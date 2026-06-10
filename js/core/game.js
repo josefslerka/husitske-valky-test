@@ -545,7 +545,9 @@ class Game {
                         unit.health -= damage;
                         if (unit.health <= 0) {
                             unit.health = 0;
-                            this.enemiesKilled++;
+                            // Statistiky podle frakce hráče + jednotné efekty smrti
+                            this.combatSystem.trackUnitDeath(unit, null);
+                            this.handleUnitDeath(unit);
                         }
                     }
                     if (event.text) {
@@ -2097,6 +2099,24 @@ class Game {
     // ==========================================
     // SYSTÉM MORÁLKY
     // ==========================================
+
+    // Jednotné zpracování smrti jednotky. Každý kill-path (přímý zásah,
+    // protiútok, plošný útok, eventy) musí projít tudy - jinak smrt
+    // velitele nespustí kolaps morálky a zničený vůz neotevře průlom.
+    handleUnitDeath(victim, killer = null) {
+        if (victim.isCommander && victim.isCommander()) {
+            this.onCommanderDeath(victim);
+        }
+        if (victim.isWagon && victim.isWagon()) {
+            this.onWagonDestroyed(victim);
+        }
+        this.applyMoraleLossOnDeath(victim);
+
+        // Vítězství v souboji zvyšuje morálku přeživšího vítěze
+        if (killer && killer.health > 0) {
+            killer.increaseMorale(10, i18n.t('gameLog.combatVictory'));
+        }
+    }
 
     // Aplikace ztráty morálky při smrti jednotky na blízké spojence
     applyMoraleLossOnDeath(deadUnit) {

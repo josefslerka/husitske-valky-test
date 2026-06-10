@@ -157,6 +157,7 @@ class CombatSystem {
                     if (areaDmg.killed) {
                         this.game.addLog(i18n.t('gameLog.areaKill', { attacker: attacker.name, target: areaDmg.unit.name, nearby: defender.name, damage: areaDmg.damage }), 'combat');
                         this.trackUnitDeath(areaDmg.unit, attacker);
+                        this.game.handleUnitDeath(areaDmg.unit, attacker);
                     } else {
                         this.game.addLog(i18n.t('gameLog.areaHit', { attacker: attacker.name, target: areaDmg.unit.name, nearby: defender.name, damage: areaDmg.damage, health: areaDmg.unit.health }), 'combat');
                     }
@@ -167,24 +168,9 @@ class CombatSystem {
                 this.game.addLog(i18n.t('gameLog.destroyed', { attacker: attacker.name, defender: defender.name, damage: result.damage }), 'combat');
                 Sound.playDeath();
 
-                // Aktualizace statistik
+                // Aktualizace statistik + jednotné efekty smrti (velitel, vůz, morálka)
                 this.trackUnitDeath(defender, attacker);
-
-                // Speciální efekt při smrti velitele
-                if (defender.isCommander && defender.isCommander()) {
-                    this.game.onCommanderDeath(defender);
-                }
-
-                // Speciální efekt při zničení vozu - průlom v hradbě
-                if (defender.isWagon && defender.isWagon()) {
-                    this.game.onWagonDestroyed(defender);
-                }
-
-                // Efekt na morálku - smrt spojence snižuje morálku blízkých jednotek
-                this.game.applyMoraleLossOnDeath(defender);
-
-                // Vítězství zvyšuje morálku útočníka
-                attacker.increaseMorale(10, i18n.t('gameLog.combatVictory'));
+                this.game.handleUnitDeath(defender, attacker);
             } else {
                 this.game.addLog(i18n.t('gameLog.attacked', { attacker: attacker.name, defender: defender.name, damage: result.damage, health: defender.health }), 'combat');
 
@@ -217,6 +203,7 @@ class CombatSystem {
                                 this.game.addLog(i18n.t('gameLog.counterKill', { defender: defender.name, attacker: attacker.name, damage: result.counterDamage }), 'combat');
                                 Sound.playDeath();
                                 this.trackUnitDeath(attacker, defender);
+                                this.game.handleUnitDeath(attacker, defender);
                             } else {
                                 this.game.addLog(i18n.t('gameLog.counterAttack', { defender: defender.name, damage: result.counterDamage, attacker: attacker.name, health: attacker.health }), 'combat');
                             }
