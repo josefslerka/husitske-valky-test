@@ -758,7 +758,13 @@ class Unit {
             movement: this.movement,  // Uložit i změněný pohyb (dismount)
             morale: this.morale,
             isRouting: this.isRouting,
-            rallyAttempts: this.rallyAttempts
+            rallyAttempts: this.rallyAttempts,
+            // Hodnoty, které mohou být za hry přepsány (strana scénáře,
+            // posily s přepsanou frakcí, eventy měnící staty)
+            faction: this.faction,
+            attack: this.attack,
+            defense: this.defense,
+            special: this.special
         };
     }
 
@@ -780,6 +786,12 @@ class Unit {
         }
         unit.isRouting = data.isRouting || false;
         unit.rallyAttempts = data.rallyAttempts || 0;
+        // Přepsané hodnoty - bez nich by jednotka po načtení spadla
+        // zpět na šablonu (a posila s přepsanou frakcí by změnila stranu)
+        if (data.faction !== undefined) unit.faction = data.faction;
+        if (data.attack !== undefined) unit.attack = data.attack;
+        if (data.defense !== undefined) unit.defense = data.defense;
+        if (data.special !== undefined) unit.special = data.special;
         return unit;
     }
 }

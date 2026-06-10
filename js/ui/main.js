@@ -500,15 +500,47 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function startGameFromSave() {
+        // Save je potřeba přečíst předem - určuje scénář, a tím velikost
+        // mapy, terén a podmínky vítězství
+        let saveData = null;
+        try {
+            saveData = JSON.parse(localStorage.getItem('husitskeValky_save'));
+        } catch (e) {
+            console.error('Poškozený save:', e);
+            return;
+        }
+        if (!saveData) return;
+
+        const scenario = saveData.scenarioId
+            ? ScenarioManager.getScenario(saveData.scenarioId)
+            : null;
+
         mainMenu.classList.add('hidden');
         gameContainer.classList.remove('hidden');
 
-        // Vytvoření výchozí hexové mapy (bude přepsána při načtení)
-        hexGrid = new HexGrid(canvas, 16, 10, 40);
         destroyCurrentGame();
-        game = new Game(hexGrid);
 
-        // Načtení hry
+        if (scenario) {
+            // Stejná příprava jako startMission: grid dle scénáře, terén,
+            // podmínky vítězství... loadGame pak přepíše dynamický stav
+            const mapSize = scenario.mapSize;
+            hexGrid = new HexGrid(canvas, mapSize.width, mapSize.height, 40);
+            game = new Game(hexGrid);
+            game.fogOfWar = (gameSettings.difficultyLevel === 'advanced');
+            game.initGameWithScenario(scenario);
+
+            document.getElementById('battle-name').textContent = scenario.name;
+            document.getElementById('battle-date').textContent = scenario.date;
+            updateObjectivesPanel(scenario);
+            selectedScenario = scenario;
+        } else {
+            // Starý save nebo rychlá bitva - výchozí mapa
+            hexGrid = new HexGrid(canvas, 16, 10, 40);
+            game = new Game(hexGrid);
+            game.initGame();
+        }
+
+        // Načtení hry (jednotky, kolo, průběh scénáře, mlha války)
         game.loadGame();
 
         // Export pro debugging

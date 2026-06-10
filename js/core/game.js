@@ -2020,12 +2020,31 @@ class Game {
     // Uložení hry do localStorage
     saveGame() {
         const saveData = {
-            version: 1,
+            version: 2,
+            scenarioId: this.currentScenario ? this.currentScenario.id : null,
             turnNumber: this.turnNumber,
             currentFaction: this.currentFaction,
             gameState: this.gameState,
             units: this.units.map(u => u.serialize()),
             nextUnitId: this.unitFactory.nextId,
+            // Průběh scénáře - bez něj by se po načtení znovu spouštěly
+            // eventy a podmínky vítězství by počítaly se špatnými čísly
+            processedEvents: [...this.processedEvents],
+            objectiveHeldTurns: this.objectiveHeldTurns || {},
+            enemiesKilled: this.enemiesKilled,
+            unitsLost: this.unitsLost,
+            escapedUnits: this.escapedUnits || 0,
+            stats: this.stats,
+            initialPlayerUnits: this.initialPlayerUnits,
+            initialEnemyUnits: this.initialEnemyUnits,
+            // Chorál a morální zlom
+            choralUsed: this.choralUsed,
+            choralActive: this.choralActive,
+            choralTurnsRemaining: this.choralTurnsRemaining,
+            moraleBroken: this.moraleBroken,
+            // Mlha války
+            fogOfWar: this.fogOfWar,
+            exploredHexes: [...this.exploredHexes],
             savedAt: new Date().toISOString()
         };
 
@@ -2052,8 +2071,8 @@ class Game {
 
             const saveData = JSON.parse(saveString);
 
-            // Kontrola verze
-            if (saveData.version !== 1) {
+            // Kontrola verze (v1 = staré savy bez stavu scénáře)
+            if (saveData.version !== 1 && saveData.version !== 2) {
                 this.addLog(i18n.t('gameLog.saveIncompatible'), 'combat');
                 return false;
             }
@@ -2067,8 +2086,50 @@ class Game {
             // Obnovení jednotek
             this.units = saveData.units.map(data => Unit.deserialize(data));
 
-            // Nastavení terénu (vždy stejný)
-            this.setupTerrain();
+            // Terén: pokud běží scénář, aplikoval ho už initGameWithScenario
+            // (volá se před loadGame ze startGameFromSave). Default mapu
+            // stavíme jen pro hry bez scénáře - dřívější bezpodmínečné
+            // setupTerrain() přepisovalo mapu scénáře výchozí mapou.
+            if (!this.currentScenario) {
+                this.setupTerrain();
+            }
+
+            // Průběh scénáře
+            this.processedEvents = new Set(saveData.processedEvents || []);
+            this.objectiveHeldTurns = saveData.objectiveHeldTurns || {};
+            this.enemiesKilled = saveData.enemiesKilled || 0;
+            this.unitsLost = saveData.unitsLost || 0;
+            this.escapedUnits = saveData.escapedUnits || 0;
+            if (saveData.stats) {
+                this.stats = saveData.stats;
+            }
+            if (saveData.initialPlayerUnits !== undefined) {
+                this.initialPlayerUnits = saveData.initialPlayerUnits;
+                this.initialEnemyUnits = saveData.initialEnemyUnits;
+            }
+
+            // Chorál a morální zlom
+            this.choralUsed = saveData.choralUsed || false;
+            this.choralActive = saveData.choralActive || false;
+            this.choralTurnsRemaining = saveData.choralTurnsRemaining || 0;
+            this.moraleBroken = saveData.moraleBroken || false;
+
+            // Mlha války
+            if (saveData.fogOfWar !== undefined) {
+                this.fogOfWar = saveData.fogOfWar;
+            }
+            this.exploredHexes = new Set(saveData.exploredHexes || []);
+            this.visibleHexes = new Set();
+
+            // Routující jednotky - stav je per-unit (isRouting), Set jen sleduje
+            this.routingUnits = new Set(
+                this.units.filter(u => u.isRouting).map(u => u.id)
+            );
+
+            // Fáze scénáře podle načteného kola
+            if (this.currentScenario) {
+                this.updatePhase();
+            }
 
             // Reset výběru
             this.selectedUnit = null;
