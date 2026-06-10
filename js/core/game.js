@@ -905,8 +905,31 @@ class Game {
         this.hexGrid.canvas.addEventListener('mousemove', (e) => this.handleMouseMove(e), { signal });
         this.hexGrid.canvas.addEventListener('mouseleave', () => this.hideTooltip(), { signal });
 
-        // Tlačítko konce tahu
-        document.getElementById('btn-end-turn').addEventListener('click', () => this.endTurn(), { signal });
+        // Tlačítko konce tahu (s volitelným potvrzením z nastavení)
+        document.getElementById('btn-end-turn').addEventListener('click', async () => {
+            if (window.gameSettings && window.gameSettings.confirmEndTurn &&
+                this.currentFaction === 'hussites' && this.gameState === 'playing' &&
+                typeof showConfirmDialog === 'function') {
+                const confirmed = await showConfirmDialog(
+                    i18n.t('game.confirmEndTurnPrompt'),
+                    i18n.t('game.endTurn')
+                );
+                if (!confirmed) return;
+            }
+            this.endTurn();
+        }, { signal });
+
+        // Tlačítko útoku - zvýrazní platné cíle vybrané jednotky
+        const attackBtn = document.getElementById('btn-attack');
+        if (attackBtn) {
+            attackBtn.addEventListener('click', () => {
+                if (!this.selectedUnit || !this.selectedUnit.canAttack()) return;
+                const targets = this.combatSystem.getValidAttackTargets(this.selectedUnit);
+                this.hexGrid.setAttackable(targets);
+                this.render();
+                this.addLog(i18n.t('gameLog.selectAttackTarget'), 'combat');
+            }, { signal });
+        }
 
         // Tlačítko obrany
         document.getElementById('btn-defend').addEventListener('click', () => this.combatSystem.defendSelectedUnit(), { signal });
@@ -2483,23 +2506,34 @@ class Game {
     // Kontrola, zda je jednotka obklíčena (nepřátelé na protilehlých stranách)
     // Vrací: { surrounded: bool, level: 0-3, directions: [[dir1, dir2], ...] }
     checkSurrounded(unit) {
-        const neighbors = this.hexGrid.getNeighbors(unit.col, unit.row);
         const enemyFaction = unit.faction === 'hussites' ? 'crusaders' : 'hussites';
 
-        // Zjistíme, na kterých směrech jsou nepřátelé (0-5)
+        // Zjistíme, na kterých směrech jsou nepřátelé (0-5).
+        // POZOR: nelze použít hexGrid.getNeighbors() - ten hexy mimo mapu
+        // vyfiltruje a pole zkomprimuje, takže index != směr a protilehlé
+        // páry by na okraji mapy párovaly náhodné dvojice. Směrové tabulky
+        // odpovídají getNeighbors v hex.js (odd-q offset).
+        const isOddCol = unit.col % 2 === 1;
+        const directions = isOddCol ? [
+            [0, -1], [1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0]
+        ] : [
+            [0, -1], [1, -1], [1, 0], [0, 1], [-1, 0], [-1, -1]
+        ];
+
         const enemyDirections = [];
         for (let i = 0; i < 6; i++) {
-            if (i < neighbors.length) {
-                const neighbor = neighbors[i];
-                const enemyAtPos = this.units.find(u =>
-                    u.col === neighbor.col &&
-                    u.row === neighbor.row &&
-                    u.faction === enemyFaction &&
-                    u.health > 0
-                );
-                if (enemyAtPos) {
-                    enemyDirections.push(i);
-                }
+            const nc = unit.col + directions[i][0];
+            const nr = unit.row + directions[i][1];
+            // Směr mimo mapu nemůže obsahovat nepřítele
+            if (nc < 0 || nc >= this.hexGrid.cols || nr < 0 || nr >= this.hexGrid.rows) continue;
+            const enemyAtPos = this.units.find(u =>
+                u.col === nc &&
+                u.row === nr &&
+                u.faction === enemyFaction &&
+                u.health > 0
+            );
+            if (enemyAtPos) {
+                enemyDirections.push(i);
             }
         }
 
@@ -2593,9 +2627,9 @@ class Game {
 
     // Kontrola, zda je jednotka u vozové hradby nebo v městě (pro regeneraci)
     isUnitNearWagonOrTown(unit) {
-        // Kontrola terénu - město
+        // Kontrola terénu - město (getTerrain vrací string, ne objekt)
         const terrain = this.hexGrid.getTerrain(unit.col, unit.row);
-        if (terrain && terrain.type === 'town') {
+        if (terrain === 'town') {
             return { type: 'town', name: 'město' };
         }
 
@@ -2618,6 +2652,10 @@ class Game {
     regenerateHealth() {
         // Regenerace pouze na začátku husitského tahu (po křižáckém tahu)
         if (this.currentFaction !== 'hussites') return;
+
+        // Set se čistí každé kolo - bez toho by se každá jednotka vyléčila
+        // jen jednou za celou hru místo jednou za kolo
+        this.regeneratedUnits.clear();
 
         const HEAL_AMOUNT = 10;
         const MAX_HEAL_PERCENT = 0.5; // Max 50% maxHealth

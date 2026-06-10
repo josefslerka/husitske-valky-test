@@ -349,6 +349,8 @@ class CombatSystem {
 
     // Zobrazení floating damage čísla
     showDamageNumber(col, row, damage, isHeal = false) {
+        // Nastavení "Zobrazovat poškození" dosud nemělo žádný efekt
+        if (window.gameSettings && window.gameSettings.showDamage === false) return;
         const canvas = document.getElementById('game-canvas');
         if (!canvas) return;
 

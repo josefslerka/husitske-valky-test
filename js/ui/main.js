@@ -74,8 +74,21 @@ document.addEventListener('DOMContentLoaded', () => {
         difficultyLevel: 'beginner' // 'beginner' = bez mlhy, 'advanced' = s mlhou války
     };
 
+    // Nastavení musí být dostupné i pro game.js / ai.js / CombatSystem
+    // (confirmEndTurn, aiSpeed, showDamage)
+    window.gameSettings = gameSettings;
+
     // Načtení uložených nastavení
     loadSettings();
+
+    // Aplikace hlasitosti z uložených nastavení
+    applyVolumeSettings();
+
+    function applyVolumeSettings() {
+        const vol = (gameSettings.soundVolume !== undefined ? gameSettings.soundVolume : 70) / 100;
+        Sound.setVolume(vol);
+        Music.setVolume(vol);
+    }
 
     // =============================================
     // HLAVNÍ MENU
@@ -180,6 +193,10 @@ document.addEventListener('DOMContentLoaded', () => {
     function initActTabs() {
         const tabs = document.querySelectorAll('.act-tab');
         tabs.forEach(tab => {
+            // Volá se při každém otevření výběru misí - bez guardu se
+            // listenery hromadí a klik se zpracuje vícekrát
+            if (tab.dataset.listenerAdded) return;
+            tab.dataset.listenerAdded = 'true';
             tab.addEventListener('click', () => {
                 const actId = parseInt(tab.dataset.act);
 
@@ -879,6 +896,9 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             Sound.disable();
         }
+
+        // Aplikace hlasitosti (posuvník dosud neměl žádný efekt)
+        applyVolumeSettings();
 
         // Aplikace obtížnosti na běžící hru
         if (game) {

@@ -61,6 +61,20 @@ const Music = {
         }
     },
 
+    // Chorál ve hře - přehraje hymnus jednou (event activate_choral
+    // a tlačítko chorálu ho volají, dosud metoda neexistovala)
+    playChoral() {
+        this.init();
+        if (!this.audio.paused) return; // hudba už hraje, nerestartovat
+        this.audio.loop = false;
+        const playPromise = this.audio.play();
+        if (playPromise !== undefined) {
+            playPromise.catch(error => {
+                console.warn('Audio playback failed:', error);
+            });
+        }
+    },
+
     // Zapnutí/vypnutí hudby
     toggle() {
         this.init();

@@ -227,8 +227,11 @@ class VictoryConditionsSystem {
                 const currentPercent = (playerUnits.length / this.game.initialPlayerUnits) * 100;
                 const requiredTurnsSurvive = primary.turns || this.game.currentScenario.maxTurns;
 
-                // Kontrola proběhne až po uplynutí požadovaného počtu kol
-                if (this.game.turnNumber < requiredTurnsSurvive) {
+                // Kontrola proběhne až po DOKONČENÍ požadovaného počtu kol.
+                // turnNumber se zvyšuje při přepnutí na husity - vyhodnocení
+                // při turnNumber == required by nepřítele připravilo o jeho
+                // poslední tah ("přežij 12 kol" by znamenalo 11 tahů nepřítele)
+                if (this.game.turnNumber <= requiredTurnsSurvive) {
                     // Ještě neuplynul požadovaný čas - pokračujeme ve hře
                     // (porážka před vypršením času jen pokud zemřou všechny jednotky - to řeší checkVictory)
                     return;
@@ -267,8 +270,10 @@ class VictoryConditionsSystem {
 
                 const requiredTurnsHold = primary.turns || this.game.currentScenario.maxTurns;
 
-                // Kontrola musí proběhnout až po uplynutí požadovaného počtu kol
-                if (this.game.turnNumber < requiredTurnsHold) {
+                // Kontrola musí proběhnout až po DOKONČENÍ požadovaného počtu
+                // kol (viz komentář u 'survive'); porážka při ztrátě pozice
+                // platí průběžně
+                if (this.game.turnNumber <= requiredTurnsHold) {
                     // Porážka pokud nepřítel obsadil JAKOUKOLI klíčovou pozici
                     if (enemyOccupiedPositions.length > 0) {
                         this.game.addLog(i18n.t('gameLog.keyPositionsLost'), 'turn');
@@ -304,7 +309,8 @@ class VictoryConditionsSystem {
 
             case 'survive_turns':
                 const requiredTurns = primary.turns || this.game.currentScenario.maxTurns;
-                victoryAchieved = this.game.turnNumber >= requiredTurns;
+                // > místo >=: kolo musí být dokončené (viz komentář u 'survive')
+                victoryAchieved = this.game.turnNumber > requiredTurns;
 
                 if (victoryAchieved) {
                     this.game.addLog(i18n.t('gameLog.victorySurviveTurns', { turns: requiredTurns }), 'turn');

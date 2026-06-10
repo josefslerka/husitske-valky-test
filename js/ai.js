@@ -92,7 +92,11 @@ const AI = {
         }
 
         // Pokračuj na další jednotku po krátké prodlevě
-        const delay = action && action.type === 'attack' ? 700 : 500;
+        // (rychlost AI z nastavení dosud neměla žádný efekt)
+        const speedFactor = { fast: 0.4, normal: 1, slow: 1.8 }[
+            (window.gameSettings && window.gameSettings.aiSpeed) || 'normal'
+        ] || 1;
+        const delay = (action && action.type === 'attack' ? 700 : 500) * speedFactor;
         setTimeout(() => {
             this.processUnits(game, units, index + 1);
         }, delay);
@@ -258,7 +262,10 @@ const AI = {
             // Kontrola dosahu včetně reach schopnosti
             let inRange = distance <= unit.range;
             if (unit.special === 'reach' && distance === 2 && unit.range === 1) {
-                inRange = game.canReachThrough(unit, enemy);
+                // canReachThrough žije na CombatSystem - volání na game by
+                // spadlo (TypeError) a zamrzlo AI tah, jakmile by AI dostala
+                // jednotku s reach
+                inRange = game.combatSystem.canReachThrough(unit, enemy);
             }
 
             if (inRange) {

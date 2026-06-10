@@ -24,6 +24,7 @@
     "overview": "Přehled",
     "objectivesTitle": "Cíle mise",
     "endTurn": "Ukončit tah",
+    "confirmEndTurnPrompt": "Opravdu chcete ukončit tah?",
     "unit": "Jednotka",
     "selectUnit": "Vyberte jednotku",
     "attack": "Útok",
@@ -268,6 +269,7 @@
     "unitsTitle": "Jednotky v bitvě"
   },
   "gameLog": {
+    "selectAttackTarget": "Vyber cíl útoku kliknutím na zvýrazněný hex.",
     "gameStart": "Hra zahájena. Husité začínají.",
     "hussitesStart": "Husité začínají.",
     "crusadersStart": "Křižáci začínají.",

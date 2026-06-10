@@ -24,6 +24,7 @@
     "overview": "Overview",
     "objectivesTitle": "Mission Objectives",
     "endTurn": "End Turn",
+    "confirmEndTurnPrompt": "Really end your turn?",
     "unit": "Unit",
     "selectUnit": "Select a unit",
     "attack": "Attack",
@@ -2872,6 +2873,7 @@
     "unitsTitle": "Units in Battle"
   },
   "gameLog": {
+    "selectAttackTarget": "Click a highlighted hex to choose an attack target.",
     "gameStart": "Game started. Hussites begin.",
     "hussitesStart": "Hussites begin.",
     "crusadersStart": "Crusaders begin.",
