@@ -11,6 +11,10 @@ class CombatSystem {
         for (const enemy of this.game.units) {
             if (enemy.faction === unit.faction || enemy.health <= 0) continue;
 
+            // Mlha války: jednotku skrytou v mlze nelze zaměřit - červené
+            // zvýraznění hexu by jinak prozradilo její pozici
+            if (!this.game.fogOfWarSystem.isEnemyVisible(enemy)) continue;
+
             const distance = this.game.hexGrid.getDistance(unit.col, unit.row, enemy.col, enemy.row);
 
             // Normální dosah

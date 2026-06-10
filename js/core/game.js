@@ -849,7 +849,17 @@ class Game {
     }
 
     showTooltip(hex, mouseX, mouseY) {
-        const unit = this.getUnitAt(hex.col, hex.row);
+        // Mlha války: neprozkoumaný hex neprozrazuje vůbec nic
+        if (this.fogOfWar && !this.fogOfWarSystem.isHexExplored(hex.col, hex.row)) {
+            this.hideTooltip();
+            return;
+        }
+
+        let unit = this.getUnitAt(hex.col, hex.row);
+        // Nepřítel skrytý v mlze se v tooltipu chová, jako by tam nebyl
+        if (unit && !this.fogOfWarSystem.isEnemyVisible(unit)) {
+            unit = null;
+        }
         const terrain = this.hexGrid.getTerrain(hex.col, hex.row);
 
         let html = '';

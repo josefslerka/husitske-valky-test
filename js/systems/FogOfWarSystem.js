@@ -36,11 +36,14 @@ class FogOfWarSystem {
 
             const sightRange = this.getUnitSightRange(unit);
 
-            // Přidej všechny hexy v dosahu viditelnosti
-            for (let q = -sightRange; q <= sightRange; q++) {
-                for (let r = Math.max(-sightRange, -q - sightRange); r <= Math.min(sightRange, -q + sightRange); r++) {
-                    const col = unit.col + q;
-                    const row = unit.row + r;
+            // Přidej všechny hexy v dosahu viditelnosti.
+            // Grid používá offsetové souřadnice (odd-q) - iterujeme proto celý
+            // čtverec a filtrujeme přes getDistance. Axiální kosočtverec by na
+            // offsetových souřadnicích nechával trvale zamlžené hexy.
+            for (let dc = -sightRange; dc <= sightRange; dc++) {
+                for (let dr = -sightRange; dr <= sightRange; dr++) {
+                    const col = unit.col + dc;
+                    const row = unit.row + dr;
 
                     if (col < 0 || col >= this.game.hexGrid.cols || row < 0 || row >= this.game.hexGrid.rows) continue;
 
