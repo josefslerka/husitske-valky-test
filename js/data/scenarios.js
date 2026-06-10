@@ -1530,8 +1530,10 @@ const Scenarios = {
                         id: 'block_gate',
                         type: 'capture_position',
                         positions: [[9,12]],
-                        holdTurns: 10,
-                        description: 'Zablokuj městskou bránu a udrž 10 kol'
+                        // Brána je 5 hexů od nejbližší jednotky (pohyb 2) - obsadit ji lze
+                        // nejdřív v kole 3, při maxTurns 10 je tedy strop držení 8 kol
+                        holdTurns: 6,
+                        description: 'Zablokuj městskou bránu a udrž 6 kol'
                     }
                 ]
             },
@@ -2310,9 +2312,10 @@ const Scenarios = {
                     { type: 'SUDLICNICI', col: 8, row: 5 },
                     { type: 'SUDLICNICI', col: 8, row: 7 },
                     // Sirotci (Bedřich ze Strážnice)
+                    // POZOR: typ musí mít faction: 'hussites' - HALAPARTNICI jsou křižácká šablona
                     { type: 'PAVEZNICI', col: 8, row: 6 },
-                    { type: 'HALAPARTNICI', col: 9, row: 5 },
-                    { type: 'HALAPARTNICI', col: 9, row: 7 },
+                    { type: 'SUDLICNICI', col: 9, row: 5 },
+                    { type: 'SUDLICNICI', col: 9, row: 7 },
                     // Střelci
                     { type: 'KUSINICI_HUSITI', col: 6, row: 4 },
                     { type: 'KUSINICI_HUSITI', col: 6, row: 8 },
@@ -2352,6 +2355,8 @@ const Scenarios = {
                     // Městská děla
                     { type: 'POLNI_DELO', col: 14, row: 6 },
                     // Rytíři Viléma Švihovského - mobilní záloha
+                    // Vilém je cílem podmínky kill_commander - musí být na mapě
+                    { type: 'VILEM_SVIHOVSKY', col: 18, row: 5 },
                     { type: 'TEZKY_RYTIR', col: 17, row: 5 },
                     { type: 'TEZKY_RYTIR', col: 17, row: 7 },
                     { type: 'LEHKA_JIZDA', col: 18, row: 6 }
@@ -2480,6 +2485,8 @@ const Scenarios = {
                 commander: 'Prokop Holý',
                 faction_name: 'Radikálové (Táboři a Sirotci)',
                 units: [
+                    // Prokop Holý - velitel radikálů (event v kole 12 i debriefing s ním počítají)
+                    { type: 'PROKOP_HOLY', col: 16, row: 6 },
                     // Vozová hradba radikálů
                     { type: 'VOZOVA_HRADBA', col: 14, row: 3 },
                     { type: 'VOZOVA_HRADBA', col: 14, row: 4 },
@@ -2508,6 +2515,9 @@ const Scenarios = {
                 commander: 'Diviš Bořek z Miletínka',
                 faction_name: 'Umírnění (Panská jednota)',
                 units: [
+                    // Diviš Bořek - velitel umírněných (cíl "kill_commander" ho vyžaduje na mapě,
+                    // jinak je podmínka splněná automaticky - every() na prázdném poli)
+                    { type: 'DIVIS_BOREK', col: 6, row: 4 },
                     // Vozová hradba umírněných (pražské vozy - modré)
                     { type: 'VOZOVA_HRADBA_PRASKY', col: 7, row: 5 },
                     { type: 'VOZOVA_HRADBA_PRASKY', col: 7, row: 6 },
@@ -3290,6 +3300,9 @@ const ScenarioManager = {
                 // Převod souřadnic ze scénáře na skutečné souřadnice mapy
                 const mapped = hexGrid.scenarioToMap(unitDef.col, unitDef.row);
                 const unit = unitFactory.createUnit(unitDef.type, mapped.col, mapped.row);
+                // Strana ve scénáři přebíjí frakci šablony (např. Diviš Bořek je
+                // husitská šablona, ale u Lipan velí straně protivníka)
+                unit.faction = 'hussites';
                 units.push(unit);
             } catch (e) {
                 console.error(`Failed to create hussite unit: ${unitDef.type}`, e);
@@ -3302,6 +3315,7 @@ const ScenarioManager = {
                 // Převod souřadnic ze scénáře na skutečné souřadnice mapy
                 const mapped = hexGrid.scenarioToMap(unitDef.col, unitDef.row);
                 const unit = unitFactory.createUnit(unitDef.type, mapped.col, mapped.row);
+                unit.faction = 'crusaders';
                 units.push(unit);
             } catch (e) {
                 console.error(`Failed to create crusader unit: ${unitDef.type}`, e);

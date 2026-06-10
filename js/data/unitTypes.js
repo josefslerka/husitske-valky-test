@@ -1246,6 +1246,39 @@ const UnitTypes = {
         }
     },
 
+    // Vilém Švihovský z Rýzmberka - velitel obrany Plzně 1433-34
+    VILEM_SVIHOVSKY: {
+        id: 'vilem_svihovsky',
+        name: 'Vilém Švihovský',
+        faction: 'crusaders',
+        symbol: '🏰',  // Obránce města
+        maxHealth: 90,
+        attack: 28,
+        defense: 32,
+        range: 1,
+        movement: 3,
+        cost: 380,
+        description: 'Vilém Švihovský z Rýzmberka. Hejtman obrany Plzně během husitského obléhání 1433-34.',
+        special: 'commander',
+        unitClass: 'commander',
+        baseMorale: 90,
+        lore: {
+            description: 'Vilém Švihovský z Rýzmberka byl katolický šlechtic a hejtman plzeňského landfrýdu. Vedl obranu Plzně během devítiměsíčního husitského obléhání v letech 1433-34.',
+            equipment: 'Plná zbroj, meč, erb Švihovských z Rýzmberka.',
+            origin: 'Rod pánů z Rýzmberka a Švihova, západní Čechy',
+            historicalNote: 'Obležená Plzeň pod jeho velením odolala polním vojskům až do jejich odchodu k Lipanům. Město za statečnost získalo od Zikmunda velblouda do znaku - na památku zvířete ukořistěného obránci při výpadu do husitského tábora.'
+        },
+        commanderAbilities: {
+            auraRange: 3,
+            moraleBonus: 12,
+            attackBonus: 4,
+            defenseBonus: 6,
+            rallyBonus: 22,         // Zkušený obránce - drží morálku posádky
+            fearRange: 2,
+            fearPenalty: 2
+        }
+    },
+
     // Břeněk Švihovský z Rýzmburka - husitský velitel posil u Živohoště
     BRENEK_SVIHOVSKY: {
         id: 'brenek_svihovsky',
