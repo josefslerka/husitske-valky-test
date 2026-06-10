@@ -1313,29 +1313,47 @@ class Game {
     }
 
     // Získání validních pohybů pomocí BFS (jednotky nemohou procházet skrz sebe)
+    // Cena vstupu na hex podle terénu (v pohybových bodech).
+    // Jízda platí v těžkém terénu přirážku - lekce ze Sudoměře: rytíř
+    // v bahně udělá hex za kolo, zatímco cepník projde
+    getTerrainMoveCost(terrain, unit) {
+        const baseCosts = {
+            forest: 2,
+            hills: 2,
+            slope: 2,
+            mud: 2,
+            swamp: 3
+        };
+        let cost = baseCosts[terrain] || 1;
+        if (unit.isCavalry && unit.isCavalry() &&
+            (terrain === 'mud' || terrain === 'swamp' || terrain === 'forest')) {
+            cost += 1;
+        }
+        return cost;
+    }
+
     getValidMoves(unit) {
-        const moves = [];
         const range = unit.movement;
 
-        // BFS pro nalezení všech dosažitelných polí
-        const visited = new Set();
-        const queue = [{ col: unit.col, row: unit.row, distance: 0 }];
-        visited.add(`${unit.col},${unit.row}`);
+        // Dijkstra s terénními cenami (dřív uniformní BFS - bahno, les
+        // i bažina stály 1 a tooltip "Zpomaluje" byl planý slib)
+        const startKey = `${unit.col},${unit.row}`;
+        const best = new Map([[startKey, 0]]);   // klíč -> nejnižší cena dosažení
+        const endable = new Set();               // hexy, kde smí pohyb skončit
+        const queue = [{ col: unit.col, row: unit.row, cost: 0 }];
 
         while (queue.length > 0) {
+            // Výběr uzlu s nejnižší cenou (mapy jsou malé, sort stačí)
+            queue.sort((a, b) => a.cost - b.cost);
             const current = queue.shift();
+            const currentKey = `${current.col},${current.row}`;
+            if (current.cost > best.get(currentKey)) continue; // zastaralý záznam
 
-            // Pokud jsme dosáhli maximálního dosahu, nepokračujeme dál
-            if (current.distance >= range) continue;
+            if (current.cost >= range) continue;
 
-            // Získáme sousedy aktuálního hexu
             const neighbors = this.hexGrid.getNeighbors(current.col, current.row);
 
             for (const neighbor of neighbors) {
-                const key = `${neighbor.col},${neighbor.row}`;
-                if (visited.has(key)) continue;
-                visited.add(key);
-
                 // Kontrola, zda je pole platné
                 if (neighbor.col < 0 || neighbor.col >= this.hexGrid.cols ||
                     neighbor.row < 0 || neighbor.row >= this.hexGrid.rows) continue;
@@ -1361,36 +1379,45 @@ class Game {
                     }
                 }
 
+                const stepCost = this.getTerrainMoveCost(terrain, unit);
+
+                // Garance jednoho kroku: na hex sousedící s výchozí pozicí
+                // se jednotka dostane vždy, i když na něj "nemá" body
+                // (jinak by pomalá jednotka před bažinou zamrzla na místě)
+                const newCost = current.cost === 0
+                    ? Math.min(stepCost, range)
+                    : current.cost + stepCost;
+                if (newCost > range) continue;
+
+                const key = `${neighbor.col},${neighbor.row}`;
+                if (newCost >= (best.get(key) ?? Infinity)) continue;
+                best.set(key, newCost);
+
                 // Kontrola, zda je pole obsazené
                 const unitAtHex = this.getUnitAt(neighbor.col, neighbor.row);
 
                 if (unitAtHex) {
-                    // Nelze vstoupit na obsazené pole
-                    // Ale pokud je to spojenecká jednotka, můžeme přes ni projít (ale ne skončit na ní)
+                    // Přes spojence lze projít (ale ne skončit), přes nepřátele vůbec
                     if (unitAtHex.faction === unit.faction) {
-                        // Můžeme pokračovat v hledání přes spojence, ale nemůžeme tam skončit
-                        queue.push({ col: neighbor.col, row: neighbor.row, distance: current.distance + 1 });
+                        queue.push({ col: neighbor.col, row: neighbor.row, cost: newCost });
                     }
-                    // Přes nepřátele nelze projít vůbec
                     continue;
                 }
 
-                // Prázdné pole - můžeme tam vstoupit
-                moves.push({ col: neighbor.col, row: neighbor.row });
+                // Prázdné pole - lze tam skončit
+                endable.add(key);
 
-                // ZOC (Zone of Control) - kontrola, zda hex sousedí s nepřátelskou jednotkou s ZOC
-                // Pokud ano, pohyb zde KONČÍ - nemůžeme pokračovat dál
-                const isInEnemyZOC = this.isHexInEnemyZOC(neighbor.col, neighbor.row, unit.faction);
-
-                if (!isInEnemyZOC) {
-                    // Můžeme pokračovat dál pouze pokud nejsme v nepřátelské ZOC
-                    queue.push({ col: neighbor.col, row: neighbor.row, distance: current.distance + 1 });
+                // ZOC (Zone of Control) - v nepřátelské zóně pohyb KONČÍ
+                if (!this.isHexInEnemyZOC(neighbor.col, neighbor.row, unit.faction)) {
+                    queue.push({ col: neighbor.col, row: neighbor.row, cost: newCost });
                 }
-                // Pokud jsme v ZOC, hex je dosažitelný, ale nemůžeme z něj pokračovat
             }
         }
 
-        return moves;
+        return [...endable].map(key => {
+            const [col, row] = key.split(',').map(Number);
+            return { col, row };
+        });
     }
 
     // Kontrola, zda je hex v zóně kontroly nepřátelské jednotky
