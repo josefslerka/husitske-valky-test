@@ -1745,12 +1745,20 @@ class Game {
         }
 
         // Statistiky hry
+        // turnNumber se zvyšuje na ZAČÁTKU kola - když vyhodnocení proběhne
+        // po dokončení posledního kola, čítač už ukazuje kolo, které se
+        // nikdy nehrálo (u 12kolové mise "13"). Stropujeme na maxTurns.
+        const maxTurns = this.currentScenario && this.currentScenario.maxTurns;
+        const completedTurns = maxTurns ? Math.min(this.turnNumber, maxTurns) : this.turnNumber;
         const stats = {
-            turns: this.turnNumber,
+            turns: completedTurns,
             enemiesKilled: this.enemiesKilled || 0,
             unitsLost: this.unitsLost || 0,
-            secondaryObjectives: this.secondaryResults || []
+            secondaryObjectives: this.secondaryResults || [],
+            // Konkrétní důvod výsledku (nastavuje VictoryConditionsSystem.outcome)
+            reason: this.gameOverReason || null
         };
+        this.gameOverReason = null;
 
         // Použít nový gameover modal pokud existuje
         if (typeof window.showGameOver === 'function') {

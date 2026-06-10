@@ -1020,6 +1020,18 @@ document.addEventListener('DOMContentLoaded', () => {
         banner.className = isVictory ? 'victory' : 'defeat';
         banner.textContent = isVictory ? '🏆' : '💀';
 
+        // Konkrétní důvod výsledku ("Přežilo jen 36 % jednotek (potřeba 50 %)")
+        // - dosud byl jen v herním logu, kde si ho hráč nevšiml
+        const reasonEl = document.getElementById('gameover-reason');
+        if (reasonEl) {
+            if (stats?.reason) {
+                reasonEl.textContent = stats.reason;
+                reasonEl.classList.remove('hidden');
+            } else {
+                reasonEl.classList.add('hidden');
+            }
+        }
+
         // Dynamický titulek podle výsledku
         let titleText = isVictory ? i18n.t('gameover.victory') : i18n.t('gameover.defeat');
         if (isVictory) {

@@ -104,6 +104,8 @@
     "veryHard": "Velmi těžké"
   },
   "gameover": {
+    "reasonAllUnitsLost": "Všechny vaše jednotky byly zničeny.",
+    "reasonEnemyDestroyed": "Celé nepřátelské vojsko bylo zničeno.",
     "victory": "Vítězství!",
     "defeat": "Porážka",
     "totalVictory": "Úplné vítězství!",

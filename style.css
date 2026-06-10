@@ -4524,3 +4524,15 @@ body {
         height: 35px;
     }
 }
+
+/* Důvod výsledku v game-over modalu */
+.gameover-reason {
+    color: #ffd700;
+    font-style: italic;
+    font-size: 1.05em;
+    margin: 4px 0 10px;
+    padding: 8px 14px;
+    background: rgba(255, 215, 0, 0.08);
+    border-left: 3px solid #ffd700;
+    border-radius: 4px;
+}

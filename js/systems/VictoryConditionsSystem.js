@@ -4,6 +4,15 @@ class VictoryConditionsSystem {
         this.game = game;
     }
 
+    // Zaloguje důvod výsledku A uloží ho pro game-over obrazovku.
+    // Každé místo, které rozhoduje o konci hry, musí jít tudy - jinak
+    // hráč v modalu neuvidí, PROČ vyhrál/prohrál (jen narativní text)
+    outcome(text) {
+        this.game.gameOverReason = text;
+        this.game.addLog(text, 'turn');
+        return text;
+    }
+
     // Hlavní kontrola vítězství
     checkVictory() {
         // Tutoriál má vlastní systém ukončení
@@ -20,10 +29,12 @@ class VictoryConditionsSystem {
 
         // Standardní kontrola - všechny jednotky jedné strany mrtvé
         if (hussitesAlive.length === 0) {
+            this.outcome(i18n.t('gameover.reasonAllUnitsLost'));
             this.evaluateSecondaryConditions('crusaders');
             this.game.showVictory('crusaders');
             return;
         } else if (crusadersAlive.length === 0) {
+            this.outcome(i18n.t('gameover.reasonEnemyDestroyed'));
             this.evaluateSecondaryConditions('hussites');
             this.game.showVictory('hussites');
             return;
@@ -41,7 +52,7 @@ class VictoryConditionsSystem {
                     u.faction === playerFaction && u.unitClass === 'commander' && u.health > 0
                 );
                 if (playerCommanders.length === 0) {
-                    this.game.addLog(i18n.t('gameLog.commanderFallen'), 'combat');
+                    this.outcome(i18n.t('gameLog.commanderFallen'));
                     this.game.showVictory(enemyFaction);
                     return;
                 }
@@ -55,7 +66,7 @@ class VictoryConditionsSystem {
                     return unit && unit.faction === enemyFaction;
                 });
                 if (lostAll) {
-                    this.game.addLog(i18n.t('gameLog.keyPositionsLost'), 'combat');
+                    this.outcome(i18n.t('gameLog.keyPositionsLost'));
                     this.game.showVictory(enemyFaction);
                     return;
                 }
@@ -66,7 +77,7 @@ class VictoryConditionsSystem {
                 const playerAlive = this.game.units.filter(u => u.faction === playerFaction && u.health > 0);
                 const lostPercent = ((this.game.initialPlayerUnits - playerAlive.length) / this.game.initialPlayerUnits) * 100;
                 if (lostPercent >= defeat.primary.percent) {
-                    this.game.addLog(i18n.t('gameLog.tooManyCasualties', { percent: Math.round(lostPercent) }), 'combat');
+                    this.outcome(i18n.t('gameLog.tooManyCasualties', { percent: Math.round(lostPercent) }));
                     this.game.showVictory(enemyFaction);
                     return;
                 }
@@ -241,9 +252,9 @@ class VictoryConditionsSystem {
                 victoryAchieved = currentPercent >= minPercent;
 
                 if (victoryAchieved) {
-                    this.game.addLog(i18n.t('gameLog.victorySurvival', { turn: requiredTurnsSurvive, percent: Math.round(currentPercent) }), 'turn');
+                    this.outcome(i18n.t('gameLog.victorySurvival', { turn: requiredTurnsSurvive, percent: Math.round(currentPercent) }));
                 } else {
-                    this.game.addLog(i18n.t('gameLog.defeatSurvival', { percent: Math.round(currentPercent), required: minPercent }), 'turn');
+                    this.outcome(i18n.t('gameLog.defeatSurvival', { percent: Math.round(currentPercent), required: minPercent }));
                 }
                 break;
 
@@ -253,9 +264,9 @@ class VictoryConditionsSystem {
                 victoryAchieved = destroyedPercent >= destroyPercent;
 
                 if (victoryAchieved) {
-                    this.game.addLog(i18n.t('gameLog.victoryDestruction', { percent: Math.round(destroyedPercent) }), 'turn');
+                    this.outcome(i18n.t('gameLog.victoryDestruction', { percent: Math.round(destroyedPercent) }));
                 } else {
-                    this.game.addLog(i18n.t('gameLog.defeatDestruction', { percent: Math.round(destroyedPercent), required: destroyPercent }), 'turn');
+                    this.outcome(i18n.t('gameLog.defeatDestruction', { percent: Math.round(destroyedPercent), required: destroyPercent }));
                 }
                 break;
 
@@ -276,7 +287,7 @@ class VictoryConditionsSystem {
                 if (this.game.turnNumber <= requiredTurnsHold) {
                     // Porážka pokud nepřítel obsadil JAKOUKOLI klíčovou pozici
                     if (enemyOccupiedPositions.length > 0) {
-                        this.game.addLog(i18n.t('gameLog.keyPositionsLost'), 'turn');
+                        this.outcome(i18n.t('gameLog.keyPositionsLost'));
                         this.game.showVictory(enemyFaction);
                         return;
                     }
@@ -289,9 +300,9 @@ class VictoryConditionsSystem {
                 victoryAchieved = enemyOccupiedPositions.length === 0;
 
                 if (victoryAchieved) {
-                    this.game.addLog(i18n.t('gameLog.victoryHoldPosition', { turn: requiredTurnsHold }), 'turn');
+                    this.outcome(i18n.t('gameLog.victoryHoldPosition', { turn: requiredTurnsHold }));
                 } else {
-                    this.game.addLog(i18n.t('gameLog.keyPositionsLost'), 'turn');
+                    this.outcome(i18n.t('gameLog.keyPositionsLost'));
                 }
                 break;
 
@@ -301,9 +312,9 @@ class VictoryConditionsSystem {
                 victoryAchieved = escaped >= required;
 
                 if (victoryAchieved) {
-                    this.game.addLog(i18n.t('gameLog.victoryEscape', { escaped: escaped }), 'turn');
+                    this.outcome(i18n.t('gameLog.victoryEscape', { escaped: escaped }));
                 } else {
-                    this.game.addLog(i18n.t('gameLog.defeatEscape', { escaped: escaped, required: required }), 'turn');
+                    this.outcome(i18n.t('gameLog.defeatEscape', { escaped: escaped, required: required }));
                 }
                 break;
 
@@ -313,9 +324,9 @@ class VictoryConditionsSystem {
                 victoryAchieved = this.game.turnNumber > requiredTurns;
 
                 if (victoryAchieved) {
-                    this.game.addLog(i18n.t('gameLog.victorySurviveTurns', { turns: requiredTurns }), 'turn');
+                    this.outcome(i18n.t('gameLog.victorySurviveTurns', { turns: requiredTurns }));
                 } else {
-                    this.game.addLog(i18n.t('gameLog.defeatSurviveTurns', { turns: requiredTurns }), 'turn');
+                    this.outcome(i18n.t('gameLog.defeatSurviveTurns', { turns: requiredTurns }));
                 }
                 break;
 
@@ -329,9 +340,9 @@ class VictoryConditionsSystem {
                 victoryAchieved = capturedPositions.length >= captureCount;
 
                 if (victoryAchieved) {
-                    this.game.addLog(i18n.t('gameLog.victoryCapturePosition', { count: capturedPositions.length }), 'turn');
+                    this.outcome(i18n.t('gameLog.victoryCapturePosition', { count: capturedPositions.length }));
                 } else {
-                    this.game.addLog(i18n.t('gameLog.defeatCapturePosition', { count: capturedPositions.length, required: captureCount }), 'turn');
+                    this.outcome(i18n.t('gameLog.defeatCapturePosition', { count: capturedPositions.length, required: captureCount }));
                 }
                 break;
 
@@ -361,9 +372,9 @@ class VictoryConditionsSystem {
 
                 victoryAchieved = anyObjectiveAchieved;
                 if (victoryAchieved) {
-                    this.game.addLog(i18n.t('gameLog.victoryDualObjective', { objectives: achievedObjectives.join(', ') }), 'turn');
+                    this.outcome(i18n.t('gameLog.victoryDualObjective', { objectives: achievedObjectives.join(', ') }));
                 } else {
-                    this.game.addLog(i18n.t('gameLog.defeatDualObjective'), 'turn');
+                    this.outcome(i18n.t('gameLog.defeatDualObjective'));
                 }
                 break;
 
@@ -375,12 +386,12 @@ class VictoryConditionsSystem {
 
                 if (victoryAchieved) {
                     if (this.game.moraleBroken) {
-                        this.game.addLog(i18n.t('gameLog.armyRouting'), 'turn');
+                        this.outcome(i18n.t('gameLog.armyRouting'));
                     } else {
-                        this.game.addLog(i18n.t('gameLog.victoryDestroyArmy'), 'turn');
+                        this.outcome(i18n.t('gameLog.victoryDestroyArmy'));
                     }
                 } else {
-                    this.game.addLog(i18n.t('gameLog.defeatDestroyOrRout'), 'turn');
+                    this.outcome(i18n.t('gameLog.defeatDestroyOrRout'));
                 }
                 break;
 
@@ -411,9 +422,9 @@ class VictoryConditionsSystem {
 
                 victoryAchieved = anyBattleObjectiveAchieved;
                 if (victoryAchieved) {
-                    this.game.addLog(i18n.t('gameLog.victoryDualObjective', { objectives: achievedBattleObjectives.join(', ') }), 'turn');
+                    this.outcome(i18n.t('gameLog.victoryDualObjective', { objectives: achievedBattleObjectives.join(', ') }));
                 } else {
-                    this.game.addLog(i18n.t('gameLog.defeatDualObjective'), 'turn');
+                    this.outcome(i18n.t('gameLog.defeatDualObjective'));
                 }
                 break;
 
@@ -454,7 +465,7 @@ class VictoryConditionsSystem {
                 const destroyed = (this.game.enemiesKilled / this.game.initialEnemyUnits) * 100;
                 victoryAchieved = destroyed >= percent;
                 if (victoryAchieved) {
-                    this.game.addLog(i18n.t('gameLog.victoryDestruction', { percent: Math.round(destroyed) }), 'turn');
+                    this.outcome(i18n.t('gameLog.victoryDestruction', { percent: Math.round(destroyed) }));
                 }
                 break;
             }
@@ -465,9 +476,9 @@ class VictoryConditionsSystem {
                 victoryAchieved = (destroyed >= (primary.percent || 50)) ||
                     (this.game.moraleBroken && enemyRouting > enemyUnits.length / 2);
                 if (victoryAchieved) {
-                    this.game.addLog(this.game.moraleBroken ?
+                    this.outcome(this.game.moraleBroken ?
                         i18n.t('gameLog.armyRouting') :
-                        i18n.t('gameLog.victoryDestroyArmy'), 'turn');
+                        i18n.t('gameLog.victoryDestroyArmy'));
                 }
                 break;
             }
@@ -480,7 +491,7 @@ class VictoryConditionsSystem {
                 });
                 victoryAchieved = captured.length >= count;
                 if (victoryAchieved) {
-                    this.game.addLog(i18n.t('gameLog.victoryCapturePosition', { count: captured.length }), 'turn');
+                    this.outcome(i18n.t('gameLog.victoryCapturePosition', { count: captured.length }));
                 }
                 break;
             }
@@ -517,7 +528,7 @@ class VictoryConditionsSystem {
                     this.game.objectiveHeldTurns[obj.id] = (this.game.objectiveHeldTurns[obj.id] || 0) + 1;
 
                     if (this.game.objectiveHeldTurns[obj.id] >= obj.holdTurns) {
-                        this.game.addLog(i18n.t('gameLog.victoryObjectiveHeld', { description: obj.description }), 'turn');
+                        this.outcome(i18n.t('gameLog.victoryObjectiveHeld', { description: obj.description }));
                         this.evaluateSecondaryConditions(playerFaction);
                         this.game.showVictory(playerFaction);
                     }

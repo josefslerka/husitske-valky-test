@@ -104,6 +104,8 @@
     "veryHard": "Very Hard"
   },
   "gameover": {
+    "reasonAllUnitsLost": "All your units have been destroyed.",
+    "reasonEnemyDestroyed": "The entire enemy army has been destroyed.",
     "victory": "Victory!",
     "defeat": "Defeat",
     "totalVictory": "Total Victory!",
