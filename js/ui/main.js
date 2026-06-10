@@ -55,6 +55,15 @@ document.addEventListener('DOMContentLoaded', () => {
     let game = null;
     let selectedScenario = null;
 
+    // Úklid staré instance hry - jinak její listenery a animační smyčka
+    // zůstávají aktivní a každý klik na tlačítka se zpracuje vícekrát
+    function destroyCurrentGame() {
+        if (game && typeof game.destroy === 'function') {
+            game.destroy();
+        }
+        game = null;
+    }
+
     // Nastavení hry
     const gameSettings = {
         soundEnabled: true,
@@ -431,6 +440,7 @@ document.addEventListener('DOMContentLoaded', () => {
         hexGrid = new HexGrid(canvas, mapSize.width, mapSize.height, 40);
 
         // Vytvoření nové instance hry s novým gridem
+        destroyCurrentGame();
         game = new Game(hexGrid);
         game.currentScenario = scenario;
 
@@ -474,6 +484,7 @@ document.addEventListener('DOMContentLoaded', () => {
         hexGrid = new HexGrid(canvas, 16, 10, 40);
 
         // Vytvoření instance hry
+        destroyCurrentGame();
         game = new Game(hexGrid);
 
         // Nastavení mlhy války podle obtížnosti
@@ -494,6 +505,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Vytvoření výchozí hexové mapy (bude přepsána při načtení)
         hexGrid = new HexGrid(canvas, 16, 10, 40);
+        destroyCurrentGame();
         game = new Game(hexGrid);
 
         // Načtení hry
@@ -741,10 +753,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function returnToMainMenu() {
-        // Zastavení hry
-        if (game && game.animationLoop) {
-            cancelAnimationFrame(game.animationLoop);
-        }
+        // Zastavení hry (listenery + animační smyčka)
+        destroyCurrentGame();
 
         // Skrytí všech modalů a herní obrazovky
         missionModal.classList.add('hidden');
@@ -918,12 +928,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // =============================================
 
     function showEncyclopedia() {
-        // Vytvoření dočasné hry pro naplnění encyklopedie všemi jednotkami
-        const tempHexGrid = new HexGrid(canvas, 16, 10, 40);
-        const tempGame = new Game(tempHexGrid);
-        tempGame.initGame();
-
-        populateHelpUnits(tempGame);
+        // Bez instance hry vypíše populateHelpUnits všechny typy jednotek,
+        // což je pro encyklopedii přesně to, co chceme (a nevzniká temp hra
+        // s vlastní animační smyčkou a listenery na živém canvasu)
+        populateHelpUnits(null);
 
         // Inicializuj obsah encyklopedie
         if (typeof initEncyclopediaContent === 'function') {

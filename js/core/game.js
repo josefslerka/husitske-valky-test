@@ -74,7 +74,19 @@ class Game {
         const minimapCanvas = document.getElementById('minimap');
         this.minimap = new Minimap(minimapCanvas, hexGrid);
 
+        // Controller pro hromadné odebrání všech listenerů při destroy()
+        this.eventAbortController = new AbortController();
+
         this.setupEventListeners();
+    }
+
+    // Úklid instance - bez něj zůstávají listenery a animační smyčka
+    // staré hry aktivní na sdíleném canvasu a tlačítkách
+    destroy() {
+        this.stopAnimationLoop();
+        this.eventAbortController.abort();
+        this.hideTooltip();
+        this.gameState = 'destroyed';
     }
 
     // Inicializace nové hry (výchozí bez scénáře)
@@ -765,32 +777,34 @@ class Game {
     }
 
     setupEventListeners() {
+        // Všechny listenery sdílí abort signál - destroy() je odebere najednou
+        const signal = this.eventAbortController.signal;
+
         // Klik na canvas
-        this.hexGrid.canvas.addEventListener('click', (e) => this.handleClick(e));
+        this.hexGrid.canvas.addEventListener('click', (e) => this.handleClick(e), { signal });
 
         // Hover pro tooltip
-        this.hexGrid.canvas.addEventListener('mousemove', (e) => this.handleMouseMove(e));
-        this.hexGrid.canvas.addEventListener('mouseleave', () => this.hideTooltip());
+        this.hexGrid.canvas.addEventListener('mousemove', (e) => this.handleMouseMove(e), { signal });
+        this.hexGrid.canvas.addEventListener('mouseleave', () => this.hideTooltip(), { signal });
 
         // Tlačítko konce tahu
-        document.getElementById('btn-end-turn').addEventListener('click', () => this.endTurn());
+        document.getElementById('btn-end-turn').addEventListener('click', () => this.endTurn(), { signal });
 
         // Tlačítko obrany
-        document.getElementById('btn-defend').addEventListener('click', () => this.combatSystem.defendSelectedUnit());
+        document.getElementById('btn-defend').addEventListener('click', () => this.combatSystem.defendSelectedUnit(), { signal });
 
         // Tlačítko undo (vrátit pohyb)
-        document.getElementById('btn-undo').addEventListener('click', () => this.undoLastMove());
+        document.getElementById('btn-undo').addEventListener('click', () => this.undoLastMove(), { signal });
 
         // Tlačítko chorálu
         const choralBtn = document.getElementById('btn-choral');
         if (choralBtn) {
-            choralBtn.addEventListener('click', () => this.activateChoral());
+            choralBtn.addEventListener('click', () => this.activateChoral(), { signal });
         }
 
         // Tlačítko nové hry ze starého victory modalu (pro zpětnou kompatibilitu)
         const oldNewGameBtn = document.getElementById('btn-new-game');
-        if (oldNewGameBtn && !oldNewGameBtn.dataset.listenerAdded) {
-            oldNewGameBtn.dataset.listenerAdded = 'true';
+        if (oldNewGameBtn) {
             oldNewGameBtn.addEventListener('click', () => {
                 document.getElementById('victory-modal').classList.add('hidden');
                 // Pokusit se vrátit do hlavního menu
@@ -799,7 +813,7 @@ class Game {
                 } else {
                     this.initGame();
                 }
-            });
+            }, { signal });
         }
 
         // Reference na tooltip element
