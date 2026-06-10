@@ -2454,6 +2454,9 @@ class Game {
     applyCommanderAuras() {
         for (const unit of this.units) {
             if (unit.health <= 0 || unit.isCommander()) continue;
+            // Jen frakce, jejíž tah právě začíná - endTurn běží 2x za kolo
+            // a bez filtru by aury tikaly dvojnásobnou rychlostí
+            if (unit.faction !== this.currentFaction) continue;
 
             // Bonusy od spojeneckého velitele
             const bonuses = this.getCommanderBonuses(unit);
@@ -2560,6 +2563,9 @@ class Game {
     applySurroundedEffects() {
         for (const unit of this.units) {
             if (unit.health <= 0) continue;
+            // Jen frakce na tahu - jinak ztráta morálky z obklíčení tiká
+            // 2x za kolo (endTurn běží při přepnutí na obě strany)
+            if (unit.faction !== this.currentFaction) continue;
 
             const surroundInfo = this.checkSurrounded(unit);
             if (surroundInfo.surrounded) {

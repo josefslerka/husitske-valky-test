@@ -294,9 +294,12 @@ class MoraleSystem {
                 const baseChance = 0.15; // 15% základní šance každé kolo
                 const moraleModifier = (1 - unit.morale / unit.maxMorale) * 0.25;
 
-                // Blízkost prchajících jednotek zvyšuje šanci
+                // Blízkost prchajících jednotek VLASTNÍ frakce zvyšuje šanci.
+                // Bez filtru frakce paniku křižáků živili i prchající husité -
+                // útěk protivníka jednotku děsit nemá
                 const nearbyRouting = this.game.units.filter(u =>
                     u.isRouting && u.health > 0 &&
+                    u.faction === unit.faction &&
                     this.game.hexGrid.getDistance(unit.col, unit.row, u.col, u.row) <= 2
                 ).length;
                 const proximityBonus = nearbyRouting * 0.1;
