@@ -769,7 +769,7 @@ const Scenarios = {
                     { type: 'TEZKY_RYTIR', col: 24, row: 21 },
                     { type: 'TEZKOODENCI', col: 24, row: 20 },
                     { type: 'TEZKOODENCI', col: 23, row: 21 },
-                    // Jindřich z Plumova - varoval před útokem
+                    // Jindřich z Plumlova - varoval před útokem
                     { type: 'JINDRICH_PLUMOV', col: 21, row: 20 }
                 ]
             }
@@ -836,7 +836,7 @@ const Scenarios = {
                         trigger: 'turn_4',
                         triggerBefore: 'turn_7',
                         condition: { type: 'units_in_area', faction: 'crusaders', area: { minCol: 18, maxCol: 24, minRow: 15, maxRow: 21 }, minCount: 2 },
-                        message: 'Jindřich z Plumova varuje před útokem přes svah. Zikmund ho obviní ze zbabělosti!'
+                        message: 'Jindřich z Plumlova varuje před útokem přes svah. Zikmund ho obviní ze zbabělosti!'
                     },
                     {
                         id: 'nobility_dismount_msg',
@@ -1426,7 +1426,7 @@ const Scenarios = {
                 ]
             },
             crusaders: {
-                commander: 'Fridrich IV. Svárlivý',
+                commander: 'Fridrich IV. Bojovný',
                 units: [
                     // HRADNÍ POSÁDKA (na hradě)
                     { type: 'KOPINICI', col: 8, row: 1 },
@@ -1725,7 +1725,7 @@ const Scenarios = {
         date: '3.-4. srpna 1427',
         type: 'pursuit_battle',
         difficulty: 1,
-        description: 'Třetí křížová výprava končí útěkem. Křižáci prchají před husity, aniž by se odvážili bojovat.',
+        description: 'Čtvrtá křížová výprava končí útěkem. Křižáci prchají před husity, aniž by se odvážili bojovat.',
         historicalSignificance: 'Psychologické vítězství husitů - samotná jejich pověst stačí k porážce křižáků. Kardinál Beaufort roztrhá říšské korouhve.',
 
         briefing: {
@@ -1889,7 +1889,7 @@ const Scenarios = {
         },
 
         debriefing: {
-            victory: 'Třetí křížová výprava končí naprostým debaklem! Křižáci prchli, aniž by se odvážili bojovat. Kardinál Beaufort v zoufalství roztrhal říšské korouhve. O několik dní později husité dobývají Tachov - 11. srpna město a 14. srpna hrad. Prokop Holý se stává nejmocnějším mužem v Čechách.',
+            victory: 'Čtvrtá křížová výprava končí naprostým debaklem! Křižáci prchli, aniž by se odvážili bojovat. Kardinál Beaufort v zoufalství roztrhal říšské korouhve. O několik dní později husité dobývají Tachov - 11. srpna město a 14. srpna hrad. Prokop Holý se stává nejmocnějším mužem v Čechách.',
             defeat: 'Křižákům se podařilo překonat strach a zorganizovat obranu. Husitská pověst neporazitelnosti dostala trhlinu. Tachov zůstává v rukou nepřítele.'
         },
 
@@ -2212,7 +2212,7 @@ const Scenarios = {
         },
 
         debriefing: {
-            victory: 'Slavné vítězství! Samotný zvuk "Ktož jsú boží bojovníci" způsobil panický útěk křižácké armády. 4. křížová výprava končí absolutním debaklem - křižáci prchají, aniž by se pokusili o boj. Toto je vrchol husitské slávy!',
+            victory: 'Slavné vítězství! Samotný zvuk "Ktož jsú boží bojovníci" způsobil panický útěk křižácké armády. 5. křížová výprava končí absolutním debaklem - křižáci prchají, aniž by se pokusili o boj. Toto je vrchol husitské slávy!',
             defeat: 'Křižáci překonali svůj strach a zformovali obranu. I přes váš chorál se nezhroutili. Husitská pověst neporazitelnosti je otřesena.'
         },
 

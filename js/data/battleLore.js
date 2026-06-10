@@ -3,7 +3,7 @@
 
 const BattleLore = {
     // Bitva u Živohoště
-    'zivohosť': {
+    'zivohost': {
         name: 'Bitva u Živohoště',
         date: '4. listopadu 1419',
         location: 'Oblast mezi Živohoští a Novým Knínem',
@@ -24,7 +24,7 @@ const BattleLore = {
         trivia: [
             'Historicky PRVNÍ větší střet husitských válek',
             'Vozová hradba nebyla použita - vznikla až později',
-            'Petr ze Šternberka padl později na Vítkově',
+            'Petr ze Šternberka padl o rok později v bitvě pod Vyšehradem',
             'Zajatí husité byli vhozeni do kutnohorských šachet'
         ],
         casualties: { hussites: '~100+ mrtvých/zajatých', enemy: 'Neznámé' },
@@ -103,7 +103,7 @@ const BattleLore = {
             composition: 'Střelci s hákovnicemi, cepníci, 3 ženy'
         },
         enemySide: {
-            commanders: ['Zikmund Lucemburský', 'Bedřich IV. Bojovný', 'Heinrich z Isenburgu (padl)', 'Pippo Spano'],
+            commanders: ['Zikmund Lucemburský', 'Fridrich IV. Bojovný', 'Heinrich z Isenburgu (padl)', 'Pippo Spano'],
             strength: '~30 000 celkem; 7-8 000 útočníků na Vítkov',
             composition: 'Mezinárodní křižácká armáda'
         },
@@ -225,7 +225,7 @@ const BattleLore = {
             composition: 'Městské hotovosti, 2 pušky, 2 praky'
         },
         enemySide: {
-            commanders: ['Fridrich IV. Svárlivý', 'Hynek Hlaváč z Dubé', 'Zikmund z Vartenberka'],
+            commanders: ['Fridrich IV. Bojovný', 'Hynek Hlaváč z Dubé', 'Zikmund z Vartenberka'],
             strength: 'Saské vojsko + mostecká hotovost + katolická šlechta',
             composition: 'Profesionální míšeňská armáda'
         },
@@ -287,7 +287,7 @@ const BattleLore = {
         },
         enemySide: {
             commanders: ['Arcibiskup Ota ze Ziegenheimu', 'Fridrich Hohenzollern', 'Kardinál Jindřich Beaufort'],
-            strength: '~25 000 mužů + 1 000 anglických lučištníků',
+            strength: '~25 000 mužů',
             composition: 'PRVNÍ použití vlastní vozové hradby křižáky'
         },
         terrain: 'Okolí Stříbra a Tachova. Nerozhodující - křižáci uprchli.',
@@ -298,12 +298,12 @@ const BattleLore = {
         ],
         trivia: [
             'Křižáci použili vlastní vozovou hradbu - neúčinná',
-            '1 000 ANGLICKÝCH LUČIŠTNÍKŮ v křižácké armádě',
+            'Anglické lučištníky najal kardinál Beaufort až roku 1429 - do Čech nedorazili, regent je odklonil do Francie',
             '"Nevidím, před kým utíkat, žádného nepřítele nevidím!" - sarkastický výrok rytíře Kamrovce',
             'Na 4 roky zastaveny křížové výpravy'
         ],
         casualties: { hussites: 'Zanedbatelné', enemy: 'Stovky' },
-        aftermath: 'Bez boje - křižáci prchli! 3. křížová výprava končí debaklem.',
+        aftermath: 'Bez boje - křižáci prchli! 4. křížová výprava končí debaklem.',
         reliability: 'Vysoká'
     },
 
@@ -343,9 +343,9 @@ const BattleLore = {
         date: '14. srpna 1431',
         location: 'Mezi Domažlicemi a Kdyní, u vrchu Baldov',
         hussiteSide: {
-            commanders: ['Prokop Holý', 'Zikmund Korybutovič (host)'],
+            commanders: ['Prokop Holý'],
             strength: '40-50 000 bojovníků',
-            composition: 'Spojené svazy + 6 000 polských husitů'
+            composition: 'Spojené svazy táborů, sirotků a pražanů'
         },
         enemySide: {
             commanders: ['Fridrich Hohenzollern', 'Kardinál Giuliano Cesarini', 'Zikmund ODMÍTL účast'],
@@ -469,7 +469,7 @@ const BattleLore = {
 
 // Mapování scenario ID na battle lore ID
 const ScenarioToBattleLore = {
-    'zivohosť': 'zivohosť',
+    'zivohost': 'zivohost',
     'nekmir': 'nekmir',
     'sudomer': 'sudomer',
     'vitkov': 'vitkov',

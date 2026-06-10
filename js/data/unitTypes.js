@@ -1010,10 +1010,10 @@ const UnitTypes = {
         }
     },
 
-    // Fridrich IV. Svárlivý - míšeňský markrabě
+    // Fridrich IV. Bojovný - míšeňský markrabě
     FRIDRICH_MISNENSKY: {
         id: 'fridrich_misnensky',
-        name: 'Fridrich IV. Svárlivý',
+        name: 'Fridrich IV. Bojovný',
         faction: 'crusaders',
         symbol: '🦅',  // Saský orel
         maxHealth: 85,
@@ -1027,7 +1027,7 @@ const UnitTypes = {
         unitClass: 'commander',
         baseMorale: 85,
         lore: {
-            description: 'Fridrich IV. Svárlivý (1370-1428) byl míšeňský markrabě a později saský kurfiřt. Jeden z mála velitelů, kteří proti husitům dosáhli úspěchu. Roku 1421 porazil husitský oddíl u Mostu.',
+            description: 'Fridrich IV. Bojovný (1370-1428) byl míšeňský markrabě a později saský kurfiřt. Jeden z mála velitelů, kteří proti husitům dosáhli úspěchu. Roku 1421 porazil husitský oddíl u Mostu.',
             equipment: 'Plná gotická zbroj, meč, kopí, korouhev se saským erbem.',
             origin: 'Wettinská dynastie, Míšeň',
             historicalNote: 'Za vítězství u Mostu získal roku 1423 od Zikmunda saské kurfiřtství. Titul saského kurfiřta pak Wettinové drželi až do roku 1918.'
@@ -1064,7 +1064,7 @@ const UnitTypes = {
             description: 'Bohuslav ze Švamberka (?-1425) byl významný jihočeský katolický šlechtic a hejtman královského landfrýdu. Vedl vojsko katolických pánů proti Žižkovi v bitvě u Sudoměře 25. března 1420.',
             equipment: 'Plná zbroj s erbem Švamberků (labuť), kopí, meč.',
             origin: 'Rod pánů ze Švamberka, západní Čechy',
-            historicalNote: 'U Sudoměře vedl 2000 jezdců proti 400 husitům. Přesto utrpěl zdrcující porážku. Žižka využil úzké hráze mezi rybníky a jízda se nemohla rozvinout. Švamberk sám byl zajat, ale později propuštěn.'
+            historicalNote: 'U Sudoměře vedl 2000 jezdců proti 400 husitům. Přesto utrpěl zdrcující porážku. Žižka využil úzké hráze mezi rybníky a jízda se nemohla rozvinout. Roku 1421 ho husité zajali na hradě Krasíkově - poté přestoupil ke kališnictví a padl roku 1425 jako táborský hejtman.'
         },
         commanderAbilities: {
             auraRange: 3,
@@ -1195,7 +1195,7 @@ const UnitTypes = {
         unitClass: 'commander',
         baseMorale: 90,
         lore: {
-            description: 'Fridrich IV. Bojovný (1411-1464) byl saský kurfiřt a významný říšský kníže. Roku 1426 vedl velkou křížovou výpravu proti husitům, která skončila katastrofální porážkou u Ústí nad Labem.',
+            description: 'Fridrich IV. Bojovný (1370-1428) byl míšeňský markrabě a od roku 1423 saský kurfiřt. Roku 1426 jeho saské vojsko podniklo velkou křížovou výpravu, která skončila katastrofální porážkou u Ústí nad Labem.',
             equipment: 'Honosná gotická zbroj, kopí, meč, korouhev se saským erbem.',
             origin: 'Wettinská dynastie, Sasko',
             historicalNote: 'Bitva u Ústí nad Labem (16. června 1426) byla jednou z největších porážek křižáků. Proti 70 000 křižáků stálo jen asi 25 000 husitů. Husité zabili nebo zajali až 15 000 nepřátel včetně mnoha říšských knížat.'
@@ -1229,10 +1229,10 @@ const UnitTypes = {
         unitClass: 'commander',
         baseMorale: 85,
         lore: {
-            description: 'Petr Konopišťský ze Šternberka (?-1420) byl katolický šlechtic a zarytý odpůrce husitů. V listopadu 1419 vedl útok na husitské poutníky u Živohoště, což se mu stalo osudným.',
+            description: 'Petr Konopišťský ze Šternberka (?-1420) byl katolický šlechtic a zarytý odpůrce husitů. V listopadu 1419 vedl útok na husitské poutníky u Živohoště. Padl o rok později v bitvě pod Vyšehradem.',
             equipment: 'Plná zbroj s hvězdou Šternberků, kopí, meč.',
             origin: 'Rod pánů ze Šternberka, Konopiště',
-            historicalNote: 'U Živohoště Petr ze Šternberka napadl skupinu husitských poutníků směřujících do Prahy. Přesila zdánlivě zaručovala úspěch, ale příchod Břeňka Švihovského s posilami změnil průběh bitvy. Šternberk v bitvě zahynul.'
+            historicalNote: 'U Živohoště Petr ze Šternberka napadl skupinu husitských poutníků směřujících do Prahy. Přesila zdánlivě zaručovala úspěch, ale příchod Břeňka Švihovského s posilami změnil průběh bitvy. Šternberk padl o rok později v bitvě pod Vyšehradem.'
         },
         commanderAbilities: {
             auraRange: 3,
@@ -1379,10 +1379,10 @@ const UnitTypes = {
         }
     },
 
-    // Jindřich z Plumova - moravský hejtman, varoval před útokem
+    // Jindřich z Plumlova - moravský hejtman, varoval před útokem
     JINDRICH_PLUMOV: {
         id: 'jindrich_plumov',
-        name: 'Jindřich z Plumova',
+        name: 'Jindřich z Plumlova',
         faction: 'crusaders',
         symbol: '🏇',  // Jezdec
         maxHealth: 85,
@@ -1391,15 +1391,15 @@ const UnitTypes = {
         range: 1,
         movement: 4,
         cost: 350,
-        description: 'Jindřich z Plumova, moravský zemský hejtman. Varoval před útokem na Vyšehrad, byl obviněn ze zbabělosti.',
+        description: 'Jindřich z Plumlova, moravský zemský hejtman. Varoval před útokem na Vyšehrad, byl obviněn ze zbabělosti.',
         special: 'commander',
         unitClass: 'commander',
         baseMorale: 75,
         lore: {
-            description: 'Jindřich z Plumova byl moravský zemský hejtman a opatrný velitel. U Vyšehradu varoval před unáhleným útokem na husitské pozice, ale jeho rada nebyla vyslyšena.',
+            description: 'Jindřich z Plumlova byl moravský zemský hejtman a opatrný velitel. U Vyšehradu varoval před unáhleným útokem na husitské pozice, ale jeho rada nebyla vyslyšena.',
             equipment: 'Zbroj s moravským erbem, meč, kopí.',
             origin: 'Morava',
-            historicalNote: 'U Vyšehradu Jindřich z Plumova správně předvídal, že přímý útok na husitské pozice selže. Jeho varování bylo ignorováno a po porážce byl nespravedlivě obviněn ze zbabělosti, ačkoli jeho opatrnost byla oprávněná.'
+            historicalNote: 'U Vyšehradu Jindřich z Plumlova správně předvídal, že přímý útok na husitské pozice selže. Jeho varování bylo ignorováno a po porážce byl nespravedlivě obviněn ze zbabělosti, ačkoli jeho opatrnost byla oprávněná.'
         },
         commanderAbilities: {
             auraRange: 3,
@@ -1604,7 +1604,7 @@ const UnitTypes = {
         unitClass: 'commander',
         baseMorale: 82,
         lore: {
-            description: 'Hynek z Poděbrad a Kunštátu (?-1426) byl moravský šlechtic a spojenec husitů. Je především znám jako otec Jiřího z Poděbrad, budoucího českého krále.',
+            description: 'Hynek z Poděbrad a Kunštátu (?-1426) byl moravský šlechtic a spojenec husitů. Byl strýcem Jiřího z Poděbrad, budoucího českého krále - Jiříkovým otcem byl Hynkův bratr Viktorin Boček z Kunštátu.',
             equipment: 'Zbroj s kunštátským erbem, meč, štít.',
             origin: 'Poděbrady a Kunštát, východní Čechy a Morava',
             historicalNote: 'Hynek z Poděbrad bojoval na straně orebitů u Malešova roku 1424. Jeho syn Jiří se narodil roku 1420 a stal se roku 1458 českým králem - jediným husitou na českém trůně.'

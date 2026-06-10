@@ -562,7 +562,7 @@
         "description": "Bohuslav of Švamberk (?-1425) was a prominent South Bohemian Catholic nobleman and hetman of the royal Landfrieden. He led Catholic lords' army against Žižka in the Battle of Sudoměř on March 25, 1420.",
         "equipment": "Full armor with Švamberk coat of arms (swan), lance, sword.",
         "origin": "Lords of Švamberk family, western Bohemia",
-        "historicalNote": "At Sudoměř, he led 2,000 cavalry against 400 Hussites. Nevertheless, he suffered a crushing defeat. Žižka used narrow causeways between fishponds and cavalry could not deploy. Švamberk himself was captured but later released."
+        "historicalNote": "At Sudoměř, he led 2,000 cavalry against 400 Hussites. Nevertheless, he suffered a crushing defeat. Žižka used narrow causeways between fishponds and cavalry could not deploy. The Hussites captured him at Krasíkov castle in 1421 - he then converted to the Hussite cause and fell in 1425 as a Taborite captain."
       }
     },
     "ZIKMUND": {
@@ -599,7 +599,7 @@
       "name": "Frederick the Belligerent",
       "description": "Duke of Saxony called the Belligerent. Commander of crusade at Ústí nad Labem 1426.",
       "lore": {
-        "description": "Frederick IV the Belligerent (1411-1464) was Saxon Elector and prominent imperial prince. In 1426, he led a great crusade against Hussites that ended in catastrophic defeat at Ústí nad Labem.",
+        "description": "Frederick IV the Warlike (1370-1428) was Margrave of Meissen and from 1423 Elector of Saxony. In 1426, his Saxon army launched a great crusade that ended in catastrophic defeat at Ústí nad Labem.",
         "equipment": "Ornate Gothic armor, lance, sword, banner with Saxon coat of arms.",
         "origin": "House of Wettin, Saxony",
         "historicalNote": "The Battle of Ústí nad Labem (June 16, 1426) was one of the greatest defeats of crusaders. Against 70,000 crusaders stood only about 25,000 Hussites. Hussites killed or captured up to 15,000 enemies including many imperial princes."
@@ -609,7 +609,7 @@
       "name": "Peter of Šternberk",
       "description": "Peter Konopišťský of Šternberk. Led assault on South Bohemian Hussite pilgrims at Živohošť.",
       "lore": {
-        "description": "Peter Konopišťský of Šternberk (?-1420) was a Catholic nobleman and staunch opponent of Hussites. In November 1419, he led an attack on Hussite pilgrims at Živohošť, which proved fatal for him.",
+        "description": "Peter Konopišťský of Šternberk (?-1420) was a Catholic nobleman and staunch opponent of Hussites. In November 1419, he led an attack on Hussite pilgrims at Živohošť. He fell a year later at the Battle of Vyšehrad.",
         "equipment": "Full armor with Šternberk star, lance, sword.",
         "origin": "Lords of Šternberk family, Konopiště",
         "historicalNote": "At Živohošť, Peter of Šternberk attacked a group of Hussite pilgrims heading to Prague. Overwhelming numbers seemingly guaranteed success, but the arrival of Břeněk of Švihov with reinforcements changed the course of battle. Šternberk perished in the battle."
@@ -709,7 +709,7 @@
       "name": "Hynek of Poděbrady",
       "description": "Hynek of Poděbrady and Kunštát, Oreb ally. Father of future King George of Poděbrady.",
       "lore": {
-        "description": "Hynek of Poděbrady and Kunštát (?-1426) was a Moravian nobleman and Hussite ally. He is primarily known as father of George of Poděbrady, future Czech king.",
+        "description": "Hynek of Poděbrady and Kunštát (?-1426) was a Moravian nobleman and Hussite ally. He was the uncle of George of Poděbrady, future Czech king - George's father was Hynek's brother Viktorin Boček of Kunštát.",
         "equipment": "Armor with Kunštát coat of arms, sword, shield.",
         "origin": "Poděbrady and Kunštát, eastern Bohemia and Moravia",
         "historicalNote": "Hynek of Poděbrady fought on the side of Orebites at Malešov in 1424. His son George was born in 1420 and became Czech king in 1458 - the only Hussite on Czech throne."
@@ -1485,7 +1485,7 @@
     },
     "tachov_1427": {
       "name": "Battle of Tachov",
-      "description": "Third crusade ends in flight. Crusaders flee before Hussites without daring to fight.",
+      "description": "Fourth crusade ends in flight. Crusaders flee before Hussites without daring to fight.",
       "historicalSignificance": "Psychological victory of Hussites - their reputation alone suffices to defeat crusaders. Cardinal Beaufort tears imperial banners.",
       "briefing": {
         "hussites": "Crusaders unsuccessfully besieged Stříbro and now withdraw toward Tachov. Approach quickly and exploit their demoralization. Pursue fleeing and capture Tachov!",
@@ -1522,7 +1522,7 @@
         ]
       },
       "debriefing": {
-        "victory": "Third crusade ends in complete debacle! Crusaders fled without daring to fight. Cardinal Beaufort in desperation tore imperial banners. Few days later Hussites capture Tachov - August 11 city and August 14 castle. Prokop the Great becomes most powerful man in Bohemia.",
+        "victory": "Fourth crusade ends in complete debacle! Crusaders fled without daring to fight. Cardinal Beaufort in desperation tore imperial banners. Few days later Hussites capture Tachov - August 11 city and August 14 castle. Prokop the Great becomes most powerful man in Bohemia.",
         "defeat": "Crusaders managed to overcome fear and organize defense. Hussite reputation of invincibility got crack. Tachov remains in enemy hands."
       },
       "phases": [
@@ -1659,7 +1659,7 @@
         ]
       },
       "debriefing": {
-        "victory": "Glorious victory! Mere sound of 'Ktož jsú boží bojovníci' caused panic flight of crusader army. 4th crusade ends in absolute debacle - crusaders flee without attempting fight. This is peak of Hussite glory!",
+        "victory": "Glorious victory! Mere sound of 'Ktož jsú boží bojovníci' caused panic flight of crusader army. 5th crusade ends in absolute debacle - crusaders flee without attempting fight. This is peak of Hussite glory!",
         "defeat": "Crusaders overcame their fear and formed defense. Despite your choral they didn't collapse. Hussite reputation of invincibility is shaken."
       },
       "phases": [
@@ -2199,7 +2199,7 @@
       "trivia": [
         "Historically the FIRST major clash of the Hussite Wars",
         "Wagon fort was not used - it originated only later",
-        "Peter of Šternberk fell later at Vítkov",
+        "Peter of Šternberk fell a year later at the Battle of Vyšehrad",
         "Captured Hussites were thrown into Kutná Hora mine shafts"
       ],
       "reliability": "Moderately reliable - two main sources"
@@ -2304,7 +2304,7 @@
       "enemySide": {
         "commanders": [
           "Sigismund of Luxembourg",
-          "Frederick IV the Belligerent",
+          "Frederick IV the Warlike",
           "Henry of Isenburg (fell)",
           "Pippo Spano"
         ],
@@ -2486,7 +2486,7 @@
       },
       "enemySide": {
         "commanders": [
-          "Frederick IV the Belligerent",
+          "Frederick IV the Warlike",
           "Hynek Hlaváč of Dubá",
           "Sigismund of Wartenberg"
         ],
@@ -2581,17 +2581,17 @@
           "Frederick Hohenzollern",
           "Cardinal Henry Beaufort"
         ],
-        "strength": "~25,000 men + 1,000 English archers",
+        "strength": "~25,000 men",
         "composition": "FIRST use of own wagon fort by crusaders"
       },
       "terrain": "Area around Stříbro and Tachov. Indecisive - crusaders fled.",
       "weather": "Unknown",
-      "outcome": "Without battle - crusaders fled! 3rd Crusade ends in debacle.",
+      "outcome": "Without battle - crusaders fled! 4th Crusade ends in debacle.",
       "casualties": {
         "hussites": "Negligible",
         "enemy": "Hundreds"
       },
-      "aftermath": "Without battle - crusaders fled! 3rd Crusade ends in debacle.",
+      "aftermath": "Without battle - crusaders fled! 4th Crusade ends in debacle.",
       "significance": "Crusades halted for 4 years. Demonstrated complete demoralization of crusader armies.",
       "quotes": [
         {
@@ -2609,7 +2609,7 @@
       ],
       "trivia": [
         "Crusaders used own wagon fort - ineffective",
-        "1,000 ENGLISH ARCHERS in crusader army",
+        "Cardinal Beaufort recruited English archers only in 1429 - they never reached Bohemia, diverted to France",
         "'I see not whom to flee from, I see no enemy!' - sarcastic remark by knight Kamrovec",
         "Crusades halted for 4 years"
       ],
@@ -2666,11 +2666,10 @@
       "location": "Between Domažlice and Kdyně, at Baldov hill",
       "hussiteSide": {
         "commanders": [
-          "Prokop the Great",
-          "Sigismund Korybut (guest)"
+          "Prokop the Great"
         ],
         "strength": "40-50,000 warriors",
-        "composition": "Combined unions + 6,000 Polish Hussites"
+        "composition": "Combined unions of Taborites, Orphans and Praguers"
       },
       "enemySide": {
         "commanders": [

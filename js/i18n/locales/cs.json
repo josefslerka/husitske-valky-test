@@ -362,7 +362,7 @@
     "aiDefending": "[AI] {unitName} zaujímá obranný postoj."
   },
   "battleLore": {
-    "zivohosť": {
+    "zivohost": {
       "name": "Bitva u Živohoště",
       "date": "4. listopadu 1419",
       "location": "Oblast mezi Živohoští a Novým Knínem",
@@ -393,7 +393,7 @@
       "trivia": [
         "Historicky PRVNÍ větší střet husitských válek",
         "Vozová hradba nebyla použita - vznikla až později",
-        "Petr ze Šternberka padl později na Vítkově",
+        "Petr ze Šternberka padl o rok později v bitvě pod Vyšehradem",
         "Zajatí husité byli vhozeni do kutnohorských šachet"
       ],
       "casualties": {
@@ -497,7 +497,7 @@
       "enemySide": {
         "commanders": [
           "Zikmund Lucemburský",
-          "Bedřich IV. Bojovný",
+          "Fridrich IV. Bojovný",
           "Heinrich z Isenburgu (padl)",
           "Pippo Spano"
         ],
@@ -667,7 +667,7 @@
       },
       "enemySide": {
         "commanders": [
-          "Fridrich IV. Svárlivý",
+          "Fridrich IV. Bojovný",
           "Hynek Hlaváč z Dubé",
           "Zikmund z Vartenberka"
         ],
@@ -756,7 +756,7 @@
           "Fridrich Hohenzollern",
           "Kardinál Jindřich Beaufort"
         ],
-        "strength": "~25 000 mužů + 1 000 anglických lučištníků",
+        "strength": "~25 000 mužů",
         "composition": "PRVNÍ použití vlastní vozové hradby křižáky"
       },
       "terrain": "Okolí Stříbra a Tachova. Nerozhodující - křižáci uprchli.",
@@ -776,7 +776,7 @@
       ],
       "trivia": [
         "Křižáci použili vlastní vozovou hradbu - neúčinná",
-        "1 000 ANGLICKÝCH LUČIŠTNÍKŮ v křižácké armádě",
+        "Anglické lučištníky najal kardinál Beaufort až roku 1429 - do Čech nedorazili, regent je odklonil do Francie",
         "\"Nevidím, před kým utíkat, žádného nepřítele nevidím!\" - sarkastický výrok rytíře Kamrovce",
         "Na 4 roky zastaveny křížové výpravy"
       ],
@@ -785,7 +785,7 @@
         "enemy": "Stovky"
       },
       "reliability": "Vysoká",
-      "outcome": "Bez boje - křižáci prchli! 3. křížová výprava končí debaklem."
+      "outcome": "Bez boje - křižáci prchli! 4. křížová výprava končí debaklem."
     },
     "nisa": {
       "name": "Bitva u Nisy (Slezsko)",
@@ -835,11 +835,10 @@
       "location": "Mezi Domažlicemi a Kdyní, u vrchu Baldov",
       "hussiteSide": {
         "commanders": [
-          "Prokop Holý",
-          "Zikmund Korybutovič (host)"
+          "Prokop Holý"
         ],
         "strength": "40-50 000 bojovníků",
-        "composition": "Spojené svazy + 6 000 polských husitů"
+        "composition": "Spojené svazy táborů, sirotků a pražanů"
       },
       "enemySide": {
         "commanders": [
@@ -1362,7 +1361,7 @@
           "text": "Připravené pozice poskytují +3 k obraně!"
         },
         {
-          "message": "Jindřich z Plumova varuje před útokem přes svah. Zikmund ho obviní ze zbabělosti!"
+          "message": "Jindřich z Plumlova varuje před útokem přes svah. Zikmund ho obviní ze zbabělosti!"
         },
         {
           "message": "Uražená česká šlechta útočí! Musí sesednout kvůli strmému svahu."
@@ -1421,7 +1420,7 @@
           "name": "Boční útok české šlechty",
           "description": "Česká a moravská šlechta útočí od Podolí.",
           "events": [
-            {"message": "Jindřich z Plumova varuje před útokem přes svah. Zikmund ho obviní ze zbabělosti!"},
+            {"message": "Jindřich z Plumlova varuje před útokem přes svah. Zikmund ho obviní ze zbabělosti!"},
             {"message": "Uražená česká šlechta útočí! Musí sesednout kvůli strmému svahu."},
             {"text": "Česká šlechta ztrácí výhodu jízdy na strmém svahu!"}
           ]
@@ -1735,7 +1734,7 @@
     },
     "tachov_1427": {
       "name": "Bitva u Tachova",
-      "description": "Třetí křížová výprava končí útěkem. Křižáci prchají před husity, aniž by se odvážili bojovat.",
+      "description": "Čtvrtá křížová výprava končí útěkem. Křižáci prchají před husity, aniž by se odvážili bojovat.",
       "historicalSignificance": "Psychologické vítězství husitů - samotná jejich pověst stačí k porážce křižáků. Kardinál Beaufort roztrhá říšské korouhve.",
       "briefing": {
         "hussites": "Křižáci neúspěšně obléhali Stříbro a nyní se stahují k Tachovu. Přibližte se rychle a využijte jejich demoralizace. Pronásledujte prchající a zajměte Tachov!",
@@ -1772,7 +1771,7 @@
         ]
       },
       "debriefing": {
-        "victory": "Třetí křížová výprava končí naprostým debaklem! Křižáci prchli, aniž by se odvážili bojovat. Kardinál Beaufort v zoufalství roztrhal říšské korouhve. O několik dní později husité dobývají Tachov - 11. srpna město a 14. srpna hrad. Prokop Holý se stává nejmocnějším mužem v Čechách.",
+        "victory": "Čtvrtá křížová výprava končí naprostým debaklem! Křižáci prchli, aniž by se odvážili bojovat. Kardinál Beaufort v zoufalství roztrhal říšské korouhve. O několik dní později husité dobývají Tachov - 11. srpna město a 14. srpna hrad. Prokop Holý se stává nejmocnějším mužem v Čechách.",
         "defeat": "Křižákům se podařilo překonat strach a zorganizovat obranu. Husitská pověst neporazitelnosti dostala trhlinu. Tachov zůstává v rukou nepřítele."
       },
       "phases": [
@@ -1909,7 +1908,7 @@
         ]
       },
       "debriefing": {
-        "victory": "Slavné vítězství! Samotný zvuk \"Ktož jsú boží bojovníci\" způsobil panický útěk křižácké armády. 4. křížová výprava končí absolutním debaklem - křižáci prchají, aniž by se pokusili o boj. Toto je vrchol husitské slávy!",
+        "victory": "Slavné vítězství! Samotný zvuk \"Ktož jsú boží bojovníci\" způsobil panický útěk křižácké armády. 5. křížová výprava končí absolutním debaklem - křižáci prchají, aniž by se pokusili o boj. Toto je vrchol husitské slávy!",
         "defeat": "Křižáci překonali svůj strach a zformovali obranu. I přes váš chorál se nezhroutili. Husitská pověst neporazitelnosti je otřesena."
       },
       "phases": [

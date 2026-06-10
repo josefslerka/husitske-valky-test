@@ -238,10 +238,13 @@ function getLocalizedBattleLore(battleId, baseLore) {
         }
     });
 
-    // Strany konfliktu
+    // Strany konfliktu - velitelé jsou v locale JSON uloženi jako pole,
+    // starší formát byl string oddělený čárkami; podpoř obojí
+    const asCommanderList = (val) => Array.isArray(val) ? val : String(val).split(', ');
+
     if (baseLore.hussiteSide && i18n.hasTranslation(`${loreKey}.hussiteSide.commanders`)) {
         localizedLore.hussiteSide = {
-            commanders: i18n.t(`${loreKey}.hussiteSide.commanders`).split(', '),
+            commanders: asCommanderList(i18n.t(`${loreKey}.hussiteSide.commanders`)),
             strength: i18n.t(`${loreKey}.hussiteSide.strength`),
             composition: i18n.t(`${loreKey}.hussiteSide.composition`)
         };
@@ -249,7 +252,7 @@ function getLocalizedBattleLore(battleId, baseLore) {
 
     if (baseLore.enemySide && i18n.hasTranslation(`${loreKey}.enemySide.commanders`)) {
         localizedLore.enemySide = {
-            commanders: i18n.t(`${loreKey}.enemySide.commanders`).split(', '),
+            commanders: asCommanderList(i18n.t(`${loreKey}.enemySide.commanders`)),
             strength: i18n.t(`${loreKey}.enemySide.strength`),
             composition: i18n.t(`${loreKey}.enemySide.composition`)
         };
