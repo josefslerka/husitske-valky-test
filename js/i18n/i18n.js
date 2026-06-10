@@ -1,0 +1,296 @@
+// Lokalizační systém pro Husitské Války
+// Podporuje načítání různých jazyků a dynamické přepínání
+
+class I18n {
+    constructor() {
+        this.currentLanguage = 'cs'; // Výchozí jazyk
+        this.translations = {};
+        this.loadedLanguages = new Set();
+        this.fallbackLanguage = 'cs';
+    }
+
+    /**
+     * Načte jazykový soubor
+     * @param {string} lang - Kód jazyka (cs, en, de, pl)
+     */
+    async loadLanguage(lang) {
+        if (this.loadedLanguages.has(lang)) {
+            return; // Už načteno
+        }
+
+        try {
+            const response = await fetch(`js/i18n/locales/${lang}.json`);
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            const data = await response.json();
+            this.translations[lang] = data;
+            this.loadedLanguages.add(lang);
+        } catch (error) {
+            console.error(`✗ Error loading language ${lang}:`, error);
+            console.error('Make sure you are running the game from a web server (not file://)');
+            console.error('Try: python3 -m http.server 8000');
+            // Pokud je to výchozí jazyk, vytvoř prázdný objekt
+            if (lang === this.fallbackLanguage) {
+                this.translations[lang] = {};
+            }
+        }
+    }
+
+    /**
+     * Nastaví aktivní jazyk
+     * @param {string} lang - Kód jazyka
+     */
+    async setLanguage(lang) {
+        // Načti jazyk pokud ještě není načten
+        if (!this.loadedLanguages.has(lang)) {
+            await this.loadLanguage(lang);
+        }
+
+        // Pokud jazyk neexistuje, zůstaň u aktuálního
+        if (!this.translations[lang]) {
+            console.warn(`Language ${lang} not available, staying on ${this.currentLanguage}`);
+            return;
+        }
+
+        this.currentLanguage = lang;
+
+        // Ulož do localStorage
+        localStorage.setItem('gameLanguage', lang);
+
+        // Aktualizuj UI
+        this.updateDOM();
+
+        // Aktualizuj herní data (jednotky, scénáře, atd.)
+        if (typeof updateGameDataLocalization === 'function') {
+            updateGameDataLocalization();
+        }
+    }
+
+    /**
+     * Získá překlad pro daný klíč
+     * @param {string} key - Klíč překladu (např. "menu.newGame")
+     * @param {object} params - Parametry pro nahrazení v textu
+     * @returns {string} Přeložený text
+     */
+    t(key, params = {}) {
+        let translation = this.getNestedTranslation(this.currentLanguage, key);
+
+        // Fallback na výchozí jazyk
+        if (translation === undefined && this.currentLanguage !== this.fallbackLanguage) {
+            translation = this.getNestedTranslation(this.fallbackLanguage, key);
+        }
+
+        // Pokud překlad neexistuje, vrať klíč
+        if (translation === undefined) {
+            console.warn(`Translation missing: ${key} (${this.currentLanguage})`);
+            return key;
+        }
+
+        // Nahraď parametry
+        return this.replaceParams(translation, params);
+    }
+
+    /**
+     * Získá vnořený překlad z objektu
+     * @param {string} lang - Jazyk
+     * @param {string} key - Klíč (tečková notace)
+     * @returns {string|undefined} Překlad
+     */
+    getNestedTranslation(lang, key) {
+        const keys = key.split('.');
+        let current = this.translations[lang];
+
+        for (const k of keys) {
+            if (current && typeof current === 'object' && k in current) {
+                current = current[k];
+            } else {
+                return undefined;
+            }
+        }
+
+        return current;
+    }
+
+    /**
+     * Nahradí parametry v textu
+     * @param {string} text - Text s placeholdery {param}
+     * @param {object} params - Parametry
+     * @returns {string} Text s nahrazenými parametry
+     */
+    replaceParams(text, params) {
+        if (typeof text !== 'string') return text;
+
+        return text.replace(/\{(\w+)\}/g, (match, key) => {
+            return params[key] !== undefined ? params[key] : match;
+        });
+    }
+
+    /**
+     * Kontroluje, zda existuje překlad pro daný klíč
+     * @param {string} key - Klíč překladu
+     * @returns {boolean}
+     */
+    hasTranslation(key) {
+        return this.getNestedTranslation(this.currentLanguage, key) !== undefined;
+    }
+
+    /**
+     * Aktualizuje DOM elementy s data-i18n atributem
+     */
+    updateDOM() {
+        let updated = 0;
+        // Aktualizuj elementy s data-i18n atributem
+        document.querySelectorAll('[data-i18n]').forEach(element => {
+            const key = element.getAttribute('data-i18n');
+            const translation = this.t(key);
+
+            // Speciální zpracování pro různé typy elementů
+            if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                if (element.hasAttribute('placeholder')) {
+                    element.placeholder = translation;
+                } else {
+                    element.value = translation;
+                }
+            } else {
+                element.textContent = translation;
+                updated++;
+            }
+        });
+
+        // Aktualizuj elementy s data-i18n-placeholder
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+            const key = element.getAttribute('data-i18n-placeholder');
+            element.placeholder = this.t(key);
+        });
+
+        // Aktualizuj elementy s data-i18n-title (tooltip)
+        document.querySelectorAll('[data-i18n-title]').forEach(element => {
+            const key = element.getAttribute('data-i18n-title');
+            element.title = this.t(key);
+        });
+
+        // Aktualizuj HTML lang atribut
+        document.documentElement.lang = this.currentLanguage;
+
+        // Aktualizuj page title a meta tagy
+        this.updateMetaTags();
+    }
+
+    /**
+     * Aktualizuje meta tagy podle jazyka
+     */
+    updateMetaTags() {
+        const metaData = {
+            cs: {
+                title: 'Husitské Války - Tahová Strategie',
+                description: 'Historická tahová strategie o husitských válkách. Veďte husitská vojska Jana Žižky v bitvách 15. století.'
+            },
+            en: {
+                title: 'Hussite Wars - Turn-Based Strategy',
+                description: 'Historical turn-based strategy about Hussite Wars. Lead Jan Žižka\'s armies in 15th century battles.'
+            }
+        };
+
+        const data = metaData[this.currentLanguage] || metaData.cs;
+
+        // Aktualizuj page title
+        document.title = data.title;
+
+        // Aktualizuj meta description
+        const metaDesc = document.querySelector('meta[name="description"]');
+        if (metaDesc) {
+            metaDesc.content = data.description;
+        }
+
+        // Aktualizuj Open Graph tagy
+        const ogTitle = document.querySelector('meta[property="og:title"]');
+        if (ogTitle) ogTitle.content = data.title;
+
+        const ogDesc = document.querySelector('meta[property="og:description"]');
+        if (ogDesc) ogDesc.content = data.description;
+
+        // Aktualizuj Twitter tagy
+        const twitterTitle = document.querySelector('meta[property="twitter:title"]');
+        if (twitterTitle) twitterTitle.content = data.title;
+
+        const twitterDesc = document.querySelector('meta[property="twitter:description"]');
+        if (twitterDesc) twitterDesc.content = data.description;
+    }
+
+    /**
+     * Získá aktuální jazyk
+     * @returns {string}
+     */
+    getCurrentLanguage() {
+        return this.currentLanguage;
+    }
+
+    /**
+     * Získá seznam dostupných jazyků
+     * @returns {string[]}
+     */
+    getAvailableLanguages() {
+        return Array.from(this.loadedLanguages);
+    }
+
+    /**
+     * Detekuje jazyk prohlížeče
+     * @returns {string} Detekovaný jazyk (cs/en) nebo fallback
+     */
+    detectBrowserLanguage() {
+        const browserLang = navigator.language || navigator.userLanguage;
+        const langCode = browserLang.split('-')[0].toLowerCase();
+
+        // Seznam podporovaných jazyků
+        const supportedLanguages = ['cs', 'en'];
+
+        // Pokud je jazyk podporován, vrať ho
+        if (supportedLanguages.includes(langCode)) {
+            return langCode;
+        }
+
+        // Jinak vrať fallback
+        return this.fallbackLanguage;
+    }
+
+    /**
+     * Inicializace - načte výchozí jazyk
+     */
+    async init() {
+        // Načti uložený jazyk z localStorage
+        const savedLanguage = localStorage.getItem('gameLanguage');
+
+        // Načti výchozí jazyk (čeština)
+        await this.loadLanguage(this.fallbackLanguage);
+
+        // Pokud máme uložený jazyk, použij ho
+        if (savedLanguage) {
+            if (savedLanguage !== this.fallbackLanguage) {
+                await this.setLanguage(savedLanguage);
+            } else {
+                this.currentLanguage = this.fallbackLanguage;
+            }
+        } else {
+            // Jinak detekuj jazyk prohlížeče
+            const detectedLang = this.detectBrowserLanguage();
+
+            if (detectedLang !== this.fallbackLanguage) {
+                await this.setLanguage(detectedLang);
+            } else {
+                this.currentLanguage = this.fallbackLanguage;
+            }
+        }
+
+        // Aktualizuj DOM
+        this.updateDOM();
+    }
+}
+
+// Vytvoř globální instanci
+const i18n = new I18n();
+
+// Export pro případné použití v modulech
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = i18n;
+}

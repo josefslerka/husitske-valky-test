@@ -1,0 +1,524 @@
+// VictoryConditionsSystem - Správa vítězných a porážkových podmínek
+class VictoryConditionsSystem {
+    constructor(game) {
+        this.game = game;
+    }
+
+    // Hlavní kontrola vítězství
+    checkVictory() {
+        // Tutoriál má vlastní systém ukončení
+        if (this.game.isTutorial) {
+            const crusadersAlive = this.game.units.filter(u => u.faction === 'crusaders' && u.health > 0);
+            if (crusadersAlive.length === 0) {
+                this.game.tutorialSystem.triggerTutorialEvent('all_enemies_dead');
+            }
+            return;
+        }
+
+        const hussitesAlive = this.game.units.filter(u => u.faction === 'hussites' && u.health > 0);
+        const crusadersAlive = this.game.units.filter(u => u.faction === 'crusaders' && u.health > 0);
+
+        // Standardní kontrola - všechny jednotky jedné strany mrtvé
+        if (hussitesAlive.length === 0) {
+            this.evaluateSecondaryConditions('crusaders');
+            this.game.showVictory('crusaders');
+            return;
+        } else if (crusadersAlive.length === 0) {
+            this.evaluateSecondaryConditions('hussites');
+            this.game.showVictory('hussites');
+            return;
+        }
+
+        // Kontrola defeatConditions ze scénáře
+        if (this.game.currentScenario && this.game.currentScenario.defeatConditions) {
+            const defeat = this.game.currentScenario.defeatConditions;
+            const playerFaction = this.game.currentScenario.playerFaction || 'hussites';
+            const enemyFaction = playerFaction === 'hussites' ? 'crusaders' : 'hussites';
+
+            // Smrt velitele = okamžitá porážka
+            if (defeat.primary && defeat.primary.type === 'commander_death') {
+                const playerCommanders = this.game.units.filter(u =>
+                    u.faction === playerFaction && u.unitClass === 'commander' && u.health > 0
+                );
+                if (playerCommanders.length === 0) {
+                    this.game.addLog(i18n.t('gameLog.commanderFallen'), 'combat');
+                    this.game.showVictory(enemyFaction);
+                    return;
+                }
+            }
+
+            // Ztráta klíčových pozic = porážka
+            if (defeat.alternative && defeat.alternative.type === 'lose_positions') {
+                const positions = defeat.alternative.positions || [];
+                const lostAll = positions.every(pos => {
+                    const unit = this.game.getUnitAt(pos[0], pos[1]);
+                    return unit && unit.faction === enemyFaction;
+                });
+                if (lostAll) {
+                    this.game.addLog(i18n.t('gameLog.keyPositionsLost'), 'combat');
+                    this.game.showVictory(enemyFaction);
+                    return;
+                }
+            }
+
+            // Ztráta příliš mnoha jednotek
+            if (defeat.primary && defeat.primary.type === 'lose_percent') {
+                const playerAlive = this.game.units.filter(u => u.faction === playerFaction && u.health > 0);
+                const lostPercent = ((this.game.initialPlayerUnits - playerAlive.length) / this.game.initialPlayerUnits) * 100;
+                if (lostPercent >= defeat.primary.percent) {
+                    this.game.addLog(i18n.t('gameLog.tooManyCasualties', { percent: Math.round(lostPercent) }), 'combat');
+                    this.game.showVictory(enemyFaction);
+                    return;
+                }
+            }
+        }
+    }
+
+    // Vyhodnocení sekundárních podmínek
+    evaluateSecondaryConditions(winner) {
+        if (!this.game.currentScenario || !this.game.currentScenario.victoryConditions) return;
+        const conditions = this.game.currentScenario.victoryConditions;
+        if (!conditions.secondary) return;
+
+        const playerFaction = this.game.currentScenario.playerFaction || 'hussites';
+        const enemyFaction = playerFaction === 'hussites' ? 'crusaders' : 'hussites';
+        const isVictory = (winner === playerFaction);
+
+        if (!isVictory) {
+            this.game.secondaryResults = [];
+            return;
+        }
+
+        let secondaryResults = [];
+        for (const sec of conditions.secondary) {
+            let achieved = false;
+            switch (sec.type) {
+                case 'kill_commander':
+                    const enemyCommanders = this.game.units.filter(u =>
+                        u.faction === enemyFaction && u.unitClass === 'commander'
+                    );
+                    achieved = enemyCommanders.every(c => c.health <= 0);
+                    break;
+                case 'no_losses':
+                    achieved = this.game.unitsLost === 0;
+                    break;
+                case 'max_losses':
+                    achieved = this.game.unitsLost <= (sec.maxLosses || 0);
+                    break;
+                case 'fast_victory':
+                    achieved = this.game.turnNumber <= (sec.maxTurns || 5);
+                    break;
+                case 'hold_position':
+                    // Kontrola zda hráč drží určité pozice
+                    const holdPositions = sec.positions || [];
+                    const heldCount = holdPositions.filter(pos => {
+                        const unit = this.game.getUnitAt(pos[0], pos[1]);
+                        return unit && unit.faction === playerFaction && unit.health > 0;
+                    });
+                    achieved = heldCount.length >= Math.ceil(holdPositions.length / 2);
+                    break;
+                case 'capture_position':
+                    // Kontrola zda hráč obsadil určité pozice
+                    const capturePos = sec.positions || [];
+                    const capturedCount = capturePos.filter(pos => {
+                        const unit = this.game.getUnitAt(pos[0], pos[1]);
+                        return unit && unit.faction === playerFaction && unit.health > 0;
+                    });
+                    achieved = capturedCount.length >= (sec.count || capturePos.length);
+                    break;
+                case 'destroy_percent':
+                    // Kontrola zda hráč zničil X% nepřátel
+                    const destroyedPercentSec = (this.game.enemiesKilled / this.game.initialEnemyUnits) * 100;
+                    achieved = destroyedPercentSec >= (sec.percent || 50);
+                    break;
+                case 'capture_wagons':
+                    // Kontrola zda hráč zajal nepřátelské vozy
+                    const capturedWagons = this.game.units.filter(u =>
+                        u.faction === enemyFaction &&
+                        u.health <= 0 &&
+                        u.unitClass === 'wagon'
+                    );
+                    achieved = capturedWagons.length >= (sec.count || 1);
+                    break;
+                case 'survive_commander':
+                    // Kontrola zda velitel přežil
+                    const playerCommanders = this.game.units.filter(u =>
+                        u.faction === playerFaction &&
+                        u.unitClass === 'commander' &&
+                        u.health > 0
+                    );
+                    achieved = playerCommanders.length > 0;
+                    break;
+                case 'eliminate_commander':
+                case 'kill_commander_alt':
+                    // Kontrola zda nepřátelský velitel byl zabit/zajat
+                    const enemyCommandersSec = this.game.units.filter(u =>
+                        u.faction === enemyFaction &&
+                        u.unitClass === 'commander'
+                    );
+                    achieved = enemyCommandersSec.every(c => c.health <= 0);
+                    break;
+                case 'protect_wagons':
+                    // Kontrola zda hráč uchránil své vozy
+                    const playerWagons = this.game.units.filter(u =>
+                        u.faction === playerFaction &&
+                        u.unitClass === 'wagon' &&
+                        u.health > 0
+                    );
+                    achieved = playerWagons.length >= (sec.minWagons || 1);
+                    break;
+                case 'save_wagons':
+                    // Alias pro protect_wagons
+                    const savedWagons = this.game.units.filter(u =>
+                        u.faction === playerFaction &&
+                        u.unitClass === 'wagon' &&
+                        u.health > 0
+                    );
+                    achieved = savedWagons.length >= (sec.count || 1);
+                    break;
+                case 'protect_artillery':
+                    // Kontrola zda hráč uchránil své děla
+                    const playerArtillery = this.game.units.filter(u =>
+                        u.faction === playerFaction &&
+                        u.unitClass === 'artillery' &&
+                        u.health > 0
+                    );
+                    achieved = playerArtillery.length >= (sec.minCount || 1);
+                    break;
+                case 'both_objectives':
+                    // Special case - vyžaduje splnění všech ostatních sekundárních cílů
+                    // Toto je spíš flavor text, vždy achieved = true
+                    achieved = true;
+                    break;
+            }
+            secondaryResults.push({ ...sec, achieved });
+            if (achieved) {
+                this.game.addLog(i18n.t('gameLog.objectiveComplete', { description: sec.description }), 'turn');
+            }
+        }
+        this.game.secondaryResults = secondaryResults;
+    }
+
+    // Kontrola vítězných podmínek scénáře (po uplynutí času)
+    checkScenarioVictoryConditions() {
+        if (!this.game.currentScenario) {
+            console.warn('[VICTORY] checkScenarioVictoryConditions: No current scenario!');
+            return;
+        }
+
+        if (!this.game.currentScenario.victoryConditions) {
+            console.warn(`[VICTORY] checkScenarioVictoryConditions: Scenario "${this.game.currentScenario.name}" has no victory conditions!`);
+            return;
+        }
+
+        const conditions = this.game.currentScenario.victoryConditions;
+        const playerFaction = this.game.currentScenario.playerFaction || 'hussites';
+        const enemyFaction = playerFaction === 'hussites' ? 'crusaders' : 'hussites';
+
+        const playerUnits = this.game.units.filter(u => u.faction === playerFaction && u.health > 0);
+        const enemyUnits = this.game.units.filter(u => u.faction === enemyFaction && u.health > 0);
+
+        const primary = conditions.primary;
+        let victoryAchieved = false;
+
+        switch (primary.type) {
+            case 'survive':
+                const minPercent = primary.minUnitsPercent || 0;
+                const currentPercent = (playerUnits.length / this.game.initialPlayerUnits) * 100;
+                const requiredTurnsSurvive = primary.turns || this.game.currentScenario.maxTurns;
+
+                // Kontrola proběhne až po uplynutí požadovaného počtu kol
+                if (this.game.turnNumber < requiredTurnsSurvive) {
+                    // Ještě neuplynul požadovaný čas - pokračujeme ve hře
+                    // (porážka před vypršením času jen pokud zemřou všechny jednotky - to řeší checkVictory)
+                    return;
+                }
+
+                // Uplynul požadovaný čas - vyhodnotíme podle procenta jednotek
+                victoryAchieved = currentPercent >= minPercent;
+
+                if (victoryAchieved) {
+                    this.game.addLog(i18n.t('gameLog.victorySurvival', { turn: requiredTurnsSurvive, percent: Math.round(currentPercent) }), 'turn');
+                } else {
+                    this.game.addLog(i18n.t('gameLog.defeatSurvival', { percent: Math.round(currentPercent), required: minPercent }), 'turn');
+                }
+                break;
+
+            case 'destroy_percent':
+                const destroyPercent = primary.percent || 50;
+                const destroyedPercent = (this.game.enemiesKilled / this.game.initialEnemyUnits) * 100;
+                victoryAchieved = destroyedPercent >= destroyPercent;
+
+                if (victoryAchieved) {
+                    this.game.addLog(i18n.t('gameLog.victoryDestruction', { percent: Math.round(destroyedPercent) }), 'turn');
+                } else {
+                    this.game.addLog(i18n.t('gameLog.defeatDestruction', { percent: Math.round(destroyedPercent), required: destroyPercent }), 'turn');
+                }
+                break;
+
+            case 'hold_position':
+                const requiredPositions = primary.positions || [];
+
+                // Kontrola, zda nepřítel obsadil nějakou klíčovou pozici
+                const enemyOccupiedPositions = requiredPositions.filter(pos => {
+                    const unit = this.game.getUnitAt(pos[0], pos[1]);
+                    return unit && unit.faction === enemyFaction && unit.health > 0;
+                });
+
+                const requiredTurnsHold = primary.turns || this.game.currentScenario.maxTurns;
+
+                // Kontrola musí proběhnout až po uplynutí požadovaného počtu kol
+                if (this.game.turnNumber < requiredTurnsHold) {
+                    // Porážka pokud nepřítel obsadil JAKOUKOLI klíčovou pozici
+                    if (enemyOccupiedPositions.length > 0) {
+                        this.game.addLog(i18n.t('gameLog.keyPositionsLost'), 'turn');
+                        this.game.showVictory(enemyFaction);
+                        return;
+                    }
+                    // Jinak pokračuje hra (i když je pozice prázdná)
+                    return;
+                }
+
+                // Uplynul požadovaný čas - vyhodnotíme podle obsazených pozic nepřítelem
+                // Vítězství pokud nepřítel neobsadil pozice
+                victoryAchieved = enemyOccupiedPositions.length === 0;
+
+                if (victoryAchieved) {
+                    this.game.addLog(i18n.t('gameLog.victoryHoldPosition', { turn: requiredTurnsHold }), 'turn');
+                } else {
+                    this.game.addLog(i18n.t('gameLog.keyPositionsLost'), 'turn');
+                }
+                break;
+
+            case 'escape':
+                const required = primary.unitsRequired || 5;
+                const escaped = this.game.escapedUnits || 0;
+                victoryAchieved = escaped >= required;
+
+                if (victoryAchieved) {
+                    this.game.addLog(i18n.t('gameLog.victoryEscape', { escaped: escaped }), 'turn');
+                } else {
+                    this.game.addLog(i18n.t('gameLog.defeatEscape', { escaped: escaped, required: required }), 'turn');
+                }
+                break;
+
+            case 'survive_turns':
+                const requiredTurns = primary.turns || this.game.currentScenario.maxTurns;
+                victoryAchieved = this.game.turnNumber >= requiredTurns;
+
+                if (victoryAchieved) {
+                    this.game.addLog(i18n.t('gameLog.victorySurviveTurns', { turns: requiredTurns }), 'turn');
+                } else {
+                    this.game.addLog(i18n.t('gameLog.defeatSurviveTurns', { turns: requiredTurns }), 'turn');
+                }
+                break;
+
+            case 'capture_position':
+                const capturePositions = primary.positions || [];
+                const captureCount = primary.count || capturePositions.length;
+                const capturedPositions = capturePositions.filter(pos => {
+                    const unit = this.game.getUnitAt(pos[0], pos[1]);
+                    return unit && unit.faction === playerFaction && unit.health > 0;
+                });
+                victoryAchieved = capturedPositions.length >= captureCount;
+
+                if (victoryAchieved) {
+                    this.game.addLog(i18n.t('gameLog.victoryCapturePosition', { count: capturedPositions.length }), 'turn');
+                } else {
+                    this.game.addLog(i18n.t('gameLog.defeatCapturePosition', { count: capturedPositions.length, required: captureCount }), 'turn');
+                }
+                break;
+
+            case 'dual_objective':
+                const objectives = primary.objectives || [];
+                let anyObjectiveAchieved = false;
+                let achievedObjectives = [];
+
+                for (const obj of objectives) {
+                    let objAchieved = false;
+                    if (obj.type === 'capture_position') {
+                        const held = this.game.objectiveHeldTurns && this.game.objectiveHeldTurns[obj.id];
+                        objAchieved = held >= (obj.holdTurns || 1);
+                    } else if (obj.type === 'hold_position') {
+                        const positions = obj.positions || [];
+                        const allHeld = positions.every(([col, row]) => {
+                            const unit = this.game.getUnitAt(col, row);
+                            return unit && unit.faction === playerFaction && unit.health > 0;
+                        });
+                        objAchieved = allHeld;
+                    }
+                    if (objAchieved) {
+                        anyObjectiveAchieved = true;
+                        achievedObjectives.push(obj.description);
+                    }
+                }
+
+                victoryAchieved = anyObjectiveAchieved;
+                if (victoryAchieved) {
+                    this.game.addLog(i18n.t('gameLog.victoryDualObjective', { objectives: achievedObjectives.join(', ') }), 'turn');
+                } else {
+                    this.game.addLog(i18n.t('gameLog.defeatDualObjective'), 'turn');
+                }
+                break;
+
+            case 'destroy_or_rout':
+                // Vítězství pokud nepřítel je zničen NEBO prchá (morální zlom)
+                const enemyRouting = enemyUnits.filter(u => u.isRouting).length;
+                const enemyDestroyed = (this.game.enemiesKilled / this.game.initialEnemyUnits) * 100;
+                victoryAchieved = (enemyDestroyed >= 50) || (this.game.moraleBroken && enemyRouting > enemyUnits.length / 2);
+
+                if (victoryAchieved) {
+                    if (this.game.moraleBroken) {
+                        this.game.addLog(i18n.t('gameLog.armyRouting'), 'turn');
+                    } else {
+                        this.game.addLog(i18n.t('gameLog.victoryDestroyArmy'), 'turn');
+                    }
+                } else {
+                    this.game.addLog(i18n.t('gameLog.defeatDestroyOrRout'), 'turn');
+                }
+                break;
+
+            case 'dual_objective_battle':
+                // Alias pro dual_objective (stejná logika)
+                const battleObjectives = primary.objectives || [];
+                let anyBattleObjectiveAchieved = false;
+                let achievedBattleObjectives = [];
+
+                for (const obj of battleObjectives) {
+                    let objAchieved = false;
+                    if (obj.type === 'capture_position') {
+                        const heldBattle = this.game.objectiveHeldTurns && this.game.objectiveHeldTurns[obj.id];
+                        objAchieved = heldBattle >= (obj.holdTurns || 1);
+                    } else if (obj.type === 'hold_position') {
+                        const positions = obj.positions || [];
+                        const allHeldBattle = positions.every(([col, row]) => {
+                            const unit = this.game.getUnitAt(col, row);
+                            return unit && unit.faction === playerFaction && unit.health > 0;
+                        });
+                        objAchieved = allHeldBattle;
+                    }
+                    if (objAchieved) {
+                        anyBattleObjectiveAchieved = true;
+                        achievedBattleObjectives.push(obj.description);
+                    }
+                }
+
+                victoryAchieved = anyBattleObjectiveAchieved;
+                if (victoryAchieved) {
+                    this.game.addLog(i18n.t('gameLog.victoryDualObjective', { objectives: achievedBattleObjectives.join(', ') }), 'turn');
+                } else {
+                    this.game.addLog(i18n.t('gameLog.defeatDualObjective'), 'turn');
+                }
+                break;
+
+            case 'tutorial_complete':
+                // Tutoriál má vlastní systém - toto je jen fallback
+                victoryAchieved = true;
+                this.game.addLog(i18n.t('tutorial.completed'), 'turn');
+                break;
+
+            default:
+                victoryAchieved = false;
+        }
+
+        // Vyhodnocení výsledku
+        if (victoryAchieved) {
+            this.evaluateSecondaryConditions(playerFaction);
+            this.game.showVictory(playerFaction);
+        } else {
+            this.game.showVictory(enemyFaction);
+        }
+    }
+
+    // Průběžná kontrola vítězství - pouze pro splnění podmínky (ne porážka)
+    // Používá se pro destroy_percent, destroy_or_rout a capture_position,
+    // které jinak čekají na vypršení maxTurns
+    checkMidGameVictory() {
+        if (!this.game.currentScenario?.victoryConditions?.primary) return;
+
+        const primary = this.game.currentScenario.victoryConditions.primary;
+        const playerFaction = this.game.currentScenario.playerFaction || 'hussites';
+        const enemyFaction = playerFaction === 'hussites' ? 'crusaders' : 'hussites';
+
+        let victoryAchieved = false;
+
+        switch (primary.type) {
+            case 'destroy_percent': {
+                const percent = primary.percent || 50;
+                const destroyed = (this.game.enemiesKilled / this.game.initialEnemyUnits) * 100;
+                victoryAchieved = destroyed >= percent;
+                if (victoryAchieved) {
+                    this.game.addLog(i18n.t('gameLog.victoryDestruction', { percent: Math.round(destroyed) }), 'turn');
+                }
+                break;
+            }
+            case 'destroy_or_rout': {
+                const enemyUnits = this.game.units.filter(u => u.faction === enemyFaction && u.health > 0);
+                const enemyRouting = enemyUnits.filter(u => u.isRouting).length;
+                const destroyed = (this.game.enemiesKilled / this.game.initialEnemyUnits) * 100;
+                victoryAchieved = (destroyed >= (primary.percent || 50)) ||
+                    (this.game.moraleBroken && enemyRouting > enemyUnits.length / 2);
+                if (victoryAchieved) {
+                    this.game.addLog(this.game.moraleBroken ?
+                        i18n.t('gameLog.armyRouting') :
+                        i18n.t('gameLog.victoryDestroyArmy'), 'turn');
+                }
+                break;
+            }
+            case 'capture_position': {
+                const positions = primary.positions || [];
+                const count = primary.count || positions.length;
+                const captured = positions.filter(pos => {
+                    const unit = this.game.getUnitAt(pos[0], pos[1]);
+                    return unit && unit.faction === playerFaction && unit.health > 0;
+                });
+                victoryAchieved = captured.length >= count;
+                if (victoryAchieved) {
+                    this.game.addLog(i18n.t('gameLog.victoryCapturePosition', { count: captured.length }), 'turn');
+                }
+                break;
+            }
+        }
+
+        if (victoryAchieved) {
+            this.evaluateSecondaryConditions(playerFaction);
+            this.game.showVictory(playerFaction);
+        }
+    }
+
+    // Kontrola progressu dual objective
+    checkDualObjectiveProgress() {
+        if (!this.game.currentScenario || !this.game.currentScenario.victoryConditions) return;
+        const conditions = this.game.currentScenario.victoryConditions;
+        if (!conditions.primary || conditions.primary.type !== 'dual_objective') return;
+
+        const playerFaction = this.game.currentScenario.playerFaction || 'hussites';
+        const objectives = conditions.primary.objectives || [];
+
+        if (!this.game.objectiveHeldTurns) {
+            this.game.objectiveHeldTurns = {};
+        }
+
+        for (const obj of objectives) {
+            if (obj.type === 'capture_position') {
+                const positions = obj.positions || [];
+                const allHeld = positions.every(([col, row]) => {
+                    const unit = this.game.getUnitAt(col, row);
+                    return unit && unit.faction === playerFaction && unit.health > 0;
+                });
+
+                if (allHeld) {
+                    this.game.objectiveHeldTurns[obj.id] = (this.game.objectiveHeldTurns[obj.id] || 0) + 1;
+
+                    if (this.game.objectiveHeldTurns[obj.id] >= obj.holdTurns) {
+                        this.game.addLog(i18n.t('gameLog.victoryObjectiveHeld', { description: obj.description }), 'turn');
+                        this.evaluateSecondaryConditions(playerFaction);
+                        this.game.showVictory(playerFaction);
+                    }
+                } else {
+                    this.game.objectiveHeldTurns[obj.id] = 0;
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,40 @@
+📋 Scénář: Výcvik na Táboře
+     Ratio:     2.63 (hussites/crusaders) - včetně posil
+📋 Scénář: Bitva u Živohoště
+              +  730 reinforcements = 980 total
+     Ratio:     0.75 (hussites/crusaders) - včetně posil
+📋 Scénář: Bitva u Nekmíře
+     Ratio:     0.81 (hussites/crusaders) - včetně posil
+📋 Scénář: Bitva u Sudoměře
+     Ratio:     0.81 (hussites/crusaders) - včetně posil
+📋 Scénář: Bitva na Vítkově
+              +  590 reinforcements = 1000 total
+     Ratio:     0.79 (hussites/crusaders) - včetně posil
+📋 Scénář: Bitva pod Vyšehradem
+     Ratio:     0.54 (hussites/crusaders) - včetně posil
+📋 Scénář: Bitva u Kutné Hory
+     Ratio:     0.79 (hussites/crusaders) - včetně posil
+📋 Scénář: Bitva u Německého Brodu
+     Ratio:     0.94 (hussites/crusaders) - včetně posil
+📋 Scénář: Bitva u Mostu
+              + 1340 reinforcements = 1520 total
+     Ratio:     0.66 (hussites/crusaders) - včetně posil
+📋 Scénář: Bitva u Ústí nad Labem
+     Ratio:     1.14 (hussites/crusaders) - včetně posil
+📋 Scénář: Bitva u Tachova
+     Ratio:     1.34 (hussites/crusaders) - včetně posil
+📋 Scénář: Bitva u Nisy
+     Ratio:     1.76 (hussites/crusaders) - včetně posil
+📋 Scénář: Bitva u Domažlic
+     Ratio:     1.54 (hussites/crusaders) - včetně posil
+📋 Scénář: Obléhání Plzně
+     Ratio:     1.46 (hussites/crusaders) - včetně posil
+📋 Scénář: Bitva u Lipan
+     Ratio:     0.89 (hussites/crusaders) - včetně posil
+📋 Scénář: Obléhání hradu Sion
+              +  640 reinforcements = 1570 total
+     Ratio:     0.61 (hussites/crusaders) - včetně posil
+📋 Scénář: Bitva u Hořic
+     Ratio:     0.64 (hussites/crusaders) - včetně posil
+📋 Scénář: Bitva u Malešova
+     Ratio:     1.06 (hussites/crusaders) - včetně posil

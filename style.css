@@ -1,0 +1,4526 @@
+/* ===============================================
+   MEDIEVAL CHRONICLE COLOR PALETTE
+   Inspired by illuminated manuscripts
+   =============================================== */
+:root {
+    /* Parchment tones */
+    --parchment-light: #f5e6c8;
+    --parchment: #e8d4a8;
+    --parchment-dark: #d4c090;
+    --parchment-shadow: #c4a060;
+
+    /* Ink & text */
+    --ink-dark: #0d0a04;
+    --ink-medium: #1a1408;
+    --ink-light: #2a2010;
+
+    /* Crimson (blood red from manuscripts) */
+    --crimson-dark: #6b1520;
+    --crimson: #8b1a28;
+    --crimson-light: #c03040;
+    --crimson-glow: rgba(192, 48, 64, 0.5);
+
+    /* Forest green (illumination green) */
+    --forest-dark: #1a3a20;
+    --forest: #2a5a30;
+    --forest-light: #4a9a50;
+    --forest-glow: rgba(74, 154, 80, 0.4);
+
+    /* Gold & ochre (gilding) */
+    --gold-dark: #8b6914;
+    --gold: #c9a227;
+    --gold-light: #f0d060;
+    --gold-glow: rgba(240, 208, 96, 0.5);
+    --ochre: #bf8f30;
+
+    /* Accent blues (rare manuscript blue) */
+    --lapis-dark: #1a2a5a;
+    --lapis: #2a4a9a;
+    --lapis-light: #5a7acc;
+    --lapis-glow: rgba(90, 122, 204, 0.4);
+
+    /* Nové kontrastní barvy pro UI stavy */
+    --btn-primary: #3a6a30;
+    --btn-primary-hover: #4a8a40;
+    --btn-primary-active: #2a5020;
+
+    --btn-secondary: #4a4035;
+    --btn-secondary-hover: #5a5045;
+    --btn-secondary-active: #3a3025;
+
+    --btn-danger: #8a2020;
+    --btn-danger-hover: #a03030;
+
+    --btn-disabled: #3a3530;
+    --btn-disabled-text: #6a6560;
+
+    /* Stav - aktivní/neaktivní */
+    --state-active: #50a050;
+    --state-inactive: #505050;
+    --state-warning: #c08030;
+    --state-error: #c04040;
+
+    /* UI shadows and overlays */
+    --shadow-color: rgba(0, 0, 0, 0.7);
+    --overlay-dark: rgba(10, 8, 4, 0.97);
+    --overlay-medium: rgba(26, 20, 10, 0.95);
+
+    /* Spacing system */
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 12px;
+    --spacing-lg: 16px;
+    --spacing-xl: 24px;
+
+    /* Transitions */
+    --transition-fast: 0.15s ease;
+    --transition-normal: 0.25s ease;
+    --transition-slow: 0.4s ease;
+
+    /* Enhanced shadows */
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+    --shadow-glow-gold: 0 0 15px var(--gold-glow);
+    --shadow-glow-green: 0 0 15px var(--forest-glow);
+    --shadow-glow-red: 0 0 15px var(--crimson-glow);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* ===============================================
+   TYPOGRAFICKÝ SYSTÉM
+   Jasná hierarchie velikostí a stylů
+   =============================================== */
+
+/* Základní velikosti */
+:root {
+    --font-size-xs: 0.75rem;    /* 12px - metadata, labels */
+    --font-size-sm: 0.875rem;   /* 14px - sekundární text */
+    --font-size-base: 1rem;     /* 16px - základní text */
+    --font-size-lg: 1.125rem;   /* 18px - důležitý text */
+    --font-size-xl: 1.25rem;    /* 20px - malé nadpisy */
+    --font-size-2xl: 1.5rem;    /* 24px - sekce nadpisy */
+    --font-size-3xl: 2rem;      /* 32px - hlavní nadpisy */
+
+    --line-height-tight: 1.2;
+    --line-height-normal: 1.5;
+    --line-height-relaxed: 1.7;
+}
+
+body {
+    font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif;
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-normal);
+    background:
+        /* Subtle parchment texture overlay */
+        repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 2px,
+            rgba(139, 105, 32, 0.03) 2px,
+            rgba(139, 105, 32, 0.03) 4px
+        ),
+        repeating-linear-gradient(
+            90deg,
+            transparent,
+            transparent 2px,
+            rgba(139, 105, 32, 0.02) 2px,
+            rgba(139, 105, 32, 0.02) 4px
+        ),
+        linear-gradient(135deg, var(--ink-dark) 0%, var(--ink-medium) 50%, var(--ink-dark) 100%);
+    min-height: 100vh;
+    color: var(--parchment);
+}
+
+#game-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+/* Header */
+#game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background:
+        linear-gradient(180deg, var(--ink-dark) 0%, var(--ink-medium) 100%);
+    border-bottom: 3px solid var(--gold);
+    box-shadow:
+        0 4px 15px var(--shadow-color),
+        0 1px 0 rgba(201, 162, 39, 0.3) inset;
+}
+
+.header-left {
+    flex: 0 0 auto;
+}
+
+.header-logo {
+    height: 50px;
+    width: auto;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.header-logo:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px var(--gold-glow);
+}
+
+.header-center {
+    flex: 1;
+    text-align: center;
+}
+
+#game-header h1, #battle-name {
+    font-size: 1.5rem;
+    color: var(--gold);
+    text-shadow: 2px 2px 4px var(--shadow-color);
+    margin: 0;
+    letter-spacing: 1px;
+}
+
+#battle-date {
+    font-size: var(--font-size-sm);
+    color: var(--parchment-dark);
+    font-style: italic;
+}
+
+#turn-info {
+    display: flex;
+    gap: 20px;
+    font-size: 1.1rem;
+    flex: 0 0 auto;
+}
+
+#current-player {
+    padding: 5px 15px;
+    background: var(--crimson);
+    border-radius: 4px;
+    font-weight: bold;
+    border: 1px solid var(--crimson-light);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+}
+
+#current-player.crusaders {
+    background: var(--lapis);
+    border-color: var(--lapis-light);
+}
+
+/* Main layout */
+#game-main {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    position: relative; /* Pro fixní pozicování minimapy */
+}
+
+/* Side panels - parchment style */
+#unit-panel, #info-panel {
+    padding: 15px;
+    background:
+        /* Subtle parchment grain */
+        repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 1px,
+            rgba(139, 105, 32, 0.05) 1px,
+            rgba(139, 105, 32, 0.05) 2px
+        ),
+        linear-gradient(180deg,
+            rgba(232, 212, 168, 0.12) 0%,
+            rgba(212, 192, 144, 0.08) 50%,
+            rgba(196, 160, 96, 0.06) 100%
+        ),
+        var(--overlay-dark);
+    border: 2px solid var(--gold-dark);
+    border-image: linear-gradient(180deg, var(--gold) 0%, var(--gold-dark) 100%) 1;
+    transition: width var(--transition-normal), box-shadow var(--transition-normal);
+    position: relative;
+    box-shadow:
+        inset 0 0 20px rgba(232, 212, 168, 0.05),
+        var(--shadow-md);
+}
+
+/* Unit panel - left side */
+#unit-panel {
+    width: 230px;
+    min-width: 230px;
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 150px);
+    overflow: hidden;
+}
+
+/* Info panel - right side */
+#info-panel {
+    width: 210px;
+    min-width: 210px;
+}
+
+/* Panel toggle buttons */
+.panel-toggle {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 50px;
+    background: linear-gradient(180deg, var(--gold-dark) 0%, var(--ink-light) 100%);
+    border: 1px solid var(--gold);
+    color: var(--gold-light);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-size-sm);
+    z-index: 10;
+    transition: all 0.2s;
+}
+
+.panel-toggle:hover {
+    background: linear-gradient(180deg, var(--gold) 0%, var(--gold-dark) 100%);
+    color: var(--ink-dark);
+}
+
+#unit-panel .panel-toggle {
+    right: -24px;
+    border-left: none;
+    border-radius: 0 4px 4px 0;
+}
+
+#info-panel .panel-toggle {
+    left: -24px;
+    border-right: none;
+    border-radius: 4px 0 0 4px;
+}
+
+/* Collapsed panel state - using checkbox hack */
+#panel-left-toggle:checked ~ #game-container #unit-panel,
+#unit-panel.collapsed {
+    width: 30px;
+    padding: 15px 5px;
+}
+
+#panel-right-toggle:checked ~ #game-container #info-panel,
+#info-panel.collapsed {
+    width: 30px;
+    padding: 15px 5px;
+}
+
+#unit-panel.collapsed .panel-content,
+#info-panel.collapsed .panel-content,
+#unit-panel.collapsed h2,
+#info-panel.collapsed h2,
+#unit-panel.collapsed #unit-info,
+#unit-panel.collapsed #unit-actions,
+#info-panel.collapsed #army-overview {
+    display: none;
+}
+
+#unit-panel h2 {
+    flex-shrink: 0;
+    order: -2;
+}
+
+#unit-actions {
+    flex-shrink: 0;
+    order: -1;
+    margin-bottom: 10px;
+    margin-top: 0;
+}
+
+#unit-info {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+#unit-info::-webkit-scrollbar {
+    width: 8px;
+}
+
+#unit-info::-webkit-scrollbar-track {
+    background: rgba(26, 18, 8, 0.5);
+    border-radius: 4px;
+}
+
+#unit-info::-webkit-scrollbar-thumb {
+    background: var(--gold-dark);
+    border-radius: 4px;
+}
+
+#unit-info::-webkit-scrollbar-thumb:hover {
+    background: var(--gold);
+}
+
+/* Info panel scrollable */
+#info-panel {
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 150px);
+    overflow: hidden;
+    font-size: 13px;
+}
+
+#info-panel h2 {
+    flex-shrink: 0;
+    font-size: 1.1rem;
+}
+
+#army-overview {
+    flex: 1;
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+/* Stylování scrollbaru pro info-panel */
+#army-overview::-webkit-scrollbar {
+    width: 8px;
+}
+
+#army-overview::-webkit-scrollbar-track {
+    background: rgba(26, 18, 8, 0.5);
+    border-radius: 4px;
+}
+
+#army-overview::-webkit-scrollbar-thumb {
+    background: var(--gold-dark);
+    border-radius: 4px;
+}
+
+#army-overview::-webkit-scrollbar-thumb:hover {
+    background: var(--gold);
+}
+
+#unit-panel h2, #info-panel h2 {
+    color: var(--gold);
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    padding-bottom: 5px;
+    border-bottom: 2px solid var(--gold-dark);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: normal;
+}
+
+/* min-height removed - handled by flexbox in #unit-panel */
+
+#unit-info .no-selection {
+    color: var(--parchment-shadow);
+    font-style: italic;
+}
+
+/* Statistiky jednotky - zobrazení, NE tlačítka */
+.unit-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+    margin: 12px 0;
+}
+
+.unit-stat {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 10px;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.25) 0%, rgba(0, 0, 0, 0.15) 100%);
+    border-radius: 4px;
+    font-size: var(--font-size-sm);
+    border: 1px solid rgba(201, 162, 39, 0.15);
+    /* Explicitně NE interaktivní */
+    cursor: default;
+    user-select: none;
+    transition: background var(--transition-fast);
+}
+
+.unit-stat:hover {
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.2) 100%);
+    border-color: rgba(201, 162, 39, 0.25);
+}
+
+.unit-stat .stat-icon {
+    font-size: var(--font-size-sm);
+    margin-right: 4px;
+    opacity: 0.9;
+}
+
+.unit-stat .label {
+    color: var(--parchment-shadow);
+    font-size: var(--font-size-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.unit-stat .value {
+    font-weight: bold;
+    color: var(--gold-light);
+    font-size: var(--font-size-base);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+.health-bar {
+    width: 100%;
+    height: 20px;
+    background: linear-gradient(180deg, var(--ink-dark) 0%, rgba(0,0,0,0.6) 100%);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 10px;
+    border: 1px solid var(--gold-dark);
+    position: relative;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.health-bar-fill {
+    height: 100%;
+    background: linear-gradient(180deg, var(--forest-light) 0%, var(--forest) 50%, var(--forest-dark) 100%);
+    transition: width var(--transition-normal);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.2);
+}
+
+.health-bar-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: var(--font-size-xs);
+    font-weight: bold;
+    color: var(--parchment-light);
+    text-shadow: 0 1px 3px rgba(0,0,0,0.9), 0 0 5px rgba(0,0,0,0.5);
+    pointer-events: none;
+    letter-spacing: 0.5px;
+}
+
+/* ===============================================
+   AURA EFEKTY - Velitelské bonusy/postihy
+   =============================================== */
+.aura-effect {
+    margin: 8px 0;
+    padding: 8px 10px;
+    border-radius: 6px;
+    border-left: 4px solid;
+}
+
+.aura-effect.aura-bonus {
+    background: linear-gradient(90deg, rgba(74, 154, 80, 0.2) 0%, rgba(74, 154, 80, 0.05) 100%);
+    border-left-color: var(--forest-light);
+}
+
+.aura-effect.aura-fear {
+    background: linear-gradient(90deg, rgba(192, 48, 64, 0.25) 0%, rgba(192, 48, 64, 0.05) 100%);
+    border-left-color: var(--crimson-light);
+}
+
+.aura-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 4px;
+}
+
+.aura-icon {
+    font-size: 1rem;
+}
+
+.aura-title {
+    font-weight: bold;
+    font-size: var(--font-size-sm);
+    color: var(--parchment-light);
+}
+
+.aura-bonus .aura-title {
+    color: var(--forest-light);
+}
+
+.aura-fear .aura-title {
+    color: var(--crimson-light);
+}
+
+.aura-values {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: var(--font-size-xs);
+}
+
+.aura-value {
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-weight: bold;
+}
+
+.aura-value.positive {
+    background: rgba(74, 154, 80, 0.3);
+    color: var(--forest-light);
+}
+
+.aura-value.negative {
+    background: rgba(192, 48, 64, 0.3);
+    color: var(--crimson-light);
+}
+
+#unit-actions {
+    display: flex;
+    gap: 6px;
+}
+
+#unit-actions button {
+    flex: 1;
+    padding: 6px 10px;
+    font-size: var(--font-size-xs);
+    cursor: pointer;
+    background: linear-gradient(180deg, var(--forest) 0%, var(--forest-dark) 100%);
+    border: 1px solid var(--forest-light);
+    color: var(--parchment-light);
+    border-radius: 4px;
+    transition: all var(--transition-fast);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    box-shadow: var(--shadow-sm);
+}
+
+#unit-actions button:hover:not(:disabled) {
+    background: linear-gradient(180deg, var(--forest-light) 0%, var(--forest) 100%);
+    box-shadow: var(--shadow-glow-green);
+    transform: translateY(-1px);
+}
+
+#unit-actions button:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: var(--shadow-sm);
+}
+
+#unit-actions button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    background: linear-gradient(180deg, #3a3a30 0%, #2a2a20 100%);
+    border-color: #4a4a40;
+}
+
+#btn-undo {
+    background: linear-gradient(180deg, var(--lapis) 0%, var(--lapis-dark) 100%);
+    border-color: var(--lapis-light);
+}
+
+#btn-undo:not(.hidden) {
+    display: block;
+}
+
+#btn-undo:hover:not(:disabled) {
+    background: linear-gradient(180deg, var(--lapis-light) 0%, var(--lapis) 100%);
+    box-shadow: 0 0 8px rgba(74, 90, 154, 0.4);
+}
+
+/* Army overview */
+.army-section {
+    margin-bottom: 12px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+    padding: 8px;
+    border: 1px solid rgba(201, 162, 39, 0.2);
+}
+
+.army-section h3 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(201, 162, 39, 0.3);
+    font-size: var(--font-size-sm);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.army-section h3 .faction-icon {
+    font-size: 1.1rem;
+}
+
+.army-section h3 .faction-name {
+    flex: 1;
+    color: var(--gold);
+}
+
+.army-section h3 .faction-count {
+    font-size: var(--font-size-xs);
+    color: var(--parchment-shadow);
+    background: rgba(0, 0, 0, 0.3);
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+
+/* Husitská sekce */
+.army-section.hussites {
+    border-color: rgba(139, 26, 40, 0.4);
+}
+
+.army-section.hussites h3 {
+    border-bottom-color: var(--crimson);
+}
+
+.army-section.hussites h3 .faction-name {
+    color: var(--crimson-light);
+}
+
+/* Křižácká sekce */
+.army-section.crusaders {
+    border-color: rgba(42, 58, 122, 0.4);
+}
+
+.army-section.crusaders h3 {
+    border-bottom-color: var(--lapis);
+}
+
+.army-section.crusaders h3 .faction-name {
+    color: var(--lapis-light);
+}
+
+.army-section ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.army-section li {
+    padding: 4px 8px;
+    font-size: var(--font-size-sm);
+    background: rgba(232, 212, 168, 0.04);
+    border-radius: 4px;
+    border-left: 3px solid transparent;
+    transition: all var(--transition-fast);
+    cursor: pointer;
+}
+
+.army-section li:hover:not(.destroyed) {
+    background: rgba(232, 212, 168, 0.12);
+    transform: translateX(2px);
+    box-shadow: var(--shadow-sm);
+}
+
+.army-section.hussites li {
+    border-left-color: var(--crimson-dark);
+}
+
+.army-section.crusaders li {
+    border-left-color: var(--lapis-dark);
+}
+
+/* Nový vzhled jednotek v přehledu */
+.unit-list-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.unit-icon {
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-size-sm);
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 3px;
+    flex-shrink: 0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.army-section.hussites .unit-icon {
+    background: rgba(139, 26, 40, 0.3);
+    border-color: rgba(139, 26, 40, 0.5);
+}
+
+.army-section.crusaders .unit-icon {
+    background: rgba(42, 58, 122, 0.3);
+    border-color: rgba(42, 58, 122, 0.5);
+}
+
+.unit-icon.destroyed {
+    color: #666;
+    background: rgba(0, 0, 0, 0.3);
+    border-color: transparent;
+}
+
+.unit-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.78rem;
+}
+
+.unit-health {
+    font-size: 0.7rem;
+    padding: 1px 4px;
+    border-radius: 3px;
+    background: rgba(0, 0, 0, 0.4);
+    flex-shrink: 0;
+    font-family: 'Courier New', monospace;
+    min-width: 42px;
+    text-align: center;
+}
+
+.unit-health.health-high {
+    color: #7ecf7e;
+    border: 1px solid rgba(126, 207, 126, 0.3);
+}
+
+.unit-health.health-medium {
+    color: #e8c547;
+    border: 1px solid rgba(232, 197, 71, 0.3);
+}
+
+.unit-health.health-critical {
+    color: #ff6b6b;
+    border: 1px solid rgba(255, 107, 107, 0.3);
+    animation: pulse-critical 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-critical {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
+.army-section li.destroyed {
+    opacity: 0.35;
+    border-left-color: #3a3a3a !important;
+}
+
+.army-section li.destroyed .unit-name {
+    text-decoration: line-through;
+    color: #888;
+}
+
+/* Map container */
+#map-container {
+    flex: 1;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    background: #1a1a1a;
+    overflow: auto;
+    padding: 20px;
+    min-width: 0; /* Umožní flexboxu zmenšit kontejner */
+}
+
+#game-canvas {
+    border: 3px solid var(--gold-dark);
+    box-shadow: 0 0 20px var(--shadow-color), inset 0 0 5px rgba(0,0,0,0.3);
+    flex-shrink: 0; /* Canvas se nezmenšuje */
+}
+
+/* Minimapa - přetahovatelná, fixně v rámci game-main */
+#minimap {
+    position: absolute;
+    bottom: 15px;
+    right: 230px; /* Odsazení od pravého panelu */
+    /* Velikost nastavena v JS, zde jen základní styl */
+    min-width: 150px;
+    min-height: 100px;
+    border: 3px solid var(--gold);
+    border-radius: 6px;
+    background:
+        linear-gradient(135deg, rgba(26, 18, 8, 0.95) 0%, rgba(44, 31, 16, 0.9) 100%);
+    box-shadow:
+        0 0 0 1px var(--gold-dark),
+        0 4px 15px rgba(0, 0, 0, 0.5),
+        inset 0 0 10px rgba(0, 0, 0, 0.3);
+    cursor: grab;
+    transition: box-shadow 0.2s ease;
+    z-index: 100; /* Nad mapou */
+    user-select: none;
+}
+
+#minimap:hover {
+    box-shadow:
+        0 0 0 1px var(--gold),
+        0 6px 20px rgba(0, 0, 0, 0.6),
+        0 0 15px var(--gold-glow);
+}
+
+#minimap.dragging {
+    cursor: grabbing;
+    box-shadow:
+        0 0 0 2px var(--gold-light),
+        0 8px 25px rgba(0, 0, 0, 0.7),
+        0 0 25px var(--gold-glow);
+    opacity: 0.9;
+}
+
+/* Minimap drag handle */
+#minimap::before {
+    content: '⋮⋮';
+    position: absolute;
+    top: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 10px;
+    color: var(--gold-dark);
+    letter-spacing: 1px;
+    pointer-events: none;
+}
+
+/* Minimap label */
+#minimap::after {
+    content: 'MAPA';
+    position: absolute;
+    top: -18px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.65rem;
+    color: var(--gold);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    background: var(--ink-dark);
+    padding: 2px 8px;
+    border-radius: 3px;
+    border: 1px solid var(--gold-dark);
+    pointer-events: none;
+}
+
+#map-container {
+    position: relative;
+}
+
+/* Footer */
+#game-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    background: linear-gradient(0deg, var(--ink-dark) 0%, var(--ink-medium) 100%);
+    border-top: 3px solid var(--gold);
+    flex-wrap: wrap;
+    gap: 10px;
+    box-shadow: 0 -2px 10px var(--shadow-color);
+}
+
+/* Footer groups */
+.footer-main-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.footer-log {
+    flex: 1;
+    min-width: 200px;
+}
+
+.footer-menu {
+    position: relative;
+}
+
+/* Footer button base style */
+/* Sekundární tlačítka ve footeru - tmavší, méně výrazná */
+.footer-btn {
+    padding: 10px 20px;
+    font-size: var(--font-size-sm);
+    font-weight: bold;
+    cursor: pointer;
+    background: linear-gradient(180deg, #4a4035 0%, #2a2520 100%);
+    border: 2px solid #5a5045;
+    color: var(--parchment-dark);
+    border-radius: 5px;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.footer-btn:hover:not(:disabled) {
+    background: linear-gradient(180deg, #5a5045 0%, #3a3530 100%);
+    border-color: var(--gold-dark);
+    color: var(--parchment);
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+}
+
+.footer-btn:active:not(:disabled) {
+    background: linear-gradient(180deg, #3a3025 0%, #1a1510 100%);
+    transform: scale(0.98);
+}
+
+.footer-btn:disabled {
+    background: #2a2520;
+    border-color: #3a3530;
+    color: #5a5550;
+    cursor: not-allowed;
+}
+
+/* Hlavní akční tlačítko - Ukončit tah */
+#btn-end-turn {
+    padding: 8px 20px;
+    font-size: var(--font-size-sm);
+    font-weight: bold;
+    cursor: pointer;
+    background: linear-gradient(180deg, var(--crimson-light) 0%, var(--crimson-dark) 100%);
+    border: 2px solid #e04050;
+    color: #fff;
+    border-radius: 5px;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+#btn-end-turn:hover {
+    background: linear-gradient(180deg, #d04050 0%, var(--crimson) 100%);
+    border-color: #f06070;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px var(--crimson-glow);
+}
+
+#btn-end-turn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* Pulsující efekt pro tlačítko Ukončit tah když všechny jednotky jednaly */
+#btn-end-turn.pulse {
+    animation: end-turn-pulse 1.2s ease-in-out infinite;
+    border-color: #ff7080;
+}
+
+@keyframes end-turn-pulse {
+    0%, 100% {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 0 0 10px var(--crimson-glow);
+        transform: scale(1);
+    }
+    50% {
+        box-shadow: 0 6px 25px var(--crimson-glow), 0 0 40px rgba(192, 48, 64, 0.6);
+        transform: scale(1.03);
+    }
+}
+
+/* Tlačítko Chorál - speciální akce */
+#btn-choral {
+    padding: 8px 14px;
+    font-size: var(--font-size-sm);
+    background: linear-gradient(180deg, var(--forest-light) 0%, var(--forest-dark) 100%);
+    border: 2px solid #5aa060;
+    color: #fff;
+}
+
+#btn-choral:hover:not(:disabled) {
+    background: linear-gradient(180deg, #5aaa60 0%, var(--forest) 100%);
+    border-color: #70c080;
+    box-shadow: 0 0 12px var(--forest-glow);
+}
+
+#btn-choral:disabled {
+    background: #2a3530;
+    border-color: #3a4540;
+    color: #5a6560;
+}
+
+/* Dropdown menu */
+.dropdown-menu {
+    position: absolute;
+    bottom: 100%;
+    right: 0;
+    background:
+        linear-gradient(135deg,
+            rgba(232, 212, 168, 0.1) 0%,
+            rgba(196, 160, 96, 0.05) 100%
+        ),
+        var(--overlay-dark);
+    border: 2px solid var(--gold);
+    border-radius: 8px 8px 0 0;
+    min-width: 180px;
+    padding: 8px 0;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.2s ease;
+    z-index: 100;
+    margin-bottom: 5px;
+    box-shadow: 0 -5px 20px var(--shadow-color);
+}
+
+.footer-menu:hover .dropdown-menu,
+.footer-menu.open .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.dropdown-menu button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 15px;
+    background: transparent;
+    border: none;
+    color: var(--parchment);
+    font-size: var(--font-size-base);
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.2s;
+    font-family: inherit;
+}
+
+.dropdown-menu button:hover {
+    background: linear-gradient(90deg, var(--gold-glow) 0%, transparent 100%);
+    color: var(--parchment-light);
+}
+
+.dropdown-menu button .btn-icon {
+    width: 24px;
+    text-align: center;
+}
+
+.dropdown-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, var(--gold-dark) 50%, transparent 100%);
+    margin: 8px 0;
+}
+
+/* Dropdown items are visible inside dropdown */
+.dropdown-menu #btn-save,
+.dropdown-menu #btn-load,
+.dropdown-menu #btn-sound,
+.dropdown-menu #btn-help {
+    display: flex;
+}
+
+#btn-sound.muted {
+    opacity: 0.6;
+}
+
+/* Tlačítko chorálu */
+#btn-choral {
+    padding: 10px 15px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    background: linear-gradient(180deg, var(--crimson) 0%, var(--crimson-dark) 100%);
+    border: 2px solid var(--crimson-light);
+    color: var(--parchment-light);
+    border-radius: 5px;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+#btn-choral:hover:not(:disabled) {
+    background: linear-gradient(180deg, var(--crimson-light) 0%, var(--crimson) 100%);
+    transform: scale(1.02);
+    box-shadow: 0 0 12px var(--crimson-glow);
+}
+
+#btn-choral:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    background: linear-gradient(180deg, #4a4a4a 0%, #2a2a2a 100%);
+    border-color: #555;
+}
+
+#btn-choral.active {
+    background: linear-gradient(180deg, var(--crimson-light) 0%, var(--crimson) 100%);
+    animation: choral-pulse 1s infinite;
+}
+
+@keyframes choral-pulse {
+    0%, 100% {
+        box-shadow: 0 0 5px var(--crimson-glow);
+    }
+    50% {
+        box-shadow: 0 0 20px var(--crimson-glow), 0 0 30px rgba(139, 26, 40, 0.3);
+    }
+}
+
+/* Herní log - vylepšený */
+#game-log {
+    flex: 1;
+    height: 50px;  /* Zvětšeno */
+    max-height: 100px;
+    overflow-y: auto;
+    padding: 8px 12px;
+    background:
+        linear-gradient(180deg,
+            rgba(26, 18, 8, 0.95) 0%,
+            rgba(44, 31, 16, 0.9) 100%
+        );
+    border-radius: 6px;
+    font-size: var(--font-size-sm);
+    border: 2px solid var(--gold-dark);
+    border-left: 4px solid var(--gold);
+    color: var(--parchment);
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+#game-log::-webkit-scrollbar {
+    width: 6px;
+}
+
+#game-log::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+}
+
+#game-log::-webkit-scrollbar-thumb {
+    background: var(--gold-dark);
+    border-radius: 3px;
+}
+
+#game-log p {
+    margin: 3px 0;
+    padding: 2px 0;
+    color: var(--parchment);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    border-bottom: 1px solid rgba(201, 162, 39, 0.1);
+    line-height: 1.3;
+}
+
+#game-log p:last-child {
+    border-bottom: none;
+}
+
+#game-log .combat {
+    color: #ff7070;
+    font-weight: 600;
+}
+
+#game-log .combat::before {
+    content: '⚔ ';
+}
+
+#game-log .move {
+    color: #80cf80;
+}
+
+#game-log .move::before {
+    content: '→ ';
+}
+
+#game-log .turn {
+    color: var(--gold-light);
+    font-weight: bold;
+    font-style: normal;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+    background: rgba(201, 162, 39, 0.1);
+    padding: 3px 6px;
+    margin: 4px -6px;
+    border-radius: 3px;
+}
+
+#game-log .morale {
+    color: #e8c547;
+    font-style: italic;
+}
+
+#game-log .morale::before {
+    content: '💀 ';
+}
+
+#game-log .reinforcement {
+    color: #60a0ff;
+    font-weight: 500;
+}
+
+#game-log .reinforcement::before {
+    content: '📯 ';
+}
+
+/* Modal */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(26, 18, 8, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal.hidden {
+    display: none;
+}
+
+.modal-content {
+    background:
+        /* Parchment texture */
+        repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 3px,
+            rgba(139, 105, 32, 0.04) 3px,
+            rgba(139, 105, 32, 0.04) 6px
+        ),
+        linear-gradient(135deg,
+            rgba(232, 212, 168, 0.15) 0%,
+            rgba(212, 192, 144, 0.1) 50%,
+            rgba(196, 160, 96, 0.08) 100%
+        ),
+        linear-gradient(135deg, var(--ink-medium) 0%, var(--ink-light) 100%);
+    padding: 40px;
+    border-radius: 12px;
+    border: 3px solid var(--gold);
+    text-align: center;
+    box-shadow:
+        0 0 0 1px var(--gold-dark),
+        0 20px 60px rgba(0, 0, 0, 0.7),
+        0 0 40px rgba(201, 162, 39, 0.15),
+        inset 0 0 30px rgba(232, 212, 168, 0.05);
+    position: relative;
+    animation: modalFadeIn 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* Zavírací tlačítko v pravém horním rohu */
+.modal-content > .close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 1.8rem;
+    z-index: 10;
+}
+
+.modal-content h2 {
+    font-size: var(--font-size-3xl);
+    font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif;
+    font-weight: normal;
+    color: var(--gold);
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+}
+
+.modal-content p {
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+    color: var(--parchment);
+}
+
+#btn-new-game {
+    padding: 12px 30px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    background: linear-gradient(180deg, #8b6914 0%, #5c4a1f 100%);
+    border: 2px solid #d4af37;
+    color: #f4e4c1;
+    border-radius: 5px;
+}
+
+/* Quick Escape Dialog - Zvěd */
+.quick-escape-content {
+    padding: 25px 35px;
+    max-width: 350px;
+}
+
+.quick-escape-content h3 {
+    font-size: 1.4rem;
+    color: var(--gold);
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.quick-escape-content p {
+    font-size: 1rem;
+    margin-bottom: 20px;
+    color: var(--parchment);
+}
+
+.quick-escape-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.quick-escape-buttons button {
+    padding: 10px 25px;
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: all 0.2s;
+    font-family: inherit;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.quick-escape-buttons .btn-primary {
+    background: linear-gradient(180deg, var(--forest) 0%, var(--forest-dark) 100%);
+    border: 2px solid var(--forest-light);
+    color: var(--parchment-light);
+}
+
+.quick-escape-buttons .btn-primary:hover {
+    background: linear-gradient(180deg, var(--forest-light) 0%, var(--forest) 100%);
+    transform: scale(1.02);
+    box-shadow: 0 0 12px var(--forest-glow);
+}
+
+.quick-escape-buttons .btn-secondary {
+    background: linear-gradient(180deg, var(--ink-light) 0%, var(--ink-medium) 100%);
+    border: 2px solid var(--gold-dark);
+    color: var(--parchment);
+}
+
+.quick-escape-buttons .btn-secondary:hover {
+    background: linear-gradient(180deg, var(--gold-dark) 0%, var(--ink-light) 100%);
+    transform: scale(1.02);
+}
+
+/* Confirm Dialog */
+.confirm-dialog {
+    max-width: 450px;
+    padding: 35px;
+    font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif;
+}
+
+.confirm-icon {
+    font-size: 3rem;
+    margin-bottom: 15px;
+}
+
+.confirm-dialog h2 {
+    font-size: var(--font-size-2xl);
+    font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif;
+    font-weight: normal;
+    color: var(--gold);
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.confirm-dialog p {
+    font-size: var(--font-size-lg);
+    font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif;
+    color: var(--parchment);
+    margin-bottom: 25px;
+    line-height: var(--line-height-normal);
+}
+
+.confirm-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.confirm-buttons .menu-btn {
+    min-width: 120px;
+    padding: 12px 24px;
+    font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif;
+    font-size: var(--font-size-base);
+}
+
+.modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: -1;
+}
+
+/* Scout hidden indicator */
+.unit-hidden {
+    opacity: 0.6;
+    filter: brightness(0.7);
+}
+
+/* Jednotky které už jednaly - v army overview */
+.army-section li.exhausted {
+    opacity: 0.5;
+    color: var(--parchment-shadow);
+}
+
+.army-section li.exhausted::after {
+    content: ' ✓';
+    color: var(--forest-light);
+}
+
+/* Tooltip */
+#tooltip {
+    position: absolute;
+    background:
+        linear-gradient(135deg,
+            rgba(232, 212, 168, 0.12) 0%,
+            rgba(212, 192, 144, 0.08) 100%
+        ),
+        linear-gradient(135deg, var(--ink-medium) 0%, var(--ink-light) 100%);
+    border: 2px solid var(--gold);
+    border-radius: 8px;
+    padding: 10px 15px;
+    color: var(--parchment);
+    font-size: var(--font-size-sm);
+    pointer-events: none;
+    z-index: 100;
+    max-width: 220px;
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.5),
+        inset 0 0 15px rgba(232, 212, 168, 0.03);
+}
+
+#tooltip .tooltip-title {
+    font-weight: bold;
+    font-size: 1rem;
+    color: var(--gold);
+    margin-bottom: 5px;
+}
+
+#tooltip .tooltip-faction {
+    font-size: var(--font-size-xs);
+    color: var(--parchment-shadow);
+    margin-bottom: 8px;
+}
+
+#tooltip .tooltip-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 10px;
+}
+
+#tooltip .tooltip-stat {
+    display: flex;
+    justify-content: space-between;
+}
+
+#tooltip .tooltip-stat .label {
+    color: var(--parchment-dark);
+}
+
+#tooltip .tooltip-terrain {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid var(--gold-dark);
+    color: var(--parchment-dark);
+}
+
+#tooltip .tooltip-bonus {
+    color: var(--forest-light);
+    font-size: var(--font-size-sm);
+}
+
+#tooltip .tooltip-special {
+    color: var(--gold-light);
+    font-size: var(--font-size-sm);
+    margin-top: 5px;
+    padding: 3px 6px;
+    background: rgba(201, 162, 39, 0.15);
+    border-radius: 3px;
+}
+
+#tooltip .tooltip-debuff {
+    color: var(--crimson-light);
+    font-size: var(--font-size-sm);
+    margin-top: 3px;
+}
+
+#tooltip .tooltip-info {
+    color: var(--lapis-light);
+    font-size: var(--font-size-xs);
+    margin-top: 3px;
+    font-style: italic;
+}
+
+/* Preview poškození v tooltipu při útoku */
+#tooltip .tooltip-damage-preview {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid var(--crimson-dark);
+    background: rgba(139, 26, 40, 0.15);
+    padding: 8px;
+    border-radius: 4px;
+}
+
+#tooltip .tooltip-damage-preview .damage-title {
+    color: var(--crimson-light);
+    font-weight: bold;
+    font-size: var(--font-size-sm);
+    margin-bottom: 5px;
+}
+
+#tooltip .tooltip-damage-preview .damage-value {
+    color: var(--parchment-light);
+    font-size: var(--font-size-sm);
+}
+
+#tooltip .tooltip-damage-preview .damage-range {
+    color: var(--parchment-shadow);
+    font-size: var(--font-size-sm);
+}
+
+/* Utility classes */
+.hidden {
+    display: none !important;
+}
+
+/* Help Modal */
+#btn-help {
+    padding: 10px 15px;
+}
+
+.help-modal-content {
+    max-width: 800px;
+    width: 90%;
+    max-height: 85vh;
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    text-align: left;
+}
+
+.help-close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 2rem;
+    background: none;
+    border: none;
+    color: var(--gold);
+    cursor: pointer;
+    line-height: 1;
+    padding: 5px 10px;
+    transition: color 0.2s;
+}
+
+.help-close-btn:hover {
+    color: var(--gold-light);
+    text-shadow: 0 0 10px var(--gold-glow);
+}
+
+.help-modal-content h2 {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+/* Tabs */
+.help-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    border-bottom: 2px solid var(--gold-dark);
+    margin-bottom: 15px;
+}
+
+.help-tab {
+    padding: 8px 12px;
+    background: linear-gradient(180deg, var(--ink-light) 0%, var(--ink-medium) 100%);
+    border: 2px solid var(--gold-dark);
+    border-bottom: none;
+    color: var(--parchment-dark);
+    cursor: pointer;
+    border-radius: 6px 6px 0 0;
+    font-size: var(--font-size-xs);
+    font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif;
+    font-weight: normal;
+    transition: all var(--transition-normal);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    position: relative;
+    white-space: nowrap;
+}
+
+.help-tab:hover {
+    background: linear-gradient(180deg, var(--gold-dark) 0%, var(--ink-light) 100%);
+    color: var(--parchment-light);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(201, 162, 39, 0.3);
+}
+
+.help-tab.active {
+    background: linear-gradient(180deg, var(--gold) 0%, var(--gold-dark) 100%);
+    color: var(--ink-dark);
+    border-color: var(--gold);
+    border-width: 2px;
+    font-weight: bold;
+    box-shadow:
+        0 -2px 8px rgba(201, 162, 39, 0.4),
+        inset 0 1px 2px rgba(255, 255, 255, 0.2);
+}
+
+/* Tab content */
+.help-content {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+.help-tab-content {
+    display: none;
+}
+
+.help-tab-content.active {
+    display: block;
+}
+
+.help-tab-content h3 {
+    color: var(--gold);
+    font-size: 1.3rem;
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--gold-dark);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: normal;
+}
+
+/* Units list in help */
+#help-units-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 15px;
+}
+
+.help-unit-card {
+    background:
+        linear-gradient(135deg,
+            rgba(232, 212, 168, 0.06) 0%,
+            transparent 100%
+        ),
+        rgba(26, 18, 8, 0.8);
+    border: 1px solid var(--gold-dark);
+    border-radius: 8px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Header s ikonou a názvem */
+.help-unit-header {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.help-unit-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    flex-shrink: 0;
+}
+
+.help-unit-icon.hussites {
+    background: linear-gradient(135deg, var(--crimson) 0%, var(--crimson-dark) 100%);
+    border: 2px solid var(--crimson-light);
+}
+
+.help-unit-icon.crusaders {
+    background: linear-gradient(135deg, var(--lapis) 0%, var(--lapis-dark) 100%);
+    border: 2px solid var(--lapis-light);
+}
+
+.help-unit-header-info {
+    flex: 1;
+}
+
+.help-unit-name {
+    color: var(--gold);
+    font-size: 1.1rem;
+    margin: 0 0 2px 0;
+}
+
+.help-unit-class {
+    color: var(--parchment-dark);
+    font-size: var(--font-size-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Statistiky v gridu */
+.help-unit-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+
+.stat-icon {
+    font-size: 1rem;
+}
+
+.stat-value {
+    color: var(--parchment-light);
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.stat-label {
+    color: var(--parchment-dark);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+}
+
+/* Speciální schopnost */
+.help-unit-special {
+    background: linear-gradient(90deg, rgba(201, 162, 39, 0.15) 0%, transparent 100%);
+    border-left: 3px solid var(--gold);
+    padding: 8px 12px;
+    color: var(--gold-light);
+    font-size: var(--font-size-sm);
+    border-radius: 0 4px 4px 0;
+}
+
+/* Popis jednotky - zvětšený font */
+.help-unit-description {
+    color: var(--parchment);
+    font-size: 1rem;
+    line-height: 1.7;
+    margin: 0;
+}
+
+/* Lore sekce - lepší čitelnost */
+.help-unit-lore {
+    border-top: 1px solid var(--gold-dark);
+    padding-top: 15px;
+    margin-top: 8px;
+}
+
+.lore-description {
+    color: var(--parchment);
+    font-size: 1rem;
+    line-height: 1.75;
+    margin: 0 0 14px 0;
+}
+
+.lore-item {
+    color: var(--parchment);
+    font-size: var(--font-size-base);
+    margin-bottom: 10px;
+    line-height: 1.6;
+}
+
+.lore-label {
+    color: var(--gold);
+    font-weight: bold;
+    margin-right: 4px;
+}
+
+.lore-quote {
+    background: rgba(0, 0, 0, 0.3);
+    border-left: 3px solid var(--gold);
+    padding: 14px 16px;
+    margin: 14px 0 0 0;
+    border-radius: 0 4px 4px 0;
+    font-style: italic;
+    color: var(--parchment);
+    font-size: 1rem;
+    line-height: 1.7;
+}
+
+/* Starý styl pro kompatibilitu */
+.help-unit-details {
+    flex: 1;
+}
+
+.help-unit-details h4 {
+    color: var(--gold);
+    font-size: 1.05rem;
+    margin-bottom: 5px;
+}
+
+.help-unit-stats {
+    display: flex;
+    gap: 15px;
+    font-size: var(--font-size-sm);
+    color: var(--parchment-dark);
+    margin-bottom: 5px;
+}
+
+.help-unit-stats span {
+    display: flex;
+    gap: 3px;
+}
+
+.help-unit-special {
+    font-size: var(--font-size-sm);
+    color: var(--gold-light);
+    background: rgba(201, 162, 39, 0.15);
+    padding: 3px 8px;
+    border-radius: 3px;
+    display: inline-block;
+    margin-top: 5px;
+}
+
+.help-unit-description {
+    font-size: var(--font-size-sm);
+    color: var(--parchment-shadow);
+    margin-top: 5px;
+    font-style: italic;
+}
+
+/* Terrain list */
+.terrain-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+}
+
+.terrain-item {
+    display: flex;
+    gap: 12px;
+    background:
+        linear-gradient(135deg,
+            rgba(232, 212, 168, 0.05) 0%,
+            transparent 100%
+        ),
+        rgba(26, 18, 8, 0.6);
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid var(--gold-dark);
+}
+
+.terrain-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 5px;
+    flex-shrink: 0;
+}
+
+.terrain-icon.plains {
+    background: linear-gradient(135deg, #7cb342 0%, #558b2f 100%);
+}
+
+.terrain-icon.forest {
+    background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
+}
+
+.terrain-icon.hills {
+    background: linear-gradient(135deg, #8d6e63 0%, #5d4037 100%);
+}
+
+.terrain-icon.water {
+    background: linear-gradient(135deg, #1976d2 0%, #0d47a1 100%);
+}
+
+.terrain-icon.town {
+    background: linear-gradient(135deg, #795548 0%, #4e342e 100%);
+}
+
+.terrain-icon.road {
+    background: linear-gradient(135deg, #9e9e9e 0%, #616161 100%);
+}
+
+.terrain-icon.dam {
+    background: linear-gradient(135deg, #8a7a5a 0%, #5a4a3a 100%);
+}
+
+.terrain-icon.mud {
+    background: linear-gradient(135deg, #5a4a3a 0%, #3a2a1a 100%);
+}
+
+.terrain-icon.slope {
+    background: linear-gradient(180deg, #6a5a4a 0%, #9a8a7a 100%);
+}
+
+.terrain-info strong {
+    color: var(--gold);
+    font-size: 1rem;
+}
+
+.terrain-info p {
+    color: var(--parchment-dark);
+    font-size: var(--font-size-sm);
+    margin-top: 3px;
+}
+
+/* Rules section */
+.rules-section {
+    margin-bottom: 20px;
+    background:
+        linear-gradient(90deg,
+            rgba(139, 26, 40, 0.08) 0%,
+            transparent 100%
+        ),
+        rgba(26, 18, 8, 0.5);
+    padding: 15px;
+    border-radius: 6px;
+    border-left: 3px solid var(--crimson);
+}
+
+.rules-section h4 {
+    color: var(--gold);
+    font-size: 1.05rem;
+    margin-bottom: 8px;
+}
+
+.rules-section p {
+    color: var(--parchment-dark);
+    font-size: var(--font-size-sm);
+    line-height: 1.5;
+}
+
+.rules-section ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.rules-section li {
+    color: var(--parchment-dark);
+    font-size: var(--font-size-sm);
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(201, 162, 39, 0.2);
+}
+
+.rules-section li:last-child {
+    border-bottom: none;
+}
+
+.rules-section li strong {
+    color: var(--gold-light);
+}
+
+/* History section */
+.history-section {
+    background:
+        linear-gradient(135deg,
+            rgba(232, 212, 168, 0.06) 0%,
+            transparent 100%
+        ),
+        rgba(26, 18, 8, 0.5);
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid var(--gold-dark);
+}
+
+.history-section h4 {
+    color: var(--gold);
+    font-size: 1.1rem;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid var(--gold-dark);
+}
+
+.history-section h4:first-child {
+    margin-top: 0;
+}
+
+.history-section p {
+    color: var(--parchment-dark);
+    font-size: var(--font-size-base);
+    line-height: 1.6;
+    margin-bottom: 10px;
+}
+
+/* Faction headers in encyclopedia */
+.faction-header {
+    color: var(--gold);
+    font-size: 1.3rem;
+    margin-top: 20px;
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--gold-dark);
+}
+
+.faction-header.hussite-header {
+    border-bottom-color: var(--crimson);
+}
+
+.faction-header.crusader-header {
+    border-bottom-color: var(--lapis);
+    margin-top: 30px;
+}
+
+/* Commanders list */
+.commanders-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.commander-card {
+    background:
+        linear-gradient(135deg,
+            rgba(232, 212, 168, 0.06) 0%,
+            transparent 100%
+        ),
+        rgba(26, 18, 8, 0.8);
+    border: 2px solid var(--gold-dark);
+    border-radius: 8px;
+    padding: 15px;
+    transition: all 0.2s;
+}
+
+.commander-card:hover {
+    border-color: var(--gold);
+    box-shadow: 0 4px 15px var(--gold-glow);
+}
+
+.commander-card.hussite {
+    border-left: 4px solid var(--crimson);
+}
+
+.commander-card.crusader {
+    border-left: 4px solid var(--lapis);
+}
+
+.commander-card h4 {
+    color: var(--gold);
+    font-size: 1.15rem;
+    margin-bottom: 5px;
+}
+
+.commander-card .commander-years {
+    color: var(--parchment-shadow);
+    font-size: var(--font-size-sm);
+    font-style: italic;
+    margin-bottom: 10px;
+}
+
+.commander-card p {
+    color: var(--parchment-dark);
+    font-size: var(--font-size-sm);
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* Tactics section */
+.tactics-section {
+    background:
+        linear-gradient(135deg,
+            rgba(232, 212, 168, 0.06) 0%,
+            transparent 100%
+        ),
+        rgba(26, 18, 8, 0.5);
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid var(--gold-dark);
+}
+
+.tactics-section h4 {
+    color: var(--gold);
+    font-size: 1.1rem;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid var(--gold-dark);
+}
+
+.tactics-section h4:first-child {
+    margin-top: 0;
+}
+
+.tactics-section p {
+    color: var(--parchment-dark);
+    font-size: var(--font-size-base);
+    line-height: 1.6;
+    margin-bottom: 10px;
+}
+
+/* Controls list */
+.controls-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.control-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    background:
+        linear-gradient(90deg,
+            rgba(232, 212, 168, 0.05) 0%,
+            transparent 100%
+        ),
+        rgba(26, 18, 8, 0.6);
+    border-radius: 5px;
+    border: 1px solid var(--gold-dark);
+}
+
+.control-key {
+    background: linear-gradient(180deg, var(--gold) 0%, var(--gold-dark) 100%);
+    padding: 5px 12px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: var(--font-size-sm);
+    color: var(--ink-dark);
+    border: 1px solid var(--gold-light);
+    font-weight: bold;
+}
+
+.control-desc {
+    color: var(--parchment-dark);
+    font-size: var(--font-size-sm);
+}
+
+/* About Section */
+.about-section {
+    background:
+        linear-gradient(135deg,
+            rgba(232, 212, 168, 0.06) 0%,
+            transparent 100%
+        ),
+        rgba(26, 18, 8, 0.5);
+    padding: 15px 20px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    border: 1px solid var(--gold-dark);
+}
+
+.about-section h4 {
+    color: var(--gold);
+    font-size: var(--font-size-lg);
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid var(--gold-dark);
+}
+
+.about-section p {
+    color: var(--parchment-dark);
+    font-size: var(--font-size-base);
+    line-height: 1.6;
+    margin-bottom: 8px;
+}
+
+.about-section ul {
+    color: var(--parchment-dark);
+    font-size: var(--font-size-base);
+    line-height: 1.6;
+    margin-left: 20px;
+    margin-bottom: 8px;
+}
+
+.about-section li {
+    margin-bottom: 5px;
+}
+
+.about-version {
+    font-size: var(--font-size-lg);
+    color: var(--gold-dark);
+    margin-bottom: 15px;
+}
+
+.about-section a {
+    color: var(--gold);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
+
+.about-section a:hover {
+    color: var(--gold-light);
+    text-decoration: underline;
+}
+
+.support-section {
+    text-align: center;
+    background:
+        linear-gradient(135deg,
+            rgba(201, 162, 39, 0.1) 0%,
+            transparent 100%
+        ),
+        rgba(26, 18, 8, 0.6);
+    border-color: var(--gold);
+}
+
+.coffee-button {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 12px 30px;
+    background: linear-gradient(180deg, var(--gold) 0%, var(--gold-dark) 100%);
+    color: var(--ink-dark);
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: var(--font-size-base);
+    font-weight: bold;
+    border: 2px solid var(--gold-light);
+    box-shadow: 0 4px 10px rgba(201, 162, 39, 0.3);
+    transition: all var(--transition-normal);
+}
+
+.coffee-button:hover {
+    background: linear-gradient(180deg, var(--gold-light) 0%, var(--gold) 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(201, 162, 39, 0.5);
+    text-decoration: none;
+}
+
+.about-copyright {
+    font-size: var(--font-size-sm);
+    color: var(--parchment-shadow);
+    margin-top: 10px;
+}
+
+/* Mission Modal */
+.mission-modal-content {
+    max-width: 900px;
+    width: 90%;
+    max-height: 80vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif;
+}
+
+/* Sjednocené fonty pro mission detail */
+.mission-modal-content p,
+.mission-modal-content span,
+.mission-modal-content li {
+    font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif;
+    line-height: 1.5;
+}
+
+.mission-modal-content > * {
+    flex-shrink: 0;
+}
+
+.mission-modal-content #mission-list {
+    flex-shrink: 1;
+    min-height: 0;
+}
+
+.mission-modal-content h2 {
+    text-align: center;
+    font-size: 2rem;
+    color: #d4af37;
+    margin-bottom: 5px;
+}
+
+.mission-subtitle {
+    text-align: center;
+    color: #888;
+    font-size: 1rem;
+    margin-bottom: 20px;
+}
+
+/* Campaign Tabs */
+.campaign-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+    padding: 0 5px;
+}
+
+.act-tab {
+    flex: 1;
+    padding: 8px 10px;
+    background: linear-gradient(180deg, var(--ink-light) 0%, var(--ink-medium) 100%);
+    border: 2px solid var(--gold-dark);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.act-tab:hover {
+    border-color: var(--gold);
+    background: linear-gradient(180deg, var(--gold-dark) 0%, var(--ink-light) 100%);
+}
+
+.act-tab.active {
+    border-color: var(--gold);
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+    box-shadow: 0 0 10px var(--gold-glow);
+}
+
+.act-tab.locked {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.act-tab.locked:hover {
+    border-color: var(--gold-dark);
+    background: linear-gradient(180deg, var(--ink-light) 0%, var(--ink-medium) 100%);
+}
+
+.act-name {
+    font-size: var(--font-size-sm);
+    color: var(--gold);
+    font-weight: 600;
+    display: block;
+}
+
+.act-years {
+    font-size: var(--font-size-xs);
+    color: var(--parchment-shadow);
+    font-style: italic;
+    margin-top: 3px;
+    display: block;
+}
+
+.act-tab.active .act-name {
+    color: var(--ink-dark);
+}
+
+.act-tab.active .act-years {
+    color: var(--ink-medium);
+}
+
+/* Act Description */
+.act-description {
+    text-align: center;
+    padding: 10px 20px;
+    margin-bottom: 15px;
+    background:
+        linear-gradient(90deg,
+            rgba(201, 162, 39, 0.1) 0%,
+            transparent 100%
+        );
+    border-left: 3px solid var(--gold);
+    border-radius: 0 8px 8px 0;
+}
+
+.act-description p {
+    color: var(--parchment-dark);
+    font-style: italic;
+    margin: 0;
+}
+
+/* Mission Card Locked State */
+.mission-card.locked {
+    opacity: 0.5;
+    cursor: not-allowed;
+    border-color: var(--ink-light);
+}
+
+.mission-card.locked:hover {
+    border-color: var(--ink-light);
+    background: rgba(26, 18, 8, 0.8);
+    transform: none;
+    box-shadow: none;
+}
+
+.mission-card.locked .mission-card-number {
+    background: linear-gradient(135deg, var(--ink-light) 0%, var(--ink-dark) 100%);
+    border-color: var(--ink-light);
+    color: var(--parchment-shadow);
+}
+
+.mission-card.locked .mission-card-title {
+    color: var(--parchment-shadow);
+}
+
+.mission-card.locked .mission-card-desc {
+    color: var(--ink-light);
+}
+
+.mission-locked-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2rem;
+}
+
+/* Tutorial Badge */
+.tutorial-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--forest) 0%, var(--forest-dark) 100%);
+    border: 1px solid var(--forest-light);
+    color: var(--parchment-light);
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: var(--font-size-sm);
+    margin: 10px 0;
+}
+
+.mission-card .tutorial-marker {
+    background: var(--forest);
+    color: var(--parchment-light);
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    margin-left: 10px;
+}
+
+/* Mission List */
+#mission-list {
+    display: block;
+    height: 280px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 12px;
+    margin-bottom: 10px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--gold-dark) var(--ink-dark);
+}
+
+#mission-list::-webkit-scrollbar {
+    width: 10px;
+}
+
+#mission-list::-webkit-scrollbar-track {
+    background: var(--ink-dark);
+    border-radius: 5px;
+}
+
+#mission-list::-webkit-scrollbar-thumb {
+    background: var(--gold-dark);
+    border-radius: 5px;
+    border: 2px solid var(--ink-dark);
+}
+
+#mission-list::-webkit-scrollbar-thumb:hover {
+    background: var(--gold);
+}
+
+.mission-card {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px 15px;
+    margin-bottom: 10px;
+    background:
+        linear-gradient(90deg,
+            rgba(232, 212, 168, 0.06) 0%,
+            transparent 100%
+        ),
+        rgba(26, 18, 8, 0.9);
+    border: 2px solid var(--gold-dark);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.mission-card:hover {
+    border-color: var(--gold);
+    background:
+        linear-gradient(90deg,
+            rgba(201, 162, 39, 0.15) 0%,
+            transparent 100%
+        ),
+        rgba(44, 31, 16, 0.9);
+    transform: translateX(5px);
+    box-shadow: 0 4px 15px var(--gold-glow);
+}
+
+.mission-card-number {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, var(--crimson) 0%, var(--crimson-dark) 100%);
+    border: 2px solid var(--gold);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--gold-light);
+    flex-shrink: 0;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+.mission-card-info {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.mission-card-title {
+    font-size: 1.1rem;
+    color: var(--gold);
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.mission-card-date {
+    font-size: var(--font-size-sm);
+    color: var(--parchment-shadow);
+    margin-bottom: 4px;
+    font-style: italic;
+}
+
+.mission-card-desc {
+    font-size: var(--font-size-sm);
+    color: var(--parchment-dark);
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+}
+
+.mission-card-difficulty {
+    display: flex;
+    gap: 2px;
+    flex-shrink: 0;
+    margin-left: auto;
+    cursor: help;
+    position: relative;
+}
+
+.mission-card-difficulty .star {
+    font-size: 1rem;
+    color: var(--ink-light);
+}
+
+.mission-card-difficulty .star.filled {
+    color: var(--gold);
+    text-shadow: 0 0 5px var(--gold-glow);
+}
+
+/* Popisek obtížnosti při hoveru */
+.mission-card-difficulty::before {
+    content: attr(title);
+    position: absolute;
+    bottom: 100%;
+    right: 0;
+    background: var(--ink-dark);
+    color: var(--parchment);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: var(--font-size-xs);
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+    border: 1px solid var(--gold-dark);
+}
+
+.mission-card-difficulty:hover::before {
+    opacity: 1;
+}
+
+/* Mission Details */
+#mission-details {
+    padding: 10px;
+    max-height: 55vh;
+    overflow-y: auto;
+}
+
+#mission-details::-webkit-scrollbar {
+    width: 8px;
+}
+
+#mission-details::-webkit-scrollbar-track {
+    background: rgba(26, 18, 8, 0.5);
+    border-radius: 4px;
+}
+
+#mission-details::-webkit-scrollbar-thumb {
+    background: var(--gold-dark);
+    border-radius: 4px;
+}
+
+#mission-details::-webkit-scrollbar-thumb:hover {
+    background: var(--gold);
+}
+
+.mission-info {
+    background:
+        linear-gradient(135deg,
+            rgba(232, 212, 168, 0.08) 0%,
+            rgba(196, 160, 96, 0.04) 100%
+        ),
+        rgba(26, 18, 8, 0.6);
+    border: 2px solid var(--gold-dark);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.mission-info h3 {
+    color: var(--gold);
+    font-size: 1.5rem;
+    margin-bottom: 5px;
+}
+
+.mission-date {
+    color: var(--parchment-shadow);
+    font-size: var(--font-size-sm);
+    margin-bottom: 15px;
+    font-style: italic;
+}
+
+#mission-description {
+    color: var(--parchment);
+    line-height: 1.6;
+    margin-bottom: 20px;
+    font-size: var(--font-size-base);
+}
+
+.mission-briefing {
+    background:
+        linear-gradient(90deg,
+            rgba(139, 26, 40, 0.15) 0%,
+            rgba(139, 26, 40, 0.05) 100%
+        );
+    border-left: 3px solid var(--crimson);
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 0 5px 5px 0;
+}
+
+.mission-briefing h4 {
+    color: var(--gold);
+    font-size: var(--font-size-sm);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: normal;
+}
+
+#mission-briefing {
+    color: var(--parchment);
+    font-style: italic;
+    line-height: 1.6;
+    font-size: var(--font-size-base);
+}
+
+.mission-objectives {
+    background:
+        linear-gradient(135deg,
+            rgba(42, 90, 48, 0.1) 0%,
+            rgba(26, 58, 32, 0.05) 100%
+        );
+    padding: 15px;
+    border-radius: 5px;
+    border-left: 3px solid var(--forest);
+}
+
+.mission-objectives h4 {
+    color: var(--gold);
+    font-size: var(--font-size-sm);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: normal;
+}
+
+#mission-objectives-list {
+    list-style: none;
+    padding: 0;
+}
+
+#mission-objectives-list li {
+    padding: 8px 0;
+    padding-left: 25px;
+    position: relative;
+    color: var(--parchment-dark);
+    border-bottom: 1px solid rgba(201, 162, 39, 0.2);
+}
+
+#mission-objectives-list li:last-child {
+    border-bottom: none;
+}
+
+#mission-objectives-list li::before {
+    content: '★';
+    position: absolute;
+    left: 0;
+    color: var(--gold);
+}
+
+#mission-objectives-list li.primary::before {
+    content: '⚔';
+    color: var(--crimson-light);
+}
+
+#mission-objectives-list li.secondary::before {
+    content: '◆';
+    color: var(--parchment-shadow);
+}
+
+/* Mission History - historické poznámky */
+.mission-history {
+    margin-top: 15px;
+    background: linear-gradient(135deg, rgba(26, 18, 8, 0.6) 0%, rgba(15, 10, 5, 0.7) 100%);
+    border: 1px solid var(--gold-dark);
+    border-radius: 5px;
+    padding: 15px;
+}
+
+.mission-history > h4 {
+    color: var(--gold);
+    font-size: var(--font-size-sm);
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: normal;
+}
+
+.history-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 12px;
+}
+
+.history-column h5 {
+    color: var(--gold);
+    font-size: var(--font-size-xs);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: normal;
+}
+
+.history-column:first-child {
+    border-right: 1px solid var(--gold-dark);
+    padding-right: 15px;
+}
+
+.history-commanders {
+    color: var(--parchment);
+    font-size: var(--font-size-sm);
+    margin-bottom: 6px;
+    line-height: 1.5;
+}
+
+.history-strength {
+    color: var(--parchment-dark);
+    font-size: var(--font-size-sm);
+    font-style: italic;
+    line-height: 1.4;
+}
+
+.history-quote {
+    background: rgba(0, 0, 0, 0.3);
+    border-left: 3px solid var(--gold);
+    padding: 10px 12px;
+    margin-bottom: 10px;
+    border-radius: 0 4px 4px 0;
+}
+
+.history-quote p {
+    color: var(--parchment);
+    font-style: italic;
+    font-size: var(--font-size-sm);
+    line-height: 1.5;
+    margin-bottom: 6px;
+}
+
+.history-quote cite {
+    color: var(--parchment-dark);
+    font-size: var(--font-size-sm);
+    display: block;
+    text-align: right;
+}
+
+.history-reliability {
+    color: var(--parchment-dark);
+    font-size: var(--font-size-xs);
+    font-style: italic;
+    text-align: right;
+    margin: 0;
+}
+
+/* Mission Actions */
+.mission-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+/* Sjednocené styly tlačítek */
+.btn-primary, .btn-secondary {
+    padding: 12px 30px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-family: inherit;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Primární tlačítko - zlaté, hlavní akce */
+.btn-primary {
+    background: linear-gradient(180deg, var(--gold-light) 0%, var(--gold-dark) 100%);
+    border: 2px solid var(--gold-light);
+    color: #1a1208;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.2);
+    text-shadow: 0 1px 0 rgba(255,255,255,0.2);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(180deg, var(--gold-light) 0%, var(--gold) 100%);
+    transform: scale(1.02);
+    box-shadow: 0 0 15px var(--gold-glow);
+}
+
+/* Sekundární tlačítko - tmavé, vedlejší akce */
+.btn-secondary {
+    background: linear-gradient(180deg, #4a4035 0%, #2a2520 100%);
+    border: 2px solid #5a5045;
+    color: var(--parchment);
+}
+
+.btn-secondary:hover {
+    background: linear-gradient(180deg, #5a5045 0%, #3a3530 100%);
+    border-color: var(--gold-dark);
+    color: var(--parchment-light);
+    transform: translateY(-1px);
+}
+
+.btn-secondary:active {
+    transform: translateY(0);
+    background: linear-gradient(180deg, #3a3025 0%, #1a1510 100%);
+}
+
+/* Text link tlačítko - minimalistické */
+.btn-link {
+    background: transparent;
+    border: none;
+    color: var(--gold);
+    padding: 8px 16px;
+    cursor: pointer;
+    text-decoration: underline;
+    font-family: inherit;
+    transition: color 0.2s;
+}
+
+.btn-link:hover {
+    color: var(--gold-light);
+}
+
+/* Phase Info Panel (in header) */
+#phase-panel {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--crimson) 0%, var(--crimson-dark) 100%);
+    border: 2px solid var(--gold);
+    border-radius: 5px;
+    padding: 4px 12px;
+    margin-top: 5px;
+    font-size: var(--font-size-sm);
+    box-shadow: 0 2px 8px var(--crimson-glow);
+}
+
+#phase-icon {
+    margin-right: 6px;
+    font-size: 1rem;
+}
+
+#phase-name {
+    color: var(--gold-light);
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+#phase-description {
+    color: var(--parchment-light);
+    margin-left: 8px;
+    font-size: var(--font-size-sm);
+}
+
+#phase-panel.hidden {
+    display: none;
+}
+
+/* Event Notification */
+/* Event notification - středověký iluminovaný styl */
+.event-notification {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background:
+        /* Pergamenová textura */
+        repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 2px,
+            rgba(139, 105, 32, 0.03) 2px,
+            rgba(139, 105, 32, 0.03) 4px
+        ),
+        linear-gradient(180deg,
+            rgba(245, 230, 200, 0.15) 0%,
+            rgba(232, 212, 168, 0.1) 50%,
+            rgba(196, 160, 96, 0.08) 100%
+        ),
+        linear-gradient(135deg, #2a1f14 0%, #3a2a1a 50%, #2a1f14 100%);
+    border: 4px solid;
+    border-image: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 50%, var(--gold-dark) 100%) 1;
+    border-radius: 0;  /* Ostré rohy jako středověký dokument */
+    padding: 35px 45px;
+    z-index: 200;
+    text-align: center;
+    max-width: 500px;
+    animation: eventFadeIn 0.4s ease-out;
+    box-shadow:
+        0 0 0 2px rgba(139, 105, 32, 0.3),
+        0 0 0 6px rgba(26, 18, 8, 0.8),
+        0 15px 50px rgba(0, 0, 0, 0.7),
+        0 0 80px var(--gold-glow),
+        inset 0 0 40px rgba(232, 212, 168, 0.03);
+}
+
+/* Ozdobné rohy */
+.event-notification::before,
+.event-notification::after {
+    content: '❧';
+    position: absolute;
+    font-size: 1.5rem;
+    color: var(--gold);
+    text-shadow: 0 0 10px var(--gold-glow);
+}
+
+.event-notification::before {
+    top: 8px;
+    left: 12px;
+}
+
+.event-notification::after {
+    bottom: 8px;
+    right: 12px;
+    transform: rotate(180deg);
+}
+
+@keyframes eventFadeIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+.event-notification h3 {
+    color: var(--gold);
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.event-notification p {
+    color: var(--parchment);
+    font-size: 1.1rem;
+    line-height: 1.5;
+    margin-bottom: 20px;
+}
+
+.event-notification button {
+    padding: 10px 30px;
+    font-size: 1rem;
+    cursor: pointer;
+    background: linear-gradient(180deg, var(--gold) 0%, var(--gold-dark) 100%);
+    border: 2px solid var(--gold-light);
+    color: var(--ink-dark);
+    border-radius: 5px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: bold;
+    font-family: inherit;
+    transition: all 0.2s;
+}
+
+.event-notification button:hover {
+    background: linear-gradient(180deg, var(--gold-light) 0%, var(--gold) 100%);
+    box-shadow: 0 0 15px var(--gold-glow);
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    /* Automaticky sbal oba panely */
+    #unit-panel, #info-panel {
+        width: 30px;
+        padding: 15px 5px;
+    }
+
+    #unit-panel h2,
+    #info-panel h2,
+    #unit-info,
+    #unit-actions,
+    #army-overview {
+        display: none;
+    }
+
+    #unit-panel.expanded, #info-panel.expanded {
+        width: 200px;
+        padding: 15px;
+    }
+
+    #unit-panel.expanded h2,
+    #info-panel.expanded h2,
+    #unit-panel.expanded #unit-info,
+    #unit-panel.expanded #unit-actions,
+    #info-panel.expanded #army-overview {
+        display: block;
+    }
+
+    #unit-panel.expanded #unit-actions {
+        display: flex;
+    }
+}
+
+@media (max-width: 900px) {
+    #game-main {
+        flex-direction: column;
+    }
+
+    #unit-panel, #info-panel {
+        width: 100%;
+        max-height: 120px;
+        overflow-y: auto;
+    }
+
+    #unit-panel h2,
+    #info-panel h2,
+    #unit-info,
+    #unit-actions,
+    #army-overview {
+        display: block;
+    }
+
+    #unit-actions {
+        display: flex;
+    }
+
+    .panel-toggle {
+        display: none;
+    }
+
+    /* Footer na dva řádky */
+    #game-footer {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .footer-main-actions {
+        width: 100%;
+        justify-content: center;
+        order: 1;
+    }
+
+    .footer-log {
+        width: 100%;
+        order: 3;
+    }
+
+    .footer-menu {
+        order: 2;
+    }
+}
+
+/* ===============================================
+   MAIN MENU SCREEN
+   =============================================== */
+
+.screen {
+    width: 100%;
+    height: 100vh;
+}
+
+.screen.hidden {
+    display: none;
+}
+
+#main-menu {
+    position: relative;
+    overflow: hidden;
+}
+
+.menu-background {
+    width: 100%;
+    height: 100%;
+    background:
+        radial-gradient(ellipse at center, var(--gold-glow) 0%, transparent 50%),
+        linear-gradient(135deg, var(--ink-dark) 0%, var(--ink-medium) 50%, var(--ink-dark) 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.menu-background::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+        repeating-linear-gradient(
+            45deg,
+            rgba(201, 162, 39, 0.03) 0px,
+            rgba(201, 162, 39, 0.03) 2px,
+            transparent 2px,
+            transparent 10px
+        );
+    pointer-events: none;
+}
+
+.menu-content {
+    text-align: center;
+    z-index: 1;
+    padding: 20px;
+    max-height: 100vh;
+    overflow-y: auto;
+}
+
+.game-logo {
+    margin-bottom: 30px;
+}
+
+.logo-image {
+    max-width: 450px;
+    width: 100%;
+    height: auto;
+    border-radius: 0;
+    box-shadow: none;
+    filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.7));
+}
+
+.game-logo h1 {
+    font-size: 4rem;
+    color: var(--gold);
+    text-shadow:
+        3px 3px 0 var(--ink-medium),
+        -1px -1px 0 var(--gold-dark),
+        4px 4px 10px var(--shadow-color);
+    letter-spacing: 3px;
+    margin-bottom: 10px;
+}
+
+.game-logo .subtitle {
+    font-size: 1.2rem;
+    color: var(--parchment-dark);
+    font-style: italic;
+    letter-spacing: 2px;
+}
+
+/* Menu Buttons - Grid Layout */
+.menu-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.menu-buttons-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+    max-width: 650px;
+}
+
+.menu-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 20px;
+    font-size: var(--font-size-base);
+    font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif;
+    font-weight: normal;
+    cursor: pointer;
+    background: linear-gradient(180deg,
+        rgba(60, 50, 40, 0.95) 0%,
+        rgba(40, 35, 30, 0.95) 100%
+    );
+    border: 2px solid rgba(139, 119, 80, 0.6);
+    color: var(--parchment);
+    border-radius: 6px;
+    transition: all var(--transition-normal);
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    position: relative;
+    overflow: hidden;
+    min-width: 180px;
+}
+
+.menu-btn .btn-icon {
+    font-size: 1.1rem;
+}
+
+.menu-btn .btn-text {
+    font-size: var(--font-size-sm);
+    font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif;
+}
+
+.menu-btn:hover:not(:disabled) {
+    background: linear-gradient(180deg,
+        rgba(80, 70, 55, 0.95) 0%,
+        rgba(55, 48, 40, 0.95) 100%
+    );
+    border-color: var(--gold);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5), 0 0 10px var(--gold-glow);
+}
+
+/* Primary button - zlatá (Nová hra) */
+.menu-btn.primary {
+    background: linear-gradient(180deg,
+        rgba(180, 150, 80, 0.9) 0%,
+        rgba(140, 110, 50, 0.9) 100%
+    );
+    border-color: var(--gold);
+    color: var(--ink-dark);
+    font-weight: 600;
+}
+
+.menu-btn.primary:hover:not(:disabled) {
+    background: linear-gradient(180deg,
+        rgba(200, 170, 90, 0.95) 0%,
+        rgba(160, 130, 60, 0.95) 100%
+    );
+    box-shadow: 0 4px 20px var(--gold-glow), 0 0 15px var(--gold-glow);
+}
+
+/* Tutorial button - modrá */
+.menu-btn.tutorial-btn {
+    background: linear-gradient(180deg,
+        rgba(60, 100, 160, 0.9) 0%,
+        rgba(40, 70, 120, 0.9) 100%
+    );
+    border-color: var(--lapis-light);
+    color: var(--parchment-light);
+}
+
+.menu-btn.tutorial-btn:hover:not(:disabled) {
+    background: linear-gradient(180deg,
+        rgba(80, 120, 180, 0.95) 0%,
+        rgba(50, 85, 140, 0.95) 100%
+    );
+    border-color: var(--lapis-light);
+    box-shadow: 0 4px 20px var(--lapis-glow), 0 0 15px var(--lapis-glow);
+}
+
+.menu-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: linear-gradient(180deg, #3a3530 0%, #2a2520 100%);
+    border-color: #4a4540;
+    color: #7a7570;
+}
+
+.menu-btn.danger {
+    border-color: var(--crimson-dark);
+}
+
+.menu-btn.danger:hover {
+    background: linear-gradient(180deg, var(--crimson) 0%, var(--crimson-dark) 100%);
+    border-color: var(--crimson-light);
+    box-shadow: 0 4px 15px var(--crimson-glow);
+}
+
+.menu-footer {
+    margin-top: 10px;
+    text-align: center;
+}
+
+.version-info {
+    display: inline-block;
+    margin-left: 15px;
+    color: rgba(139, 119, 80, 0.7);
+    font-size: var(--font-size-xs);
+    font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif;
+    vertical-align: middle;
+}
+
+.support-link {
+    display: inline-block;
+    margin-left: 10px;
+    color: var(--gold-dark);
+    text-decoration: none;
+    font-size: 16px;
+    transition: all var(--transition-fast);
+    opacity: 0.8;
+}
+
+.support-link:hover {
+    color: var(--gold);
+    opacity: 1;
+    transform: scale(1.2);
+}
+
+/* Tlačítko hudby v hlavním menu - kompaktní styl */
+.music-btn {
+    display: inline-block;
+    padding: 10px 25px;
+    background: linear-gradient(180deg,
+        rgba(50, 45, 40, 0.9) 0%,
+        rgba(35, 30, 25, 0.9) 100%
+    );
+    border: 1px solid rgba(139, 119, 80, 0.4);
+    border-radius: 20px;
+    color: var(--parchment-dark);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.music-btn:hover {
+    background: linear-gradient(180deg,
+        rgba(65, 58, 50, 0.95) 0%,
+        rgba(45, 40, 35, 0.95) 100%
+    );
+    border-color: var(--gold-dark);
+    color: var(--gold);
+}
+
+.music-btn.playing {
+    background: linear-gradient(180deg, var(--crimson) 0%, var(--crimson-dark) 100%);
+    border-color: var(--gold);
+    color: var(--parchment-light);
+    animation: pulse-music 2s infinite;
+}
+
+@keyframes pulse-music {
+    0%, 100% {
+        box-shadow: 0 0 5px var(--gold-glow);
+    }
+    50% {
+        box-shadow: 0 0 15px var(--gold-glow), 0 0 25px rgba(201, 162, 39, 0.2);
+    }
+}
+
+/* Tlačítko přepínání jazyka v hlavním menu */
+.language-toggle-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    margin-left: 15px;
+    background: linear-gradient(180deg,
+        rgba(50, 45, 40, 0.9) 0%,
+        rgba(35, 30, 25, 0.9) 100%
+    );
+    border: 1px solid rgba(139, 119, 80, 0.4);
+    border-radius: 20px;
+    color: var(--parchment-dark);
+    font-size: 24px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    vertical-align: middle;
+}
+
+.language-toggle-btn:hover {
+    background: linear-gradient(180deg,
+        rgba(65, 58, 50, 0.95) 0%,
+        rgba(45, 40, 35, 0.95) 100%
+    );
+    border-color: var(--gold-dark);
+    transform: scale(1.1);
+}
+
+.language-toggle-btn:active {
+    transform: scale(0.95);
+}
+
+/* ===============================================
+   OBJECTIVES PANEL (in-game)
+   =============================================== */
+
+#objectives-panel {
+    position: fixed;
+    top: 100px;
+    right: 220px;
+    width: 280px;
+    background:
+        linear-gradient(135deg,
+            rgba(232, 212, 168, 0.1) 0%,
+            rgba(196, 160, 96, 0.05) 100%
+        ),
+        var(--overlay-dark);
+    border: 2px solid var(--gold);
+    border-radius: 8px;
+    z-index: 500;
+    box-shadow: 0 4px 15px var(--shadow-color);
+    padding: 5px;
+}
+
+.objectives-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    border-bottom: 2px solid var(--gold-dark);
+}
+
+.objectives-header h3 {
+    color: var(--gold);
+    font-size: 1rem;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: var(--parchment-shadow);
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0 5px;
+    line-height: 1;
+    transition: color 0.2s;
+}
+
+.close-btn:hover {
+    color: var(--gold);
+}
+
+#objectives-content {
+    padding: 15px;
+}
+
+.objective {
+    display: flex;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(201, 162, 39, 0.2);
+}
+
+.objective:last-child {
+    border-bottom: none;
+}
+
+.objective-status {
+    font-size: 1rem;
+    width: 20px;
+    text-align: center;
+}
+
+.objective.primary .objective-status {
+    color: var(--gold);
+}
+
+.objective.secondary .objective-status {
+    color: var(--parchment-shadow);
+}
+
+.objective.completed .objective-status {
+    color: var(--forest-light);
+}
+
+.objective.completed .objective-status::before {
+    content: '✓';
+}
+
+.objective-text {
+    flex: 1;
+    font-size: var(--font-size-sm);
+    color: var(--parchment-dark);
+}
+
+.objective.primary .objective-text {
+    color: var(--parchment-light);
+    font-weight: bold;
+}
+
+/* ===============================================
+   PAUSE MENU
+   =============================================== */
+
+.pause-modal-content {
+    min-width: 350px;
+    text-align: center;
+}
+
+.pause-modal-content h2 {
+    margin-bottom: 30px;
+}
+
+.pause-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+}
+
+.pause-buttons .menu-btn {
+    width: 260px;
+}
+
+/* ===============================================
+   SETTINGS MODAL
+   =============================================== */
+
+.settings-modal-content {
+    max-width: 420px;
+    width: 90%;
+    text-align: left;
+    position: relative;
+    padding: 30px 25px;
+}
+
+.about-modal-content {
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    text-align: left;
+    position: relative;
+    padding: 30px 25px;
+}
+
+.about-modal-content h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: var(--font-size-xl);
+}
+
+.about-modal-content h3 {
+    color: var(--gold);
+    font-size: var(--font-size-lg);
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.settings-modal-content h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: var(--font-size-xl);
+}
+
+.settings-section {
+    margin-bottom: 18px;
+    background:
+        linear-gradient(135deg,
+            rgba(232, 212, 168, 0.06) 0%,
+            transparent 100%
+        ),
+        rgba(26, 18, 8, 0.5);
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid var(--gold-dark);
+}
+
+.settings-section h3 {
+    color: var(--gold);
+    font-size: var(--font-size-base);
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid var(--gold-dark);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+}
+
+.setting-item label {
+    color: var(--parchment-dark);
+    font-size: var(--font-size-base);
+}
+
+.setting-item input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--gold);
+    cursor: pointer;
+}
+
+.setting-item input[type="range"] {
+    width: 150px;
+    accent-color: var(--gold);
+    cursor: pointer;
+}
+
+.setting-item select {
+    padding: 8px 15px;
+    background: var(--ink-medium);
+    border: 1px solid var(--gold-dark);
+    color: var(--parchment);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: var(--font-size-sm);
+    font-family: inherit;
+}
+
+.setting-item select:focus {
+    border-color: var(--gold);
+    outline: none;
+}
+
+.setting-description {
+    font-size: var(--font-size-sm);
+    color: var(--parchment-shadow);
+    margin-top: 8px;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    line-height: 1.5;
+}
+
+.setting-description strong {
+    color: var(--gold);
+}
+
+.settings-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+/* ===============================================
+   GAME OVER MODAL - Kompaktní verze
+   =============================================== */
+
+.gameover-modal-content {
+    min-width: 300px;
+    max-width: 360px;
+    text-align: center;
+    padding: 15px 20px;
+}
+
+#gameover-banner {
+    width: 100%;
+    height: 45px;
+    margin-bottom: 8px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+}
+
+#gameover-banner.victory {
+    background: linear-gradient(135deg, var(--forest) 0%, var(--forest-dark) 100%);
+    border: 2px solid var(--forest-light);
+    box-shadow: 0 0 15px var(--forest-glow);
+}
+
+#gameover-banner.defeat {
+    background: linear-gradient(135deg, var(--crimson) 0%, var(--crimson-dark) 100%);
+    border: 2px solid var(--crimson-light);
+    box-shadow: 0 0 15px var(--crimson-glow);
+}
+
+.gameover-modal-content h2 {
+    margin-bottom: 5px;
+    font-size: var(--font-size-lg);
+}
+
+.gameover-modal-content h2.victory {
+    color: var(--forest-light);
+}
+
+.gameover-modal-content h2.defeat {
+    color: var(--crimson-light);
+}
+
+#gameover-message {
+    color: var(--parchment);
+    font-size: var(--font-size-xs);
+    margin-bottom: 10px;
+    font-style: italic;
+    line-height: 1.3;
+}
+
+/* Hodnocení bitvy - krátké shrnutí */
+#gameover-rating {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 10px;
+    padding: 8px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 6px;
+}
+
+.rating-item {
+    text-align: center;
+}
+
+.rating-label {
+    display: block;
+    font-size: var(--font-size-xs);
+    color: var(--parchment-shadow);
+    text-transform: uppercase;
+}
+
+.rating-value {
+    font-size: var(--font-size-base);
+    font-weight: bold;
+    color: var(--gold);
+}
+
+.rating-value.good { color: var(--forest-light); }
+.rating-value.bad { color: var(--crimson-light); }
+
+.gameover-stats {
+    background:
+        linear-gradient(135deg,
+            rgba(232, 212, 168, 0.06) 0%,
+            rgba(196, 160, 96, 0.03) 100%
+        ),
+        rgba(26, 18, 8, 0.5);
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    text-align: left;
+    border: 1px solid var(--gold-dark);
+}
+
+.gameover-stats h3 {
+    color: var(--gold);
+    font-size: var(--font-size-xs);
+    margin-bottom: 6px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.gameover-stats h4 {
+    font-size: var(--font-size-xs);
+    color: var(--gold-dark);
+    margin: 8px 0 4px 0;
+    text-transform: uppercase;
+}
+
+.stats-section {
+    margin-bottom: 8px;
+}
+
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 2px 0;
+    border-bottom: 1px solid rgba(201, 162, 39, 0.15);
+    color: var(--parchment-dark);
+    font-size: var(--font-size-xs);
+}
+
+.stat-row:last-child {
+    border-bottom: none;
+}
+
+/* Trivia po vítězství */
+.gameover-trivia {
+    background: linear-gradient(135deg, rgba(42, 58, 42, 0.3) 0%, rgba(26, 38, 26, 0.2) 100%);
+    border: 1px solid var(--forest);
+    border-left: 3px solid var(--gold);
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin-bottom: 10px;
+    text-align: left;
+}
+
+.gameover-trivia h4 {
+    color: var(--gold);
+    font-size: var(--font-size-xs);
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.gameover-trivia p {
+    color: var(--parchment);
+    font-size: var(--font-size-xs);
+    line-height: 1.4;
+    font-style: italic;
+}
+
+.stat-row span:last-child {
+    color: var(--parchment-light);
+    font-weight: bold;
+}
+
+/* Stats sections */
+.stats-section {
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(201, 162, 39, 0.2);
+}
+
+.stats-section:last-child {
+    border-bottom: none;
+}
+
+.stats-section h4 {
+    color: var(--gold);
+    font-size: var(--font-size-sm);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    font-weight: normal;
+}
+
+/* MVP card */
+.stats-mvp {
+    background: linear-gradient(135deg, rgba(201, 162, 39, 0.15) 0%, rgba(201, 162, 39, 0.05) 100%);
+    border-radius: 6px;
+    padding: 8px !important;
+    border: 1px solid var(--gold-dark) !important;
+}
+
+.mvp-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.mvp-icon {
+    width: 35px;
+    height: 35px;
+    background: linear-gradient(135deg, var(--crimson) 0%, var(--crimson-dark) 100%);
+    border: 2px solid var(--gold);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    box-shadow: 0 0 8px var(--gold-glow);
+}
+
+.mvp-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.mvp-name {
+    color: var(--gold-light);
+    font-size: var(--font-size-sm);
+    font-weight: bold;
+}
+
+.mvp-stats {
+    color: var(--parchment-dark);
+    font-size: var(--font-size-xs);
+}
+
+.gameover-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+}
+
+.gameover-buttons .menu-btn {
+    width: 180px;
+    padding: 8px 12px;
+    font-size: var(--font-size-sm);
+}
+
+/* Secondary objectives in gameover */
+.gameover-modal-content #gameover-secondary-objectives {
+    background:
+        linear-gradient(135deg,
+            rgba(232, 212, 168, 0.08) 0%,
+            rgba(196, 160, 96, 0.04) 100%
+        ),
+        rgba(26, 18, 8, 0.6);
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid var(--gold-dark);
+}
+
+.secondary-objectives-header {
+    color: var(--gold);
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: var(--font-size-sm);
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--gold-dark);
+}
+
+.secondary-objective {
+    padding: 5px 0;
+    font-size: var(--font-size-base);
+}
+
+.secondary-objective.achieved {
+    color: var(--forest-light);
+}
+
+.secondary-objective.failed {
+    color: var(--crimson-light);
+}
+
+/* ===============================================
+   FOOTER BUTTONS ADDITIONS
+   =============================================== */
+
+#btn-objectives, #btn-menu {
+    padding: 8px 12px;
+    font-size: var(--font-size-sm);
+    font-weight: bold;
+    cursor: pointer;
+    background: linear-gradient(180deg, var(--gold) 0%, var(--gold-dark) 100%);
+    border: 2px solid var(--gold-light);
+    color: var(--ink-dark);
+    border-radius: 5px;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+#btn-objectives:hover, #btn-menu:hover {
+    background: linear-gradient(180deg, var(--gold-light) 0%, var(--gold) 100%);
+    transform: scale(1.02);
+    box-shadow: 0 0 12px var(--gold-glow);
+}
+
+/* ===============================================
+   TUTORIAL MODAL
+   =============================================== */
+
+#tutorial-modal {
+    z-index: 2000;
+    pointer-events: none;
+    align-items: flex-start;
+    justify-content: flex-end;
+    padding: 100px 20px 20px 20px;
+    background: transparent;
+}
+
+#tutorial-modal .modal-content {
+    pointer-events: auto;
+}
+
+#tutorial-modal .tutorial-actions {
+    pointer-events: auto;
+}
+
+#tutorial-modal button {
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+.tutorial-modal-content {
+    background: linear-gradient(180deg, var(--parchment) 0%, var(--parchment-dark) 100%);
+    border: 4px solid var(--gold);
+    border-radius: 12px;
+    padding: 0;
+    max-width: 400px;
+    overflow: hidden;
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(201, 162, 39, 0.2);
+}
+
+.tutorial-speaker {
+    background: linear-gradient(180deg, var(--crimson) 0%, var(--crimson-dark) 100%);
+    padding: 15px 25px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border-bottom: 3px solid var(--gold);
+}
+
+.tutorial-portrait {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(180deg, var(--gold-light) 0%, var(--gold-dark) 100%);
+    border: 3px solid var(--gold);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: var(--ink-dark);
+    box-shadow: 0 0 10px var(--gold-glow);
+}
+
+.tutorial-speaker-name {
+    color: var(--gold-light);
+    font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+    font-size: 1.3rem;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.tutorial-modal-content #tutorial-title {
+    color: var(--crimson-dark);
+    font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+    font-size: 1.5rem;
+    padding: 20px 25px 10px 25px;
+    margin: 0;
+    text-shadow: 1px 1px 0 var(--parchment-light);
+}
+
+.tutorial-modal-content #tutorial-text {
+    color: var(--ink-dark);
+    font-size: 1.1rem;
+    line-height: 1.6;
+    padding: 0 25px 25px 25px;
+    margin: 0;
+}
+
+.tutorial-actions {
+    background: linear-gradient(180deg, var(--parchment-dark) 0%, var(--parchment-shadow) 100%);
+    padding: 15px 25px;
+    display: flex;
+    justify-content: flex-end;
+    border-top: 2px solid var(--gold-dark);
+}
+
+.tutorial-actions .btn-primary {
+    background: linear-gradient(180deg, var(--gold) 0%, var(--gold-dark) 100%);
+    border: 2px solid var(--gold-light);
+    color: var(--ink-dark);
+    padding: 12px 30px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.tutorial-actions .btn-primary:hover {
+    background: linear-gradient(180deg, var(--gold-light) 0%, var(--gold) 100%);
+    transform: scale(1.05);
+    box-shadow: 0 0 15px var(--gold-glow);
+}
+
+/* Tutorial highlight pulse animation */
+@keyframes tutorial-pulse {
+    0%, 100% { box-shadow: 0 0 10px var(--gold-glow); }
+    50% { box-shadow: 0 0 25px var(--gold), 0 0 40px var(--gold-glow); }
+}
+
+.tutorial-highlight {
+    animation: tutorial-pulse 1.5s ease-in-out infinite;
+}
+
+/* Tutorial badge in mission list */
+.tutorial-badge {
+    display: inline-block;
+    background: linear-gradient(180deg, var(--lapis) 0%, var(--lapis-dark) 100%);
+    color: var(--parchment-light);
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: var(--font-size-sm);
+    margin-top: 10px;
+    border: 1px solid var(--lapis-light);
+}
+
+/* Tutorial button in main menu */
+.menu-btn.tutorial-btn {
+    background: linear-gradient(180deg, var(--lapis) 0%, var(--lapis-dark) 100%);
+    border-color: var(--lapis-light);
+}
+
+.menu-btn.tutorial-btn:hover {
+    background: linear-gradient(180deg, var(--lapis-light) 0%, var(--lapis) 100%);
+    box-shadow: 0 0 15px rgba(42, 58, 122, 0.5);
+}
+
+/* ===============================================
+   UX VYLEPŠENÍ - Vizuální zpětná vazba
+   =============================================== */
+
+/* Animace výběru jednotky */
+@keyframes unit-select-pulse {
+    0%, 100% {
+        box-shadow: 0 0 0 3px var(--gold), 0 0 15px var(--gold-glow);
+    }
+    50% {
+        box-shadow: 0 0 0 5px var(--gold-light), 0 0 25px var(--gold-glow), 0 0 40px rgba(201, 162, 39, 0.3);
+    }
+}
+
+/* Animace útoku */
+@keyframes attack-flash {
+    0% {
+        filter: brightness(1);
+    }
+    25% {
+        filter: brightness(1.8) saturate(1.5);
+    }
+    50% {
+        filter: brightness(0.7);
+    }
+    100% {
+        filter: brightness(1);
+    }
+}
+
+/* Animace poškození */
+@keyframes damage-shake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    20% {
+        transform: translateX(-4px);
+    }
+    40% {
+        transform: translateX(4px);
+    }
+    60% {
+        transform: translateX(-3px);
+    }
+    80% {
+        transform: translateX(3px);
+    }
+}
+
+/* Animace pohybu */
+@keyframes move-highlight {
+    0% {
+        background-color: rgba(42, 90, 48, 0);
+    }
+    50% {
+        background-color: rgba(42, 90, 48, 0.3);
+    }
+    100% {
+        background-color: rgba(42, 90, 48, 0);
+    }
+}
+
+/* Floating damage number */
+@keyframes damage-float {
+    0% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-40px) scale(1.2);
+    }
+}
+
+.damage-number {
+    position: absolute;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--crimson-light);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8), 0 0 10px rgba(139, 26, 40, 0.5);
+    pointer-events: none;
+    z-index: 1000;
+    animation: damage-float 1.2s ease-out forwards;
+}
+
+.damage-number.heal {
+    color: var(--forest-light);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8), 0 0 10px rgba(42, 90, 48, 0.5);
+}
+
+/* Indikátor tahu AI */
+.ai-thinking {
+    position: fixed;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(180deg, var(--lapis) 0%, var(--lapis-dark) 100%);
+    border: 2px solid var(--gold);
+    border-radius: 8px;
+    padding: 12px 25px;
+    z-index: 1500;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 4px 20px var(--shadow-color);
+}
+
+.ai-thinking-text {
+    color: var(--parchment-light);
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.ai-thinking-spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid var(--gold-dark);
+    border-top-color: var(--gold-light);
+    border-radius: 50%;
+    animation: spinner-rotate 0.8s linear infinite;
+}
+
+@keyframes spinner-rotate {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Hover efekt pro jednotky v přehledu */
+.army-section li {
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.army-section li:hover:not(.destroyed) {
+    background: linear-gradient(90deg,
+        rgba(201, 162, 39, 0.15) 0%,
+        transparent 100%
+    );
+    padding-left: 12px;
+    border-left-color: var(--gold);
+}
+
+/* Aktivní jednotka v přehledu */
+.army-section li.active {
+    background: linear-gradient(90deg,
+        rgba(201, 162, 39, 0.25) 0%,
+        rgba(201, 162, 39, 0.1) 100%
+    );
+    border-left: 3px solid var(--gold);
+    padding-left: 10px;
+}
+
+/* Vylepšené tlačítko ukončení tahu */
+#btn-end-turn {
+    position: relative;
+    overflow: hidden;
+}
+
+#btn-end-turn::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+#btn-end-turn.pulse::after {
+    animation: btn-shine 2s ease-in-out infinite;
+}
+
+@keyframes btn-shine {
+    0%, 100% {
+        left: -100%;
+    }
+    50% {
+        left: 100%;
+    }
+}
+
+/* Indikátor aktuálního kola */
+#turn-number {
+    background: linear-gradient(180deg, var(--ink-light) 0%, var(--ink-dark) 100%);
+    padding: 5px 12px;
+    border-radius: 4px;
+    border: 1px solid var(--gold-dark);
+}
+
+/* ===============================================
+   UX VYLEPŠENÍ - Kontrast a čitelnost
+   =============================================== */
+
+/* Lepší kontrast pro parchment shadow text */
+.history-strength,
+.history-reliability,
+.mission-card-date,
+.act-years,
+.commander-card .commander-years {
+    color: var(--parchment-dark);
+}
+
+/* Lepší kontrast pro sekundární text */
+.mission-card-desc,
+.terrain-info p,
+.rules-section p,
+.help-unit-description {
+    color: var(--parchment);
+}
+
+/* Tooltip čitelnost */
+#tooltip .tooltip-terrain,
+#tooltip .tooltip-stat .label {
+    color: var(--parchment);
+}
+
+/* Unit stats ve hře - lepší čitelnost */
+.unit-stat .label {
+    color: var(--parchment);
+}
+
+/* Game log - lepší kontrast */
+#game-log {
+    color: var(--parchment);
+}
+
+#game-log p {
+    color: var(--parchment);
+}
+
+/* Settings description */
+.setting-description {
+    color: var(--parchment);
+}
+
+/* Control description */
+.control-desc {
+    color: var(--parchment);
+}
+
+/* Objectives text */
+.objective-text {
+    color: var(--parchment);
+}
+
+/* ===============================================
+   UX VYLEPŠENÍ - Hotkeys tooltip
+   =============================================== */
+
+/* Tooltip pro klávesové zkratky na tlačítkách */
+[data-hotkey]::after {
+    content: attr(data-hotkey);
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--ink-dark);
+    border: 1px solid var(--gold-dark);
+    border-radius: 3px;
+    padding: 2px 6px;
+    font-size: 0.7rem;
+    color: var(--gold);
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+[data-hotkey]:hover::after {
+    opacity: 1;
+}
+
+/* ===============================================
+   UX VYLEPŠENÍ - Responsivita
+   =============================================== */
+
+@media (max-width: 700px) {
+    /* Menu grid na malých obrazovkách */
+    .menu-buttons-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .menu-btn {
+        min-width: auto;
+        padding: 12px 15px;
+        font-size: 0.85rem;
+    }
+
+    .logo-image {
+        max-width: 300px;
+    }
+}
+
+@media (max-width: 500px) {
+    /* Menu grid na velmi malých obrazovkách */
+    .menu-buttons-grid {
+        grid-template-columns: 1fr;
+        max-width: 280px;
+    }
+
+    .logo-image {
+        max-width: 250px;
+    }
+}
+
+@media (max-width: 600px) {
+    /* Help modal na malých obrazovkách */
+    .help-modal-content {
+        width: 95%;
+        padding: 20px;
+        max-height: 90vh;
+    }
+
+    .help-tabs {
+        flex-wrap: wrap;
+        gap: 3px;
+    }
+
+    .help-tab {
+        padding: 8px 10px;
+        font-size: var(--font-size-xs);
+        letter-spacing: 0.5px;
+    }
+
+    #help-units-list {
+        grid-template-columns: 1fr;
+    }
+
+    /* Mission modal na malých obrazovkách */
+    .mission-modal-content {
+        width: 95%;
+        padding: 20px;
+    }
+
+    .campaign-tabs {
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+
+    .act-tab {
+        flex: 1 1 45%;
+        padding: 6px 8px;
+    }
+
+    .act-name {
+        font-size: var(--font-size-sm);
+    }
+
+    .act-years {
+        font-size: 0.65rem;
+    }
+
+    /* Game over modal */
+    .gameover-modal-content {
+        min-width: 300px;
+        width: 90%;
+    }
+
+    /* Pause modal */
+    .pause-modal-content {
+        min-width: 280px;
+    }
+
+    .pause-buttons .menu-btn {
+        width: 220px;
+    }
+
+    /* Header na malých obrazovkách */
+    #game-header {
+        flex-wrap: wrap;
+        padding: 5px 10px;
+    }
+
+    #game-header h1, #battle-name {
+        font-size: 1.1rem;
+    }
+
+    #turn-info {
+        gap: 10px;
+        font-size: var(--font-size-sm);
+    }
+
+    .header-logo {
+        height: 35px;
+    }
+}

@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Husitské Války - Tahová Strategie</title>
+    <meta name="description" content="Historická tahová strategie o husitských válkách. Veďte husitská vojska Jana Žižky v bitvách 15. století. | Historical turn-based strategy about Hussite Wars. Lead Jan Žižka's armies in 15th century battles.">
+    <meta name="keywords" content="husité, husitské války, Jan Žižka, tahová strategie, historická hra, středověk, Čechy, strategy game, turn-based, medieval, Bohemia">
+    <meta name="author" content="Josef Šlerka">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Husitské Války - Tahová Strategie">
+    <meta property="og:description" content="Historická tahová strategie o husitských válkách. Veďte husitská vojska Jana Žižky v bitvách 15. století.">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:title" content="Husitské Války - Tahová Strategie">
+    <meta property="twitter:description" content="Historická tahová strategie o husitských válkách. Veďte husitská vojska Jana Žižky v bitvách 15. století.">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Hlavní menu -->
+    <div id="main-menu" class="screen">
+        <div class="menu-background">
+            <div class="menu-content">
+                <div class="game-logo">
+                    <img src="imgs/novelogo.png" alt="Hussite Wars" class="logo-image">
+                </div>
+
+                <nav class="menu-buttons-grid">
+                    <button id="btn-new-campaign" class="menu-btn primary">
+                        <span class="btn-icon">⚔️</span>
+                        <span class="btn-text" data-i18n="menu.newGame"></span>
+                    </button>
+                    <button id="btn-continue" class="menu-btn" disabled>
+                        <span class="btn-icon">📜</span>
+                        <span class="btn-text" data-i18n="menu.continue"></span>
+                    </button>
+                    <button id="btn-encyclopedia" class="menu-btn">
+                        <span class="btn-icon">📚</span>
+                        <span class="btn-text" data-i18n="menu.encyclopedia"></span>
+                    </button>
+                    <button id="btn-quick-battle" class="menu-btn">
+                        <span class="btn-icon">⚡</span>
+                        <span class="btn-text" data-i18n="menu.quickBattle"></span>
+                    </button>
+                    <button id="btn-about" class="menu-btn">
+                        <span class="btn-icon">ℹ️</span>
+                        <span class="btn-text" data-i18n="menu.about"></span>
+                    </button>
+                    <button id="btn-settings" class="menu-btn">
+                        <span class="btn-icon">⚙️</span>
+                        <span class="btn-text" data-i18n="menu.settings"></span>
+                    </button>
+                </nav>
+
+                <div class="menu-footer">
+                    <button id="btn-menu-music" class="music-btn" data-i18n-title="menu.music">
+                        🎵 <span data-i18n="menu.music"></span>
+                    </button>
+                    <button id="btn-language-toggle" class="language-toggle-btn" title="Změnit jazyk / Change Language">
+                        <span id="current-lang-flag">🇨🇿</span>
+                    </button>
+                    <div class="version-info">
+                        Alpha 0.1 | 03.02.2026
+                        <a href="https://buymeacoffee.com/josefslerka" target="_blank" class="support-link" title="Podpořit vývoj">☕</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="game-container" class="screen hidden">
+        <header id="game-header">
+            <div class="header-left">
+                <img src="imgs/novelogo.png" alt="Hussite Wars" class="header-logo" id="logo-home-btn" title="Zpět na hlavní menu">
+            </div>
+            <div class="header-center">
+                <h1 id="battle-name">Bitva u Sudoměře</h1>
+                <span id="battle-date">25. března 1420</span>
+                <div id="phase-panel" class="hidden">
+                    <span id="phase-icon">⚔</span>
+                    <span id="phase-name"></span>
+                    <span id="phase-description"></span>
+                </div>
+            </div>
+            <div id="turn-info">
+                <span id="current-player"></span>
+                <span id="turn-number"></span>
+            </div>
+        </header>
+
+        <main id="game-main">
+            <!-- Minimapa - fixně pozicovaná v rámci game-main -->
+            <canvas id="minimap"></canvas>
+
+            <aside id="unit-panel">
+                <button class="panel-toggle" id="toggle-left" title="Sbalit/Rozbalit">◀</button>
+                <h2 data-i18n="game.unit"></h2>
+                <div id="unit-info">
+                    <p class="no-selection" data-i18n="game.selectUnit"></p>
+                </div>
+                <div id="unit-actions" class="hidden">
+                    <button id="btn-attack" disabled data-i18n="game.attack"></button>
+                    <button id="btn-defend" data-i18n="game.defend"></button>
+                    <button id="btn-undo" class="hidden">↩ <span data-i18n="game.undo"></span></button>
+                </div>
+            </aside>
+
+            <div id="map-container">
+                <canvas id="game-canvas"></canvas>
+                <div id="tooltip" class="hidden"></div>
+                <!-- Panel cílů mise -->
+                <div id="objectives-panel" class="hidden">
+                    <div class="objectives-header">
+                        <h3 data-i18n="game.objectivesTitle">Cíle mise</h3>
+                        <button id="btn-close-objectives" class="close-btn">&times;</button>
+                    </div>
+                    <div id="objectives-content">
+                        <div class="objective primary">
+                            <span class="objective-status">○</span>
+                            <span class="objective-text" id="primary-objective"></span>
+                        </div>
+                        <div id="secondary-objectives"></div>
+                    </div>
+                </div>
+            </div>
+
+            <aside id="info-panel">
+                <button class="panel-toggle" id="toggle-right" title="Sbalit/Rozbalit">▶</button>
+                <h2 data-i18n="game.overview">Přehled</h2>
+                <div id="army-overview">
+                    <div class="army-section hussites" id="hussite-section">
+                        <h3>
+                            <span class="faction-icon">⚔</span>
+                            <span class="faction-name" data-i18n="factions.hussites">Husité</span>
+                            <span class="faction-count">0/0</span>
+                        </h3>
+                        <ul id="hussite-units"></ul>
+                    </div>
+                    <div class="army-section crusaders" id="crusader-section">
+                        <h3>
+                            <span class="faction-icon">✝</span>
+                            <span class="faction-name" data-i18n="factions.crusaders">Křižáci</span>
+                            <span class="faction-count">0/0</span>
+                        </h3>
+                        <ul id="crusader-units"></ul>
+                    </div>
+                </div>
+            </aside>
+        </main>
+
+        <footer id="game-footer">
+            <div class="footer-main-actions">
+                <button id="btn-end-turn" data-i18n="game.endTurn"></button>
+                <button id="btn-choral" title="Ktož jsú boží bojovníci - jednorázový bonus +50% útok, -20% obrana na 2 kola">⚔️ <span data-i18n="game.choral"></span></button>
+                <button id="btn-objectives" data-i18n-title="game.objectives">☑ <span data-i18n="game.objectives"></span></button>
+            </div>
+            <div class="footer-log">
+                <div id="game-log">
+                    <p>Hra zahájena. Husité začínají.</p>
+                </div>
+            </div>
+            <div class="footer-menu">
+                <button id="btn-menu" class="footer-btn" data-i18n-title="game.menu">☰ <span data-i18n="game.menu"></span></button>
+                <div class="dropdown-menu">
+                    <button id="btn-save" data-i18n-title="game.save">
+                        <span class="btn-icon">💾</span> <span data-i18n="game.save"></span>
+                    </button>
+                    <button id="btn-load" data-i18n-title="game.load">
+                        <span class="btn-icon">📂</span> <span data-i18n="game.load"></span>
+                    </button>
+                    <div class="dropdown-divider"></div>
+                    <button id="btn-sound" title="Zapnout/Vypnout zvuk">
+                        <span class="btn-icon">🔊</span> <span data-i18n="game.sound"></span>
+                    </button>
+                    <button id="btn-help" data-i18n-title="game.help">
+                        <span class="btn-icon">❓</span> <span data-i18n="game.help"></span>
+                    </button>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <div id="victory-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2 id="victory-title">Vítězství!</h2>
+            <p id="victory-message"></p>
+            <button id="btn-new-game">Nová hra</button>
+        </div>
+    </div>
+
+    <div id="mission-modal" class="modal hidden">
+        <div class="modal-content mission-modal-content">
+            <button id="mission-close" class="close-btn">&times;</button>
+            <h2 data-i18n="campaign.title">Kampaň: Husitské války</h2>
+            <p class="mission-subtitle" data-i18n="campaign.subtitle">1419-1437</p>
+
+            <!-- Záložky pro akty -->
+            <div id="campaign-acts" class="campaign-tabs">
+                <button class="act-tab active" data-act="1">
+                    <span class="act-name" data-i18n="campaign.act1.name">I. Zrození</span>
+                    <span class="act-years" data-i18n="campaign.act1.years">1419-1420</span>
+                </button>
+                <button class="act-tab" data-act="2">
+                    <span class="act-name" data-i18n="campaign.act2.name">II. Žižkova éra</span>
+                    <span class="act-years" data-i18n="campaign.act2.years">1421-1424</span>
+                </button>
+                <button class="act-tab" data-act="3">
+                    <span class="act-name" data-i18n="campaign.act3.name">III. Prokopova éra</span>
+                    <span class="act-years" data-i18n="campaign.act3.years">1425-1431</span>
+                </button>
+                <button class="act-tab" data-act="4">
+                    <span class="act-name" data-i18n="campaign.act4.name">IV. Konec</span>
+                    <span class="act-years" data-i18n="campaign.act4.years">1433-1437</span>
+                </button>
+            </div>
+
+            <!-- Popis aktu -->
+            <div id="act-description" class="act-description">
+                <p data-i18n="campaign.act1.description">První léta revoluce. Od defenestrace k obraně Prahy.</p>
+            </div>
+
+            <!-- Seznam bitev v aktu -->
+            <div id="mission-list"></div>
+
+            <div id="mission-details" class="hidden">
+                <div class="mission-info">
+                    <h3 id="mission-title"></h3>
+                    <p id="mission-date" class="mission-date"></p>
+                    <p id="mission-description"></p>
+                    <div id="mission-tutorial-badge" class="tutorial-badge hidden" data-i18n="mission.tutorialBadge">📖 Tutoriál</div>
+
+                    <div class="mission-briefing">
+                        <h4 data-i18n="mission.briefing">Rozkazy</h4>
+                        <p id="mission-briefing"></p>
+                    </div>
+
+                    <div class="mission-objectives">
+                        <h4 data-i18n="mission.objectives">Cíle mise</h4>
+                        <ul id="mission-objectives-list"></ul>
+                    </div>
+
+                    <!-- Historické poznámky -->
+                    <div id="mission-history" class="mission-history hidden">
+                        <h4 data-i18n="mission.history">Historické poznámky</h4>
+                        <div class="history-grid">
+                            <div class="history-column">
+                                <h5 data-i18n="mission.hussiteSide">Husitská strana</h5>
+                                <p id="history-hussite-commanders" class="history-commanders"></p>
+                                <p id="history-hussite-strength" class="history-strength"></p>
+                            </div>
+                            <div class="history-column">
+                                <h5 data-i18n="mission.enemySide">Protivník</h5>
+                                <p id="history-enemy-commanders" class="history-commanders"></p>
+                                <p id="history-enemy-strength" class="history-strength"></p>
+                            </div>
+                        </div>
+                        <div id="history-quote" class="history-quote hidden">
+                            <p id="history-quote-text"></p>
+                            <cite id="history-quote-source"></cite>
+                        </div>
+                        <p id="history-reliability" class="history-reliability"></p>
+                    </div>
+                </div>
+
+                <div class="mission-actions">
+                    <button id="btn-back-to-list" class="btn-secondary" data-i18n="mission.backToList">Zpět na seznam</button>
+                    <button id="btn-start-mission" class="btn-primary" data-i18n="mission.startMission">Zahájit bitvu</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="help-modal" class="modal hidden">
+        <div class="modal-content help-modal-content">
+            <button id="help-close" class="help-close-btn">&times;</button>
+            <h2 data-i18n="menu.encyclopedia">Encyklopedie</h2>
+
+            <div class="help-tabs">
+                <button class="help-tab active" data-tab="history" data-i18n="help.tabs.history">Historie</button>
+                <button class="help-tab" data-tab="units" data-i18n="help.tabs.units">Jednotky</button>
+                <button class="help-tab" data-tab="commanders" data-i18n="help.tabs.commanders">Osobnosti</button>
+                <button class="help-tab" data-tab="tactics" data-i18n="help.tabs.tactics">Taktika</button>
+                <button class="help-tab" data-tab="terrain" data-i18n="help.tabs.terrain">Terén</button>
+                <button class="help-tab" data-tab="rules" data-i18n="help.tabs.rules">Pravidla</button>
+                <button class="help-tab" data-tab="controls" data-i18n="help.tabs.controls">Ovládání</button>
+                <button class="help-tab" data-tab="about" data-i18n="help.tabs.about">O hře</button>
+            </div>
+
+            <div class="help-content">
+                <!-- Historie -->
+                <div id="tab-history" class="help-tab-content active">
+                    <h3>Husitské války (1419-1437)</h3>
+                    <div class="history-section">
+                        <h4>Příčiny konfliktu</h4>
+                        <p>Husitské války vznikly jako reakce na upálení mistra Jana Husa na kostnickém koncilu roku 1415. Hus kritizoval prodej odpustků, bohatství církve a požadoval reformy. Jeho smrt vyvolala v Čechách vlnu odporu proti katolické církvi a římskému králi Zikmundovi Lucemburskému.</p>
+
+                        <h4>Čtyři pražské artikuly</h4>
+                        <p>Husité formulovali své požadavky ve čtyřech artikulech: svobodné kázání slova božího, přijímání pod obojí způsobou (kalich), zákaz světského panování kněží a trestání smrtelných hříchů. Kalich se stal symbolem husitského hnutí.</p>
+
+                        <h4>Křížové výpravy</h4>
+                        <p>Proti husitům bylo vyhlášeno celkem pět křížových výprav (1420, 1421, 1422, 1427, 1431). Všechny skončily porážkou křižáků. Husité pod vedením Jana Žižky a později Prokopa Holého vyvinuli revoluční vojenskou taktiku založenou na vozové hradbě a palných zbraních.</p>
+
+                        <h4>Konec válek</h4>
+                        <p>Husitské hnutí se postupně rozštěpilo na umírněné (kališníky) a radikály (tábority, sirotky). Roku 1434 v bitvě u Lipan porazili umírnění radikály. Války skončily roku 1436 basilejskými kompaktáty, která uznala přijímání pod obojí.</p>
+                    </div>
+                </div>
+
+                <!-- Jednotky -->
+                <div id="tab-units" class="help-tab-content">
+                    <h3 data-i18n="encyclopedia.unitsTitle">Jednotky v bitvě</h3>
+                    <div id="help-units-list"></div>
+                </div>
+
+                <!-- Osobnosti -->
+                <div id="tab-commanders" class="help-tab-content">
+                    <h3>Významné osobnosti</h3>
+
+                    <h4 class="faction-header hussite-header">Husitští velitelé</h4>
+                    <div class="commanders-list">
+                        <div class="commander-card hussite">
+                            <h4>Jan Žižka z Trocnova</h4>
+                            <p class="commander-years">asi 1360 - 1424</p>
+                            <p>Geniální vojevůdce, který nikdy neprohrál bitvu. Pocházel z drobné šlechty, bojoval jako žoldnéř v Polsku i na straně anglického krále. Po oslepnutí (nejprve na jedno, později na obě oči) vedl husitská vojska jen podle hlášení pobočníků. Vytvořil vozovou hradbu - revoluční taktiku, která změnila způsob válčení v Evropě.</p>
+                        </div>
+                        <div class="commander-card hussite">
+                            <h4>Prokop Holý (Veliký)</h4>
+                            <p class="commander-years">asi 1380 - 1434</p>
+                            <p>Kněz a vojevůdce, vůdce táborských husitů po Žižkově smrti. Vedl spanilé jízdy do okolních zemí a porazil další křížové výpravy. Padl v bitvě u Lipan, kde se husité obrátili proti sobě.</p>
+                        </div>
+                        <div class="commander-card hussite">
+                            <h4>Jan Roháč z Dubé</h4>
+                            <p class="commander-years">asi 1400 - 1437</p>
+                            <p>Poslední husitský hejtman, věrný Žižkův pobočník. Po Lipanech odmítl přijmout kompaktáta a bránil hrad Sion. Po jeho dobytí byl s 52 druhy popraven v Praze - poslední oběť husitských válek.</p>
+                        </div>
+                        <div class="commander-card hussite">
+                            <h4>Jan Želivský</h4>
+                            <p class="commander-years">? - 1422</p>
+                            <p>Radikální pražský kazatel a demagog. Vedl průvod k Novoměstské radnici, kde došlo k první pražské defenestraci. Stal se vůdcem pražské chudiny, ale nebyl voják. Popraven roku 1422 na Staroměstské radnici.</p>
+                        </div>
+                        <div class="commander-card hussite">
+                            <h4>Hynek Krušina z Lichtenburka</h4>
+                            <p class="commander-years">asi 1395 - 1454</p>
+                            <p>Mladý husitský hejtman z mocného rodu Lichtenburků. Vedl husitské vojsko k vítězství u Vyšehradu roku 1420. Později přešel k umírněným a bojoval u Lipan proti táborům.</p>
+                        </div>
+                        <div class="commander-card hussite">
+                            <h4>Diviš Bořek z Miletínka</h4>
+                            <p class="commander-years">? - 1438</p>
+                            <p>Hejtman orebských husitů a věrný Žižkův spolubojovník. Bojoval v mnoha bitvách včetně Hořic roku 1423. Po Žižkově smrti se orebité přejmenovali na sirotky na jeho počest.</p>
+                        </div>
+                        <div class="commander-card hussite">
+                            <h4>Hynek z Poděbrad</h4>
+                            <p class="commander-years">? - 1426</p>
+                            <p>Moravský šlechtic a spojenec orebitů. Otec Jiřího z Poděbrad, budoucího českého krále - jediného husity na českém trůně. Bojoval na straně husitů u Malešova roku 1424.</p>
+                        </div>
+                    </div>
+
+                    <h4 class="faction-header crusader-header">Katoličtí a křižáčtí velitelé</h4>
+                    <div class="commanders-list">
+                        <div class="commander-card crusader">
+                            <h4>Zikmund Lucemburský</h4>
+                            <p class="commander-years">1368 - 1437</p>
+                            <p>Římský a uherský král, později císař Svaté říše římské. Syn Karla IV., odpovědný za upálení Jana Husa. Organizoval pět křížových výprav proti husitům. Nakonec byl roku 1436 přijat za českého krále po přijetí kompaktát.</p>
+                        </div>
+                        <div class="commander-card crusader">
+                            <h4>Kardinál Cesarini</h4>
+                            <p class="commander-years">1398 - 1444</p>
+                            <p>Papežský legát, který vedl pátou křížovou výpravu roku 1431. U Domažlic jeho vojsko uprchlo, aniž by spatřilo nepřítele - stačil zvuk husitského chorálu. Ztratil při útěku kardinálský klobouk.</p>
+                        </div>
+                        <div class="commander-card crusader">
+                            <h4>Fridrich IV. Saský (Bojovný)</h4>
+                            <p class="commander-years">1411 - 1464</p>
+                            <p>Saský kurfiřt a významný říšský kníže. Roku 1426 vedl velkou křížovou výpravu, která skončila katastrofální porážkou u Ústí nad Labem - jednou z největších porážek křižáků.</p>
+                        </div>
+                        <div class="commander-card crusader">
+                            <h4>Filippo Scolari (Pipo Spano)</h4>
+                            <p class="commander-years">1369 - 1426</p>
+                            <p>Florentský obchodník a kondotiér ve službách krále Zikmunda. Stal se jedním z jeho nejschopnějších vojevůdců. Vedl uherské vojsko při tažení do Čech, ale proti vozové hradbě jeho jízdní taktika selhávala.</p>
+                        </div>
+                        <div class="commander-card crusader">
+                            <h4>Bohuslav ze Švamberka</h4>
+                            <p class="commander-years">? - 1425</p>
+                            <p>Jihočeský katolický šlechtic a hejtman královského landfrýdu. Vedl 2000 jezdců proti 400 husitům u Sudoměře, kde utrpěl zdrcující porážku. Sám byl zajat, ale později propuštěn.</p>
+                        </div>
+                        <div class="commander-card crusader">
+                            <h4>Čeněk z Vartenberka</h4>
+                            <p class="commander-years">asi 1380 - 1425</p>
+                            <p>Nejvyšší purkrabí pražský. Zpočátku sympatizoval s husity a pomohl jim obsadit Pražský hrad, ale po radikalizaci hnutí přešel ke katolíkům. U Hořic roku 1423 utrpěl porážku od Žižky.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Taktika -->
+                <div id="tab-tactics" class="help-tab-content">
+                    <h3>Husitská vojenská taktika</h3>
+                    <div class="tactics-section">
+                        <h4>Vozová hradba</h4>
+                        <p>Revoluční taktika, která změnila válečnictví. Těžké selské vozy byly upraveny pro boj - okované, s dřevěnými štíty, střílnami a háky na spojování. V bitvě vytvořily mobilní pevnost, ze které střelci decimovali útočící jízdu. Vozy se daly rychle spojit do kruhu nebo čtverce.</p>
+
+                        <h4>Palné zbraně</h4>
+                        <p>Husité byli průkopníky v masovém použití palných zbraní v polních bitvách. Hákovnice, píšťaly, houfnice a tarasnice dávaly jejich vojsku devastující palebnou sílu. Hluk a kouř také děsil koně nepřátelské jízdy.</p>
+
+                        <h4>Kombinace zbraní</h4>
+                        <p>Husitské vojsko kombinovalo různé typy jednotek: střelci za vozy vedli palbu, cepníci a sudličníci bránili mezery mezi vozy, jízda prováděla výpady a pronásledovala prchající nepřátele.</p>
+
+                        <h4>Využití terénu</h4>
+                        <p>Žižka mistrně využíval terén. U Sudoměře postavil vozy na hrázi mezi rybníky, u Vítkova bránil strmý kopec. Husité vždy hledali výhodnou pozici a nutili nepřítele útočit do kopce nebo přes překážky.</p>
+
+                        <h4>Psychologická válka</h4>
+                        <p>Husitský chorál "Ktož jsú boží bojovníci" byl zpíván před bitvou a během pochodu. Jeho zvuk děsil nepřátele natolik, že u Domažlic křižácké vojsko uprchlo, aniž by spatřilo jediného husitu.</p>
+                    </div>
+                </div>
+
+                <div id="tab-terrain" class="help-tab-content">
+                    <h3>Typy terénu</h3>
+                    <div class="terrain-list">
+                        <div class="terrain-item">
+                            <div class="terrain-icon plains"></div>
+                            <div class="terrain-info">
+                                <strong>Pláně</strong>
+                                <p>Základní terén bez bonusů. Snadný pohyb.</p>
+                            </div>
+                        </div>
+                        <div class="terrain-item">
+                            <div class="terrain-icon forest"></div>
+                            <div class="terrain-info">
+                                <strong>Les</strong>
+                                <p>+2 obrana. Zpomaluje pohyb.</p>
+                            </div>
+                        </div>
+                        <div class="terrain-item">
+                            <div class="terrain-icon hills"></div>
+                            <div class="terrain-info">
+                                <strong>Kopce</strong>
+                                <p>+3 obrana. Zpomaluje pohyb.</p>
+                            </div>
+                        </div>
+                        <div class="terrain-item">
+                            <div class="terrain-icon water"></div>
+                            <div class="terrain-info">
+                                <strong>Voda</strong>
+                                <p>Neprůchodná. Tvoří přirozené překážky.</p>
+                            </div>
+                        </div>
+                        <div class="terrain-item">
+                            <div class="terrain-icon town"></div>
+                            <div class="terrain-info">
+                                <strong>Město</strong>
+                                <p>+4 obrana. Strategická pozice.</p>
+                            </div>
+                        </div>
+                        <div class="terrain-item">
+                            <div class="terrain-icon road"></div>
+                            <div class="terrain-info">
+                                <strong>Cesta</strong>
+                                <p>Rychlejší pohyb. Bez obranných bonusů.</p>
+                            </div>
+                        </div>
+                        <div class="terrain-item">
+                            <div class="terrain-icon dam"></div>
+                            <div class="terrain-info">
+                                <strong>Hráz</strong>
+                                <p>+2 obrana. Úzký průchod mezi rybníky.</p>
+                            </div>
+                        </div>
+                        <div class="terrain-item">
+                            <div class="terrain-icon mud"></div>
+                            <div class="terrain-info">
+                                <strong>Bahno</strong>
+                                <p>Zpomaluje pohyb. Obtížný terén pro jízdu.</p>
+                            </div>
+                        </div>
+                        <div class="terrain-item">
+                            <div class="terrain-icon slope"></div>
+                            <div class="terrain-info">
+                                <strong>Svah</strong>
+                                <p>+1 obrana při obraně. Bonus pro útočníka shora.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-rules" class="help-tab-content">
+                    <h3>Pravidla boje</h3>
+                    <div class="rules-section">
+                        <h4>Průběh tahu</h4>
+                        <p>Každá jednotka může v jednom tahu provést pohyb a útok (nebo pouze jedno z toho). Po dokončení akcí klikněte na "Ukončit tah".</p>
+                    </div>
+                    <div class="rules-section">
+                        <h4>Výpočet poškození</h4>
+                        <p>Poškození = Útok jednotky - Obrana cíle. Minimální poškození je 5. Terén přidává bonus k obraně.</p>
+                    </div>
+                    <div class="rules-section">
+                        <h4>Speciální schopnosti</h4>
+                        <ul>
+                            <li><strong>Náraz (Charge):</strong> +50% poškození při útoku po pohybu</li>
+                            <li><strong>Proti jízdě:</strong> +50% poškození proti kavalerii</li>
+                            <li><strong>Drtivý úder:</strong> +30% poškození proti obrněným</li>
+                            <li><strong>Vozová hradba:</strong> +3 obrana za každý sousední vůz</li>
+                            <li><strong>Dosah:</strong> Útok přes spojeneckou jednotku</li>
+                            <li><strong>Plošný útok:</strong> Zasáhne všechny nepřátele v dosahu</li>
+                            <li><strong>Rychlá palba:</strong> 2 útoky za tah (75% poškození)</li>
+                            <li><strong>Děsivý:</strong> Může vyděsit nepřítele (-2 útok)</li>
+                        </ul>
+                    </div>
+                    <div class="rules-section">
+                        <h4>Podmínky vítězství</h4>
+                        <p>Zničte všechny nepřátelské jednotky nebo dosáhněte cíle mise.</p>
+                    </div>
+                    <div class="rules-section">
+                        <h4>Chorál "Ktož jsú boží bojovníci"</h4>
+                        <p>Jednorázová schopnost aktivovaná tlačítkem. Poskytuje všem husitským jednotkám <strong>+50% útok</strong>, ale <strong>-20% obrana</strong> na 2 kola. Použijte ve správný okamžik pro rozhodující útok!</p>
+                    </div>
+                    <div class="rules-section">
+                        <h4>Pasivní regenerace</h4>
+                        <p>Jednotky vedle vozové hradby nebo v městě se na konci tahu léčí o <strong>+10 HP</strong>. Maximálně do 50% původního zdraví. Každá jednotka může regenerovat pouze jednou za bitvu.</p>
+                    </div>
+                    <div class="rules-section">
+                        <h4>Formace vozové hradby</h4>
+                        <ul>
+                            <li><strong>Linie vozů:</strong> 3+ vozy vedle sebe dostávají +10% obrana navíc</li>
+                            <li><strong>Střílny:</strong> Střelci vedle vozu dostávají +5 útok a +10% obrana</li>
+                            <li><strong>Průlom:</strong> Při zničení vozu sousední vozy ztratí formační bonus na 1 kolo</li>
+                        </ul>
+                    </div>
+                    <div class="rules-section">
+                        <h4>Mlha války</h4>
+                        <p>Vidíte pouze oblast kolem svých jednotek. Neprozkoumané oblasti jsou tmavé, prozkoumané ale neviditelné jsou šedé.</p>
+                        <ul>
+                            <li><strong>Zvěd:</strong> Vidí na 6 hexů - nejlepší průzkumník</li>
+                            <li><strong>Střelci:</strong> Vidí na 4 hexy</li>
+                            <li><strong>Jízda (lehká):</strong> Vidí na 4 hexy</li>
+                            <li><strong>Pěchota:</strong> Vidí na 3 hexy</li>
+                            <li><strong>Těžká jízda:</strong> Vidí na 3 hexy (omezení helmy)</li>
+                            <li><strong>Dělostřelectvo a vozy:</strong> Vidí na 3 hexy</li>
+                            <li><strong>Velitel:</strong> Vidí na 4 hexy</li>
+                        </ul>
+                        <p><strong>Terénní modifikátory:</strong></p>
+                        <ul>
+                            <li><strong>Na kopci:</strong> +1 k viditelnosti</li>
+                            <li><strong>V lese:</strong> -1 k viditelnosti</li>
+                            <li><strong>Vidění do lesa:</strong> Pouze na 2 hexy (pokud nejste sami v lese)</li>
+                        </ul>
+                    </div>
+                    <div class="rules-section">
+                        <h4>Zvěd - speciální jednotka</h4>
+                        <p>Lehký jezdec specializovaný na průzkum bojiště.</p>
+                        <ul>
+                            <li><strong>Průzkum:</strong> Vidí na 6 hexů - nejlepší viditelnost ze všech jednotek</li>
+                            <li><strong>Rychlý únik:</strong> Po přežití útoku se může zdarma přesunout o 2 hexy pryč</li>
+                            <li><strong>Skrytý pohyb:</strong> V lese nebo na kopci ho nepřítel vidí jen na 2 hexy</li>
+                            <li><strong>Odhalení:</strong> Může odhalit skryté nepřátelské jednotky</li>
+                        </ul>
+                        <p><strong>Omezení:</strong> Slabý v boji (-50% útoku proti pěchotě v obranné pozici), max 2 zvědi na bitvu.</p>
+                    </div>
+                    <div class="rules-section">
+                        <h4>Morální zlom</h4>
+                        <p>Když armáda utrpí kritické ztráty, její morálka se zhroutí a jednotky začnou prchat z bojiště.</p>
+                        <ul>
+                            <li><strong>Pád velitele:</strong> Smrt velitele způsobí okamžitý morální zlom</li>
+                            <li><strong>Těžké ztráty:</strong> Ztráta 60%+ armády spustí morální zlom</li>
+                            <li><strong>Panika:</strong> Když prchá více než polovina jednotek</li>
+                            <li><strong>Útěk:</strong> Prchající jednotky na okraji mapy uprchnou z bojiště</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div id="tab-controls" class="help-tab-content">
+                    <h3>Ovládání</h3>
+                    <div class="controls-list">
+                        <div class="control-item">
+                            <span class="control-key">Levé tlačítko myši</span>
+                            <span class="control-desc">Výběr jednotky / Pohyb / Útok</span>
+                        </div>
+                        <div class="control-item">
+                            <span class="control-key">Pravé tlačítko myši</span>
+                            <span class="control-desc">Zrušení výběru</span>
+                        </div>
+                        <div class="control-item">
+                            <span class="control-key">Kolečko myši</span>
+                            <span class="control-desc">Přiblížení / Oddálení mapy</span>
+                        </div>
+                        <div class="control-item">
+                            <span class="control-key">Tažení myší</span>
+                            <span class="control-desc">Posun mapy</span>
+                        </div>
+                        <div class="control-item">
+                            <span class="control-key">Minimapa</span>
+                            <span class="control-desc">Kliknutím rychle přesunete pohled</span>
+                        </div>
+                        <div class="control-item">
+                            <span class="control-key">Tab</span>
+                            <span class="control-desc">Další jednotka (která může jednat)</span>
+                        </div>
+                        <div class="control-item">
+                            <span class="control-key">Enter / Mezerník</span>
+                            <span class="control-desc">Ukončit tah (když všechny jednaly)</span>
+                        </div>
+                        <div class="control-item">
+                            <span class="control-key">D</span>
+                            <span class="control-desc">Obranný postoj</span>
+                        </div>
+                        <div class="control-item">
+                            <span class="control-key">Escape</span>
+                            <span class="control-desc">Zrušit akci / Zavřít menu</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- O hře -->
+                <div id="tab-about" class="help-tab-content">
+                    <h3>Husitské války - Tahová strategie</h3>
+
+                    <div class="about-section">
+                        <p class="about-version">Verze: <strong>Alpha 0.1</strong> (3. února 2026)</p>
+                        <p>Historická tahová strategická hra zasazená do období husitských válek (1419-1437).</p>
+                    </div>
+
+                    <div class="about-section credits">
+                        <h4>📜 Credits</h4>
+                        <p><strong>Design & Development:</strong> Josef Šlerka</p>
+                        <p><strong>Historical Research:</strong> Odborná literatura o husitských válkách</p>
+                        <p><strong>Beta Testing:</strong> TBD</p>
+                    </div>
+
+                    <div class="about-section contact">
+                        <h4>📧 Kontakt</h4>
+                        <p><strong>Email:</strong> <a href="mailto:josef.slerka@gmail.com">josef.slerka@gmail.com</a></p>
+                        <p><strong>GitHub Issues:</strong> Po publikování na GitHub</p>
+                    </div>
+
+                    <div class="about-section support-section">
+                        <h4>💝 Podpořit vývoj</h4>
+                        <p>Líbí se vám hra? Pomozte podpořit další vývoj!</p>
+                        <a href="https://buymeacoffee.com/josefslerka" target="_blank" class="coffee-button">
+                            ☕ Buy Me a Coffee
+                        </a>
+                    </div>
+
+                    <div class="about-section license">
+                        <h4>📄 License</h4>
+                        <p><strong>MIT License</strong> - Open source projekt. Můžete hru volně používat, modifikovat a distribuovat za podmínek MIT licence.</p>
+                        <p class="about-copyright">Copyright © 2026 Josef Šlerka</p>
+                    </div>
+
+                    <div class="about-section tech">
+                        <h4>🛠️ Technologie</h4>
+                        <p>Vanilla JavaScript (ES6+), HTML5 Canvas, CSS3 - žádné závislosti</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pause Menu -->
+    <div id="pause-modal" class="modal hidden">
+        <div class="modal-content pause-modal-content">
+            <button id="pause-close" class="close-btn">&times;</button>
+            <h2 data-i18n="pause.title">Hra pozastavena</h2>
+            <div class="pause-buttons">
+                <button id="btn-resume" class="menu-btn primary">
+                    <span class="btn-icon">▶️</span>
+                    <span class="btn-text" data-i18n="pause.resume">Pokračovat</span>
+                </button>
+                <button id="btn-pause-objectives" class="menu-btn">
+                    <span class="btn-icon">🎯</span>
+                    <span class="btn-text" data-i18n="pause.objectives">Cíle mise</span>
+                </button>
+                <button id="btn-pause-save" class="menu-btn">
+                    <span class="btn-icon">💾</span>
+                    <span class="btn-text" data-i18n="pause.save">Uložit hru</span>
+                </button>
+                <button id="btn-pause-load" class="menu-btn">
+                    <span class="btn-icon">📂</span>
+                    <span class="btn-text" data-i18n="pause.load">Načíst hru</span>
+                </button>
+                <button id="btn-pause-settings" class="menu-btn">
+                    <span class="btn-icon">⚙️</span>
+                    <span class="btn-text" data-i18n="pause.settings">Nastavení</span>
+                </button>
+                <button id="btn-pause-help" class="menu-btn">
+                    <span class="btn-icon">❓</span>
+                    <span class="btn-text" data-i18n="pause.help">Nápověda</span>
+                </button>
+                <button id="btn-quit-to-menu" class="menu-btn danger">
+                    <span class="btn-icon">🚪</span>
+                    <span class="btn-text" data-i18n="pause.mainMenu">Hlavní menu</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal hidden">
+        <div class="modal-content settings-modal-content">
+            <button id="settings-close" class="close-btn">&times;</button>
+            <h2 data-i18n="settings.title">Nastavení</h2>
+
+            <div class="settings-section">
+                <h3 data-i18n="settings.language">Jazyk</h3>
+                <div class="setting-item">
+                    <label for="language-select" data-i18n="settings.language">Jazyk</label>
+                    <select id="language-select">
+                        <option value="cs" data-i18n="settings.languageCzech">Čeština</option>
+                        <option value="en" data-i18n="settings.languageEnglish">English</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h3 data-i18n="settings.soundSection">Zvuk</h3>
+                <div class="setting-item">
+                    <label for="sound-enabled" data-i18n="settings.soundEnabled">Zvukové efekty</label>
+                    <input type="checkbox" id="sound-enabled" checked>
+                </div>
+                <div class="setting-item">
+                    <label for="sound-volume" data-i18n="settings.soundVolume">Hlasitost</label>
+                    <input type="range" id="sound-volume" min="0" max="100" value="70">
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h3 data-i18n="settings.difficulty">Obtížnost</h3>
+                <div class="setting-item">
+                    <label for="difficulty-level" data-i18n="settings.difficulty">Obtížnost</label>
+                    <select id="difficulty-level">
+                        <option value="beginner" selected data-i18n="settings.difficultyBeginner"></option>
+                        <option value="advanced" data-i18n="settings.difficultyAdvanced"></option>
+                    </select>
+                </div>
+                <p class="setting-description">
+                    <strong data-i18n="settings.difficultyBeginner"></strong><br>
+                    <strong data-i18n="settings.difficultyAdvanced"></strong>
+                </p>
+            </div>
+
+            <div class="settings-section">
+                <h3 data-i18n="settings.gameSection">Hra</h3>
+                <div class="setting-item">
+                    <label for="ai-speed" data-i18n="settings.aiSpeed">Rychlost AI</label>
+                    <select id="ai-speed">
+                        <option value="fast" data-i18n="settings.aiSpeedFast"></option>
+                        <option value="normal" selected data-i18n="settings.aiSpeedNormal"></option>
+                        <option value="slow" data-i18n="settings.aiSpeedSlow"></option>
+                    </select>
+                </div>
+                <div class="setting-item">
+                    <label for="show-damage" data-i18n="settings.showDamage"></label>
+                    <input type="checkbox" id="show-damage" checked>
+                </div>
+                <div class="setting-item">
+                    <label for="confirm-end-turn" data-i18n="settings.confirmEndTurn"></label>
+                    <input type="checkbox" id="confirm-end-turn">
+                </div>
+            </div>
+
+            <div class="settings-actions">
+                <button id="btn-settings-save" class="btn-primary" data-i18n="settings.save"></button>
+                <button id="btn-settings-cancel" class="btn-secondary" data-i18n="settings.cancel"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Over Modal -->
+    <div id="gameover-modal" class="modal hidden">
+        <div class="modal-content gameover-modal-content">
+            <div id="gameover-banner"></div>
+            <h2 id="gameover-title">Konec bitvy</h2>
+            <p id="gameover-message"></p>
+
+            <!-- Rychlé hodnocení -->
+            <div id="gameover-rating">
+                <div class="rating-item">
+                    <span class="rating-label" data-i18n="gameover.enemies">Nepřátelé</span>
+                    <span class="rating-value" id="rating-enemies">0/0</span>
+                </div>
+                <div class="rating-item">
+                    <span class="rating-label" data-i18n="gameover.unitsLost">Ztráty</span>
+                    <span class="rating-value" id="rating-losses">0</span>
+                </div>
+                <div class="rating-item">
+                    <span class="rating-label" data-i18n="gameover.turns">Kol</span>
+                    <span class="rating-value" id="rating-turns">0</span>
+                </div>
+            </div>
+
+            <div class="gameover-stats">
+                <h3 data-i18n="gameover.details">Podrobnosti</h3>
+
+                <!-- Bojové statistiky -->
+                <div class="stats-section">
+                    <div class="stat-row">
+                        <span data-i18n="gameover.totalDamage">🎯 Způsobené poškození:</span>
+                        <span id="stat-total-damage">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span data-i18n="gameover.damageTaken">🛡️ Obdržené poškození:</span>
+                        <span id="stat-damage-taken">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span data-i18n="gameover.avgHealth">❤️ Průměrné zdraví:</span>
+                        <span id="stat-avg-health">0%</span>
+                    </div>
+                    <div class="stat-row">
+                        <span data-i18n="gameover.durationLabel">⏱️ Doba hry:</span>
+                        <span id="stat-duration">0:00</span>
+                    </div>
+                </div>
+
+                <!-- Nejlepší jednotka -->
+                <div id="stats-mvp" class="stats-section stats-mvp hidden">
+                    <h4 data-i18n="gameover.mvp">Hrdina bitvy</h4>
+                    <div class="mvp-card">
+                        <span class="mvp-icon" id="stat-mvp-icon">⚔</span>
+                        <div class="mvp-info">
+                            <span class="mvp-name" id="stat-mvp-name">-</span>
+                            <span class="mvp-stats" id="stat-mvp-stats">0 zásahů</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="gameover-secondary-objectives" class="hidden"></div>
+
+            <!-- Věděli jste, že...? - zobrazí se po vítězství -->
+            <div id="gameover-trivia" class="gameover-trivia hidden">
+                <h4 data-i18n="gameover.trivia">Věděli jste, že...?</h4>
+                <p id="gameover-trivia-text"></p>
+            </div>
+
+            <div class="gameover-buttons">
+                <button id="btn-retry" class="menu-btn">
+                    <span class="btn-icon">🔄</span>
+                    <span class="btn-text" data-i18n="gameover.retry">Zkusit znovu</span>
+                </button>
+                <button id="btn-next-mission" class="menu-btn primary hidden">
+                    <span class="btn-icon">➡️</span>
+                    <span class="btn-text" data-i18n="gameover.nextMission">Další mise</span>
+                </button>
+                <button id="btn-gameover-menu" class="menu-btn">
+                    <span class="btn-icon">🏠</span>
+                    <span class="btn-text" data-i18n="gameover.mainMenu">Hlavní menu</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Thinking Indicator -->
+    <div id="ai-thinking" class="ai-thinking hidden">
+        <div class="ai-thinking-spinner"></div>
+        <span class="ai-thinking-text" data-i18n="game.aiThinking">Křižáci přemýšlí...</span>
+    </div>
+
+    <!-- Tutorial Modal -->
+    <div id="tutorial-modal" class="modal hidden">
+        <div class="modal-content tutorial-modal-content">
+            <button id="tutorial-close" class="close-btn">&times;</button>
+            <div class="tutorial-speaker">
+                <div class="tutorial-portrait">⚔</div>
+                <span class="tutorial-speaker-name">Jan Žižka</span>
+            </div>
+            <h2 id="tutorial-title">Vítej, bojovníku!</h2>
+            <p id="tutorial-text">Text tutoriálu...</p>
+            <div class="tutorial-actions">
+                <button id="tutorial-continue" class="btn-primary">Pokračovat</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Confirm Dialog -->
+    <div id="confirm-modal" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content confirm-dialog">
+            <div class="confirm-icon">⚠️</div>
+            <h2 id="confirm-title" data-i18n="confirm.title">Potvrzení</h2>
+            <p id="confirm-message" data-i18n="confirm.message">Opravdu chcete provést tuto akci?</p>
+            <div class="confirm-buttons">
+                <button id="confirm-cancel" class="menu-btn">
+                    <span class="btn-text" data-i18n="confirm.cancel">Zrušit</span>
+                </button>
+                <button id="confirm-ok" class="menu-btn primary">
+                    <span class="btn-text" data-i18n="confirm.ok">Potvrdit</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- About Modal -->
+    <div id="about-modal" class="modal hidden">
+        <div class="modal-content about-modal-content">
+            <button id="about-close" class="close-btn">&times;</button>
+            <h2>O hře</h2>
+
+            <div class="about-section">
+                <h3>Husitské války - Tahová strategie</h3>
+                <p class="about-version">Verze: <strong>Alpha 0.1</strong> (3. února 2026)</p>
+                <p>Historická tahová strategická hra zasazená do období husitských válek (1419-1437).</p>
+            </div>
+
+            <div class="about-section credits">
+                <h4>📜 Credits</h4>
+                <p><strong>Design & Development:</strong> Josef Šlerka</p>
+                <p><strong>Historical Research:</strong> Odborná literatura o husitských válkách</p>
+                <p><strong>Beta Testing:</strong> TBD</p>
+            </div>
+
+            <div class="about-section contact">
+                <h4>📧 Kontakt</h4>
+                <p><strong>Email:</strong> <a href="mailto:josef.slerka@gmail.com">josef.slerka@gmail.com</a></p>
+                <p><strong>GitHub Issues:</strong> Po publikování na GitHub</p>
+            </div>
+
+            <div class="about-section support-section">
+                <h4>💝 Podpořit vývoj</h4>
+                <p>Líbí se vám hra? Pomozte podpořit další vývoj!</p>
+                <a href="https://buymeacoffee.com/josefslerka" target="_blank" class="coffee-button">
+                    ☕ Buy Me a Coffee
+                </a>
+            </div>
+
+            <div class="about-section license">
+                <h4>📄 License</h4>
+                <p><strong>MIT License</strong> - Open source projekt. Můžete hru volně používat, modifikovat a distribuovat za podmínek MIT licence.</p>
+                <p class="about-copyright">Copyright © 2026 Josef Šlerka</p>
+            </div>
+
+            <div class="about-section tech">
+                <h4>🛠️ Technologie</h4>
+                <p>Vanilla JavaScript (ES6+), HTML5 Canvas, CSS3 - žádné závislosti</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- i18n - lokalizační systém (načíst jako první) -->
+    <script src="js/i18n/i18n.js"></script>
+    <script src="js/i18n/i18nHelpers.js"></script>
+    <script src="js/i18n/encyclopediaRenderer.js"></script>
+    <script>
+        // Inicializace i18n při načtení stránky
+        document.addEventListener('DOMContentLoaded', async () => {
+            await i18n.init();
+        });
+    </script>
+
+    <script src="js/ui/sound.js"></script>
+    <script src="js/ui/music.js?v=0.2"></script>
+    <script src="js/core/hex.js"></script>
+    <script src="js/data/unitTypes.js"></script>
+    <script src="js/entities/Unit.js"></script>
+    <script src="js/entities/UnitFactory.js"></script>
+    <script src="js/data/battleLore.js"></script>
+    <script src="js/data/campaign.js"></script>
+    <script src="js/data/scenarios.js"></script>
+    <script src="js/systems/CombatSystem.js"></script>
+    <script src="js/systems/FogOfWarSystem.js"></script>
+    <script src="js/systems/VictoryConditionsSystem.js"></script>
+    <script src="js/systems/TutorialSystem.js"></script>
+    <script src="js/systems/MoraleSystem.js"></script>
+    <script src="js/core/game.js"></script>
+    <script src="js/ai.js"></script>
+    <script src="js/ui/main.js"></script>
+</body>
+</html>

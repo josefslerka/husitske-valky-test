@@ -1,0 +1,383 @@
+═══════════════════════════════════════════════════════════════
+  VALIDACE SCÉNÁŘŮ - scenarios.js
+═══════════════════════════════════════════════════════════════
+
+
+───────────────────────────────────────────────────────────────────
+📋 Scénář: Výcvik na Táboře
+   ID: tutorial
+───────────────────────────────────────────────────────────────────
+
+   ✓ Kategorie validace:
+     ✅ Pozice jednotek
+     ✅ Unit types
+     ✅ Victory conditions
+     ✅ Reinforcements
+
+   💰 Balance:
+     Hussites:     210 cost
+     Crusaders:     80 cost
+     Ratio:     2.63 (hussites/crusaders)
+
+   ✅ Žádné chyby
+
+───────────────────────────────────────────────────────────────────
+📋 Scénář: Bitva u Živohoště
+   ID: zivohost_1419
+───────────────────────────────────────────────────────────────────
+
+   ✓ Kategorie validace:
+     ✅ Pozice jednotek
+     ✅ Unit types
+     ✅ Victory conditions
+     ✅ Reinforcements
+
+   💰 Balance:
+     Hussites:     250 cost
+     Crusaders:   1310 cost
+     Ratio:     0.19 (hussites/crusaders)
+
+   ✅ Žádné chyby
+
+───────────────────────────────────────────────────────────────────
+📋 Scénář: Bitva u Nekmíře
+   ID: nekmir_1419
+───────────────────────────────────────────────────────────────────
+
+   ✓ Kategorie validace:
+     ✅ Pozice jednotek
+     ✅ Unit types
+     ❌ Victory conditions
+     ✅ Reinforcements
+
+   💰 Balance:
+     Hussites:    1660 cost
+     Crusaders:   2060 cost
+     Ratio:     0.81 (hussites/crusaders)
+
+   ❌ CHYBY (2):
+     1. Secondary victory type 'kill_unit' není implementovaný
+     2. Secondary victory type 'protect_wagons' není implementovaný
+
+───────────────────────────────────────────────────────────────────
+📋 Scénář: Bitva u Sudoměře
+   ID: sudomere_1420
+───────────────────────────────────────────────────────────────────
+
+   ✓ Kategorie validace:
+     ✅ Pozice jednotek
+     ✅ Unit types
+     ✅ Victory conditions
+     ✅ Reinforcements
+
+   💰 Balance:
+     Hussites:    1160 cost
+     Crusaders:   1440 cost
+     Ratio:     0.81 (hussites/crusaders)
+
+   ✅ Žádné chyby
+
+───────────────────────────────────────────────────────────────────
+📋 Scénář: Bitva na Vítkově
+   ID: vitkov_1420
+───────────────────────────────────────────────────────────────────
+
+   ✓ Kategorie validace:
+     ✅ Pozice jednotek
+     ✅ Unit types
+     ✅ Victory conditions
+     ✅ Reinforcements
+
+   💰 Balance:
+     Hussites:     410 cost
+     Crusaders:   1270 cost
+     Ratio:     0.32 (hussites/crusaders)
+
+   ✅ Žádné chyby
+
+───────────────────────────────────────────────────────────────────
+📋 Scénář: Bitva pod Vyšehradem
+   ID: vysehrad_1420
+───────────────────────────────────────────────────────────────────
+
+   ✓ Kategorie validace:
+     ✅ Pozice jednotek
+     ✅ Unit types
+     ❌ Victory conditions
+     ✅ Reinforcements
+
+   💰 Balance:
+     Hussites:    1470 cost
+     Crusaders:   2710 cost
+     Ratio:     0.54 (hussites/crusaders)
+
+   ❌ CHYBY (2):
+     1. Primary victory type 'defend' není implementovaný
+     2. Secondary victory type 'kill_nobles' není implementovaný
+
+───────────────────────────────────────────────────────────────────
+📋 Scénář: Bitva u Kutné Hory
+   ID: kutna_hora_1421
+───────────────────────────────────────────────────────────────────
+
+   ✓ Kategorie validace:
+     ✅ Pozice jednotek
+     ✅ Unit types
+     ❌ Victory conditions
+     ✅ Reinforcements
+
+   💰 Balance:
+     Hussites:    1800 cost
+     Crusaders:   2290 cost
+     Ratio:     0.79 (hussites/crusaders)
+
+   ❌ CHYBY (1):
+     1. Secondary victory type 'save_wagons' není implementovaný
+
+───────────────────────────────────────────────────────────────────
+📋 Scénář: Bitva u Německého Brodu
+   ID: nemecky_brod_1422
+───────────────────────────────────────────────────────────────────
+
+   ✓ Kategorie validace:
+     ✅ Pozice jednotek
+     ✅ Unit types
+     ❌ Victory conditions
+     ✅ Reinforcements
+
+   💰 Balance:
+     Hussites:    1420 cost
+     Crusaders:   1510 cost
+     Ratio:     0.94 (hussites/crusaders)
+
+   ❌ CHYBY (1):
+     1. Secondary victory type 'time_limit' není implementovaný
+
+───────────────────────────────────────────────────────────────────
+📋 Scénář: Bitva u Mostu
+   ID: most_1421
+───────────────────────────────────────────────────────────────────
+
+   ✓ Kategorie validace:
+     ✅ Pozice jednotek
+     ✅ Unit types
+     ❌ Victory conditions
+     ✅ Reinforcements
+
+   💰 Balance:
+     Hussites:    1000 cost
+     Crusaders:    180 cost
+     Ratio:     5.56 (hussites/crusaders)
+
+   ❌ CHYBY (3):
+     1. Secondary victory type 'both_objectives' není implementovaný
+     2. Secondary victory type 'protect_artillery' není implementovaný
+     3. Secondary victory type 'minimal_losses' není implementovaný
+
+───────────────────────────────────────────────────────────────────
+📋 Scénář: Bitva u Ústí nad Labem
+   ID: usti_1426
+───────────────────────────────────────────────────────────────────
+
+   ✓ Kategorie validace:
+     ✅ Pozice jednotek
+     ✅ Unit types
+     ✅ Victory conditions
+     ✅ Reinforcements
+
+   💰 Balance:
+     Hussites:    1800 cost
+     Crusaders:   1580 cost
+     Ratio:     1.14 (hussites/crusaders)
+
+   ✅ Žádné chyby
+
+───────────────────────────────────────────────────────────────────
+📋 Scénář: Bitva u Tachova
+   ID: tachov_1427
+───────────────────────────────────────────────────────────────────
+
+   ✓ Kategorie validace:
+     ✅ Pozice jednotek
+     ✅ Unit types
+     ✅ Victory conditions
+     ✅ Reinforcements
+
+   💰 Balance:
+     Hussites:    1470 cost
+     Crusaders:   1100 cost
+     Ratio:     1.34 (hussites/crusaders)
+
+   ✅ Žádné chyby
+
+───────────────────────────────────────────────────────────────────
+📋 Scénář: Bitva u Nisy
+   ID: nisa_1428
+───────────────────────────────────────────────────────────────────
+
+   ✓ Kategorie validace:
+     ✅ Pozice jednotek
+     ✅ Unit types
+     ✅ Victory conditions
+     ✅ Reinforcements
+
+   💰 Balance:
+     Hussites:    1640 cost
+     Crusaders:    930 cost
+     Ratio:     1.76 (hussites/crusaders)
+
+   ✅ Žádné chyby
+
+───────────────────────────────────────────────────────────────────
+📋 Scénář: Bitva u Domažlic
+   ID: domazlice_1431
+───────────────────────────────────────────────────────────────────
+
+   ✓ Kategorie validace:
+     ✅ Pozice jednotek
+     ✅ Unit types
+     ✅ Victory conditions
+     ✅ Reinforcements
+
+   💰 Balance:
+     Hussites:    1420 cost
+     Crusaders:    920 cost
+     Ratio:     1.54 (hussites/crusaders)
+
+   ✅ Žádné chyby
+
+───────────────────────────────────────────────────────────────────
+📋 Scénář: Obléhání Plzně
+   ID: oblehani_plzne_1433
+───────────────────────────────────────────────────────────────────
+
+   ✓ Kategorie validace:
+     ✅ Pozice jednotek
+     ❌ Unit types
+     ✅ Victory conditions
+     ✅ Reinforcements
+
+   💰 Balance:
+     Hussites:    1980 cost
+     Crusaders:   1360 cost
+     Ratio:     1.46 (hussites/crusaders)
+
+   ❌ CHYBY (1):
+     1. Unit type 'BOMBARDY' neexistuje v UnitTypes
+
+───────────────────────────────────────────────────────────────────
+📋 Scénář: Bitva u Lipan
+   ID: lipany_1434
+───────────────────────────────────────────────────────────────────
+
+   ✓ Kategorie validace:
+     ✅ Pozice jednotek
+     ✅ Unit types
+     ✅ Victory conditions
+     ✅ Reinforcements
+
+   💰 Balance:
+     Hussites:    1180 cost
+     Crusaders:   1330 cost
+     Ratio:     0.89 (hussites/crusaders)
+
+   ✅ Žádné chyby
+
+───────────────────────────────────────────────────────────────────
+📋 Scénář: Obléhání hradu Sion
+   ID: sion_1437
+───────────────────────────────────────────────────────────────────
+
+   ✓ Kategorie validace:
+     ✅ Pozice jednotek
+     ✅ Unit types
+     ❌ Victory conditions
+     ✅ Reinforcements
+
+   💰 Balance:
+     Hussites:     960 cost
+     Crusaders:    930 cost
+     Ratio:     1.03 (hussites/crusaders)
+
+   ❌ CHYBY (1):
+     1. Secondary victory type 'keep_commander_alive' není implementovaný
+
+───────────────────────────────────────────────────────────────────
+📋 Scénář: Bitva u Hořic
+   ID: horice_1423
+───────────────────────────────────────────────────────────────────
+
+   ✓ Kategorie validace:
+     ✅ Pozice jednotek
+     ❌ Unit types
+     ✅ Victory conditions
+     ✅ Reinforcements
+
+   💰 Balance:
+     Hussites:    1980 cost
+     Crusaders:   3080 cost
+     Ratio:     0.64 (hussites/crusaders)
+
+   ❌ CHYBY (2):
+     1. Unit type 'KUSINICI' neexistuje v UnitTypes
+     2. Unit type 'KUSINICI' neexistuje v UnitTypes
+
+───────────────────────────────────────────────────────────────────
+📋 Scénář: Bitva u Malešova
+   ID: malesov_1424
+───────────────────────────────────────────────────────────────────
+
+   ✓ Kategorie validace:
+     ✅ Pozice jednotek
+     ❌ Unit types
+     ❌ Victory conditions
+     ✅ Reinforcements
+
+   💰 Balance:
+     Hussites:    3480 cost
+     Crusaders:   3270 cost
+     Ratio:     1.06 (hussites/crusaders)
+
+   ❌ CHYBY (6):
+     1. Unit type 'KUSINICI' neexistuje v UnitTypes
+     2. Unit type 'KUSINICI' neexistuje v UnitTypes
+     3. Unit type 'KUSINICI' neexistuje v UnitTypes
+     4. Unit type 'KUSINICI' neexistuje v UnitTypes
+     5. Secondary victory type 'commander_survives' není implementovaný
+     6. Secondary victory type 'minimize_losses' není implementovaný
+
+
+
+═══════════════════════════════════════════════════════════════
+  SUMARIZACE
+═══════════════════════════════════════════════════════════════
+
+📊 Celkem scénářů: 18
+✅ 100% validních: 9
+❌ S chybami:      9
+
+🔍 Nejčastější problémy:
+   • Victory conditions: 12x
+   • Neexistující unit type: 7x
+
+⚖️  Balance overview:
+   Průměrný ratio: 1.30
+   Min ratio:      0.19
+   Max ratio:      5.56
+
+🎯 Top 5 nejlépe vyvážených scénářů (ratio ~ 1.0):
+   1. sion_1437                      ratio: 1.03
+   2. nemecky_brod_1422              ratio: 0.94
+   3. malesov_1424                   ratio: 1.06
+   4. lipany_1434                    ratio: 0.89
+   5. usti_1426                      ratio: 1.14
+
+⚠️  Top 5 nejvíce nevyvážených scénářů:
+   1. most_1421                      ratio: 5.56
+   2. tutorial                       ratio: 2.63
+   3. zivohost_1419                  ratio: 0.19
+   4. nisa_1428                      ratio: 1.76
+   5. vitkov_1420                    ratio: 0.32
+
+═══════════════════════════════════════════════════════════════
+

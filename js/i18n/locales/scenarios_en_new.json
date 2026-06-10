@@ -1,0 +1,560 @@
+{
+  "scenarios": {
+    "tutorial": {
+      "name": "Training at Tábor",
+      "description": "Learn combat basics in interactive training.",
+      "historicalSignificance": "Before the first battles, every warrior must undergo training.",
+      "briefing": {
+        "hussites": "Welcome, recruit! I'm Jan Žižka and I'll teach you how to fight for the chalice. Follow my instructions carefully."
+      },
+      "steps": [
+        {
+          "title": "Welcome, warrior!",
+          "text": "I'm Jan Žižka. I'll teach you combat basics. Click on a unit to select it, green fields show where it can move."
+        },
+        {
+          "title": "Unit selected!",
+          "text": "Green fields = possible movement. Red fields = possible attack. Click where you want to go or who to attack."
+        },
+        {
+          "title": "Movement complete!",
+          "text": "Each unit can perform MOVEMENT and ATTACK per turn. When done, click 'End Turn' or press ENTER."
+        },
+        {
+          "title": "End of turn",
+          "text": "Now the enemy plays. After their turn, it's your turn again. Destroy all enemies for victory!"
+        },
+        {
+          "title": "Attack!",
+          "text": "In melee both sides take damage (counterattack). Shooters attack at range WITHOUT counterattack."
+        },
+        {
+          "title": "Tip: Terrain",
+          "text": "Hills give +20% defense, forests +15%. Use terrain! Units near wagon fort also get bonus."
+        },
+        {
+          "title": "Defensive stance",
+          "text": "Now learn DEFENSIVE STANCE. Select unit and press D key or click 'Defend'. Unit gains +30% defense."
+        },
+        {
+          "title": "Defensive stance activated!",
+          "text": "Defending unit has +30% defense, but can't attack. Excellent for holding position. Now destroy all enemies!"
+        },
+        {
+          "title": "Training complete!",
+          "text": "You learned basics: selection, movement, attack, defense and terrain. You're ready for real battle! Good luck."
+        }
+      ],
+      "objectives": {
+        "primary": "Complete all training lessons"
+      },
+      "debriefing": {
+        "victory": "Training successfully completed! You're ready to fight for the chalice.",
+        "defeat": "No worries, try again. Even Žižka had to learn."
+      }
+    },
+    "zivohost_1419": {
+      "name": "Battle of Živohošť",
+      "description": "First major clash of the Hussite Wars. South Bohemian pilgrims must survive the attack until reinforcements arrive.",
+      "historicalSignificance": "Demonstration of necessity for organized defense, precursor to wagon fort.",
+      "briefing": {
+        "hussites": "Your small group of South Bohemian pilgrims has been surprised at Živohošť. Retreat to Červenka hill and build improvised defenses. Reinforcements from Nový Knín are on their way!",
+        "crusaders": "Catch up with the Hussite pilgrims before they get help. You have the advantage - use it!"
+      },
+      "reinforcements": {
+        "hussites": "Reinforcements from Nový Knín arrive! Břeněk Švihovský leads detachment to help!"
+      },
+      "events": [
+        {"message": "Petr ze Šternberka caught up with you! Fortify on Červenka hill!"},
+        {"text": "TIP: Your units are close to hill. Move them to green fields for defensive bonus."},
+        {"text": "TIP: Wagon provides protection to surrounding units. Shooters from hill get attack bonus."},
+        {"message": "Břeněk Švihovský brings reinforcements! Hold positions!"},
+        {"message": "Šternberk sees superiority and hesitates. Now is the time to strike!"}
+      ],
+      "objectives": {
+        "primary": "Survive until reinforcements arrive (turn 5) with at least 40% units",
+        "secondary": [
+          "Hold Červenka hill",
+          "Capture or kill Petr ze Šternberka"
+        ]
+      },
+      "debriefing": {
+        "victory": "Reinforcements from Nový Knín arrived in time! Petr ze Šternberka retreated when he saw determined defense on the hill. Improvised wagon as seed of future wagon fort showed the way to new method of warfare.",
+        "defeat": "South Bohemian pilgrims were scattered. Petr ze Šternberka celebrates victory. Hussite movement suffered heavy blow right at the beginning."
+      }
+    },
+    "nekmir_1419": {
+      "name": "Battle of Nekmíř",
+      "description": "FIRST DOCUMENTED USE OF WAGON FORT! Jan Žižka with small group repels attack by Plzeň landfrieden.",
+      "historicalSignificance": "Historically first known use of wagon fort. Birth of tactic that will change warfare.",
+      "briefing": {
+        "hussites": "You're heading from Plzeň toward enemy fortress Nekmíř. Plzeň landfrieden caught up with you! You only have 7 wagons - not enough for closed circle. Form semicircle and defend!",
+        "crusaders": "Catch up with Hussite heretics before they destroy Nekmíř fortress. You have clear numerical superiority. Destroy them!"
+      },
+      "events": [
+        {"message": "Plzeň landfrieden caught up with Hussite column! Quickly form wagon fort!"},
+        {"text": "TIP: You only have 7 wagons - not enough for closed circle. Form semicircle open toward fortress."},
+        {"message": "Žižka: 'Pull wagons together! Shooters behind wagons, flailmen ready!'"},
+        {"text": "Wagon fort is ready! +3 to defense for units behind wagons."},
+        {"message": "Landfrieden heavy cavalry attacks! Will wagon fort hold?"},
+        {"text": "Cavalry hit wagons! Charge bonus negated!"},
+        {"message": "(Historically at this stage Hynek of Nekmíř fell - fortress owner)"},
+        {"message": "Cavalry repelled! Landfrieden withdraws!"},
+        {"message": "Victory! Žižka proved wagon fort works!"}
+      ],
+      "objectives": {
+        "primary": "Repel landfrieden attack and survive until turn 10 with 50% units",
+        "secondary": [
+          "Kill Hynek of Nekmíř",
+          "Preserve at least 5 wagons"
+        ]
+      },
+      "debriefing": {
+        "victory": "First wagon fort in history held! Žižka proved even small group with wagons can withstand superior numbers. Plzeň landfrieden was driven away and Nekmíř fortress captured. Tactic was born that will change European warfare.",
+        "defeat": "Improvised wagon fort didn't withstand enemy pressure. Hussite raid ended in disaster. However Žižka survived and learned - next time fort will be stronger and closed."
+      }
+    },
+    "sudomere_1420": {
+      "name": "Battle of Sudoměř",
+      "description": "First major Hussite victory. Jan Žižka with small army defends dam between fishponds against superior Catholic lords.",
+      "historicalSignificance": "First successful use of wagon fort in battle.",
+      "briefing": {
+        "hussites": "Your small group of pilgrims is pursued by army of Catholic lords. Use dam between fishponds and build wagon fort. You must survive until nightfall.",
+        "crusaders": "Catch up and destroy Hussite heretics before they fortify. Attack quickly, before fog falls."
+      },
+      "events": [
+        {"message": "Crusaders begin attack along narrow dam!"},
+        {"message": "Thick fog falling! Visibility drops."}
+      ],
+      "objectives": {
+        "primary": "Survive until turn 12 with at least 50% units",
+        "secondary": [
+          "Destroy 50% of enemy forces"
+        ]
+      },
+      "debriefing": {
+        "victory": "Fishpond and swamps became grave for iron lords! Hussites used terrain and repelled superior numbers. This battle showed that properly chosen battlefield can balance even significant numerical disadvantage. Žižka's genius fully manifested.",
+        "defeat": "Swamps of Sudoměř became trap not for enemy, but for you. Knights broke through your defense. Žižka's career ends before it could truly begin."
+      }
+    },
+    "vitkov_1420": {
+      "name": "Battle of Vítkov",
+      "description": "Defense of Prague against first crusade. Small garrison on Vítkov must hold until reinforcements arrive.",
+      "historicalSignificance": "Turning point of first crusade, defense of Prague.",
+      "briefing": {
+        "hussites": "You defend wooden fortifications on Vítkov with handful of men and women. Crusaders attack in superior numbers. Hold until reinforcements from Prague arrive!",
+        "crusaders": "Capture Hussite fortifications on Vítkov and open way to Prague."
+      },
+      "reinforcements": {
+        "hussites": "Jan Žižka leads reinforcements from Prague!"
+      },
+      "objectives": {
+        "primary": "Survive until turn 8 with at least 30% units",
+        "secondary": [
+          "Kill enemy commander"
+        ]
+      },
+      "debriefing": {
+        "victory": "Vítkov held! Žižka with handful of defenders, including women, repelled thousands of crusaders. Sigismund lost hope of quick conquest of Prague. This victory encouraged Hussite movement and showed that determined defenders can defeat even superior numbers.",
+        "defeat": "Fortifications on Vítkov fell and with them Prague's hope. Crusaders occupied strategic height and Prague is under siege. Hussite revolution ends before it could develop its strength."
+      }
+    },
+    "vysehrad_1420": {
+      "name": "Battle under Vyšehrad",
+      "description": "Decisive Hussite victory. Sigismund arrives late and Czech nobility is slaughtered in ravine below Podolí.",
+      "historicalSignificance": "Prague fully in Hussite hands. Loss of Czech nobility's trust in Sigismund. 25 banner lords fell.",
+      "briefing": {
+        "hussites": "You've been besieging Vyšehrad since September. Garrison negotiated capitulation for 8:00 - if Sigismund doesn't come earlier. It's All Saints' Day and royal army approaches. Defend your positions!",
+        "crusaders": "You must break through to Vyšehrad and save garrison! Czech nobility attacks from Podolí, main force frontally."
+      },
+      "events": [
+        {"message": "It's after 15:00. Vyšehrad garrison already capitulated - can't help you!"},
+        {"message": "Sigismund vainly waves sword toward Vyšehrad. It's too late."},
+        {"message": "Hungarians and Germans begin frontal attack on your trenches!"},
+        {"text": "Prepared positions provide +3 to defense!"},
+        {"message": "Jindřich of Plumlov warns against attack through slope. Sigismund accuses him of cowardice!"},
+        {"message": "Insulted Czech nobility attacks! Must dismount due to steep slope."},
+        {"text": "Czech nobility loses cavalry advantage on steep slope!"},
+        {"message": "Hynek Krušina deploys Orebite flailmen from reserve!"},
+        {"text": "Units freed from Vyšehrad siege join battle!"},
+        {"message": "Czech nobility trapped in ravine! Can't escape!"},
+        {"text": "Taborites and Orebites took no prisoners... Massacre in ravine!"},
+        {"message": "Sigismund orders retreat! Royal army flees toward Český Brod."},
+        {"message": "Victory! Prague fully in Hussite hands. 25 banner lords fell."}
+      ],
+      "objectives": {
+        "primary": "Defend St. Pankrác church until turn 15",
+        "secondary": [
+          "Inflict 40% casualties on royal army",
+          "Kill enemy commanders (historically 25 banner lords)"
+        ]
+      },
+      "debriefing": {
+        "victory": "Decisive victory under Vyšehrad! 25 banner lords of Czech nobility fell in ravine below Podolí. Vyšehrad garrison capitulated and Prague is fully in Hussite hands. Sigismund came late and with him Czech nobility's trust in his abilities.",
+        "defeat": "Sigismund's forces broke through to Vyšehrad in time. Garrison was saved and Hussites suffered heavy losses. Siege of Prague continues and Hussite cause is endangered."
+      }
+    },
+    "kutna_hora_1421": {
+      "name": "Battle of Kutná Hora",
+      "description": "Žižka surrounded by superior forces at Kutná Hora after townsmen's betrayal. Must break through with wagon fort at night!",
+      "historicalSignificance": "First offensive use of firearms from moving wagon fort. Brilliant tactical retreat.",
+      "briefing": {
+        "hussites": "Kutná Hora miners betrayed you and let crusaders into city! You're encircled. Prepare night breakthrough with wagon fort - must break toward Kolín to southwest!",
+        "crusaders": "Hussites are trapped! We've surrounded them before city. Destroy Žižka's wagon fort before he escapes!"
+      },
+      "events": [
+        {"message": "Kutná Hora miners opened Kolín Gate! Crusaders pour into city - you're surrounded!"},
+        {"message": "Žižka prepares night breakthrough. Form wagon fort heading southwest!"},
+        {"message": "BREAKTHROUGH! Fire from wagons while moving! Handgunners - fire into darkness!"},
+        {"message": "Crusaders in night chaos can't coordinate defense!"},
+        {"message": "You broke through encirclement! Retreat southwest toward Kolín!"},
+        {"message": "You're safe! Crusaders can't stop you. Žižka already planning counterattack..."}
+      ],
+      "objectives": {
+        "primary": "Get at least 5 units to southwest edge of map (toward Kolín)",
+        "secondary": [
+          "Žižka must survive",
+          "Save at least 4 wagons"
+        ]
+      },
+      "debriefing": {
+        "victory": "Brilliant night breakthrough! Žižka led entire wagon fort out of encirclement under fire from own hand cannons. This is first documented use of firearms from moving wagons. Kutná Hora traitors will be punished, but Žižka's army escaped to safety.",
+        "defeat": "Breakthrough failed. Wagon fort was broken and Žižka's army destroyed. Kutná Hora remains in enemy hands and Hussite movement loses its most capable commander."
+      }
+    },
+    "nemecky_brod_1422": {
+      "name": "Battle of Německý Brod",
+      "description": "Pursuit of retreating Sigismund's army from Kutná Hora. Ice on Sázava breaks under heavy wagons.",
+      "historicalSignificance": "End of 2nd crusade. Sigismund's last campaign in Bohemia. Loot of 500 wagons.",
+      "briefing": {
+        "hussites": "Sigismund flees from Kutná Hora toward Německý Brod! Pursue retreating army and destroy it before it escapes across Sázava. Careful - ice on river is thin!",
+        "crusaders": "Retreat! Must get across Sázava to Německý Brod. Bridge is overcrowded - part of army must cross frozen river."
+      },
+      "events": [
+        {"message": "Sigismund fled! Scolari's army retreats toward Německý Brod. Pursue them!"},
+        {"message": "Crusaders abandon loot along way. Don't get distracted - destroy army!"},
+        {"message": "Scolari's rearguard tries to stop advance on hill at Habry!"},
+        {"message": "Crusaders can't hold positions - begin fleeing toward river!"},
+        {"message": "Bridge is overcrowded! Part of army tries to cross frozen Sázava!"},
+        {"message": "Ice cracks under heavy wagons! River swallows fleeing!"},
+        {"message": "Royal army scattered! Collect loot and finish off remnants of resistance."},
+        {"message": "Victory! 500 wagons of loot captured. Second crusade ended."}
+      ],
+      "objectives": {
+        "primary": "Destroy at least 70% of royal army",
+        "secondary": [
+          "Defeat Filippo Scolari",
+          "Victory by turn 10"
+        ]
+      },
+      "debriefing": {
+        "victory": "Catastrophe of crusader army! Sigismund's men fled across frozen Sázava and ice broke beneath them. Dozens of knights drowned in their armor. 500 wagons of provisions fell into your hands. 2nd crusade ends in complete debacle.",
+        "defeat": "Sigismund escaped! Most of his army crossed Sázava and burned bridge behind them. Loot is minimal and next crusade will come much sooner."
+      }
+    },
+    "most_1421": {
+      "name": "Battle of Most",
+      "description": "Želivský's unsuccessful siege of Hněvín castle. Praguers besiege, but help comes from south.",
+      "historicalSignificance": "First major Hussite defeat. Showed that without Žižka and without wagon fort Hussites lose.",
+      "briefing": {
+        "hussites": "Hněvín castle is almost ours! Garrison offered capitulation, but Želivský refused. You have two goals: capture castle OR block city gate from which reinforcements may come. You don't have enough men for both - decide!",
+        "crusaders": "Hold castle at all costs! Margrave Frederick's reinforcements are on way. Most townsmen will sally from gate and strike Hussites in flank."
+      },
+      "events": [
+        {"message": "Želivský: 'No mercy for traitors! We'll take castle by force!'"},
+        {"message": "Castle garrison defends stubbornly. Noise comes from city..."},
+        {"message": "Most townsmen sally from city gate! Flank attack!"},
+        {"message": "You must decide - continue attack on castle, or turn around?"},
+        {"message": "Meissen banners on horizon! Margrave Frederick comes with reinforcements!"},
+        {"message": "Attack on castle now very risky. Consider alternative goal."},
+        {"message": "Time running out! Hold gate, or capture castle!"},
+        {"message": "Last chance! Either fulfill goal, or all is lost."}
+      ],
+      "objectives": {
+        "primary": "Fulfill ONE goal: Capture Hněvín castle OR keep city gate blocked",
+        "secondary": [
+          "Fulfill BOTH goals",
+          "Želivský survives",
+          "Save howitzer",
+          "Fewer than 5 lost units"
+        ]
+      },
+      "debriefing": {
+        "victory": "Hněvín castle is yours! Combination of castle capture and city gate blocking paid off. Most is under Hussite control and way to Saxony is open for future Beautiful Rides.",
+        "defeat": "Most townsmen and castle garrison held their positions. Hussite attack failed and army must retreat. Northwestern Bohemia remains in enemy hands."
+      }
+    },
+    "usti_1426": {
+      "name": "Battle of Ústí nad Labem",
+      "description": "Bloodiest defeat of crusaders. Hussites with double wagon fort decimate attacking Saxons.",
+      "historicalSignificance": "Last major frontal attack on wagon fort. Crusader losses: 4,000, Hussite: 30.",
+      "briefing": {
+        "hussites": "Build double wagon fort on Na Běhání hill. Let enemy come to you and destroy them with fire.",
+        "crusaders": "Break through Hussite fortifications and liberate besieged Ústí nad Labem."
+      },
+      "events": [
+        {"message": "Saxon army begins attack in unbearable heat!"},
+        {"message": "'They're running! Germans running!' - crusaders flee!"}
+      ],
+      "objectives": {
+        "primary": "Hold wagon fort and destroy 50% of crusaders",
+        "secondary": [
+          "Destroy 75% of enemies (historical result)"
+        ]
+      },
+      "debriefing": {
+        "victory": "Massacre at Na Běhání! 4,000 crusaders fell, while Hussites lost only 30 men. Double wagon fort proved insurmountable obstacle. Saxon duchy is decimated and will never send army against Hussites again.",
+        "defeat": "Saxon cavalry broke through your fort! Catastrophic Hussite defeat changes balance of power. Without wagon fort you're defenseless against heavy cavalry."
+      }
+    },
+    "tachov_1427": {
+      "name": "Battle of Tachov",
+      "description": "Third crusade ends in flight. Crusaders flee before Hussites without daring to fight.",
+      "historicalSignificance": "Psychological victory of Hussites - their reputation alone suffices to defeat crusaders. Cardinal Beaufort tears imperial banners.",
+      "briefing": {
+        "hussites": "Crusaders unsuccessfully besieged Stříbro and now withdraw toward Tachov. Approach quickly and exploit their demoralization. Pursue fleeing and capture Tachov!",
+        "crusaders": "Hussites approach! Your army is demoralized after unsuccessful siege of Stříbro. Try to organize defense, or retreat to Bavarian borders."
+      },
+      "events": [
+        {"message": "Hussite army approaches from Stříbro! 16,000 infantry and 1,500 cavalry under Prokop the Great."},
+        {"text": "Jindřich of Plaveň's cavalry returns without fight - refused to attack Hussites!"},
+        {"text": "Entire crusader detachments abandon camp and flee toward borders!"},
+        {"message": "Cardinal Beaufort vainly tries to stop fleeing soldiers."},
+        {"text": "Beaufort in anger tears imperial banners and throws them at princes' feet!"},
+        {"text": "Remnants of crusader army take flight toward Bavarian borders!"},
+        {"message": "Hussites find abandoned crusader camp full of supplies and weapons."}
+      ],
+      "objectives": {
+        "primary": "Destroy or rout 50% of crusader army",
+        "secondary": [
+          "Capture Tachov city",
+          "Destroy 75% of enemies before their escape"
+        ]
+      },
+      "debriefing": {
+        "victory": "Third crusade ends in complete debacle! Crusaders fled without daring to fight. Cardinal Beaufort in desperation tore imperial banners. Few days later Hussites capture Tachov - August 11 city and August 14 castle. Prokop the Great becomes most powerful man in Bohemia.",
+        "defeat": "Crusaders managed to overcome fear and organize defense. Hussite reputation of invincibility got crack. Tachov remains in enemy hands."
+      }
+    },
+    "nisa_1428": {
+      "name": "Battle of Nysa",
+      "description": "Beautiful Ride into Silesia. Hussites crushingly defeat Silesian army before Nysa walls.",
+      "historicalSignificance": "Only major battle of Silesian raid. After this victory cities surrendered without fight or paid tribute.",
+      "briefing": {
+        "hussites": "After successful raid into Hungary we continue to Silesia. Before Nysa walls awaits us army of Wrocław bishop. Crush them and burn suburbs!",
+        "crusaders": "Hussites march on Nysa! Gather peasants and townsmen for defense. City must be defended at all costs!"
+      },
+      "events": [
+        {"message": "Hussite army advances with wagons and guns against Nysa defenders!"},
+        {"message": "Peasants and villagers resist Hussites before suburbs."},
+        {"text": "Silesian detachments begin retreating under pressure of Hussite attack!"},
+        {"message": "Půta of Častolovic tries to organize defense at walls."},
+        {"text": "Defenders flee in panic - many die in river Nysa!"},
+        {"message": "Hussites burn suburbs and attack walls!"}
+      ],
+      "objectives": {
+        "primary": "Destroy 60% of Silesian army",
+        "secondary": [
+          "Burn suburbs (capture positions)",
+          "Destroy 80% of enemies (2,000 fallen)"
+        ]
+      },
+      "debriefing": {
+        "victory": "Crushing victory! Silesian army scattered, about two thousand defenders fell or drowned in river Nysa. Suburbs in flames. Půta of Častolovic held city, but no Silesian city dares oppose Hussites anymore. Beautiful Ride continues - cities surrender or pay tribute.",
+        "defeat": "Silesian defense held. Půta of Častolovic successfully defended Nysa. Beautiful Ride must continue elsewhere and Hussite reputation of invincibility suffered crack."
+      }
+    },
+    "domazlice_1431": {
+      "name": "Battle of Domažlice",
+      "description": "Greatest Hussite victory. Mere sound of Hussite choral causes crusader army flight.",
+      "historicalSignificance": "Crusaders flee upon hearing 'Ktož jsú boží bojovníci'. End of fourth crusade.",
+      "briefing": {
+        "hussites": "You approach Domažlice at fast march. Crusaders panic - sing choral and pursue fleeing!",
+        "crusaders": "Hussites approach! Try to form defense, or at least safely retreat to Bavaria."
+      },
+      "events": [
+        {"message": "Hussite army covered 80 km in 2 days and approaches Domažlice!"},
+        {"text": "Scouts report: Hussites closer than we expected!"},
+        {"text": "Sound of choral terrifies crusaders!"},
+        {"text": "Crusaders hear Hussite choral and fall to fear!"},
+        {"message": "Cardinal Cesarini flees and loses cardinal hat!"},
+        {"text": "Panic spreads through crusader camp!"},
+        {"text": "Entire crusader army takes flight!"}
+      ],
+      "objectives": {
+        "primary": "Cause flight of crusader army (destroy 60%)",
+        "secondary": [
+          "Capture Domažlice"
+        ]
+      },
+      "debriefing": {
+        "victory": "Glorious victory! Mere sound of 'Ktož jsú boží bojovníci' caused panic flight of crusader army. 4th crusade ends in absolute debacle - crusaders flee without attempting fight. This is peak of Hussite glory!",
+        "defeat": "Crusaders overcame their fear and formed defense. Despite your choral they didn't collapse. Hussite reputation of invincibility is shaken."
+      }
+    },
+    "oblehani_plzne_1433": {
+      "name": "Siege of Plzeň",
+      "description": "General assault on Catholic Plzeň. Nine months of siege culminates in attempt to breach walls.",
+      "historicalSignificance": "Greatest Hussite failure. Plzeň resisted almost year and received camel in coat of arms.",
+      "briefing": {
+        "hussites": "After months of siege time for decisive assault! Break through walls and capture city. Prokop the Great watches from rear - mustn't fail!",
+        "crusaders": "Hussites prepare general assault! Vilém Švihovský of Rýzmburk leads defense. Hold walls at all costs!"
+      },
+      "events": [
+        {"message": "Hussite bombards begin firing on Plzeň walls!"},
+        {"message": "Defenders shelter behind battlements. Vilém Švihovský encourages garrison."},
+        {"message": "First cracks appear in walls!"},
+        {"message": "Jan Pardus of Horka leads Taborite infantry into assault!"},
+        {"message": "Defenders pour hot pitch and stones on attackers."},
+        {"message": "Bloody fights at walls! Hussites try to break through defense."},
+        {"message": "Vilém Švihovský leads sally from gates! Attackers surprised!"},
+        {"text": "Defenders' morale grows! Captured Hussite camel!"},
+        {"message": "Last chance for breakthrough! Prokop the Great sends reserves."},
+        {"message": "Hussite losses too high. Some soldiers desert."}
+      ],
+      "objectives": {
+        "primary": "Occupy at least 3 positions inside city walls",
+        "secondary": [
+          "Destroy 70% of defenders",
+          "Kill Vilém Švihovský"
+        ]
+      },
+      "debriefing": {
+        "victory": "Incredible success! Plzeň walls fell after nine months of siege. Prokop the Great triumphs and Catholic bastion in western Bohemia is captured. History changes - without Plzeň moderates lose key ally and radicals strengthen their power.",
+        "defeat": "Plzeň held! Despite months of siege and repeated assaults walls held. Hussites suffered heavy losses and must withdraw. This fiasco weakens Prokop the Great and strengthens his opponents. Plzeň will receive camel in coat of arms from Emperor Sigismund for its bravery."
+      }
+    },
+    "lipany_1434": {
+      "name": "Battle of Lipany",
+      "description": "Fratricidal battle between Hussites. Moderate Utraquists and Catholics defeat radical Taborites and Orphans.",
+      "historicalSignificance": "End of Hussite Wars. Death of Prokop the Great. Victory of moderates.",
+      "briefing": {
+        "hussites": "As commander of radicals you must repel attack by moderates. Beware their trap - feigned retreat!",
+        "crusaders": "You lead coalition of moderates. Use feigned retreat, lure radicals from wagon fort and strike from flank with cavalry."
+      },
+      "events": [
+        {"message": "Fratricidal battle begins..."},
+        {"message": "Moderates begin attack on wagon fort!"},
+        {"message": "Attack fails - infantry retreats in disorder!"},
+        {"message": "Warning! Noble cavalry charges from ambush!"},
+        {"message": "Prokop the Great fell in battle!"}
+      ],
+      "objectives": {
+        "primary": "Hold wagon fort and destroy 50% of coalition",
+        "secondary": [
+          "Kill Diviš Bořek"
+        ]
+      },
+      "debriefing": {
+        "victory": "Prokop the Great discovered moderates' trap in time! Radicals stayed in wagon fort and repelled feigned retreat. Coalition of moderates defeated and radical Hussitism survives. History written differently...",
+        "defeat": "Tragedy at Lipany. Radicals believed feigned retreat and ran from wagon fort. Moderate cavalry struck from flank. Prokop the Great fell and with him hope of radical Hussitism. Hussite Wars end with defeat of those who began them."
+      }
+    },
+    "sion_1437": {
+      "name": "Siege of Sion Castle",
+      "description": "Last resistance of Hussitism. Jan Roháč of Dubá defends his small castle against royal superiority.",
+      "historicalSignificance": "End of Hussite Wars. After fall of Sion, 52 defenders were executed in Prague including Jan Roháč.",
+      "briefing": {
+        "hussites": "You're Jan Roháč of Dubá, last unconquered Hussite commander. You resisted siege for four months, but now Hungarian reinforcements arrived. Defend Sion to last man!",
+        "crusaders": "King Sigismund loses patience. With Hungarian reinforcements finally capture that cursed castle and take Roháč alive!"
+      },
+      "reinforcements": {
+        "crusaders": "Hungarian reinforcements of Michal Országh arrived!"
+      },
+      "events": [
+        {"message": "Four months of siege. Ptáček hesitates with decisive assault - Roháč is his uncle..."},
+        {"message": "Defenders suffer from lack of water. Well missing in castle!"},
+        {"message": "King Sigismund loses patience. Sends Hungarian army!"},
+        {"message": "Michal Országh brings Hungarian knights! Situation desperate."},
+        {"text": "Hungarian knights encourage royal army to decisive assault!"},
+        {"message": "Walls crumble under gun fire! Hold on!"},
+        {"text": "Some defenders lose hope. Jan Roháč encourages them to fight!"},
+        {"message": "Enemy penetrates through trenches!"},
+        {"message": "Walls fell! Man-to-man fight in castle ruins."},
+        {"message": "It's over... But memory of Sion will never die."}
+      ],
+      "objectives": {
+        "primary": "Hold castle 12 turns (until dusk)",
+        "secondary": [
+          "Destroy 40% of attackers",
+          "Jan Roháč survives"
+        ]
+      },
+      "debriefing": {
+        "victory": "Incredible! Jan Roháč and his faithful held until dusk. Under cover of night part of garrison escaped. Roháč lives and becomes legend - symbol of unbroken resistance. Hussite spirit will never die!",
+        "defeat": "Sion castle fell. Jan Roháč was captured during lunch, not expecting such rapid Hungarian attack. Together with 52 defenders he was taken to Prague. On September 9, 1437 they were all executed in Old Town Square. Roháč hung highest - on golden chain. Hussite Wars ended on gallows."
+      }
+    },
+    "horice_1423": {
+      "name": "Battle of Hořice",
+      "description": "Žižka and Diviš Bořek with Orebite infantry and cavalry face Catholic nobility on Gothard hill. Battle without wagon fort - pure field battle.",
+      "historicalSignificance": "Decisive defeat of Catholic nobility in northeastern Bohemia. Hussites captured Catholic wagons and guns.",
+      "briefing": {
+        "hussites": "Take advantageous position on Gothard hill. You have no wagons, but hill provides natural defense. Catholic nobility under Čeněk of Wartenberg approaches with cavalry superiority. Use terrain and firearms!",
+        "crusaders": "Hussite heretics fortified on hill without wagons. You have numerical superiority in cavalry - crush them before they form up!"
+      },
+      "events": [
+        {"message": "Žižka: 'Up the hill! Hold slopes, shooters forward!'"},
+        {"message": "Catholic nobility forms for attack at foot of hill."},
+        {"message": "Čeněk of Wartenberg: 'Forward! Crush heretics!'"},
+        {"message": "Heavy cavalry hits Hussite infantry! Attack stalls on steep slope."},
+        {"text": "Cavalry can't overcome steep slope and pikes!"},
+        {"message": "Hussite howitzers and shooters mow down attackers!"},
+        {"message": "Arnošt Flaška fell in battle!"},
+        {"text": "Death of Arnošt Flaška shook Catholics."},
+        {"message": "Žižka: 'Now! Forward, for the chalice!'"},
+        {"message": "Catholics take flight! Čeněk flees with handful of men!"},
+        {"message": "All Catholic wagons and guns captured!"},
+        {"message": "Čeněk of Wartenberg fled. Hussite victory complete."}
+      ],
+      "objectives": {
+        "primary": "Destroy 60% of Catholic army",
+        "secondary": [
+          "Hold Gothard hill throughout battle"
+        ]
+      },
+      "debriefing": {
+        "victory": "Decisive victory on Gothard! Orebites under Žižka and Diviš Bořek proved they can defeat cavalry superiority even without wagon fort. Čeněk of Wartenberg lost all wagons and guns which Hussites captured. Catholic nobility in northeastern Bohemia is broken.",
+        "defeat": "Catholic superiority broke through. Gothard hill fell and with it hope of holding eastern Bohemia. Hussite forces scattered and Čeněk of Wartenberg celebrates victory."
+      }
+    },
+    "malesov_1424": {
+      "name": "Battle of Malešov",
+      "description": "Žižka's masterpiece. Blind hetman uses terrain for crushing defeat of anti-Hussite coalition.",
+      "historicalSignificance": "Bloodiest battle of Hussite Wars. 1,200 coalition soldiers fell versus 200 Hussites. Žižka became most powerful man in Bohemia.",
+      "briefing": {
+        "hussites": "Anti-Žižka coalition caught up with you at Malešov. Use slope above Bohynka stream valley. Enemy has numerical superiority, but terrain is on your side!",
+        "crusaders": "We finally caught up with Žižka! He has fewer men. We'll surge into valley and crush heretics once and for all!"
+      },
+      "events": [
+        {"message": "Jan Roháč: 'Lord hetman, we have good slope above valley. Bohynka stream covers our center.'"},
+        {"message": "Jan Hvězda: 'I know these places. Valley narrow - enemy won't be able to deploy.'"},
+        {"message": "Čeněk of Wartenberg: 'Attack! We'll crush blind man once and for all!'"},
+        {"message": "Heavy cavalry enters narrow valley... Ranks crowd!"},
+        {"text": "Cavalry loses momentum in swampy valley!"},
+        {"message": "Howitzers and hand cannons fire into packed enemy ranks!"},
+        {"message": "Coalition losses mount! Valley colors with blood!"},
+        {"text": "Coalition army loses courage in murderous fire."},
+        {"message": "Žižka: 'Now! Down the hill! For God's truth!'"},
+        {"message": "Hussite cavalry and infantry rush down slope at disoriented enemy!"},
+        {"text": "Attack from hill! +15% to attack of Hussite units."},
+        {"message": "Coalition collapses! Men flee toward Malešov!"},
+        {"message": "Čeněk of Wartenberg: 'Back! Everyone back!' Rear lines didn't even enter battle."},
+        {"message": "1,200 coalition soldiers fell. Hussites lost only 200 men."},
+        {"message": "Žižka controls battlefield. Road to Kutná Hora open!"}
+      ],
+      "objectives": {
+        "primary": "Destroy 55% of coalition army",
+        "secondary": [
+          "Hold command position on slope",
+          "Jan Žižka must survive",
+          "Lose less than 30% own units"
+        ]
+      },
+      "debriefing": {
+        "victory": "Brilliant victory of blind commander! Žižka used terrain and discipline of his men for crushing defeat of coalition of Praguers and Catholics. 1,200 coalition soldiers fell, while Hussites lost only 200 men. Road to Kutná Hora open!",
+        "defeat": "Coalition overcame Žižka's defense. Taborites and Orphans suffered heavy losses. Blind commander lost reputation of invincibility and Hussite movement divided again."
+      }
+    }
+  }
+}
