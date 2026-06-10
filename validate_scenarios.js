@@ -22,6 +22,13 @@ if (!scenariosCode.includes('module.exports')) {
     scenariosCode += '\nif (typeof module !== "undefined" && module.exports) { module.exports = { Scenarios }; }';
 }
 
+// Načtení battle lore (kontrola pokrytí scénářů)
+const battleLorePath = path.join(__dirname, 'js/data/battleLore.js');
+let battleLoreCode = fs.readFileSync(battleLorePath, 'utf8');
+if (!battleLoreCode.includes('module.exports')) {
+    battleLoreCode += '\nif (typeof module !== "undefined" && module.exports) { module.exports = { BattleLore }; }';
+}
+
 // Vytvoření dočasných souborů
 const tmpDir = path.join(__dirname, '.tmp');
 if (!fs.existsSync(tmpDir)) {
@@ -30,17 +37,21 @@ if (!fs.existsSync(tmpDir)) {
 
 const tmpUnitTypesPath = path.join(tmpDir, 'unitTypes.js');
 const tmpScenariosPath = path.join(tmpDir, 'scenarios.js');
+const tmpBattleLorePath = path.join(tmpDir, 'battleLore.js');
 
 fs.writeFileSync(tmpUnitTypesPath, unitTypesCode);
 fs.writeFileSync(tmpScenariosPath, scenariosCode);
+fs.writeFileSync(tmpBattleLorePath, battleLoreCode);
 
 // Načtení modulů
 const { UnitTypes } = require(tmpUnitTypesPath);
 const { Scenarios } = require(tmpScenariosPath);
+const { BattleLore } = require(tmpBattleLorePath);
 
 // Smazání dočasných souborů
 fs.unlinkSync(tmpUnitTypesPath);
 fs.unlinkSync(tmpScenariosPath);
+fs.unlinkSync(tmpBattleLorePath);
 fs.rmdirSync(tmpDir);
 
 // Victory condition types implementované v VictoryConditionsSystem.js
@@ -80,6 +91,59 @@ const implementedDefeatTypes = [
     'lose_positions',
     'lose_percent'
 ];
+
+// Typy fázových eventů implementované v Game.processEvent
+// (event bez type je čistá zpráva - vždy validní)
+const implementedEventTypes = [
+    'message',
+    'reinforcement',
+    'terrain_change',
+    'morale',
+    'activate_choral',
+    'panic',
+    'rout',
+    'trench_bonus',
+    'dismount',
+    'tutorial',
+    'morale_boost',
+    'morale_drop',
+    'cavalry_charge_blocked',
+    'wagon_bonus',
+    'terrain_penalty',
+    'charge_bonus',
+    'massacre'
+];
+
+// Typy podmínek eventů implementované v ScenarioManager.checkEventCondition
+// (neznámá podmínka se tiše vyhodnotí jako splněná - default: return true)
+const implementedEventConditionTypes = [
+    'units_in_area',
+    'no_units_in_area',
+    'faction_losses_percent',
+    'units_routing'
+];
+
+// Hexová vzdálenost na odd-q offsetových souřadnicích (stejně jako hex.js)
+function hexDistance(c1, r1, c2, r2) {
+    const toCube = (col, row) => {
+        const x = col;
+        const z = row - (col - (col & 1)) / 2;
+        return { x, z, y: -x - z };
+    };
+    const a = toCube(c1, r1);
+    const b = toCube(c2, r2);
+    return Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y), Math.abs(a.z - b.z));
+}
+
+// Má scénář lore záznam? (stejná normalizace jako getBattleLore)
+function hasLore(scenarioId) {
+    const norm = s => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+    const nid = norm(scenarioId);
+    return Object.keys(BattleLore).some(key => {
+        const nkey = norm(key);
+        return nid.includes(nkey) || nkey.includes(nid);
+    });
+}
 
 // Validační funkce
 function validateScenario(scenario) {
@@ -233,6 +297,97 @@ function validateScenario(scenario) {
         }
     }
 
+    // 7. Velitelské podmínky vyžadují nasazeného velitele
+    // (every() na prázdné množině velitelů je splní automaticky)
+    const playerFaction = scenario.playerFaction || 'hussites';
+    const enemySide = playerFaction === 'hussites' ? 'crusaders' : 'hussites';
+    const sideHasCommander = (side) => (scenario.forces[side].units || []).some(u => {
+        const t = UnitTypes[u.type.toUpperCase()];
+        return t && t.unitClass === 'commander';
+    });
+
+    const commanderKillTypes = ['kill_commander', 'eliminate_commander', 'kill_commander_alt'];
+    const allConditions = [];
+    if (scenario.victoryConditions) {
+        if (scenario.victoryConditions.primary) allConditions.push(scenario.victoryConditions.primary);
+        if (scenario.victoryConditions.secondary) allConditions.push(...scenario.victoryConditions.secondary);
+    }
+    for (const cond of allConditions) {
+        if (commanderKillTypes.includes(cond.type) && !sideHasCommander(enemySide)) {
+            errors.push(`Podmínka '${cond.type}' vyžaduje velitele na straně ${enemySide}, ale žádný není nasazen - podmínka by byla splněna automaticky`);
+        }
+        if (cond.type === 'survive_commander' && !sideHasCommander(playerFaction)) {
+            errors.push(`Podmínka 'survive_commander' vyžaduje velitele na straně hráče (${playerFaction}), ale žádný není nasazen`);
+        }
+    }
+    if (scenario.defeatConditions && scenario.defeatConditions.primary &&
+        scenario.defeatConditions.primary.type === 'commander_death' && !sideHasCommander(playerFaction)) {
+        errors.push(`Defeat podmínka 'commander_death' vyžaduje velitele na straně hráče (${playerFaction}), ale žádný není nasazen`);
+    }
+
+    // 8. Typy fázových eventů a jejich podmínek musí být implementované
+    if (scenario.phases) {
+        for (const phase of scenario.phases) {
+            for (const event of (phase.events || [])) {
+                if (event.type && !implementedEventTypes.includes(event.type)) {
+                    errors.push(`Event typ '${event.type}' (fáze ${phase.id}) není implementovaný v processEvent - event se tiše zahodí`);
+                }
+                if (event.condition && event.condition.type &&
+                    !implementedEventConditionTypes.includes(event.condition.type)) {
+                    errors.push(`Podmínka eventu '${event.condition.type}' (fáze ${phase.id}) není implementovaná - vyhodnotí se vždy jako splněná`);
+                }
+            }
+        }
+    }
+
+    // 9. Proveditelnost capture_position s holdTurns
+    // Optimistický odhad: nejrychlejší jednotka vzdušnou čarou. Pokud cíl
+    // nelze splnit ani takhle, je matematicky nesplnitelný.
+    const maxTurns = scenario.maxTurns || 99;
+    const playerStartUnits = scenario.forces[playerFaction].units || [];
+    const checkHoldFeasible = (obj, label) => {
+        if (!obj.positions || !obj.holdTurns) return;
+        let earliestArrival = Infinity;
+        for (const pos of obj.positions) {
+            for (const u of playerStartUnits) {
+                const t = UnitTypes[u.type.toUpperCase()];
+                if (!t || !t.movement) continue;
+                const dist = hexDistance(u.col, u.row, pos[0], pos[1]);
+                const arrival = Math.max(1, Math.ceil(dist / t.movement));
+                if (arrival < earliestArrival) earliestArrival = arrival;
+            }
+        }
+        if (earliestArrival !== Infinity && obj.holdTurns > maxTurns - earliestArrival + 1) {
+            errors.push(`${label}: holdTurns=${obj.holdTurns} je nesplnitelné - pozici lze obsadit nejdřív v kole ${earliestArrival} při maxTurns=${maxTurns} (max. držení ${maxTurns - earliestArrival + 1} kol)`);
+        }
+    };
+    for (const cond of allConditions) {
+        if (cond.type === 'capture_position') {
+            checkHoldFeasible(cond, `Podmínka capture_position`);
+        }
+        if (cond.type === 'dual_objective' && cond.objectives) {
+            for (const obj of cond.objectives) {
+                checkHoldFeasible(obj, `Objective '${obj.id}'`);
+            }
+        }
+    }
+
+    // 10. Lore pokrytí (warning - hra funguje, jen chybí lore panel)
+    if (scenario.id && !hasLore(scenario.id)) {
+        warnings.push(`Scénář nemá záznam v battleLore.js - lore panel bude prázdný`);
+    }
+
+    // 11. Frakce šablony vs. strana scénáře (warning - engine frakci
+    // přepíše podle strany, ale ať si autor všimne nechtěného zařazení)
+    for (const side of ['hussites', 'crusaders']) {
+        for (const u of (scenario.forces[side].units || [])) {
+            const t = UnitTypes[u.type.toUpperCase()];
+            if (t && t.faction && t.faction !== side) {
+                warnings.push(`Jednotka ${u.type} (šablona '${t.faction}') je nasazena na straně '${side}' - engine frakci přepíše, zkontroluj záměr`);
+            }
+        }
+    }
+
     // 6. Balance check (včetně reinforcements)
     let hussitesCost = 0;
     let crusadersCost = 0;
@@ -379,6 +534,14 @@ for (const [id, scenario] of Object.entries(Scenarios)) {
         });
     } else {
         console.log(`\n   ✅ Žádné chyby`);
+    }
+
+    // Varování
+    if (result.warnings.length > 0) {
+        console.log(`\n   ⚠️  Varování (${result.warnings.length}):`);
+        result.warnings.forEach((warn, idx) => {
+            console.log(`     ${idx + 1}. ${warn}`);
+        });
     }
 }
 
