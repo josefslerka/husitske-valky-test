@@ -529,6 +529,113 @@ class Game {
                 }
                 break;
 
+            case 'tutorial':
+                // Pozůstatek tutoriálových TIPů ve scénářích - jen zobrazit text
+                if (event.text) {
+                    this.showEventNotification('💡 TIP', event.text);
+                }
+                break;
+
+            case 'morale_boost':
+            case 'morale_drop':
+                // Plošná změna morálky frakce. Boost má v datech "modifier"
+                // v bodech morálky (15, 20), drop má "amount" v malých
+                // jednotkách (2, 3) - škálujeme ×5 jako stávající event 'morale'
+                {
+                    const faction = event.faction || 'crusaders';
+                    const change = event.type === 'morale_boost'
+                        ? (event.modifier || (event.amount || 2) * 5)
+                        : -((event.amount || 2) * 5);
+                    for (const unit of this.units) {
+                        if (unit.faction === faction && unit.health > 0 && unit.morale !== undefined) {
+                            unit.morale = Math.max(0, Math.min(100, unit.morale + change));
+                        }
+                    }
+                    if (event.text) {
+                        this.showEventNotification('Morálka', event.text);
+                    }
+                }
+                break;
+
+            case 'cavalry_charge_blocked':
+                // Jízda ztrácí bonus nárazu (vozová hradba, svah, sudlice)
+                {
+                    const faction = event.faction || 'crusaders';
+                    let blocked = 0;
+                    for (const unit of this.units) {
+                        if (unit.faction === faction && unit.health > 0 &&
+                            unit.isCavalry && unit.isCavalry() && unit.special === 'charge') {
+                            unit.special = null;
+                            blocked++;
+                        }
+                    }
+                    if (event.text) {
+                        this.showEventNotification('Útok jízdy zastaven', event.text);
+                    }
+                    if (blocked > 0) {
+                        this.addLog(`${blocked} jízdních jednotek ztratilo bonus nárazu!`, 'combat');
+                    }
+                }
+                break;
+
+            case 'wagon_bonus':
+                // Bonus obrany jednotkám sousedícím s vlastním vozem
+                {
+                    const faction = event.faction || 'hussites';
+                    let boosted = 0;
+                    for (const unit of this.units) {
+                        if (unit.faction !== faction || unit.health <= 0) continue;
+                        if (unit.isWagon && unit.isWagon()) continue;
+                        const nearWagon = this.hexGrid.getNeighbors(unit.col, unit.row).some(n => {
+                            const u = this.getUnitAt(n.col, n.row);
+                            return u && u.faction === faction && u.health > 0 && u.isWagon && u.isWagon();
+                        });
+                        if (nearWagon) {
+                            unit.defense += 3;
+                            boosted++;
+                        }
+                    }
+                    if (event.text) {
+                        this.showEventNotification('Vozová hradba', event.text);
+                    }
+                    if (boosted > 0) {
+                        this.addLog(`${boosted} jednotek za vozy získává +3 k obraně!`, 'turn');
+                    }
+                }
+                break;
+
+            case 'terrain_penalty':
+                // Jízda frakce ztrácí pohyb (bažina, rozbahněné údolí)
+                {
+                    const faction = event.faction || 'crusaders';
+                    for (const unit of this.units) {
+                        if (unit.faction === faction && unit.health > 0 &&
+                            unit.isCavalry && unit.isCavalry()) {
+                            unit.movement = Math.max(1, unit.movement - 1);
+                        }
+                    }
+                    if (event.text) {
+                        this.showEventNotification('Terén', event.text);
+                    }
+                }
+                break;
+
+            case 'charge_bonus':
+                // Procentní bonus k útoku frakce (např. útok z kopce)
+                {
+                    const faction = event.faction || 'hussites';
+                    const percent = event.amount || 10;
+                    for (const unit of this.units) {
+                        if (unit.faction === faction && unit.health > 0) {
+                            unit.attack = Math.round(unit.attack * (1 + percent / 100));
+                        }
+                    }
+                    if (event.text) {
+                        this.showEventNotification('Útok!', event.text);
+                    }
+                }
+                break;
+
             case 'massacre':
                 // Routující jednotky v oblasti dostanou těžké ztráty
                 {
@@ -558,6 +665,15 @@ class Game {
                     }
                     this.render();
                 }
+                break;
+
+            default:
+                // Neznámý typ eventu - zobraz aspoň vyprávění, ať se text
+                // tiše neztratí, a upozorni do konzole
+                if (event.text || event.message) {
+                    this.showEventNotification(event.title || 'Událost', event.text || event.message);
+                }
+                console.warn(`Neimplementovaný typ eventu: ${event.type}`);
                 break;
         }
     }
