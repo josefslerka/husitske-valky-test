@@ -1490,6 +1490,18 @@ class Game {
             return; // Jednotka unikla, nepokračujeme
         }
 
+        // Overwatch: nepřátelští střelci, kteří drželi pozici i palbu,
+        // reagují na pohyb v dostřelu
+        this.triggerOverwatch(unit);
+        if (unit.health <= 0) {
+            // Jednotku srazila reakční palba - nepokračujeme
+            this.deselectUnit();
+            this.updateUnitPanel(null);
+            this.render();
+            this.victoryConditionsSystem.checkVictory();
+            return;
+        }
+
         // Pokud může ještě útočit, zobrazíme cíle
         if (unit.canAttack()) {
             this.hexGrid.setSelected(unit.col, unit.row);
@@ -1508,6 +1520,38 @@ class Game {
         this.updateUnitPanel(unit);
         this.render();
         this.victoryConditionsSystem.checkVictory();
+    }
+
+    // Overwatch (krycí palba): střelci s dosahem 2+, kteří ve svém tahu
+    // nehnuli ani nevystřelili, automaticky pálí na nepřítele, který se
+    // pohne v jejich dostřelu. Zadržený výstřel - canAttack() hlídá,
+    // že jednotka střílí jen jednou za kolo (aktivně NEBO reakčně).
+    // Síla vozové hradby: přiblížit se k ní něco stojí už cestou.
+    triggerOverwatch(movedUnit) {
+        if (!movedUnit || movedUnit.health <= 0) return;
+
+        const watcherFaction = movedUnit.faction === 'hussites' ? 'crusaders' : 'hussites';
+        const watchers = this.units.filter(u =>
+            u.faction === watcherFaction &&
+            u.health > 0 &&
+            u.range >= 2 &&
+            !u.hasMoved &&
+            u.canAttack()
+        );
+
+        for (const watcher of watchers) {
+            if (movedUnit.health <= 0) break; // cíl už padl
+
+            const dist = this.hexGrid.getDistance(watcher.col, watcher.row, movedUnit.col, movedUnit.row);
+            if (dist < 1 || dist > watcher.range) continue;
+
+            // Mlha války: na neviditelný cíl se nestřílí
+            if (watcher.faction === 'hussites' &&
+                !this.fogOfWarSystem.isEnemyVisible(movedUnit)) continue;
+
+            this.addLog(i18n.t('gameLog.overwatchFire', { unit: watcher.name, target: movedUnit.name }), 'combat');
+            this.combatSystem.performAttack(watcher, movedUnit);
+        }
     }
 
     // Kontrola, zda jednotka vstoupila do escape zóny

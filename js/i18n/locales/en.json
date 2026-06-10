@@ -2876,6 +2876,7 @@
   },
   "gameLog": {
     "selectAttackTarget": "Click a highlighted hex to choose an attack target.",
+    "overwatchFire": "⚡ Covering fire! {unit} shoots at the advancing {target}!",
     "gameStart": "Game started. Hussites begin.",
     "hussitesStart": "Hussites begin.",
     "crusadersStart": "Crusaders begin.",

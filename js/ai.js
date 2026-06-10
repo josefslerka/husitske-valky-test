@@ -555,9 +555,10 @@ const AI = {
                     // Charge útok - pohyb a pak útok
                     game.addLog(i18n.t('gameLog.aiCharging', { unitName: unit.name }), 'combat');
                     game.moveUnit(unit, action.col, action.row);
-                    // Útok po krátkém zpoždění
+                    // Útok po krátkém zpoždění (jednotku mohla mezitím
+                    // srazit overwatch palba - mrtvý neútočí)
                     setTimeout(() => {
-                        if (unit.canAttack() && action.followUpAttack.health > 0) {
+                        if (unit.health > 0 && unit.canAttack() && action.followUpAttack.health > 0) {
                             game.combatSystem.performAttack(unit, action.followUpAttack);
                         }
                     }, 400);

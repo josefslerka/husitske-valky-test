@@ -272,6 +272,7 @@
   },
   "gameLog": {
     "selectAttackTarget": "Vyber cíl útoku kliknutím na zvýrazněný hex.",
+    "overwatchFire": "⚡ Krycí palba! {unit} pálí na postupující jednotku {target}!",
     "gameStart": "Hra zahájena. Husité začínají.",
     "hussitesStart": "Husité začínají.",
     "crusadersStart": "Křižáci začínají.",
