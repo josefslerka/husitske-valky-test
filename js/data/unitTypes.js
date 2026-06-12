@@ -307,7 +307,7 @@ const UnitTypes = {
         attack: 25,
         defense: 40,
         range: 2,
-        movement: 2,
+        movement: 1,
         cost: 120,
         description: 'Opevněný vůz. Tvoří vozovou hradbu s dalšími vozy.',
         special: 'wagenburg', // Bonus když jsou vozy vedle sebe
