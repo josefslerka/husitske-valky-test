@@ -3753,10 +3753,41 @@ body {
    =============================================== */
 
 .gameover-modal-content {
-    min-width: 300px;
-    max-width: 360px;
+    min-width: 320px;
+    max-width: 760px;
+    width: auto;
     text-align: center;
-    padding: 15px 20px;
+    padding: 15px 22px;
+}
+
+/* Dvousloupcové tělo obrazovky konce bitvy (na šířku) */
+.gameover-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    align-items: start;
+    margin-bottom: 10px;
+}
+
+.gameover-col {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 0;
+}
+
+/* Bloky uvnitř sloupců už nemají vlastní spodní mezeru - řeší gap */
+.gameover-col .gameover-stats,
+.gameover-col .gameover-trivia,
+.gameover-col #gameover-secondary-objectives {
+    margin-bottom: 0;
+}
+
+/* Na úzké obrazovce zpět na jeden sloupec */
+@media (max-width: 640px) {
+    .gameover-columns {
+        grid-template-columns: 1fr;
+    }
 }
 
 #gameover-banner {
@@ -3977,9 +4008,11 @@ body {
 
 .gameover-buttons {
     display: flex;
-    flex-direction: column;
-    gap: 8px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
     align-items: center;
+    justify-content: center;
 }
 
 .gameover-buttons .menu-btn {

@@ -18,7 +18,7 @@
     <meta property="twitter:title" content="Husitské Války - Tahová Strategie">
     <meta property="twitter:description" content="Historická tahová strategie o husitských válkách. Veďte husitská vojska Jana Žižky v bitvách 15. století.">
 
-    <link rel="stylesheet" href="style.css?v=0.4">
+    <link rel="stylesheet" href="style.css?v=0.5">
 </head>
 <body>
     <!-- Hlavní menu -->
@@ -796,48 +796,55 @@
                 </div>
             </div>
 
-            <div class="gameover-stats">
-                <h3 data-i18n="gameover.details">Podrobnosti</h3>
+            <!-- Dvousloupcové tělo: vlevo statistiky, vpravo cíle + trivia -->
+            <div class="gameover-columns">
+                <div class="gameover-col">
+                    <div class="gameover-stats">
+                        <h3 data-i18n="gameover.details">Podrobnosti</h3>
 
-                <!-- Bojové statistiky -->
-                <div class="stats-section">
-                    <div class="stat-row">
-                        <span data-i18n="gameover.totalDamage">🎯 Způsobené poškození:</span>
-                        <span id="stat-total-damage">0</span>
-                    </div>
-                    <div class="stat-row">
-                        <span data-i18n="gameover.damageTaken">🛡️ Obdržené poškození:</span>
-                        <span id="stat-damage-taken">0</span>
-                    </div>
-                    <div class="stat-row">
-                        <span data-i18n="gameover.avgHealth">❤️ Průměrné zdraví:</span>
-                        <span id="stat-avg-health">0%</span>
-                    </div>
-                    <div class="stat-row">
-                        <span data-i18n="gameover.durationLabel">⏱️ Doba hry:</span>
-                        <span id="stat-duration">0:00</span>
-                    </div>
-                </div>
+                        <!-- Bojové statistiky -->
+                        <div class="stats-section">
+                            <div class="stat-row">
+                                <span data-i18n="gameover.totalDamage">🎯 Způsobené poškození:</span>
+                                <span id="stat-total-damage">0</span>
+                            </div>
+                            <div class="stat-row">
+                                <span data-i18n="gameover.damageTaken">🛡️ Obdržené poškození:</span>
+                                <span id="stat-damage-taken">0</span>
+                            </div>
+                            <div class="stat-row">
+                                <span data-i18n="gameover.avgHealth">❤️ Průměrné zdraví:</span>
+                                <span id="stat-avg-health">0%</span>
+                            </div>
+                            <div class="stat-row">
+                                <span data-i18n="gameover.durationLabel">⏱️ Doba hry:</span>
+                                <span id="stat-duration">0:00</span>
+                            </div>
+                        </div>
 
-                <!-- Nejlepší jednotka -->
-                <div id="stats-mvp" class="stats-section stats-mvp hidden">
-                    <h4 data-i18n="gameover.mvp">Hrdina bitvy</h4>
-                    <div class="mvp-card">
-                        <span class="mvp-icon" id="stat-mvp-icon">⚔</span>
-                        <div class="mvp-info">
-                            <span class="mvp-name" id="stat-mvp-name">-</span>
-                            <span class="mvp-stats" id="stat-mvp-stats">0 zásahů</span>
+                        <!-- Nejlepší jednotka -->
+                        <div id="stats-mvp" class="stats-section stats-mvp hidden">
+                            <h4 data-i18n="gameover.mvp">Hrdina bitvy</h4>
+                            <div class="mvp-card">
+                                <span class="mvp-icon" id="stat-mvp-icon">⚔</span>
+                                <div class="mvp-info">
+                                    <span class="mvp-name" id="stat-mvp-name">-</span>
+                                    <span class="mvp-stats" id="stat-mvp-stats">0 zásahů</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div id="gameover-secondary-objectives" class="hidden"></div>
+                <div class="gameover-col">
+                    <div id="gameover-secondary-objectives" class="hidden"></div>
 
-            <!-- Věděli jste, že...? - zobrazí se po vítězství -->
-            <div id="gameover-trivia" class="gameover-trivia hidden">
-                <h4 data-i18n="gameover.trivia">Věděli jste, že...?</h4>
-                <p id="gameover-trivia-text"></p>
+                    <!-- Věděli jste, že...? - zobrazí se po vítězství -->
+                    <div id="gameover-trivia" class="gameover-trivia hidden">
+                        <h4 data-i18n="gameover.trivia">Věděli jste, že...?</h4>
+                        <p id="gameover-trivia-text"></p>
+                    </div>
+                </div>
             </div>
 
             <div class="gameover-buttons">
@@ -944,9 +951,9 @@
     </div>
 
     <!-- i18n - lokalizační systém (načíst jako první) -->
-    <script src="js/i18n/i18n.js?v=0.4"></script>
-    <script src="js/i18n/i18nHelpers.js?v=0.4"></script>
-    <script src="js/i18n/encyclopediaRenderer.js?v=0.4"></script>
+    <script src="js/i18n/i18n.js?v=0.5"></script>
+    <script src="js/i18n/i18nHelpers.js?v=0.5"></script>
+    <script src="js/i18n/encyclopediaRenderer.js?v=0.5"></script>
     <script>
         // Inicializace i18n při načtení stránky
         document.addEventListener('DOMContentLoaded', async () => {
@@ -955,22 +962,22 @@
     </script>
 
     <!-- ?v= cache-busting: bumpni číslo při každém vydání, ať hráči nedostanou starý JS -->
-    <script src="js/ui/sound.js?v=0.4"></script>
-    <script src="js/ui/music.js?v=0.4"></script>
-    <script src="js/core/hex.js?v=0.4"></script>
-    <script src="js/data/unitTypes.js?v=0.4"></script>
-    <script src="js/entities/Unit.js?v=0.4"></script>
-    <script src="js/entities/UnitFactory.js?v=0.4"></script>
-    <script src="js/data/battleLore.js?v=0.4"></script>
-    <script src="js/data/campaign.js?v=0.4"></script>
-    <script src="js/data/scenarios.js?v=0.4"></script>
-    <script src="js/systems/CombatSystem.js?v=0.4"></script>
-    <script src="js/systems/FogOfWarSystem.js?v=0.4"></script>
-    <script src="js/systems/VictoryConditionsSystem.js?v=0.4"></script>
-    <script src="js/systems/TutorialSystem.js?v=0.4"></script>
-    <script src="js/systems/MoraleSystem.js?v=0.4"></script>
-    <script src="js/core/game.js?v=0.4"></script>
-    <script src="js/ai.js?v=0.4"></script>
-    <script src="js/ui/main.js?v=0.4"></script>
+    <script src="js/ui/sound.js?v=0.5"></script>
+    <script src="js/ui/music.js?v=0.5"></script>
+    <script src="js/core/hex.js?v=0.5"></script>
+    <script src="js/data/unitTypes.js?v=0.5"></script>
+    <script src="js/entities/Unit.js?v=0.5"></script>
+    <script src="js/entities/UnitFactory.js?v=0.5"></script>
+    <script src="js/data/battleLore.js?v=0.5"></script>
+    <script src="js/data/campaign.js?v=0.5"></script>
+    <script src="js/data/scenarios.js?v=0.5"></script>
+    <script src="js/systems/CombatSystem.js?v=0.5"></script>
+    <script src="js/systems/FogOfWarSystem.js?v=0.5"></script>
+    <script src="js/systems/VictoryConditionsSystem.js?v=0.5"></script>
+    <script src="js/systems/TutorialSystem.js?v=0.5"></script>
+    <script src="js/systems/MoraleSystem.js?v=0.5"></script>
+    <script src="js/core/game.js?v=0.5"></script>
+    <script src="js/ai.js?v=0.5"></script>
+    <script src="js/ui/main.js?v=0.5"></script>
 </body>
 </html>
