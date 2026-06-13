@@ -41,7 +41,9 @@
     "backToMenu": "Zpět na hlavní menu",
     "returnToMenu": "Návrat do menu",
     "confirmReturn": "Opravdu chcete opustit bitvu a vrátit se do hlavního menu?",
-    "aiThinking": "Křižáci přemýšlí..."
+    "aiThinking": "Křižáci přemýšlí...",
+    "moraleLabel": "Morálka",
+    "wavering": "KOLÍSÁ!"
   },
   "factions": {
     "hussites": "Husité",
@@ -308,6 +310,9 @@
     "breakReasonCasualties": "Těžké ztráty ({percent}%)",
     "breakReasonRouting": "Příliš mnoho prchajících ({count}/{total})",
     "armyCollapsing": "Armáda se hroutí!",
+    "armyWavering": "{faction} kolísá! Vyrazte na ně, dokud je čas!",
+    "armyWaveringPlayer": "Naše vojsko kolísá! Vydržte a držte řady!",
+    "armyRecovered": "{faction} se vzpamatoval(a) - okno se zavřelo.",
     "leaderBonus": "Přítomnost velitele",
     "safeRecovery": "Klid na bojišti",
     "noWaterThirst": "Žízeň a vyčerpání",

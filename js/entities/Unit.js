@@ -282,6 +282,13 @@ class Unit {
             damage *= (1 - gameContext.terrainTrapPenalty);
         }
 
+        // === OKNO PROTIÚTOKU ===
+        // +30% poškození kolísající nepřátelské armádě. Toto je odměna za
+        // vyražení ve správnou chvíli - husitská doktrína výpadu zpoza vozů.
+        if (gameContext && gameContext.defenderWavering) {
+            damage *= 1.3;
+        }
+
         // === ÚTOČNÝ BONUS ZA TERÉN ===
         // Bonus/malus k útoku podle terénu, na kterém útočník stojí
         const terrainAttackBonus = this.getTerrainAttackBonus(attackerTerrain);

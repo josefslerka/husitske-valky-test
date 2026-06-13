@@ -41,7 +41,9 @@
     "backToMenu": "Back to Main Menu",
     "returnToMenu": "Return to Menu",
     "confirmReturn": "Do you really want to leave the battle and return to the main menu?",
-    "aiThinking": "Crusaders are thinking..."
+    "aiThinking": "Crusaders are thinking...",
+    "moraleLabel": "Morale",
+    "wavering": "WAVERING!"
   },
   "factions": {
     "hussites": "Hussites",
@@ -2912,6 +2914,9 @@
     "breakReasonCasualties": "Heavy casualties ({percent}%)",
     "breakReasonRouting": "Too many units fleeing ({count}/{total})",
     "armyCollapsing": "Army is collapsing!",
+    "armyWavering": "{faction} are wavering! Strike now, while you can!",
+    "armyWaveringPlayer": "Our army is wavering! Hold the line!",
+    "armyRecovered": "{faction} have recovered - the window has closed.",
     "leaderBonus": "Commander nearby",
     "safeRecovery": "Safe position",
     "noWaterThirst": "Thirst and exhaustion",

@@ -133,7 +133,9 @@ class CombatSystem {
             // Speciální mechaniky scénáře
             nightPenalty: scenarioMechanics.nightPenalty || 0,
             terrainTrapPenalty: scenarioMechanics.terrainTrapPenalty || 0,
-            lastStandBonus: scenarioMechanics.lastStandBonus || 0
+            lastStandBonus: scenarioMechanics.lastStandBonus || 0,
+            // Okno protiútoku - bonus proti kolísající armádě
+            defenderWavering: this.game.wavering && this.game.wavering[defender.faction] || false
         };
 
         // Zpoždění pro zobrazení animace
@@ -213,6 +215,7 @@ class CombatSystem {
                             }
 
                             this.game.updateArmyOverview();
+                            this.game.updateWaveringState();
                             this.game.render();
                             this.game.victoryConditionsSystem.checkVictory();
                         }, 200);
@@ -230,6 +233,7 @@ class CombatSystem {
 
             this.game.deselectUnit();
             this.game.updateArmyOverview();
+            this.game.updateWaveringState();
             this.game.render();
             this.game.victoryConditionsSystem.checkVictory();
         }, 300);

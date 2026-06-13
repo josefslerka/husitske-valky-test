@@ -63,6 +63,12 @@ class Game {
         this.moraleBroken = false;
         this.routingUnits = new Set(); // Jednotky na útěku
 
+        // Okno protiútoku - kolísání armád
+        // armyMorale: průměrná morálka živých jednotek frakce (0-100), přepočítává se
+        // wavering: zda frakce právě kolísá (mezi prahem zlomu a vzpamatování)
+        this.armyMorale = { hussites: 100, crusaders: 100 };
+        this.wavering = { hussites: false, crusaders: false };
+
         // Tutoriál
         this.isTutorial = false;
         this.tutorialStep = 0;
@@ -114,6 +120,8 @@ class Game {
         this.exploredHexes = new Set();
         this.moraleBroken = false;
         this.routingUnits = new Set();
+        this.armyMorale = { hussites: 100, crusaders: 100 };
+        this.wavering = { hussites: false, crusaders: false };
 
         // Vytvoření armád
         const hussites = this.unitFactory.createHussiteArmy();
@@ -220,6 +228,8 @@ class Game {
         this.exploredHexes = new Set();
         this.moraleBroken = false;
         this.routingUnits = new Set();
+        this.armyMorale = { hussites: 100, crusaders: 100 };
+        this.wavering = { hussites: false, crusaders: false };
 
         // Aplikace terénu ze scénáře
         ScenarioManager.applyScenarioTerrain(this.hexGrid, scenario);
@@ -826,6 +836,77 @@ class Game {
                 notification.remove();
             }
         }, 10000);
+    }
+
+    // ==========================================
+    // OKNO PROTIÚTOKU - kolísání armád
+    // ==========================================
+
+    // Průměrná morálka živých jednotek frakce (0-100).
+    // Prchající jednotky mají morálku nízkou, takže táhnou průměr dolů samy.
+    getArmyMorale(faction) {
+        const living = this.units.filter(u => u.faction === faction && u.health > 0);
+        if (living.length === 0) return 0;
+        let sum = 0;
+        for (const u of living) {
+            const max = u.maxMorale || 100;
+            sum += Math.max(0, Math.min(100, (u.morale / max) * 100));
+        }
+        return Math.round(sum / living.length);
+    }
+
+    // Aktualizace stavu kolísání obou armád s hysterezí.
+    // Pod WAVER_ENTER armáda začne kolísat → otevře se okno protiútoku.
+    // Nad WAVER_EXIT se vzpamatuje → okno se zavře.
+    // Volá se po každém útoku (combat) a po zpracování morálky na konci tahu.
+    // Hystereze brání blikání stavu kolem prahu.
+    updateWaveringState() {
+        if (this.gameState !== 'playing' || this.isTutorial) return;
+
+        const WAVER_ENTER = 40;
+        const WAVER_EXIT = 55;
+        const playerFaction = this.currentScenario?.playerFaction || 'hussites';
+
+        for (const faction of ['hussites', 'crusaders']) {
+            this.armyMorale[faction] = this.getArmyMorale(faction);
+
+            const living = this.units.filter(u => u.faction === faction && u.health > 0);
+            // Bez živých jednotek nemá kolísání smysl (hra stejně končí)
+            if (living.length === 0) { this.wavering[faction] = false; continue; }
+
+            const morale = this.armyMorale[faction];
+            const wasWavering = this.wavering[faction];
+
+            if (!wasWavering && morale < WAVER_ENTER) {
+                this.wavering[faction] = true;
+                this.onWaveringStart(faction, faction === playerFaction);
+            } else if (wasWavering && morale > WAVER_EXIT) {
+                this.wavering[faction] = false;
+                this.onWaveringEnd(faction);
+            }
+        }
+    }
+
+    // Armáda začíná kolísat - okno protiútoku se otevírá
+    onWaveringStart(faction, isPlayer) {
+        const factionName = i18n.t(`factions.${faction}`);
+        if (isPlayer) {
+            const msg = i18n.t('gameLog.armyWaveringPlayer', { faction: factionName });
+            this.addLog('⚠️ ' + msg, 'morale');
+            this.showEventNotification('⚠️ ' + i18n.t('game.wavering'), msg);
+            if (typeof Sound !== 'undefined' && Sound.playDefeat) Sound.playDefeat();
+        } else {
+            const msg = i18n.t('gameLog.armyWavering', { faction: factionName });
+            this.addLog('⚔️ ' + msg, 'morale');
+            this.showEventNotification('⚔️ ' + i18n.t('game.wavering'), msg);
+            if (typeof Sound !== 'undefined' && Sound.playWagonFort) Sound.playWagonFort();
+        }
+    }
+
+    // Armáda se vzpamatovala - okno protiútoku se zavřelo
+    onWaveringEnd(faction) {
+        const factionName = i18n.t(`factions.${faction}`);
+        this.addLog(i18n.t('gameLog.armyRecovered', { faction: factionName }), 'morale');
     }
 
     startAnimationLoop() {
@@ -1750,6 +1831,10 @@ class Game {
 
             // Pasivní regenerace morálky pro jednotky které neprchají
             this.moraleSystem.regenerateMorale();
+
+            // Okno protiútoku - po zpracování morálky přehodnotit kolísání
+            // (zachytí jak nový zlom z kaskády útěků, tak vzpamatování z regenerace)
+            this.updateWaveringState();
         }
 
         // Pasivní regenerace zdraví (u vozů/města)
@@ -2003,6 +2088,45 @@ class Game {
         const crusaderCount = crusaderSection?.querySelector('.faction-count');
         if (hussiteCount) hussiteCount.textContent = `${hussiteAlive}/${hussiteTotal}`;
         if (crusaderCount) crusaderCount.textContent = `${crusaderAlive}/${crusaderTotal}`;
+
+        // Lišty morálky armád (okno protiútoku)
+        this.renderMoraleBar('hussite', 'hussites', hussiteAlive);
+        this.renderMoraleBar('crusader', 'crusaders', crusaderAlive);
+    }
+
+    // Vykreslení lišty morálky jedné armády
+    renderMoraleBar(prefix, faction, aliveCount) {
+        const bar = document.getElementById(`${prefix}-morale`);
+        const fill = document.getElementById(`${prefix}-morale-fill`);
+        const text = document.getElementById(`${prefix}-morale-text`);
+        if (!bar || !fill || !text) return;
+
+        // Bez živých jednotek lišta zmizí
+        if (aliveCount === 0) {
+            bar.style.display = 'none';
+            return;
+        }
+        bar.style.display = '';
+
+        const morale = this.getArmyMorale(faction);
+        this.armyMorale[faction] = morale;
+
+        fill.style.width = `${morale}%`;
+        fill.classList.remove('morale-medium', 'morale-low');
+        if (morale < 40) {
+            fill.classList.add('morale-low');
+        } else if (morale < 60) {
+            fill.classList.add('morale-medium');
+        }
+
+        const isWavering = this.wavering && this.wavering[faction];
+        bar.classList.toggle('wavering', !!isWavering);
+
+        const label = i18n.t('game.moraleLabel');
+        text.textContent = isWavering
+            ? `${i18n.t('game.wavering')} ${morale}%`
+            : `${label} ${morale}%`;
+        bar.title = `${label}: ${morale}%`;
     }
 
     updateUnitPanel(unit) {
@@ -2260,6 +2384,7 @@ class Game {
             choralActive: this.choralActive,
             choralTurnsRemaining: this.choralTurnsRemaining,
             moraleBroken: this.moraleBroken,
+            wavering: this.wavering,
             // Mlha války
             fogOfWar: this.fogOfWar,
             exploredHexes: [...this.exploredHexes],
@@ -2331,6 +2456,7 @@ class Game {
             this.choralActive = saveData.choralActive || false;
             this.choralTurnsRemaining = saveData.choralTurnsRemaining || 0;
             this.moraleBroken = saveData.moraleBroken || false;
+            this.wavering = saveData.wavering || { hussites: false, crusaders: false };
 
             // Mlha války
             if (saveData.fogOfWar !== undefined) {
