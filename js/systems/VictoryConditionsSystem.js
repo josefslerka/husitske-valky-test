@@ -235,7 +235,10 @@ class VictoryConditionsSystem {
         switch (primary.type) {
             case 'survive':
                 const minPercent = primary.minUnitsPercent || 0;
-                const currentPercent = (playerUnits.length / this.game.initialPlayerUnits) * 100;
+                // Posily se nepočítají - mise měří, kolik z PŮVODNÍ obrany přežilo.
+                // Bez tohoto by příchod posil nafoukl procento nad 100 % ("160% jednotek").
+                const originalSurvivors = playerUnits.filter(u => !u.isReinforcement).length;
+                const currentPercent = Math.min(100, (originalSurvivors / this.game.initialPlayerUnits) * 100);
                 const requiredTurnsSurvive = primary.turns || this.game.currentScenario.maxTurns;
 
                 // Kontrola proběhne až po DOKONČENÍ požadovaného počtu kol.
@@ -250,6 +253,8 @@ class VictoryConditionsSystem {
 
                 // Uplynul požadovaný čas - vyhodnotíme podle procenta jednotek
                 victoryAchieved = currentPercent >= minPercent;
+                // Odehrálo se requiredTurnsSurvive kol (turnNumber už je o 1 dál)
+                this.game.gameOverTurn = requiredTurnsSurvive;
 
                 if (victoryAchieved) {
                     this.outcome(i18n.t('gameLog.victorySurvival', { turn: requiredTurnsSurvive, percent: Math.round(currentPercent) }));
@@ -298,6 +303,7 @@ class VictoryConditionsSystem {
                 // Uplynul požadovaný čas - vyhodnotíme podle obsazených pozic nepřítelem
                 // Vítězství pokud nepřítel neobsadil pozice
                 victoryAchieved = enemyOccupiedPositions.length === 0;
+                this.game.gameOverTurn = requiredTurnsHold;
 
                 if (victoryAchieved) {
                     this.outcome(i18n.t('gameLog.victoryHoldPosition', { turn: requiredTurnsHold }));
@@ -322,6 +328,7 @@ class VictoryConditionsSystem {
                 const requiredTurns = primary.turns || this.game.currentScenario.maxTurns;
                 // > místo >=: kolo musí být dokončené (viz komentář u 'survive')
                 victoryAchieved = this.game.turnNumber > requiredTurns;
+                this.game.gameOverTurn = requiredTurns;
 
                 if (victoryAchieved) {
                     this.outcome(i18n.t('gameLog.victorySurviveTurns', { turns: requiredTurns }));

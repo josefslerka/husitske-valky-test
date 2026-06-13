@@ -771,7 +771,8 @@ class Unit {
             faction: this.faction,
             attack: this.attack,
             defense: this.defense,
-            special: this.special
+            special: this.special,
+            isReinforcement: this.isReinforcement || false
         };
     }
 
@@ -799,6 +800,7 @@ class Unit {
         if (data.attack !== undefined) unit.attack = data.attack;
         if (data.defense !== undefined) unit.defense = data.defense;
         if (data.special !== undefined) unit.special = data.special;
+        unit.isReinforcement = data.isReinforcement || false;
         return unit;
     }
 }

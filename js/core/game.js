@@ -803,6 +803,7 @@ class Game {
         for (let i = 0; i < count; i++) {
             const unit = this.unitFactory.createUnit(reinf.type, spawnCol, spawnRow);
             unit.faction = faction;
+            unit.isReinforcement = true; // posily se nepočítají do přežití původní obrany
             this.units.push(unit);
 
             this.addLog(i18n.t('gameLog.reinforcements', {unit: unit.name}), 'turn');
@@ -1904,8 +1905,15 @@ class Game {
         // turnNumber se zvyšuje na ZAČÁTKU kola - když vyhodnocení proběhne
         // po dokončení posledního kola, čítač už ukazuje kolo, které se
         // nikdy nehrálo (u 12kolové mise "13"). Stropujeme na maxTurns.
+        // Časové mise (survive/hold/survive_turns) se vyhodnocují až na začátku
+        // kola po deadline (turnNumber už tiknul), a deadline může být dřív než
+        // maxTurns - strop na maxTurns proto nestačí. VictoryConditionsSystem
+        // proto u nich nastaví gameOverTurn na skutečný počet odehraných kol;
+        // má přednost a drží stat KOLA v souladu s textem ("do kola 5").
         const maxTurns = this.currentScenario && this.currentScenario.maxTurns;
-        const completedTurns = maxTurns ? Math.min(this.turnNumber, maxTurns) : this.turnNumber;
+        const completedTurns = (this.gameOverTurn != null)
+            ? this.gameOverTurn
+            : (maxTurns ? Math.min(this.turnNumber, maxTurns) : this.turnNumber);
         const stats = {
             turns: completedTurns,
             enemiesKilled: this.enemiesKilled || 0,
@@ -1915,6 +1923,7 @@ class Game {
             reason: this.gameOverReason || null
         };
         this.gameOverReason = null;
+        this.gameOverTurn = null;
 
         // Použít nový gameover modal pokud existuje
         if (typeof window.showGameOver === 'function') {
