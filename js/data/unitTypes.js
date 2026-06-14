@@ -976,6 +976,39 @@ const UnitTypes = {
         }
     },
 
+    // Václav Koranda starší - radikální táborský kazatel (Živohošť 1419)
+    VACLAV_KORANDA: {
+        id: 'vaclav_koranda',
+        name: 'Václav Koranda',
+        faction: 'hussites',
+        symbol: '☩',  // Kněz
+        maxHealth: 60,
+        attack: 12,
+        defense: 15,
+        range: 1,
+        movement: 2,
+        cost: 180,
+        description: 'Radikální táborský kazatel. Kázáním drží i necvičené poutníky v řadách - sám ale žádný voják.',
+        special: 'commander',
+        unitClass: 'commander',
+        baseMorale: 95,
+        lore: {
+            description: 'Václav Koranda starší byl jedním z nejradikálnějších husitských kazatelů a chiliastů. Roku 1419 vedl radikální obec v Plzni a svolával lid na hory ("tábory"). U Živohoště 4. listopadu 1419 spoluvelel jihočeským poutníkům po boku Břeňka Švihovského.',
+            equipment: 'Kněžský hábit, kalich, bible. Žádná pořádná zbraň.',
+            origin: 'Plzeňsko',
+            historicalNote: 'Pozor na záměnu: Václav Koranda STARŠÍ (radikální kazatel raných válek) není Václav Koranda mladší (pozdější utrakvistický mistr). Staršímu se připisuje výrok z roku 1419, že nadešel čas vzít místo poutnické hole meč - symbol obratu od mírného poutnictví k ozbrojenému boji.'
+        },
+        commanderAbilities: {
+            auraRange: 2,           // Malý dosah - kazatel, ne vojevůdce
+            moraleBonus: 12,        // Žhavý kazatel drží zástup pohromadě
+            attackBonus: 0,         // Žádný vojenský bonus
+            defenseBonus: 0,
+            rallyBonus: 20,         // Fanatická víra brání útěku
+            fearRange: 0,
+            fearPenalty: 0
+        }
+    },
+
     // Jan Roháč z Dubé - poslední husitský odbojník
     JAN_ROHAC: {
         id: 'jan_rohac',

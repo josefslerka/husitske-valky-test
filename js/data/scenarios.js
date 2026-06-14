@@ -51,6 +51,8 @@ const Scenarios = {
             hussites: {
                 commander: 'Břeněk Švihovský z Rýzmburka',
                 units: [
+                    // Kněz Koranda - kazatel na vrcholu kopce, drží morálku poutníků
+                    { type: 'VACLAV_KORANDA', col: 13, row: 6 },
                     // Jihočeští poutníci - blíže kopci, mají šanci ustoupit
                     { type: 'SUDLICNICI', col: 10, row: 5 },
                     { type: 'SUDLICNICI', col: 10, row: 7 },
