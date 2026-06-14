@@ -55,7 +55,10 @@ const BattleLore = {
             'PRVNÍ doložené použití vozové hradby v historii',
             'Pouze 7 vozů - formace půlkruhu',
             'Bohuslav ze Švamberka se později PŘIDAL k husitům!',
-            'Památník první vozové hradby u Nekmíře postaven až v roce 2017 - 598 let po bitvě!'
+            'Památník první vozové hradby u Nekmíře postaven až v roce 2017 - 598 let po bitvě!',
+            'Žižkových 7 vozů byl demoliční konvoj (beranidla, děla, prak) - vozová hradba vznikla IMPROVIZACÍ, když ho cestou přepadli',
+            'Místu na polích k Všerubům, kde Žižka srazil vozy k sobě, se prý dodnes říká "Na smrtelnici"',
+            'Panské jezdectvo útočilo na vozovou hradbu poprvé - netušilo, že ji nelze jen tak smést'
         ],
         casualties: { hussites: 'Nízké', enemy: 'Značné, včetně Hynka z Nekmíře' },
         aftermath: 'Husitské vítězství. Zrodila se vozová taktika.',
