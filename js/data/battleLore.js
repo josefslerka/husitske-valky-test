@@ -467,6 +467,35 @@ const BattleLore = {
         casualties: { hussites: '~200', enemy: '1 200-3 000 mrtvých' },
         aftermath: 'Geniální vítězství slepého vojevůdce. NEJKRVAVĚJŠÍ bitva husitských válek.',
         reliability: 'Střední - přesná lokalizace bojiště není určena'
+    },
+
+    'zatec': {
+        name: 'Obrana Žatce',
+        date: '10. září - 2. října 1421',
+        location: 'Žatec - ostrožna nad řekou Ohří, severozápadní Čechy',
+        hussiteSide: {
+            commanders: ['Žatecký hejtman (jméno nedoloženo)'],
+            strength: '~6 000 obránců (posádka a měšťané)',
+            composition: 'Městská posádka, sudličníci, cepníci, kuše i hákovnice'
+        },
+        enemySide: {
+            commanders: ['Ludvík III. Falcký', 'arcibiskupové z Mohuče, Kolína a Trevíru', 'Erkinger ze Seinsheim (vedl útoky)'],
+            strength: '~20-30 000 křižáků',
+            composition: 'Druhá křížová výprava - říšská knížata, jízda, obléhací děla'
+        },
+        terrain: 'Mohutná pevnost na ostrožně obtékané ze tří stran Ohří. Útok byl možný jen z jedné strany.',
+        quotes: [
+            { text: 'Erkinger ze Seinsheimu podnikl proti Žatci celkem šest útoků za použití děl a hákovnic, ale nepodařilo se mu proniknout ani na předměstí.', source: 'J. Dolejší: Husité' }
+        ],
+        trivia: [
+            'Žatec = "pevnost Slunce" (Tábor, Žatec-Slunce, Louny-Luna, Slaný-Hvězda)',
+            'ŠEST útoků 19. září 1421 odraženo',
+            'Žádný velitel obrany se nedochoval - ubránila celá obec',
+            'Obléhání zlomil POŽÁR křižáckého ležení (2. října)'
+        ],
+        casualties: { hussites: 'Nízké - město bylo dobře předzásobené', enemy: 'Značné; navíc hlad v táboře' },
+        aftermath: 'Druhá křížová výprava se rozpadla, aniž se střetla se Žižkou v poli.',
+        reliability: 'Vysoká - dobře doložené obléhání'
     }
 };
 
@@ -477,6 +506,7 @@ const ScenarioToBattleLore = {
     'sudomer': 'sudomer',
     'vitkov': 'vitkov',
     'vysehrad': 'vysehrad',
+    'zatec': 'zatec',
     'kutna_hora': 'kutna_hora',
     'nemecky_brod': 'nemecky_brod',
     'most': 'most',

@@ -28,6 +28,7 @@ const Campaign = {
             subtitle: '1421-1424',
             description: 'Pod Žižkovým velením husité porážejí jednu křížovou výpravu za druhou.',
             battles: [
+                { id: 'zatec_1421', available: true },
                 { id: 'kutna_hora_1421', available: true },
                 { id: 'nemecky_brod_1422', available: true },
                 { id: 'most_1421', available: true },

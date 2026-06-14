@@ -1009,6 +1009,39 @@ const UnitTypes = {
         }
     },
 
+    // Žatecký hejtman - obecný velitel obrany Žatce (jméno se nedochovalo)
+    ZATECKY_HEJTMAN: {
+        id: 'zatecky_hejtman',
+        name: 'Žatecký hejtman',
+        faction: 'hussites',
+        symbol: '⚑',
+        maxHealth: 90,
+        attack: 28,
+        defense: 30,
+        range: 1,
+        movement: 3,
+        cost: 300,
+        description: 'Velitel žatecké obrany. Jméno se nedochovalo - Žatec ubránila celá obec.',
+        special: 'commander',
+        unitClass: 'commander',
+        baseMorale: 95,
+        lore: {
+            description: 'Obranu Žatce roku 1421 nevedl žádný doložený hrdina - město ubránila kolektivně jeho posádka a měšťané, na 6000 lidí. Tato bezejmennost je sama o sobě výmluvná: pevnost Slunce držela obec, ne jednotlivec.',
+            equipment: 'Městská zbroj, meč, sudlice; obránci měli i kuše a hákovnice.',
+            origin: 'Žatec, město Žatecko-lounského svazu',
+            historicalNote: 'Žatec patřil k nejmohutnějším pevnostem v Čechách - na ostrožně obtékané ze tří stran Ohří. Posádka odrazila šest útoků 19. září 1421. Město bylo dobře předzásobené; hlad naopak udeřil v křižáckém táboře.'
+        },
+        commanderAbilities: {
+            auraRange: 3,
+            moraleBonus: 14,
+            attackBonus: 3,
+            defenseBonus: 6,        // Velitel obrany - bonus k obraně hradeb
+            rallyBonus: 25,
+            fearRange: 0,
+            fearPenalty: 0
+        }
+    },
+
     // Jan Roháč z Dubé - poslední husitský odbojník
     JAN_ROHAC: {
         id: 'jan_rohac',
@@ -1208,6 +1241,39 @@ const UnitTypes = {
             rallyBonus: 18,
             fearRange: 3,
             fearPenalty: 4
+        }
+    },
+
+    // Erkinger ze Seinsheim - Zikmundův polní velitel u Žatce (1421)
+    ERKINGER_SEINSHEIM: {
+        id: 'erkinger_seinsheim',
+        name: 'Erkinger ze Seinsheim',
+        faction: 'crusaders',
+        symbol: '🛡',
+        maxHealth: 95,
+        attack: 36,
+        defense: 34,
+        range: 1,
+        movement: 3,
+        cost: 450,
+        description: 'Zikmundův polní velitel u Žatce. Vedl šest útoků na hradby.',
+        special: 'commander',
+        unitClass: 'commander',
+        baseMorale: 85,
+        lore: {
+            description: 'Erkinger ze Seinsheimu byl franský šlechtic a Zikmundův žoldnéřský velitel. Za druhé křížové výpravy roku 1421 vedl útoky na žatecké hradby. Velel oddílu 300 kopí (glév) - reálně až 1500 mužů.',
+            equipment: 'Plátová zbroj, kopí, meč; děla a hákovnice k obléhání.',
+            origin: 'Rod ze Seinsheimu, Franky',
+            historicalNote: 'Erkinger podnikl proti Žatci šest útoků za použití děl a hákovnic, ale neprorazil ani na předměstí. Za službu mu Zikmund zastavil hrady Žebrák, Točník a město Beroun - na hotovost neměl. Po neúspěchu a požáru ležení se výprava 2. října 1421 stáhla.'
+        },
+        commanderAbilities: {
+            auraRange: 3,
+            moraleBonus: 10,
+            attackBonus: 5,
+            defenseBonus: 4,
+            rallyBonus: 15,
+            fearRange: 2,
+            fearPenalty: 3
         }
     },
 

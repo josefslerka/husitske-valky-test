@@ -957,6 +957,143 @@ const Scenarios = {
     },
 
     // ==========================================
+    // BITVA: ŽATEC (10. září - 2. října 1421) - 2. křížová výprava
+    // ==========================================
+    zatec_1421: {
+        id: 'zatec_1421',
+        name: 'Obrana Žatce',
+        date: '10. září 1421',
+        type: 'defensive_battle',
+        difficulty: 3,
+        description: 'Druhá křížová výprava obléhá "pevnost Slunce". Obrovská přesila proti žatecké posádce. Udržte hradby, než se výprava zlomí.',
+        historicalSignificance: 'Neúspěch u Žatce nalomil 2. křížovou výpravu - bez jediné polní bitvy se Žižkou.',
+
+        briefing: {
+            hussites: 'Žatec - "pevnost Slunce" - obléhá obrovská křižácká výprava. Ohře vás chrání ze tří stran, útok jde jen na západní hradbu. Žádný slavný velitel zde není - drží celá obec. Odrazte útoky, než výpravu zlomí hlad a spory knížat.',
+            crusaders: 'Rozbijte žateckou hradbu děly a vezměte město. Erkinger vede útok. Padne-li Žatec, husitský severozápad je váš.'
+        },
+
+        mapSize: { width: 18, height: 11 },
+
+        terrain: {
+            // Město Žatec na ostrožně - hradby a zástavba (obrana)
+            town: [
+                [8,3],[9,3],[10,3],[11,3],[12,3],[13,3],[14,3],[15,3],
+                [8,4],[9,4],[10,4],[11,4],[12,4],[13,4],[14,4],[15,4],
+                [8,5],[9,5],[10,5],[11,5],[12,5],[13,5],[14,5],[15,5],
+                [8,6],[9,6],[10,6],[11,6],[12,6],[13,6],[14,6],[15,6],
+                [8,7],[9,7],[10,7],[11,7],[12,7],[13,7],[14,7],[15,7]
+            ],
+            // Řeka Ohře - obtéká ostrožnu ze tří stran (S, V, J), neprůchodná
+            water: [
+                [7,2],[8,2],[9,2],[10,2],[11,2],[12,2],[13,2],[14,2],[15,2],[16,2],
+                [16,3],[16,4],[16,5],[16,6],[16,7],
+                [7,8],[8,8],[9,8],[10,8],[11,8],[12,8],[13,8],[14,8],[15,8],[16,8]
+            ],
+            // Glacis před západní hradbou - útočníci ho přecházejí pomalu pod palbou
+            slope: [
+                [6,3],[7,3],[6,4],[7,4],[6,5],[7,5],[6,6],[7,6],[6,7],[7,7]
+            ],
+            plains: 'default'
+        },
+
+        forces: {
+            hussites: {
+                commander: 'Žatecký hejtman (jméno nedoloženo)',
+                units: [
+                    // Velitel obrany - bezejmenný žatecký hejtman, uvnitř města
+                    { type: 'ZATECKY_HEJTMAN', col: 11, row: 5 },
+                    // Západní hradba - hlavní obranná linie
+                    { type: 'SUDLICNICI', col: 8, row: 3 },
+                    { type: 'CEPNICI', col: 8, row: 4 },
+                    { type: 'KUSINICI_HUSITI', col: 8, row: 5 },
+                    { type: 'CEPNICI', col: 8, row: 6 },
+                    { type: 'SUDLICNICI', col: 8, row: 7 },
+                    // Druhá řada - dělo a palné zbraně (Žatec je měl)
+                    { type: 'TARASNICE', col: 9, row: 4 },
+                    { type: 'RUCNICARI', col: 9, row: 5 },
+                    { type: 'KUSINICI_HUSITI', col: 9, row: 6 },
+                    // Záloha
+                    { type: 'CEPNICI', col: 10, row: 4 },
+                    { type: 'KUSINICI_HUSITI', col: 10, row: 6 }
+                ]
+            },
+            crusaders: {
+                commander: 'Erkinger ze Seinsheim',
+                units: [
+                    // VELITEL - Erkinger ze Seinsheim
+                    { type: 'ERKINGER_SEINSHEIM', col: 2, row: 5 },
+                    // Obléhací děla - bombardují hradbu
+                    { type: 'HOUFNICE', col: 0, row: 4 },
+                    { type: 'HOUFNICE', col: 0, row: 6 },
+                    // Těžká jízda a pěchota - útok na hradby
+                    { type: 'TEZKY_RYTIR', col: 1, row: 3 },
+                    { type: 'TEZKY_RYTIR', col: 1, row: 4 },
+                    { type: 'TEZKY_RYTIR', col: 1, row: 6 },
+                    { type: 'TEZKY_RYTIR', col: 1, row: 7 },
+                    { type: 'TEZKOODENCI', col: 2, row: 4 },
+                    { type: 'TEZKOODENCI', col: 2, row: 6 },
+                    { type: 'HALAPARTNICI', col: 3, row: 3 },
+                    { type: 'HALAPARTNICI', col: 3, row: 7 },
+                    { type: 'KOPINICI', col: 3, row: 4 },
+                    { type: 'KOPINICI', col: 3, row: 6 },
+                    { type: 'KUSNICI', col: 3, row: 5 }
+                ]
+            }
+        },
+
+        phases: [
+            {
+                id: 1,
+                name: 'Obležení',
+                turnRange: [1, 3],
+                description: 'Křižáci obkličují Žatec a zahajují palbu z děl.',
+                events: [
+                    { trigger: 'turn_1', message: 'Křižácké vojsko obklíčilo Žatec. Děla pálí na hradby!' }
+                ]
+            },
+            {
+                id: 2,
+                name: 'Šest útoků',
+                turnRange: [4, 8],
+                description: 'Erkinger žene pěchotu na hradby - jeden útok za druhým.',
+                events: [
+                    { trigger: 'turn_4', message: 'Erkinger zahajuje útok na západní hradbu! Držte linii!' }
+                ]
+            },
+            {
+                id: 3,
+                name: 'Požár ležení',
+                turnRange: [9, 12],
+                description: 'Křižácké ležení hoří, knížata se hádají, tábor svírá hlad.',
+                events: [
+                    { trigger: 'turn_10', type: 'panic', faction: 'crusaders', level: 2, title: 'Požár ležení!', text: 'Křižácké ležení vzplálo! Hlad, spory knížat a zprávy o blížících se posilách lámou výpravu.' }
+                ]
+            }
+        ],
+
+        victoryConditions: {
+            primary: {
+                type: 'survive',
+                turns: 12,
+                minUnitsPercent: 50,
+                description: 'Udržte hradby do kola 12 s alespoň 50% obránců'
+            },
+            secondary: [
+                { type: 'kill_commander', description: 'Zabijte Erkingera ze Seinsheim' }
+            ]
+        },
+
+        debriefing: {
+            victory: 'Žatec obstál! Šest útoků odraženo, ležení v plamenech - druhá křížová výprava se rozpadá, aniž stanula proti Žižkovi. "Pevnost Slunce" obhájila celá obec, beze jména jediného hrdiny. Sláva města, ne muže.',
+            defeat: 'Hradby Žatce padly. Křižáci vnikli do "pevnosti Slunce" a husitský severozápad leží otevřený. Druhá výprava slaví krvavý úspěch.'
+        },
+
+        maxTurns: 12,
+        playerFaction: 'hussites'
+    },
+
+    // ==========================================
     // BITVA: KUTNÁ HORA (21.-22. prosince 1421)
     // ==========================================
     kutna_hora_1421: {
