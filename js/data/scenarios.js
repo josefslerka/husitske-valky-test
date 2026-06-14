@@ -367,7 +367,7 @@ const Scenarios = {
         mapSize: { width: 20, height: 12 },
 
         terrain: {
-            // Hráz - VELMI úzký průchod (pouze 1 hex široký!)
+            // Hráz - úzký průchod mezi rybníky (2 hexy, řady 5-6)
             dam: [
                 [9,5], [9,6]
             ],
@@ -399,22 +399,25 @@ const Scenarios = {
             hussites: {
                 commander: 'Jan Žižka z Trocnova',
                 units: [
-                    // VELITEL - Jan Žižka (za hradbou)
-                    { type: 'JAN_ZIZKA', col: 15, row: 5 },
-                    // Vozová hradba - blokuje průchod na hrázi
+                    // Vozová hradba - čelní zeď, ucpává úžinu mezi rybníky
                     { type: 'VOZOVA_HRADBA', col: 9, row: 5 },
                     { type: 'VOZOVA_HRADBA', col: 9, row: 6 },
-                    // Pěchota - za hradbou připravená k obraně
-                    { type: 'CEPNICI', col: 14, row: 5 },
-                    { type: 'CEPNICI', col: 14, row: 6 },
-                    { type: 'SUDLICNICI', col: 15, row: 6 },
-                    // Střelci - za pěchotou
-                    { type: 'KUSINICI_HUSITI', col: 16, row: 5 },
-                    { type: 'KUSINICI_HUSITI', col: 16, row: 6 },
-                    { type: 'RUCNICARI', col: 17, row: 5 },
-                    { type: 'RUCNICARI', col: 17, row: 6 },
-                    // Jízda - u vozové hradby
-                    { type: 'JIZDA_HUSITI', col: 12, row: 5 }
+                    // Střelci - TĚSNĚ za vozy, dostřel kryje úžinu (col 9) i
+                    // severní okraj bahna (řady 7-8) - bagrující jízda dostane palbu
+                    { type: 'KUSINICI_HUSITI', col: 10, row: 5 },
+                    { type: 'KUSINICI_HUSITI', col: 10, row: 6 },
+                    { type: 'RUCNICARI', col: 11, row: 5 },
+                    { type: 'RUCNICARI', col: 11, row: 6 },
+                    // Pěchota - druhá řada, drží linii a vyráží k protiútoku
+                    { type: 'CEPNICI', col: 12, row: 5 },
+                    { type: 'CEPNICI', col: 12, row: 6 },
+                    { type: 'SUDLICNICI', col: 13, row: 5 },
+                    // VELITEL - Jan Žižka (za linií, aura dosah 3 kryje hradbu)
+                    { type: 'JAN_ZIZKA', col: 13, row: 6 },
+                    // Kněz Koranda - morální kotva za hradbou (Dolejší: byl u Sudoměře)
+                    { type: 'VACLAV_KORANDA', col: 14, row: 5 },
+                    // Jízda - záloha připravená k výpadu
+                    { type: 'JIZDA_HUSITI', col: 14, row: 6 }
                 ]
             },
             crusaders: {
