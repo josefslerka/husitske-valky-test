@@ -505,36 +505,41 @@ const Scenarios = {
         historicalSignificance: 'Zlomový okamžik první křížové výpravy, obrana Prahy.',
 
         briefing: {
-            hussites: 'Bráníte dřevěné sruby na Vítkově s hrstkou mužů a žen. Křižáci útočí v přesile. Vydržte do příchodu posil z Prahy!',
+            hussites: 'Žižka osobně velí hrstce obránců (26 mužů a tři ženy) ve srubech na Vítkově. Křižácká jízda se valí do úzkého hrdla šíje. Vydržte do příchodu pražské pomoci!',
             crusaders: 'Dobyjte husitské opevnění na Vítkově a otevřete cestu k Praze.'
         },
 
         mapSize: { width: 12, height: 8 },
 
         terrain: {
-            // Vrchol Vítkova - kopec
+            // Vítkov = pevnost na úzké šíji (Dolejší). Plošina na východě,
+            // obehnaná strmými srázy; jediný přístup je 2hexové hrdlo (řady 3-4)
+            // se sruby. Jízda se v hrdle namačká a nemůže se rozvinout.
+            // Vrcholová plošina - obránci (+30% obrana)
             hills: [
-                [9,2], [10,2], [11,2],
-                [9,3], [10,3], [11,3],
-                [10,4], [11,4]
+                [8,1], [9,1], [10,1], [11,1],
+                [8,2], [9,2], [10,2], [11,2],
+                [8,3], [9,3], [10,3], [11,3],
+                [8,4], [9,4], [10,4], [11,4],
+                [8,5], [9,5], [10,5], [11,5],
+                [8,6], [9,6], [10,6], [11,6]
             ],
-            // Strmý severní svah - nepřístupný
-            water: [
-                [9,0], [10,0], [11,0],
-                [10,1], [11,1]
-            ],
-            // Jižní svah - obtížný terén
+            // Strmé srázy obklopující plošinu - trychtýřují útok do hrdla.
+            // 'slope' je průchozí, ale pomalý (jízda 3): svahem se dá jen
+            // zemřít pod palbou, rychlá cesta vede jen hrdlem.
             slope: [
-                [9,5], [10,5], [11,5],
-                [10,6], [11,6]
+                [4,0], [5,0], [6,0], [7,0], [8,0], [9,0], [10,0], [11,0],
+                [4,1], [5,1], [6,1], [7,1],
+                [4,2], [5,2], [6,2], [7,2],
+                [4,5], [5,5], [6,5], [7,5],
+                [4,6], [5,6], [6,6], [7,6],
+                [4,7], [5,7], [6,7], [7,7], [8,7], [9,7], [10,7], [11,7]
             ],
-            // Les na šíji - zpomaluje útočníky
-            forest: [
-                [3,1], [4,1], [5,1],
-                [3,2], [4,2], [5,2],
-                [3,3], [4,3], [5,3],
-                [3,4], [4,4], [5,4],
-                [3,5], [4,5], [5,5]
+            // Příkopy v hrdle ("tři pásy úzkých příkopů" - Dolejší) - zpomalují
+            // namačkanou jízdu těsně před sruby
+            mud: [
+                [5,3], [6,3],
+                [5,4], [6,4]
             ],
             plains: 'default'
         },
@@ -543,26 +548,29 @@ const Scenarios = {
             hussites: {
                 commander: 'Jan Žižka z Trocnova',
                 units: [
-                    // Posádka srubů - malá hrstka bez velitele (historicky 26-30 lidí)
-                    // SRUBY - vozové hradby jako opevnění
-                    { type: 'VOZOVA_HRADBA', col: 8, row: 3 },
-                    { type: 'VOZOVA_HRADBA', col: 8, row: 4 },
-                    // Obránci
-                    { type: 'CEPNICI', col: 9, row: 3 },
-                    { type: 'SUDLICNICI', col: 9, row: 4 },
-                    { type: 'SUDLICNICI', col: 10, row: 3 },
-                    // Střelci
-                    { type: 'KUSINICI_HUSITI', col: 10, row: 2 }
+                    // SRUBY (vozové hradby) - ucpávají 2hexové hrdlo šíje
+                    { type: 'VOZOVA_HRADBA', col: 7, row: 3 },
+                    { type: 'VOZOVA_HRADBA', col: 7, row: 4 },
+                    // Posádka: historicky 26 mužů, 2 ženy a panna. Velel OSOBNĚ
+                    // Žižka (byl na kopci, ne posila). Cepy a sudlice, málo střelby.
+                    { type: 'JAN_ZIZKA', col: 9, row: 4 },
+                    { type: 'CEPNICI', col: 8, row: 3 },
+                    { type: 'CEPNICI', col: 8, row: 2 },
+                    { type: 'SUDLICNICI', col: 8, row: 4 },
+                    { type: 'KUSINICI_HUSITI', col: 9, row: 3 }
                 ],
                 reinforcements: {
                     turn: 4,
                     units: [
-                        // Žižka vede posily z Prahy!
-                        { type: 'JAN_ZIZKA', col: 9, row: 7 },
-                        { type: 'CEPNICI', col: 10, row: 7 },
-                        { type: 'KUSINICI_HUSITI', col: 11, row: 7 }
+                        // Pomoc z Prahy: kněz Jan Želivský s Tělem Páně + lid
+                        // s cepy. Tento příchod zlomil útok - Němci prchli v hrůze
+                        // ze svátosti (Vavřinec z Březové).
+                        { type: 'JAN_ZELIVSKY', col: 10, row: 5 },
+                        { type: 'CEPNICI', col: 10, row: 6 },
+                        { type: 'CEPNICI', col: 11, row: 5 },
+                        { type: 'SUDLICNICI', col: 11, row: 6 }
                     ],
-                    message: 'Jan Žižka vede posily z Prahy!'
+                    message: 'Kněz Jan Želivský přivádí z Prahy lid s Tělem Páně! Křižáci couvají před svátostí!'
                 }
             },
             crusaders: {
@@ -591,7 +599,7 @@ const Scenarios = {
                 id: 1,
                 name: 'Útok na šíji',
                 turnRange: [1, 3],
-                description: 'Míšeňská a rakouská jízda útočí přes les.',
+                description: 'Míšeňská a duryňská jízda se valí do úzkého hrdla šíje.',
                 events: []
             },
             {
