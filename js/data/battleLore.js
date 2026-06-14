@@ -102,12 +102,12 @@ const BattleLore = {
         location: 'Vrch Vítkov, Praha 3 - Žižkov',
         hussiteSide: {
             commanders: ['Jan Žižka z Trocnova'],
-            strength: '~60 obránců + posily (~50 střelců, cepníci)',
-            composition: 'Střelci s hákovnicemi, cepníci, 3 ženy'
+            strength: '26 mužů, 2 ženy a panna v srubech; pražská pomoc s cepy',
+            composition: 'Cepníci a sudličníci, jen pár kuší (málo prachu), 3 ženy'
         },
         enemySide: {
-            commanders: ['Zikmund Lucemburský', 'Fridrich IV. Bojovný', 'Heinrich z Isenburgu (padl)', 'Pippo Spano'],
-            strength: '~30 000 celkem; 7-8 000 útočníků na Vítkov',
+            commanders: ['Zikmund Lucemburský', 'Fridrich IV. Bojovný', 'Heinrich z Isenburgu (velel útoku)', 'Pippo Spano'],
+            strength: '~30 000 celkem; 7-8 000 v sektoru, ale do hrdla se vešlo jen ~300 jezdců',
             composition: 'Mezinárodní křižácká armáda'
         },
         terrain: 'Protáhlý hřeben se strmými svahy, dřevěné sruby. Úzká přístupová cesta neumožnila využít převahu.',
@@ -119,11 +119,11 @@ const BattleLore = {
             '3 ŽENY bránily Vítkov',
             'Pokřik "Hrrr na ně!" se stal heslem husitů',
             'Jezdecká socha Žižky na Vítkově - třetí největší na světě',
-            '14. červenec je Památný den české armády'
+            'Den před bitvou jízda rozprášila Pražany, kteří proti rozkazu vyrazili z brány'
         ],
         casualties: { hussites: 'Jednotky až desítky', enemy: '100-300 padlých' },
         aftermath: 'Rozhodné vítězství. 30. července rozpuštění křížové výpravy.',
-        reliability: 'Vysoká - Vavřinec z Březové byl přímý účastník'
+        reliability: 'Vysoká - Vavřinec z Březové byl současník a kronikář'
     },
 
     // Bitva pod Vyšehradem

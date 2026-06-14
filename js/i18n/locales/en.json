@@ -2306,17 +2306,17 @@
         "commanders": [
           "Jan Žižka of Trocnov"
         ],
-        "strength": "~60 defenders + reinforcements (~50 shooters, flailmen)",
-        "composition": "Shooters with hand cannons, flailmen, 3 women"
+        "strength": "26 men, 2 women and a maiden in the blockhouses; Prague relief with flails",
+        "composition": "Flailmen and glaivemen, few crossbows (little gunpowder), 3 women"
       },
       "enemySide": {
         "commanders": [
           "Sigismund of Luxembourg",
           "Frederick IV the Warlike",
-          "Henry of Isenburg (fell)",
+          "Henry of Isenburg (led the assault)",
           "Pippo Spano"
         ],
-        "strength": "~30,000 total; 7-8,000 attackers on Vítkov",
+        "strength": "~30,000 total; 7-8,000 in the sector, but only ~300 riders fit into the neck",
         "composition": "International crusader army"
       },
       "terrain": "Extended ridge with steep slopes, wooden blockhouses. Narrow access path prevented use of numerical superiority.",
@@ -2342,9 +2342,9 @@
         "3 WOMEN defended Vítkov",
         "Battle cry 'Hrrr at them!' became Hussite motto",
         "Equestrian statue of Žižka on Vítkov - third largest in the world",
-        "July 14 is Memorial Day of Czech Army"
+        "The day before, cavalry scattered Prague townsfolk who charged out against orders"
       ],
-      "reliability": "High - Vavřinec of Březová was direct participant"
+      "reliability": "High - Vavřinec of Březová was a contemporary chronicler"
     },
     "vysehrad": {
       "name": "Battle under Vyšehrad",
