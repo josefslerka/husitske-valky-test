@@ -25,6 +25,9 @@ Temporary Items
 # Claude Code
 .claude/
 
+# Prameny / zdroje (knihy, PDF, EPUB) - copyright, nepublikovat
+zdroje/
+
 # R
 .Rhistory
 
