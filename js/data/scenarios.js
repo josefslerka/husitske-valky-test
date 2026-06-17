@@ -652,7 +652,7 @@ const Scenarios = {
         historicalSignificance: 'Praha plně v husitských rukou. Ztráta důvěry české šlechty v Zikmunda. 25 korouhevních pánů padlo.',
 
         briefing: {
-            hussites: 'Obléháte Vyšehrad od září. Posádka vyjednala kapitulaci na 15:00 - pokud Zikmund nepřijde dřív. Je Den všech svatých a královské vojsko se blíží. Braňte své pozice!',
+            hussites: 'Obléháte Vyšehrad od září. Posádka vyjednala kapitulaci na ráno (středověká "hodina patnáctá") - pokud Zikmund nepřijde dřív. Je Den všech svatých a královské vojsko se blíží. Braňte své pozice!',
             crusaders: 'Musíte prorazit k Vyšehradu a zachránit posádku! Česká šlechta útočí od Podolí, hlavní voj čelně.'
         },
 
@@ -812,9 +812,9 @@ const Scenarios = {
                 id: 1,
                 name: 'Zikmund přichází pozdě',
                 turnRange: [1, 2],
-                description: 'Královské vojsko dorazí po 15:00 - hodinu po ultimátu.',
+                description: 'Královské vojsko dorazí až po ultimátu ke kapitulaci - příliš pozdě.',
                 events: [
-                    { trigger: 'turn_1', message: 'Je po 15. hodině. Vyšehradská posádka již kapitulovala - nemůže vám pomoci!' },
+                    { trigger: 'turn_1', message: 'Ultimátum vypršelo - vyšehradská posádka už kapitulovala a nemůže vám pomoci!' },
                     { trigger: 'turn_2', message: 'Zikmund marně mává mečem směrem k Vyšehradu. Je pozdě.' }
                 ]
             },
@@ -932,7 +932,7 @@ const Scenarios = {
 
         specialMechanics: {
             capitulationAgreement: {
-                description: 'Vyšehradská posádka kapitulovala v 15:00',
+                description: 'Vyšehradská posádka kapitulovala ráno ("hodina patnáctá" = ~8:00 ráno, vlašské hodiny)',
                 effect: 'no_vysehrad_sortie',
                 note: 'Posádka do bitvy nezasáhne bez ohledu na průběh'
             },
