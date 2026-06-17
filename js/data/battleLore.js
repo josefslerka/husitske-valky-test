@@ -179,7 +179,8 @@ const BattleLore = {
             'Žižka byl ZCELA SLEPÝ - druhé oko ztratil při obléhání Rabí',
             'Kutnohorští tajně spolupracovali se Zikmundem a otevřeli mu brány',
             'Zikmund strávil Vánoce v domnění, že vyhrál',
-            'PRVNÍ mobilní dělostřelecký manévr v historii - noční průlom'
+            'PRVNÍ mobilní dělostřelecký manévr v historii - noční průlom',
+            'Kutnohorští horníci házeli zajaté husity do dolových šachet - odtud ta zrada'
         ],
         casualties: { hussites: '300-500', enemy: '2-12 000' },
         aftermath: 'Husitské vítězství. Geniální noční průlom vozovou hradbou.',

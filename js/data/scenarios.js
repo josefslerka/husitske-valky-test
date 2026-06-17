@@ -1201,7 +1201,8 @@ const Scenarios = {
                     { type: 'TEZKY_RYTIR', col: 4, row: 5 },
                     { type: 'TEZKY_RYTIR', col: 4, row: 7 },
                     { type: 'LEHKA_JIZDA', col: 5, row: 6 },
-                    // Jižní blok (blokuje cestu ke Kolínu)
+                    // Jižní blok (blokuje cestu ke Kolínu) - vede Pippo Spano
+                    { type: 'FILIPPO_SCOLARI', col: 6, row: 10 },
                     { type: 'KOPINICI', col: 6, row: 9 },
                     { type: 'KOPINICI', col: 7, row: 9 },
                     { type: 'KOPINICI', col: 8, row: 9 },
