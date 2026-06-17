@@ -19,7 +19,7 @@ class I18n {
         }
 
         try {
-            const response = await fetch(`js/i18n/locales/${lang}.json?v=1.5`);
+            const response = await fetch(`js/i18n/locales/${lang}.json?v=1.6`);
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }

@@ -1476,7 +1476,7 @@ const Scenarios = {
         },
 
         debriefing: {
-            victory: 'Katastrofa křižáckého vojska! Zikmundovi muži prchali přes zamrzlou Sázavu a led se pod nimi propadal. Desítky rytířů utonuly ve svých zbrojích. 500 vozů s proviantem padlo do vašich rukou. 2. křížová výprava končí naprostým debaklem.',
+            victory: 'Katastrofa křižáckého vojska! Podle tradice prchali Zikmundovi muži přes zamrzlou Sázavu a led se pod nimi propadal. Skutečnou hrůzou ústupu byl ale krutý mráz - umrzaly i prchající ženy a děti. 500 vozů s proviantem padlo do vašich rukou. 2. křížová výprava končí naprostým debaklem.',
             defeat: 'Zikmund unikl! Většina jeho vojska překročila Sázavu a spálila most za sebou. Kořist je minimální a příští křížová výprava přijde mnohem dříve.'
         },
 

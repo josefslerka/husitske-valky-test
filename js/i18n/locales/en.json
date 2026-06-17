@@ -2455,7 +2455,7 @@
         "strength": "Remnants of crusader army",
         "composition": "Fleeing Hungarian and Austrian detachments"
       },
-      "terrain": "Height at Habry, frozen Sázava. Ice became deadly trap.",
+      "terrain": "Táborec hill by Habry and the frozen Sázava, bitter frost. Main fighting at the town walls (St. Adalbert suburb).",
       "weather": "Severe winter, frozen river",
       "outcome": "Crushing victory. 2nd Crusade ends in complete debacle.",
       "casualties": {
@@ -2475,10 +2475,12 @@
         }
       ],
       "trivia": [
-        "January 11 Žižka was KNIGHTED",
-        "548 knights drowned under ice on Sázava",
+        "Žižka was ALLEGEDLY knighted at Německý Brod (around January 10)",
+        "By chronicle tradition 548 knights drowned under the Sázava ice - but the critical historian Dolejší never mentions the ice",
         "City was EMPTY FOR YEARS - wolves ran through streets",
-        "Massacre was revenge for murder of Hussites at Kutná Hora"
+        "Massacre was revenge for murder of Hussites at Kutná Hora",
+        "The real horror of the retreat was the frost - fleeing women and children froze to death on the road (Dolejší)",
+        "The crusaders made their stand backs to the walls by St. Adalbert church, covered by a Teutonic Knights commandery"
       ],
       "reliability": "High"
     },

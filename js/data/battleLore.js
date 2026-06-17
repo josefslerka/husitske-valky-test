@@ -202,16 +202,18 @@ const BattleLore = {
             strength: 'Zbytky křižáckého vojska',
             composition: 'Prchající uherské a rakouské oddíly'
         },
-        terrain: 'Výšina u Habrů, zamrzlá Sázava. Led se stal smrtelnou pastí.',
+        terrain: 'Výšina Táborec u Habrů a zamrzlá Sázava, krutý mráz. Hlavní boj u hradeb Brodu (Vojtěšské předměstí).',
         quotes: [
             { text: 'Město Německý Brod padá a hynou všichni... nejméně tisíc a pět set lidí.', source: 'Kronika starého pražského kolegiáta' },
             { text: '[Masakr byl] velký hřích na duších všech zúčastněných husitů.', source: 'List Jana Žižky, 1423' }
         ],
         trivia: [
-            '11. ledna byl Žižka PASOVÁN NA RYTÍŘE',
-            '548 rytířů se utopilo pod ledem na Sázavě',
+            'Žižka byl u Německého Brodu ÚDAJNĚ pasován na rytíře (kolem 10. ledna)',
+            'Podle kronikářské tradice se 548 rytířů utopilo pod ledem Sázavy - kritický Dolejší ale propadlý led vůbec nezmiňuje',
             'Město bylo NĚKOLIK LET PUSTÉ - vlci běhali ulicemi',
-            'Masakr byl odvetou za vraždění husitů v Kutné Hoře'
+            'Masakr byl odvetou za vraždění husitů v Kutné Hoře',
+            'Skutečnou hrůzou ústupu byl mráz - prchající ženy a děti umrzaly cestou (Dolejší)',
+            'Křižáci se bránili zády ke hradbám u kostelíka sv. Vojtěcha, kryla je i komenda německých rytířů'
         ],
         casualties: { hussites: 'Nízké', enemy: 'Tisíce mrtvých v poli + ve městě' },
         aftermath: 'Drtivá výhra. 2. křížová výprava končí naprostým debaklem.',
