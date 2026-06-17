@@ -230,7 +230,73 @@ class HexGrid {
             case 'slope':
                 this.drawSlope(x, y, size);
                 break;
+            case 'trenches':
+                this.drawTrenches(x, y, size);
+                break;
+            case 'church':
+                this.drawChurch(x, y, size);
+                break;
         }
+    }
+
+    drawTrenches(x, y, size) {
+        // Okopy - zemní val s příkopem a palisádou (husitská opevnění)
+        // Příkop (tmavý)
+        this.ctx.fillStyle = '#4a3a28';
+        this.ctx.fillRect(x - 18, y + 2, 36, 11);
+        // Zemní val (navršená hlína)
+        this.ctx.fillStyle = '#7a5f3f';
+        this.ctx.beginPath();
+        this.ctx.moveTo(x - 18, y + 2);
+        this.ctx.lineTo(x - 12, y - 8);
+        this.ctx.lineTo(x + 12, y - 8);
+        this.ctx.lineTo(x + 18, y + 2);
+        this.ctx.closePath();
+        this.ctx.fill();
+        // Palisáda - kůly na valu
+        this.ctx.strokeStyle = '#3a2a1a';
+        this.ctx.lineWidth = 2;
+        for (let i = -12; i <= 12; i += 5) {
+            this.ctx.beginPath();
+            this.ctx.moveTo(x + i, y - 8);
+            this.ctx.lineTo(x + i, y - 15);
+            this.ctx.stroke();
+        }
+    }
+
+    drawChurch(x, y, size) {
+        // Kostel - loď s věží a křížem
+        // Loď
+        this.ctx.fillStyle = '#cfc3a8';
+        this.ctx.fillRect(x - 12, y - 4, 22, 18);
+        // Střecha lodi
+        this.ctx.fillStyle = '#6b3a2a';
+        this.ctx.beginPath();
+        this.ctx.moveTo(x - 14, y - 4);
+        this.ctx.lineTo(x - 1, y - 14);
+        this.ctx.lineTo(x + 12, y - 4);
+        this.ctx.closePath();
+        this.ctx.fill();
+        // Věž
+        this.ctx.fillStyle = '#bfb398';
+        this.ctx.fillRect(x + 4, y - 20, 9, 16);
+        // Špička věže
+        this.ctx.fillStyle = '#6b3a2a';
+        this.ctx.beginPath();
+        this.ctx.moveTo(x + 3, y - 20);
+        this.ctx.lineTo(x + 8.5, y - 28);
+        this.ctx.lineTo(x + 14, y - 20);
+        this.ctx.closePath();
+        this.ctx.fill();
+        // Kříž
+        this.ctx.strokeStyle = '#2a1a0a';
+        this.ctx.lineWidth = 1.5;
+        this.ctx.beginPath();
+        this.ctx.moveTo(x + 8.5, y - 28);
+        this.ctx.lineTo(x + 8.5, y - 33);
+        this.ctx.moveTo(x + 6, y - 31);
+        this.ctx.lineTo(x + 11, y - 31);
+        this.ctx.stroke();
     }
 
     drawPlains(x, y, size, decorations) {

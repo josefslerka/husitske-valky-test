@@ -652,7 +652,7 @@ const Scenarios = {
         historicalSignificance: 'Praha plně v husitských rukou. Ztráta důvěry české šlechty v Zikmunda. 25 korouhevních pánů padlo.',
 
         briefing: {
-            hussites: 'Obléháte Vyšehrad od září. Posádka vyjednala kapitulaci na 8:00 - pokud Zikmund nepřijde dřív. Je Den všech svatých a královské vojsko se blíží. Braňte své pozice!',
+            hussites: 'Obléháte Vyšehrad od září. Posádka vyjednala kapitulaci na 15:00 - pokud Zikmund nepřijde dřív. Je Den všech svatých a královské vojsko se blíží. Braňte své pozice!',
             crusaders: 'Musíte prorazit k Vyšehradu a zachránit posádku! Česká šlechta útočí od Podolí, hlavní voj čelně.'
         },
 
@@ -678,12 +678,18 @@ const Scenarios = {
             church: [
                 [15,13]
             ],
-            // Podolský svah - strmý, past pro jízdu
+            // Podolský svah - strmý, past pro jízdu (šlechta musí sesednout)
             slope: [
                 [20,20], [21,20], [22,20], [23,20], [24,20],
                 [20,21], [21,21], [22,21], [23,21], [24,21],
                 [21,22], [22,22], [23,22], [24,22],
                 [22,23], [23,23], [24,23]
+            ],
+            // Mokřiny a rybníky pod Podolím - kde sesednutá šlechta uvázla
+            // a sedláci ji bez slitování ubíjeli cepy (Dolejší)
+            mud: [
+                [19,23], [20,23], [21,23], [25,23],
+                [19,24], [20,24], [21,24], [22,24], [23,24], [24,24], [25,24]
             ],
             // Údolí Botiče
             forest: [
@@ -926,7 +932,7 @@ const Scenarios = {
 
         specialMechanics: {
             capitulationAgreement: {
-                description: 'Vyšehradská posádka kapitulovala v 8:00',
+                description: 'Vyšehradská posádka kapitulovala v 15:00',
                 effect: 'no_vysehrad_sortie',
                 note: 'Posádka do bitvy nezasáhne bez ohledu na průběh'
             },
@@ -948,7 +954,7 @@ const Scenarios = {
         },
 
         debriefing: {
-            victory: 'Rozhodující vítězství pod Vyšehradem! 25 korouhevních pánů české šlechty padlo v úvozu pod Podolím. Vyšehradská posádka kapitulovala a Praha je plně v husitských rukou. Zikmund přišel pozdě a s ním i důvěra české šlechty v jeho schopnosti.',
+            victory: 'Rozhodující vítězství pod Vyšehradem! 25 korouhevních pánů české šlechty padlo v mokřinách pod Podolím. Vyšehradská posádka kapitulovala a Praha je plně v husitských rukou. Zikmund přišel pozdě a s ním i důvěra české šlechty v jeho schopnosti. Moravský hejtman Jindřich z Plumlova, hnaný králem na porážku a pak opuštěný, padl podle svého slibu: "Budeme nakonec v bitvě, kde ty už nebudeš!"',
             defeat: 'Zikmundovy síly prorazily k Vyšehradu včas. Posádka byla zachráněna a husité utrpěli těžké ztráty. Obléhání Prahy pokračuje a husitská věc je v ohrožení.'
         },
 
