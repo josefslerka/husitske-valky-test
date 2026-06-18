@@ -747,12 +747,13 @@
       "trivia": [
         "Piccolomini MYLNĚ připsal vítězství mrtvému Žižkovi",
         "PRVNÍ velká bitva Prokopa Holého jako velitele",
-        "14 hrabat a baronů padlo",
+        "Padlo 7 říšských hrabat a 23 korouhevních pánů",
+        "Smírný list odmítnut → obě strany si slíbily nikoho nešetřit; 24 klečících pánů pobito",
         "POSLEDNÍ BITVA kde jízda čelně napadla vozovou hradbu"
       ],
       "casualties": {
-        "hussites": "Údajně pouze 16 mužů (!)",
-        "enemy": "~4 000"
+        "hussites": "Údajně jen 19 mužů (Starý letopisec)",
+        "enemy": "~4 000 (kroniky až 15 000)"
       },
       "reliability": "Vysoká",
       "outcome": "Drtivé vítězství. Saské vévodství zdecimováno."
@@ -1704,10 +1705,10 @@
     "usti_1426": {
       "name": "Bitva u Ústí nad Labem",
       "description": "Nejkrvavější porážka křižáků. Husité s dvojitou vozovou hradbou decimují útočící Sasy.",
-      "historicalSignificance": "Poslední velký čelní útok na vozovou hradbu. Ztráty křižáků: 4000, husitů: 30.",
+      "historicalSignificance": "Poslední velký čelní útok těžké jízdy na vozovou hradbu. Podle Starých letopisů padlo Čechů jen 19 (a nikdo významný kromě měšťana Jana Bradatého); německé ztráty kroniky kladou na tisíce, až k 15 000.",
       "briefing": {
-        "hussites": "Postavte dvojitou vozovou hradbu na návrší Na Běhání. Nechte nepřítele přijít k vám a zničte ho palbou.",
-        "crusaders": "Prorazte husitské opevnění a osvoboďte obležené Ústí nad Labem."
+        "hussites": "Postavte dvojitou vozovou hradbu na návrší Na Běhání. Nechte nepřítele přijít k vám a zničte ho palbou. Před bojem si obě strany slíbily nikoho nešetřit.",
+        "crusaders": "Prorazte husitské opevnění a osvoboďte obležené Ústí nad Labem. Vrchní velení má kondotiér Boso z Vitzthumu."
       },
       "events": [
         {
@@ -1724,7 +1725,7 @@
         ]
       },
       "debriefing": {
-        "victory": "Masakr Na Běhání! 4000 křižáků padlo, zatímco husité ztratili pouhých 30 mužů. Dvojitá vozová hradba se ukázala jako nepřekonatelná překážka. Saské vévodství je zdecimováno a už nikdy nevyšle vojsko proti husitům.",
+        "victory": "Masakr Na Běhání! Podle Starých letopisů padlo Čechů jen 19 - a nikdo významný kromě měšťana Jana Bradatého; německé ztráty kroniky kladou na tisíce, až k 15 000. Dvojitá vozová hradba se ukázala jako nepřekonatelná překážka. Vítězství ale neslo i temný stín: 24 klečících hrabat a korouhevních pánů, kteří prosili o milost, bylo pro vzájemný slib nešetřit nikoho do jednoho pobito. Pověst o české nepřemožitelnosti je na světě.",
         "defeat": "Saská jízda prorazila vaši hradbu! Katastrofální porážka husitů mění rovnováhu sil. Bez vozové hradby jste bezbranní proti těžké jízdě."
       },
       "phases": [
@@ -1732,7 +1733,8 @@
           "name": "Křižácký útok",
           "description": "Němci útočí v parném vedru.",
           "events": [
-            {"message": "Saské vojsko zahajuje útok v nesnesitelném vedru!"}
+            {"message": "Smírný list odmítnut! Němci pyšně vzkázali, že \"nikoho neživit nebudou a všechny pobijí\" - Češi se proto zavázali stejným slibem. Pardon nedá nikdo."},
+            {"message": "Saské a míšeňské jezdectvo útočí do svahu v nesnesitelném červnovém vedru!"}
           ]
         },
         {
@@ -1744,7 +1746,8 @@
           "name": "Panika a útěk",
           "description": "Křižáci se dávají na bezhlavý útěk.",
           "events": [
-            {"message": "\"Běží! Němci běží!\" - křižáci prchají!"}
+            {"message": "\"Běží! Němci běží!\" - křižáci prchají!"},
+            {"message": "Pod německou korouhví pokleklo 24 hrabat a korouhevních pánů s meči zabodnutými do země a prosili o milost - pro slib daný před bojem jsou ale do jednoho pobiti."}
           ]
         }
       ],

@@ -602,9 +602,19 @@
         "historicalNote": "Henry of Isenburg led elite Meissen knights in the assault on Vítkov. Although crusaders initially broke through defenses, Žižka's counterattack swept them away. Many knights perished, including Henry, or were captured."
       }
     },
+    "BOSO_VITZTHUM": {
+      "name": "Boso of Vitzthum",
+      "description": "Renowned condottiere entrusted with field command of the crusade at Ústí nad Labem in 1426. He fell in the battle.",
+      "lore": {
+        "description": "Boso of Vitzthum (in Czech sources 'Boso of Fictum') was a seasoned mercenary captain — a condottiere. Field command at Ústí was entrusted to him by the Saxon Elector Frederick the Belligerent, who organized the crusade but did not take part in the main battle in person.",
+        "equipment": "Plate armor, lance, sword; the counts of Weida and Schwarzburg stood under his banner.",
+        "origin": "Meissen-Saxon (Wettin) army",
+        "historicalNote": "The Battle of Ústí (June 16, 1426) was, according to the chronicles, the bloodiest battle of the Hussite Wars. After the defeat, 24 counts and bannerlords knelt under the German banner, swords driven into the ground, begging for mercy — but because both sides had vowed before the battle to spare no one, every last one was slain. Boso himself did not survive his command."
+      }
+    },
     "FRIDRICH_SASKY": {
       "name": "Frederick the Belligerent",
-      "description": "Duke of Saxony called the Belligerent. Commander of crusade at Ústí nad Labem 1426.",
+      "description": "Duke of Saxony called the Belligerent. Organized the great crusade of 1426; field command at Ústí, however, he entrusted to the condottiere Boso of Vitzthum.",
       "lore": {
         "description": "Frederick IV the Warlike (1370-1428) was Margrave of Meissen and from 1423 Elector of Saxony. In 1426, his Saxon army launched a great crusade that ended in catastrophic defeat at Ústí nad Labem.",
         "equipment": "Ornate Gothic armor, lance, sword, banner with Saxon coat of arms.",
@@ -1444,10 +1454,10 @@
     "usti_1426": {
       "name": "Battle of Ústí nad Labem",
       "description": "Bloodiest defeat of crusaders. Hussites with double wagon fort decimate attacking Saxons.",
-      "historicalSignificance": "Last major frontal attack on wagon fort. Crusader losses: 4,000, Hussite: 30.",
+      "historicalSignificance": "Last major frontal attack of heavy cavalry on a wagon fort. According to the Old Annals only 19 Czechs fell (and no one of note except the burgher Jan Bradatý); chronicles put German losses in the thousands, up to 15,000.",
       "briefing": {
-        "hussites": "Build double wagon fort on Na Běhání hill. Let enemy come to you and destroy them with fire.",
-        "crusaders": "Break through Hussite fortifications and liberate besieged Ústí nad Labem."
+        "hussites": "Build a double wagon fort on Na Běhání hill. Let the enemy come to you and destroy them with fire. Before the battle, both sides vowed to spare no one.",
+        "crusaders": "Break through the Hussite fortifications and liberate besieged Ústí nad Labem. Supreme command is held by the condottiere Boso of Vitzthum."
       },
       "events": [
         {
@@ -1464,7 +1474,7 @@
         ]
       },
       "debriefing": {
-        "victory": "Massacre at Na Běhání! 4,000 crusaders fell, while Hussites lost only 30 men. Double wagon fort proved insurmountable obstacle. Saxon duchy is decimated and will never send army against Hussites again.",
+        "victory": "Massacre at Na Běhání! According to the Old Annals only 19 Czechs fell - and no one of note except the burgher Jan Bradatý; chronicles put German losses in the thousands, up to 15,000. The double wagon fort proved an insurmountable obstacle. Yet the victory carried a dark shadow: 24 kneeling counts and bannerlords who begged for mercy were, by the mutual vow to spare no one, slain to the last man. The legend of Czech invincibility is born.",
         "defeat": "Saxon cavalry broke through your fort! Catastrophic Hussite defeat changes balance of power. Without wagon fort you're defenseless against heavy cavalry."
       },
       "phases": [
@@ -1472,7 +1482,8 @@
           "name": "Crusader attack",
           "description": "Germans attack in scorching heat.",
           "events": [
-            {"message": "Saxon army begins attack in unbearable heat!"}
+            {"message": "Truce letter refused! The Germans proudly replied they 'would keep no one alive and kill them all' - so the Czechs took the same vow. No one gives quarter."},
+            {"message": "Saxon and Meissen cavalry charge uphill in the unbearable June heat!"}
           ]
         },
         {
@@ -1484,7 +1495,8 @@
           "name": "Panic and flight",
           "description": "Crusaders break into headlong flight.",
           "events": [
-            {"message": "\"They run! Germans run!\" - crusaders flee!"}
+            {"message": "\"They run! Germans run!\" - crusaders flee!"},
+            {"message": "Under the German banner, 24 counts and bannerlords knelt with swords driven into the ground and begged for mercy - but by the vow taken before the battle, they are slain to the last."}
           ]
         }
       ],
@@ -2554,8 +2566,8 @@
       "weather": "Unknown",
       "outcome": "Crushing victory. Saxon duchy decimated.",
       "casualties": {
-        "hussites": "Allegedly only 16 men (!)",
-        "enemy": "~4,000"
+        "hussites": "Allegedly only 19 men (Old Annalist)",
+        "enemy": "~4,000 (chronicles up to 15,000)"
       },
       "aftermath": "Crushing victory. Saxon duchy decimated.",
       "significance": "LAST BATTLE where cavalry frontally attacked wagon fort. Piccolomini wrongly attributed victory to dead Žižka.",
@@ -2572,7 +2584,8 @@
       "trivia": [
         "Piccolomini WRONGLY attributed victory to dead Žižka",
         "FIRST great battle of Prokop the Great as commander",
-        "14 counts and barons fell",
+        "7 imperial counts and 23 bannerlords fell",
+        "Truce letter refused → both sides vowed to spare no one; 24 kneeling lords slain",
         "LAST BATTLE where cavalry frontally attacked wagon fort"
       ],
       "reliability": "High"

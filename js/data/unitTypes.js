@@ -1289,7 +1289,7 @@ const UnitTypes = {
         range: 1,
         movement: 4,
         cost: 500,
-        description: 'Vévoda saský zvaný Bojovný. Velitel křížové výpravy u Ústí nad Labem 1426.',
+        description: 'Vévoda saský zvaný Bojovný. Zorganizoval velkou křížovou výpravu roku 1426; polní velení u Ústí ale svěřil kondotiérovi Bosovi z Vitzthumu.',
         special: 'commander',
         unitClass: 'commander',
         baseMorale: 90,
@@ -1305,6 +1305,40 @@ const UnitTypes = {
             attackBonus: 5,
             defenseBonus: 4,
             cavalryBonus: 12,       // Bonus pro jízdu
+            rallyBonus: 20,
+            fearRange: 3,
+            fearPenalty: 5
+        }
+    },
+
+    // Boso z Vitzthumu (v čes. pramenech „Boso z Fictuma") - kondotiér, vrchní polní velitel křižáků u Ústí 1426 (padl)
+    BOSO_VITZTHUM: {
+        id: 'boso_vitzthum',
+        name: 'Boso z Vitzthumu',
+        faction: 'crusaders',
+        symbol: '🦅',  // Saská/míšeňská korouhev
+        maxHealth: 100,
+        attack: 36,
+        defense: 30,
+        range: 1,
+        movement: 4,
+        cost: 500,
+        description: 'Proslulý kondotiér, jemuž bylo svěřeno vrchní velení křížové výpravy u Ústí nad Labem 1426. V bitvě padl.',
+        special: 'commander',
+        unitClass: 'commander',
+        baseMorale: 90,
+        lore: {
+            description: 'Boso z Vitzthumu (v českých pramenech „Boso z Fictuma") byl zkušený žoldnéřský velitel — kondotiér. Vrchní velení na bojišti u Ústí mu svěřil saský kurfiřt Fridrich Bojovný, který výpravu zorganizoval, ale hlavní bitvy se osobně neúčastnil.',
+            equipment: 'Plátová zbroj, kopí, meč; pod jeho korouhví stála hrabata z Weidy a Schwarzburku.',
+            origin: 'Míšeňsko-saské (wettinské) vojsko',
+            historicalNote: 'Bitva u Ústí (16. června 1426) byla podle kronik nejkrvavější bitvou husitských válek. Po porážce pokleklo pod německou korouhví 24 hrabat a korouhevních pánů s meči zabodnutými do země a prosilo o milost — protože si však obě strany před bojem slíbily nikoho nešetřit, byli všichni do jednoho pobiti. Sám Boso velení nepřežil.'
+        },
+        commanderAbilities: {
+            auraRange: 4,
+            moraleBonus: 15,
+            attackBonus: 5,
+            defenseBonus: 4,
+            cavalryBonus: 12,
             rallyBonus: 20,
             fearRange: 3,
             fearPenalty: 5

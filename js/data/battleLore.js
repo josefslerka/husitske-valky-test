@@ -273,10 +273,11 @@ const BattleLore = {
         trivia: [
             'Piccolomini MYLNĚ připsal vítězství mrtvému Žižkovi',
             'PRVNÍ velká bitva Prokopa Holého jako velitele',
-            '14 hrabat a baronů padlo',
+            'Padlo 7 říšských hrabat a 23 korouhevních pánů',
+            'Smírný list odmítnut → obě strany si slíbily nikoho nešetřit; 24 klečících pánů pobito',
             'POSLEDNÍ BITVA kde jízda čelně napadla vozovou hradbu'
         ],
-        casualties: { hussites: 'Údajně pouze 16 mužů (!)', enemy: '~4 000' },
+        casualties: { hussites: 'Údajně jen 19 mužů (Starý letopisec)', enemy: '~4 000 (kroniky až 15 000)' },
         aftermath: 'Drtivé vítězství. Saské vévodství zdecimováno.',
         reliability: 'Vysoká'
     },

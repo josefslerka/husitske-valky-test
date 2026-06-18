@@ -1729,11 +1729,11 @@ const Scenarios = {
         type: 'field_battle',
         difficulty: 2,
         description: 'Nejkrvavější porážka křižáků. Husité s dvojitou vozovou hradbou decimují útočící Sasy.',
-        historicalSignificance: 'Poslední velký čelní útok na vozovou hradbu. Ztráty křižáků: 4000, husitů: 30.',
+        historicalSignificance: 'Poslední velký čelní útok těžké jízdy na vozovou hradbu. Podle Starých letopisů padlo Čechů jen 19 (a nikdo významný kromě měšťana Jana Bradatého); německé ztráty kroniky kladou na tisíce, až k 15 000.',
 
         briefing: {
-            hussites: 'Postavte dvojitou vozovou hradbu na návrší Na Běhání. Nechte nepřítele přijít k vám a zničte ho palbou.',
-            crusaders: 'Prorazte husitské opevnění a osvoboďte obležené Ústí nad Labem.'
+            hussites: 'Postavte dvojitou vozovou hradbu na návrší Na Běhání. Nechte nepřítele přijít k vám a zničte ho palbou. Před bojem si obě strany slíbily nikoho nešetřit.',
+            crusaders: 'Prorazte husitské opevnění a osvoboďte obležené Ústí nad Labem. Vrchní velení má kondotiér Boso z Vitzthumu.'
         },
 
         mapSize: { width: 22, height: 14 },
@@ -1746,7 +1746,7 @@ const Scenarios = {
                 [14,6], [15,6], [16,6], [17,6], [18,6],
                 [15,7], [16,7], [17,7]
             ],
-            // Potok Ždírnice pod kopcem
+            // Chabařovický potok pod svahem (po bitvě prý celý rudý krví)
             water: [
                 [10,3], [11,4], [12,5], [11,6], [10,7]
             ],
@@ -1789,10 +1789,10 @@ const Scenarios = {
                 ]
             },
             crusaders: {
-                commander: 'Fridrich Saský',
+                commander: 'Boso z Vitzthumu',
                 units: [
-                    // VELITEL - vévoda Fridrich Saský (Bojovný)
-                    { type: 'FRIDRICH_SASKY', col: 2, row: 5 },
+                    // VELITEL - kondotiér Boso z Vitzthumu (vrchní polní velení, padl). Fridrich Bojovný výpravu zorganizoval, ale bitvy se neúčastnil.
+                    { type: 'BOSO_VITZTHUM', col: 2, row: 5 },
                     // Saská a míšeňská jízda - hlavní útočná síla
                     { type: 'TEZKY_RYTIR', col: 3, row: 4 },
                     { type: 'TEZKY_RYTIR', col: 3, row: 5 },
@@ -1822,7 +1822,8 @@ const Scenarios = {
                 turnRange: [1, 4],
                 description: 'Němci útočí v parném vedru.',
                 events: [
-                    { trigger: 'turn_1', message: 'Saské vojsko zahajuje útok v nesnesitelném vedru!' }
+                    { trigger: 'turn_1', message: 'Smírný list odmítnut! Němci pyšně vzkázali, že "nikoho neživit nebudou a všechny pobijí" - Češi se proto zavázali stejným slibem. Pardon nedá nikdo.' },
+                    { trigger: 'turn_2', message: 'Saské a míšeňské jezdectvo útočí do svahu v nesnesitelném červnovém vedru!' }
                 ]
             },
             {
@@ -1838,7 +1839,8 @@ const Scenarios = {
                 turnRange: [9, 12],
                 description: 'Křižáci se dávají na bezhlavý útěk.',
                 events: [
-                    { trigger: 'turn_9', message: '"Běží! Němci běží!" - křižáci prchají!' }
+                    { trigger: 'turn_9', message: '"Běží! Němci běží!" - křižáci prchají!' },
+                    { trigger: 'turn_11', message: 'Pod německou korouhví pokleklo 24 hrabat a korouhevních pánů s meči zabodnutými do země a prosili o milost - pro slib daný před bojem jsou ale do jednoho pobiti.' }
                 ]
             }
         ],
@@ -1854,8 +1856,16 @@ const Scenarios = {
             ]
         },
 
+        specialMechanics: {
+            noQuarterGiven: {
+                description: 'Obě strany si před bojem slíbily nikoho nešetřit',
+                effect: 'routed_units_destroyed',
+                exception: 'pážata a štítonoši, kteří se boje nezúčastnili, byli ušetřeni'
+            }
+        },
+
         debriefing: {
-            victory: 'Masakr Na Běhání! 4000 křižáků padlo, zatímco husité ztratili pouhých 30 mužů. Dvojitá vozová hradba se ukázala jako nepřekonatelná překážka. Saské vévodství je zdecimováno a už nikdy nevyšle vojsko proti husitům.',
+            victory: 'Masakr Na Běhání! Podle Starých letopisů padlo Čechů jen 19 - a nikdo významný kromě měšťana Jana Bradatého; německé ztráty kroniky kladou na tisíce, až k 15 000. Dvojitá vozová hradba se ukázala jako nepřekonatelná překážka. Vítězství ale neslo i temný stín: 24 klečících hrabat a korouhevních pánů, kteří prosili o milost, bylo pro vzájemný slib nešetřit nikoho do jednoho pobito. Pověst o české nepřemožitelnosti je na světě.',
             defeat: 'Saská jízda prorazila vaši hradbu! Katastrofální porážka husitů mění rovnováhu sil. Bez vozové hradby jste bezbranní proti těžké jízdě.'
         },
 
