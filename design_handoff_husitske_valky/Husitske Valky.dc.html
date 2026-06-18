@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;background:#0b0805;font-family:'EB Garamond',Georgia,serif;-webkit-font-smoothing:antialiased;}
+@keyframes emberPulse{0%,100%{opacity:.55}50%{opacity:1}}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-track{background:rgba(0,0,0,.35)}
+::-webkit-scrollbar-thumb{background:linear-gradient(#5a4a28,#34280f);border-radius:5px;border:1px solid rgba(214,178,84,.25)}
+</style>
+</helmet>
+
+<div style="position:relative;width:100vw;height:100vh;overflow:hidden;background:repeating-linear-gradient(125deg,rgba(255,214,128,.018) 0 2px,transparent 2px 8px),radial-gradient(125% 95% at 50% 32%,#2c2114 0%,#19120b 46%,#0a0704 100%);">
+
+  <div style="position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:200;display:flex;gap:6px;padding:6px;background:rgba(16,12,7,.86);border:1px solid rgba(214,178,84,.28);border-radius:11px;box-shadow:0 6px 22px rgba(0,0,0,.5);backdrop-filter:blur(8px);">
+    <span style="display:flex;align-items:center;padding:0 10px 0 6px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.22em;color:#7a6a44;">NÁHLED</span>
+    <sc-for list="{{ navItems }}" as="nav" hint-placeholder-count="4">
+      <button onClick="{{ nav.go }}" style="{{ nav.style }}">{{ nav.l }}</button>
+    </sc-for>
+  </div>
+
+  <div ref="{{ setStage }}" style="position:absolute;left:50%;top:50%;width:1280px;height:720px;transform:translate(-50%,-50%);transform-origin:center center;">
+
+    <!-- ============ MENU ============ -->
+    <sc-if value="{{ isMenu }}" hint-placeholder-val="{{ true }}">
+    <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px;">
+      <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:40px;">
+        <div style="width:108px;height:108px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 42% 34%,#2c2316,#120d07);border:2px solid #b8902f;box-shadow:0 0 0 6px rgba(184,144,47,.1),0 8px 26px rgba(0,0,0,.6),inset 0 2px 10px rgba(0,0,0,.6);">
+          <svg width="58" height="58" viewBox="0 0 48 48" fill="none" stroke="#ecd283" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 7h30" stroke="#9a7d3a" stroke-width="1.4"></path>
+            <path d="M11 8h26"></path>
+            <path d="M14 9c0 9 3 14 10 14s10-5 10-14" fill="rgba(236,210,131,.12)"></path>
+            <path d="M24 23v11"></path>
+            <path d="M16 36h16"></path>
+            <path d="M19 34h10"></path>
+          </svg>
+        </div>
+        <h1 style="font-family:'Cinzel',serif;font-weight:800;font-size:55px;letter-spacing:.05em;margin:20px 0 0;color:#ecd589;text-shadow:0 2px 0 rgba(0,0,0,.55),0 0 30px rgba(214,178,84,.3);">HUSITSKÉ VÁLKY</h1>
+        <div style="display:flex;align-items:center;gap:14px;margin-top:12px;">
+          <span style="height:1px;width:64px;background:linear-gradient(90deg,transparent,#9a7d3a);"></span>
+          <span style="font-family:'Cinzel',serif;font-size:12px;letter-spacing:.36em;color:#a08a52;font-weight:600;">TAHOVÁ STRATEGIE</span>
+          <span style="height:1px;width:64px;background:linear-gradient(90deg,#9a7d3a,transparent);"></span>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(3,238px);grid-auto-rows:74px;gap:16px;">
+        <sc-for list="{{ menuBtns }}" as="btn" hint-placeholder-count="6">
+          <button onClick="{{ btn.go }}" style="{{ btn.style }}" style-hover="filter:brightness(1.08);transform:translateY(-1px)">
+            {{ btn.icon }}<span>{{ btn.l }}</span>
+          </button>
+        </sc-for>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:16px;margin-top:36px;">
+        <button onClick="{{ toggleMusic }}" style="display:flex;align-items:center;gap:9px;cursor:pointer;border-radius:8px;padding:9px 16px;background:linear-gradient(180deg,#241d12,#16110a);border:1px solid rgba(214,178,84,.26);color:#d3bd86;font-family:'EB Garamond',serif;font-size:15px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d3bd86" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17V5l10-2v12"></path><circle cx="6" cy="17" r="3"></circle><circle cx="16" cy="15" r="3"></circle></svg>
+          Hudba
+          <span style="width:7px;height:7px;border-radius:50%;background:#7fb53f;box-shadow:0 0 6px #7fb53f;"></span>
+        </button>
+        <div style="display:flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:8px;background:linear-gradient(180deg,#241d12,#16110a);border:1px solid rgba(214,178,84,.26);color:#cdb377;font-family:'Cinzel',serif;font-weight:700;font-size:13px;letter-spacing:.04em;">CZ</div>
+        <span style="font-family:'EB Garamond',serif;font-size:14px;color:#8a774d;letter-spacing:.04em;">Alpha 0.1 &nbsp;·&nbsp; 03.02.2026</span>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- ============ ENCYKLOPEDIE ============ -->
+    <sc-if value="{{ isEnc }}" hint-placeholder-val="{{ true }}">
+    <div style="position:absolute;inset:0;background:repeating-linear-gradient(125deg,rgba(255,214,128,.015) 0 2px,transparent 2px 8px),radial-gradient(125% 95% at 50% 32%,#241b10 0%,#140e08 50%,#080503 100%);display:flex;align-items:center;justify-content:center;">
+      <div style="position:absolute;inset:0;background:rgba(0,0,0,.45);"></div>
+      <div style="position:relative;width:930px;height:606px;display:flex;flex-direction:column;border-radius:14px;padding:28px 34px 0;background:linear-gradient(160deg,#241c12 0%,#17110b 100%);border:1px solid rgba(214,178,84,.55);box-shadow:0 0 0 1px rgba(0,0,0,.6),0 24px 60px rgba(0,0,0,.6),inset 0 1px 0 rgba(214,178,84,.12);">
+        <button onClick="{{ goMenu }}" style="position:absolute;top:18px;right:20px;width:34px;height:34px;border-radius:8px;cursor:pointer;background:transparent;border:1px solid rgba(214,178,84,.3);color:#d8be83;font-size:18px;line-height:1;display:flex;align-items:center;justify-content:center;" style-hover="background:rgba(160,40,50,.3);border-color:rgba(200,90,100,.6)">×</button>
+        <h2 style="text-align:center;font-family:'Cinzel',serif;font-weight:700;font-size:34px;letter-spacing:.08em;color:#ecd283;margin:2px 0 22px;text-shadow:0 0 24px rgba(214,178,84,.25);">ENCYKLOPEDIE</h2>
+
+        <div style="display:flex;flex-wrap:wrap;gap:6px;border-bottom:1px solid rgba(214,178,84,.3);padding-bottom:0;margin-bottom:0;">
+          <sc-for list="{{ encTabs }}" as="t" hint-placeholder-count="8">
+            <button onClick="{{ t.go }}" style="{{ t.style }}">{{ t.l }}</button>
+          </sc-for>
+        </div>
+
+        <div style="flex:1;overflow-y:auto;padding:22px 4px 28px 2px;">
+          <h3 style="font-family:'Cinzel',serif;font-weight:700;font-size:25px;letter-spacing:.04em;color:#e6b84a;margin:0 0 6px;">{{ encTitle }}</h3>
+          <div style="height:2px;background:linear-gradient(90deg,#c89a32,rgba(200,154,50,.05));margin-bottom:20px;"></div>
+
+          <sc-if value="{{ showUnits }}" hint-placeholder-val="{{ true }}">
+            <p style="font-family:'EB Garamond',serif;font-weight:600;font-size:16px;letter-spacing:.04em;color:#d6b96e;margin:0 0 14px;border-bottom:1px solid rgba(214,178,84,.18);padding-bottom:8px;">Husité</p>
+            <sc-for list="{{ units }}" as="u" hint-placeholder-count="4">
+              <div style="border:1px solid rgba(214,178,84,.22);border-radius:11px;padding:16px 18px;margin-bottom:14px;background:linear-gradient(160deg,rgba(42,33,20,.55),rgba(22,16,10,.55));">
+                <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;">
+                  <div style="width:46px;height:46px;border-radius:9px;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#9a2a38,#5e1620);border:1px solid rgba(214,178,84,.3);box-shadow:inset 0 1px 0 rgba(255,255,255,.12);">{{ u.icon }}</div>
+                  <div>
+                    <div style="font-family:'EB Garamond',serif;font-weight:600;font-size:19px;color:#ecc15a;">{{ u.n }}</div>
+                    <div style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:.18em;color:#9a8556;margin-top:2px;">{{ u.cat }}</div>
+                  </div>
+                </div>
+                <div style="display:flex;justify-content:space-between;gap:8px;background:rgba(0,0,0,.28);border:1px solid rgba(214,178,84,.12);border-radius:9px;padding:13px 6px;margin-bottom:12px;">
+                  <div style="flex:1;text-align:center;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" style="margin-bottom:5px;"><path d="M12 20s-6.5-4-8.5-8.2C2 8.5 3.8 5.5 7 5.5c1.9 0 3 1 5 2.8 2-1.8 3.1-2.8 5-2.8 3.2 0 5 3 3.5 6.3C18.5 16 12 20 12 20z" fill="#b9555f"></path></svg>
+                    <div style="font-family:'EB Garamond',serif;font-weight:600;font-size:20px;color:#ecdfc2;">{{ u.hp }}</div>
+                    <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.14em;color:#897650;margin-top:2px;">ZDRAVÍ</div>
+                  </div>
+                  <div style="flex:1;text-align:center;border-left:1px solid rgba(214,178,84,.1);">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#cdb06a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:5px;"><path d="M6.5 17.5 17 7"></path><path d="M14.5 6h3.5v3.5"></path><path d="M17.5 17.5 7 7"></path><path d="M9.5 6H6v3.5"></path></svg>
+                    <div style="font-family:'EB Garamond',serif;font-weight:600;font-size:20px;color:#ecdfc2;">{{ u.atk }}</div>
+                    <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.14em;color:#897650;margin-top:2px;">ÚTOK</div>
+                  </div>
+                  <div style="flex:1;text-align:center;border-left:1px solid rgba(214,178,84,.1);">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#cdb06a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:5px;"><path d="M12 3l7 3v5c0 4.5-3 7.6-7 9.5C8 18.6 5 15.5 5 11V6z"></path></svg>
+                    <div style="font-family:'EB Garamond',serif;font-weight:600;font-size:20px;color:#ecdfc2;">{{ u.def }}</div>
+                    <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.14em;color:#897650;margin-top:2px;">OBRANA</div>
+                  </div>
+                  <div style="flex:1;text-align:center;border-left:1px solid rgba(214,178,84,.1);">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#cdb06a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:5px;"><path d="M3 12h11"></path><path d="M11 8l4 4-4 4"></path><path d="M20 6v12"></path></svg>
+                    <div style="font-family:'EB Garamond',serif;font-weight:600;font-size:20px;color:#ecdfc2;">{{ u.rng }}</div>
+                    <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.14em;color:#897650;margin-top:2px;">DOSAH</div>
+                  </div>
+                  <div style="flex:1;text-align:center;border-left:1px solid rgba(214,178,84,.1);">
+                    <svg width="16" height="16" viewBox="0 0 24 24" style="margin-bottom:5px;"><ellipse cx="8.5" cy="8" rx="2.6" ry="4" fill="#cdb06a"></ellipse><ellipse cx="15" cy="15" rx="2.6" ry="4" fill="#cdb06a"></ellipse></svg>
+                    <div style="font-family:'EB Garamond',serif;font-weight:600;font-size:20px;color:#ecdfc2;">{{ u.mov }}</div>
+                    <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.14em;color:#897650;margin-top:2px;">POHYB</div>
+                  </div>
+                </div>
+                <div style="display:flex;align-items:center;gap:9px;background:linear-gradient(90deg,rgba(120,92,30,.42),rgba(120,92,30,.08));border-left:3px solid #d8b350;border-radius:0 7px 7px 0;padding:9px 13px;margin-bottom:12px;">
+                  <svg width="14" height="14" viewBox="0 0 24 24"><path d="M13 2 4 14h6l-1 8 9-12h-6z" fill="#f0c84e"></path></svg>
+                  <span style="font-family:'EB Garamond',serif;font-size:14.5px;color:#ecca72;">{{ u.ab }}</span>
+                </div>
+                <p style="font-family:'EB Garamond',serif;font-style:italic;font-size:15px;line-height:1.5;color:#bda782;margin:0;">{{ u.desc }}</p>
+              </div>
+            </sc-for>
+          </sc-if>
+
+          <sc-if value="{{ showBlocks }}" hint-placeholder-val="{{ true }}">
+            <div style="border:1px solid rgba(214,178,84,.18);border-radius:12px;padding:6px 26px 22px;background:linear-gradient(160deg,rgba(36,28,17,.4),rgba(18,13,8,.4));">
+              <sc-for list="{{ encBlocks }}" as="b" hint-placeholder-count="6">
+                <sc-if value="{{ b.isHead }}" hint-placeholder-val="{{ true }}">
+                  <h4 style="font-family:'EB Garamond',serif;font-weight:600;font-size:19px;color:#e0a93f;letter-spacing:.02em;margin:22px 0 4px;">{{ b.text }}</h4>
+                  <div style="height:1px;background:linear-gradient(90deg,rgba(214,178,84,.4),transparent);margin-bottom:13px;"></div>
+                </sc-if>
+                <sc-if value="{{ b.isText }}" hint-placeholder-val="{{ true }}">
+                  <p style="font-family:'EB Garamond',serif;font-size:16.5px;line-height:1.62;color:#ddcba4;margin:0 0 4px;text-wrap:pretty;">{{ b.text }}</p>
+                </sc-if>
+              </sc-for>
+            </div>
+          </sc-if>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- ============ KAMPAŇ ============ -->
+    <sc-if value="{{ isKampan }}" hint-placeholder-val="{{ true }}">
+    <div style="position:absolute;inset:0;background:radial-gradient(125% 95% at 50% 40%,#1e1810 0%,#100b07 60%,#070402 100%);display:flex;align-items:center;justify-content:center;">
+      <div style="position:absolute;inset:0;background:rgba(0,0,0,.5);"></div>
+      <div style="position:relative;width:880px;height:606px;display:flex;flex-direction:column;border-radius:14px;padding:26px 34px 0;background:linear-gradient(160deg,#241c12 0%,#17110b 100%);border:1px solid rgba(214,178,84,.55);box-shadow:0 24px 60px rgba(0,0,0,.65),inset 0 1px 0 rgba(214,178,84,.12);">
+        <button onClick="{{ goMenu }}" style="position:absolute;top:18px;right:20px;width:34px;height:34px;border-radius:8px;cursor:pointer;background:transparent;border:1px solid rgba(214,178,84,.3);color:#d8be83;font-size:18px;line-height:1;display:flex;align-items:center;justify-content:center;" style-hover="background:rgba(160,40,50,.3);border-color:rgba(200,90,100,.6)">×</button>
+        <h2 style="text-align:center;font-family:'Cinzel',serif;font-weight:700;font-size:33px;letter-spacing:.07em;color:#ecd283;margin:2px 0 4px;text-shadow:0 0 24px rgba(214,178,84,.25);">KAMPAŇ: HUSITSKÉ VÁLKY</h2>
+        <p style="text-align:center;font-family:'EB Garamond',serif;font-size:17px;letter-spacing:.06em;color:#c0a96e;margin:0 0 22px;">{{ campaignSub }}</p>
+
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px;">
+          <sc-for list="{{ eras }}" as="e" hint-placeholder-count="4">
+            <button onClick="{{ e.go }}" style="{{ e.style }}">
+              <div style="font-weight:700;font-size:16px;letter-spacing:.02em;">{{ e.t }}</div>
+              <div style="font-style:italic;font-family:'EB Garamond',serif;font-size:13px;opacity:.8;margin-top:3px;">{{ e.d }}</div>
+            </button>
+          </sc-for>
+        </div>
+
+        <div style="flex:1;overflow-y:auto;padding-right:4px;display:flex;flex-direction:column;gap:14px;">
+          <sc-for list="{{ missions }}" as="m" hint-placeholder-count="3">
+            <div onClick="{{ m.go }}" style="{{ m.style }}">
+              <div style="flex:none;width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 40% 34%,#a82f3d,#5e1620);border:2px solid rgba(236,208,127,.5);font-family:'Cinzel',serif;font-weight:700;font-size:19px;color:#f3e2b0;box-shadow:0 2px 6px rgba(0,0,0,.45);">{{ m.n }}</div>
+              <div style="flex:1;min-width:0;">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
+                  <div>
+                    <div style="font-family:'EB Garamond',serif;font-weight:600;font-size:20px;color:#ecca72;">{{ m.t }}</div>
+                    <div style="font-family:'EB Garamond',serif;font-style:italic;font-size:14px;color:#a8956a;margin-top:1px;">{{ m.d }}</div>
+                  </div>
+                  <div style="display:flex;gap:3px;flex:none;padding-top:3px;">
+                    <sc-for list="{{ m.starArr }}" as="s" hint-placeholder-count="3">{{ s.el }}</sc-for>
+                  </div>
+                </div>
+                <p style="font-family:'EB Garamond',serif;font-size:15.5px;line-height:1.5;color:#cdbb93;margin:9px 0 0;text-wrap:pretty;">{{ m.desc }}</p>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- ============ BITVA ============ -->
+    <sc-if value="{{ isBitva }}" hint-placeholder-val="{{ true }}">
+    <div style="position:absolute;inset:0;display:flex;flex-direction:column;background:#0d0a06;">
+
+      <!-- top bar -->
+      <div style="flex:none;height:66px;display:flex;align-items:center;gap:18px;padding:0 18px;background:linear-gradient(180deg,#1d160d,#120c07);border-bottom:1px solid rgba(214,178,84,.28);box-shadow:0 2px 10px rgba(0,0,0,.5);">
+        <div style="flex:none;width:42px;height:42px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 42% 34%,#2c2316,#120d07);border:1px solid #a8842c;">
+          <svg width="24" height="24" viewBox="0 0 48 48" fill="none" stroke="#ecd283" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9c0 9 3 14 10 14s10-5 10-14"></path><path d="M11 8h26"></path><path d="M24 23v11"></path><path d="M16 36h16"></path></svg>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;">
+          <div style="font-family:'Cinzel',serif;font-weight:700;font-size:23px;letter-spacing:.04em;color:#ecca6a;text-shadow:0 1px 0 rgba(0,0,0,.6);">Bitva u Živohoště</div>
+          <div style="display:flex;align-items:center;gap:14px;margin-top:3px;">
+            <span style="font-family:'EB Garamond',serif;font-style:italic;font-size:14px;color:#a8956a;">4. listopadu 1419</span>
+            <span style="display:flex;align-items:center;gap:7px;background:linear-gradient(180deg,rgba(150,40,50,.45),rgba(90,20,28,.4));border:1px solid rgba(200,90,100,.45);border-radius:20px;padding:3px 14px;">
+              <svg width="13" height="13" viewBox="0 0 24 24"><path d="M13 2 4 14h6l-1 8 9-12h-6z" fill="#f0c84e"></path></svg>
+              <span style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:.12em;font-weight:600;color:#f0c050;">PŘEKVAPIVÝ ÚTOK</span>
+              <span style="font-family:'EB Garamond',serif;font-size:13.5px;color:#e2bfa6;">{{ titleEvent }}</span>
+            </span>
+          </div>
+        </div>
+        <div style="flex:none;display:flex;gap:10px;">
+          <span style="display:flex;align-items:center;font-family:'Cinzel',serif;font-size:13px;font-weight:600;letter-spacing:.04em;color:#e9b9a0;background:linear-gradient(180deg,rgba(150,40,50,.4),rgba(90,20,28,.35));border:1px solid rgba(200,90,100,.4);border-radius:7px;padding:7px 14px;">Tah: Husité</span>
+          <span style="display:flex;align-items:center;font-family:'Cinzel',serif;font-size:13px;font-weight:600;letter-spacing:.04em;color:#e9cf86;background:linear-gradient(180deg,#241d12,#16110a);border:1px solid rgba(214,178,84,.4);border-radius:7px;padding:7px 14px;">Kolo: 1</span>
+        </div>
+      </div>
+
+      <!-- main -->
+      <div style="flex:1;display:flex;min-height:0;">
+
+        <!-- left panel -->
+        <div style="flex:none;width:248px;display:flex;flex-direction:column;padding:16px 16px;background:linear-gradient(180deg,#1a140c,#100b06);border-right:1px solid rgba(214,178,84,.2);">
+          <div style="font-family:'Cinzel',serif;font-size:14px;letter-spacing:.2em;color:#c2a865;padding-bottom:9px;border-bottom:1px solid rgba(214,178,84,.25);">JEDNOTKA</div>
+          <div style="display:flex;align-items:center;gap:12px;margin:16px 0 14px;">
+            <div style="width:50px;height:50px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 40% 34%,#3f6fae,#1f3c66);border:2px solid #6f9bd8;box-shadow:0 2px 7px rgba(0,0,0,.5);">{{ selUnit.icon }}</div>
+            <div>
+              <div style="font-family:'EB Garamond',serif;font-weight:600;font-size:20px;color:#ecdcb6;">{{ selUnit.n }}</div>
+              <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:.16em;color:#9a8556;margin-top:2px;">{{ selUnit.cat }}</div>
+            </div>
+          </div>
+          <div style="margin-bottom:16px;">
+            <div style="display:flex;justify-content:space-between;font-family:'EB Garamond',serif;font-size:12.5px;color:#b39c6e;margin-bottom:4px;"><span>Zdraví</span><span>{{ selUnit.hp }} / {{ selUnit.max }}</span></div>
+            <div style="height:9px;border-radius:5px;background:rgba(0,0,0,.5);border:1px solid rgba(0,0,0,.6);overflow:hidden;"><div style="height:100%;width:{{ selUnit.hpPct }};border-radius:4px;background:linear-gradient(90deg,#6fae3f,#9bd05a);box-shadow:0 0 8px rgba(123,181,63,.5);"></div></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;">
+            <div style="display:flex;align-items:center;gap:8px;background:rgba(0,0,0,.28);border:1px solid rgba(214,178,84,.14);border-radius:8px;padding:9px 11px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#cdb06a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 17.5 17 7"></path><path d="M14.5 6h3.5v3.5"></path><path d="M17.5 17.5 7 7"></path><path d="M9.5 6H6v3.5"></path></svg><div><span style="font-family:'EB Garamond',serif;font-weight:600;font-size:17px;color:#ecdcb6;">{{ selUnit.atk }}</span><span style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;color:#897650;display:block;">ÚTOK</span></div></div>
+            <div style="display:flex;align-items:center;gap:8px;background:rgba(0,0,0,.28);border:1px solid rgba(214,178,84,.14);border-radius:8px;padding:9px 11px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#cdb06a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 7.6-7 9.5C8 18.6 5 15.5 5 11V6z"></path></svg><div><span style="font-family:'EB Garamond',serif;font-weight:600;font-size:17px;color:#ecdcb6;">{{ selUnit.def }}</span><span style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;color:#897650;display:block;">OBRANA</span></div></div>
+            <div style="display:flex;align-items:center;gap:8px;background:rgba(0,0,0,.28);border:1px solid rgba(214,178,84,.14);border-radius:8px;padding:9px 11px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#cdb06a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h11"></path><path d="M11 8l4 4-4 4"></path><path d="M20 6v12"></path></svg><div><span style="font-family:'EB Garamond',serif;font-weight:600;font-size:17px;color:#ecdcb6;">{{ selUnit.rng }}</span><span style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;color:#897650;display:block;">DOSAH</span></div></div>
+            <div style="display:flex;align-items:center;gap:8px;background:rgba(0,0,0,.28);border:1px solid rgba(214,178,84,.14);border-radius:8px;padding:9px 11px;"><svg width="15" height="15" viewBox="0 0 24 24"><ellipse cx="8.5" cy="8" rx="2.6" ry="4" fill="#cdb06a"></ellipse><ellipse cx="15" cy="15" rx="2.6" ry="4" fill="#cdb06a"></ellipse></svg><div><span style="font-family:'EB Garamond',serif;font-weight:600;font-size:17px;color:#ecdcb6;">{{ selUnit.mov }}</span><span style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;color:#897650;display:block;">POHYB</span></div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;background:linear-gradient(90deg,rgba(120,92,30,.4),rgba(120,92,30,.05));border-left:3px solid #d8b350;border-radius:0 7px 7px 0;padding:8px 12px;margin-bottom:auto;">
+            <svg width="13" height="13" viewBox="0 0 24 24"><path d="M13 2 4 14h6l-1 8 9-12h-6z" fill="#f0c84e"></path></svg>
+            <span style="font-family:'EB Garamond',serif;font-size:13.5px;color:#ecca72;">{{ selUnit.ab }}</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;margin-top:16px;">
+            <button style="display:flex;align-items:center;justify-content:center;gap:9px;cursor:pointer;border-radius:8px;padding:11px;font-family:'Cinzel',serif;font-weight:700;font-size:13px;letter-spacing:.07em;color:#2a1c08;border:none;background:linear-gradient(180deg,#f2da8a,#c8a03a);box-shadow:0 2px 0 #856420,inset 0 1px 0 rgba(255,255,255,.5);" style-hover="filter:brightness(1.07)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2a1c08" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 17.5 17 7"></path><path d="M14.5 6h3.5v3.5"></path><path d="M17.5 17.5 7 7"></path><path d="M9.5 6H6v3.5"></path></svg>ÚTOK</button>
+            <div style="display:flex;gap:8px;">
+              <button style="flex:1;display:flex;align-items:center;justify-content:center;gap:7px;cursor:pointer;border-radius:8px;padding:10px;font-family:'Cinzel',serif;font-weight:600;font-size:12px;letter-spacing:.06em;color:#e6d09a;background:linear-gradient(180deg,#2c2417,#1a140d);border:1px solid rgba(214,178,84,.3);" style-hover="border-color:rgba(214,178,84,.6)">POHYB</button>
+              <button style="flex:1;display:flex;align-items:center;justify-content:center;gap:7px;cursor:pointer;border-radius:8px;padding:10px;font-family:'Cinzel',serif;font-weight:600;font-size:12px;letter-spacing:.06em;color:#e6d09a;background:linear-gradient(180deg,#2c2417,#1a140d);border:1px solid rgba(214,178,84,.3);" style-hover="border-color:rgba(214,178,84,.6)">BRÁNIT</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- map -->
+        <div style="flex:1;position:relative;overflow:hidden;background:radial-gradient(130% 120% at 50% 40%,#33502a,#1c2e16);">
+          <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);">{{ battleMap }}</div>
+
+          <!-- objectives -->
+          <div style="position:absolute;top:14px;right:14px;width:300px;border-radius:12px;padding:14px 16px;background:linear-gradient(160deg,rgba(26,20,12,.95),rgba(16,11,7,.95));border:1px solid rgba(214,178,84,.45);box-shadow:0 8px 24px rgba(0,0,0,.5);">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+              <span style="font-family:'Cinzel',serif;font-size:14px;letter-spacing:.16em;color:#ecca6a;">CÍLE MISE</span>
+              <span style="color:#9a8556;font-size:15px;cursor:pointer;">×</span>
+            </div>
+            <sc-for list="{{ objectives }}" as="o" hint-placeholder-count="3">
+              <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:11px;">
+                <span style="flex:none;margin-top:1px;">{{ o.el }}</span>
+                <span style="font-family:'EB Garamond',serif;font-size:14.5px;line-height:1.4;color:{{ o.color }};">{{ o.text }}</span>
+              </div>
+            </sc-for>
+          </div>
+
+          <!-- minimap -->
+          <div style="position:absolute;bottom:14px;right:14px;width:178px;height:114px;border-radius:8px;padding:4px;background:#0c0a06;border:1px solid rgba(214,178,84,.4);box-shadow:0 6px 18px rgba(0,0,0,.5);">{{ miniMap }}</div>
+        </div>
+
+        <!-- right panel -->
+        <div style="flex:none;width:236px;display:flex;flex-direction:column;padding:16px 14px;gap:14px;background:linear-gradient(180deg,#1a140c,#100b06);border-left:1px solid rgba(214,178,84,.2);overflow-y:auto;">
+          <div style="font-family:'Cinzel',serif;font-size:14px;letter-spacing:.2em;color:#c2a865;padding-bottom:8px;border-bottom:1px solid rgba(214,178,84,.25);">PŘEHLED</div>
+
+          <div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#cf5d68" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9c0 5-2 8-2 8s-2-3-2-8"></path><path d="M8 7h8"></path></svg>
+              <span style="font-family:'Cinzel',serif;font-weight:700;font-size:14px;letter-spacing:.1em;color:#d0606c;">HUSITÉ</span>
+              <span style="margin-left:auto;font-family:'EB Garamond',serif;font-size:13px;color:#b39c6e;">6/6</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:7px;margin-bottom:9px;">
+              <div style="flex:1;height:6px;border-radius:4px;background:rgba(0,0,0,.5);overflow:hidden;"><div style="height:100%;width:100%;background:linear-gradient(90deg,#6fae3f,#9bd05a);"></div></div>
+              <span style="font-family:'EB Garamond',serif;font-size:11px;color:#8fb35c;">100%</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:5px;">
+              <sc-for list="{{ husiteUnits }}" as="u" hint-placeholder-count="6">
+                <div style="display:flex;align-items:center;gap:8px;padding:6px 9px;border-radius:7px;background:rgba(40,32,20,.4);border-left:2px solid #a23341;">
+                  <span style="flex:none;">{{ u.icon }}</span>
+                  <span style="flex:1;min-width:0;font-family:'EB Garamond',serif;font-size:14px;color:#dcc99c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ u.n }}</span>
+                  <span style="display:flex;align-items:center;gap:3px;flex:none;"><svg width="11" height="11" viewBox="0 0 24 24"><path d="M12 20s-6.5-4-8.5-8.2C2 8.5 3.8 5.5 7 5.5c1.9 0 3 1 5 2.8 2-1.8 3.1-2.8 5-2.8 3.2 0 5 3 3.5 6.3C18.5 16 12 20 12 20z" fill="#9bbf5e"></path></svg><span style="font-family:'EB Garamond',serif;font-size:13px;color:#cdbb8e;">{{ u.hp }}</span></span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7fa6da" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v15"></path><path d="M7 9h10"></path></svg>
+              <span style="font-family:'Cinzel',serif;font-weight:700;font-size:14px;letter-spacing:.1em;color:#7fa6da;">KŘIŽÁCI</span>
+              <span style="margin-left:auto;font-family:'EB Garamond',serif;font-size:13px;color:#b39c6e;">11/11</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:7px;margin-bottom:9px;">
+              <div style="flex:1;height:6px;border-radius:4px;background:rgba(0,0,0,.5);overflow:hidden;"><div style="height:100%;width:100%;background:linear-gradient(90deg,#6fae3f,#9bd05a);"></div></div>
+              <span style="font-family:'EB Garamond',serif;font-size:11px;color:#8fb35c;">100%</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:5px;">
+              <sc-for list="{{ krizaciUnits }}" as="u" hint-placeholder-count="5">
+                <div style="display:flex;align-items:center;gap:8px;padding:6px 9px;border-radius:7px;background:rgba(28,34,48,.4);border-left:2px solid #4f86c6;">
+                  <span style="flex:none;">{{ u.icon }}</span>
+                  <span style="flex:1;min-width:0;font-family:'EB Garamond',serif;font-size:14px;color:#c6d3e6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ u.n }}</span>
+                  <span style="display:flex;align-items:center;gap:3px;flex:none;"><svg width="11" height="11" viewBox="0 0 24 24"><path d="M12 20s-6.5-4-8.5-8.2C2 8.5 3.8 5.5 7 5.5c1.9 0 3 1 5 2.8 2-1.8 3.1-2.8 5-2.8 3.2 0 5 3 3.5 6.3C18.5 16 12 20 12 20z" fill="#9bbf5e"></path></svg><span style="font-family:'EB Garamond',serif;font-size:13px;color:#cdbb8e;">{{ u.hp }}</span></span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- bottom bar -->
+      <div style="flex:none;height:58px;display:flex;align-items:center;gap:12px;padding:0 16px;background:linear-gradient(180deg,#1d160d,#100b06);border-top:1px solid rgba(214,178,84,.28);box-shadow:0 -2px 10px rgba(0,0,0,.5);">
+        <button style="display:flex;align-items:center;gap:9px;cursor:pointer;border-radius:8px;padding:11px 22px;font-family:'Cinzel',serif;font-weight:700;font-size:14px;letter-spacing:.06em;color:#fae6cf;border:1px solid rgba(220,110,118,.5);background:linear-gradient(180deg,#a8313f,#6e1c27);box-shadow:0 2px 0 rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.18);" style-hover="filter:brightness(1.08)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fae6cf" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13"></path><path d="M13 6l6 6-6 6"></path></svg>UKONČIT TAH</button>
+        <button style="display:flex;align-items:center;gap:8px;cursor:pointer;border-radius:8px;padding:11px 18px;font-family:'Cinzel',serif;font-weight:600;font-size:13px;letter-spacing:.06em;color:#e9c0a0;border:1px solid rgba(200,90,100,.4);background:linear-gradient(180deg,rgba(150,40,50,.4),rgba(90,20,28,.35));" style-hover="filter:brightness(1.1)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#e9c0a0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9c0 5-2 8-2 8s-2-3-2-8"></path><path d="M8 7h8"></path></svg>CHORÁL</button>
+        <button style="display:flex;align-items:center;gap:8px;cursor:pointer;border-radius:8px;padding:11px 18px;font-family:'Cinzel',serif;font-weight:600;font-size:13px;letter-spacing:.06em;color:#e9cf86;border:1px solid rgba(214,178,84,.4);background:linear-gradient(180deg,#241d12,#16110a);" style-hover="border-color:rgba(214,178,84,.7)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#e9cf86" stroke-width="1.7"><circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="3"></circle></svg>CÍLE</button>
+        <div style="flex:1;height:38px;display:flex;align-items:center;padding:0 16px;border-radius:8px;background:rgba(0,0,0,.4);border:1px solid rgba(214,178,84,.16);font-family:'EB Garamond',serif;font-style:italic;font-size:15px;color:#c4b083;">Husité začínají.</div>
+        <button style="display:flex;align-items:center;gap:8px;cursor:pointer;border-radius:8px;padding:11px 18px;font-family:'Cinzel',serif;font-weight:600;font-size:13px;letter-spacing:.06em;color:#e9cf86;border:1px solid rgba(214,178,84,.4);background:linear-gradient(180deg,#241d12,#16110a);" style-hover="border-color:rgba(214,178,84,.7)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#e9cf86" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>MENU</button>
+      </div>
+    </div>
+    </sc-if>
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { screen:'menu', encTab:'historie', era:'ii', selMission:null, music:true };
+
+  componentDidMount(){ this._f=()=>this.fit(); window.addEventListener('resize',this._f); this.fit(); }
+  componentWillUnmount(){ if(this._f) window.removeEventListener('resize',this._f); }
+  fit(){ const s=this.stage; if(!s) return; const k=Math.min(window.innerWidth/1280, window.innerHeight/720); s.style.transform='translate(-50%,-50%) scale('+k+')'; }
+
+  icon(name, color, size){
+    color = color || '#e3d6b8'; size = size || 16;
+    const R = React.createElement;
+    const p = (d,extra)=>R('path', Object.assign({d:d}, extra||{}));
+    const c = (cx,cy,r,extra)=>R('circle', Object.assign({cx:cx,cy:cy,r:r}, extra||{}));
+    let kids;
+    switch(name){
+      case 'swords': kids=[p('M6.5 17.5 17 7'),p('M14.5 6h3.5v3.5'),p('M17.5 17.5 7 7'),p('M9.5 6H6v3.5'),p('M5 18l1.5 1.5'),p('M19 18l-1.5 1.5')]; break;
+      case 'scroll': kids=[p('M8 4h9a2 2 0 0 1 2 2v10'),p('M8 4a2 2 0 0 0-2 2v1h4'),p('M19 16a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V7'),p('M9 20h8')]; break;
+      case 'book': kids=[p('M12 6.5C10 5 7 5 4 5.6v12C7 17 10 17 12 18.5 14 17 17 17 20 17.6v-12C17 5 14 5 12 6.5z'),p('M12 6.5v12')]; break;
+      case 'bolt': kids=[p('M13 2 4 14h6l-1 8 9-12h-6z',{fill:color,stroke:'none'})]; break;
+      case 'info': kids=[c(12,12,9),p('M12 11v5'),p('M12 8h.01')]; break;
+      case 'gear': kids=[c(12,12,3),p('M12 2v3M12 19v3M2 12h3M19 12h3M5.2 5.2l2.1 2.1M16.7 16.7l2.1 2.1M18.8 5.2l-2.1 2.1M7.3 16.7l-2.1 2.1')]; break;
+      case 'heart': kids=[p('M12 20s-6.5-4-8.5-8.2C2 8.5 3.8 5.5 7 5.5c1.9 0 3 1 5 2.8 2-1.8 3.1-2.8 5-2.8 3.2 0 5 3 3.5 6.3C18.5 16 12 20 12 20z',{fill:color,stroke:'none'})]; break;
+      case 'shield': kids=[p('M12 3l7 3v5c0 4.5-3 7.6-7 9.5C8 18.6 5 15.5 5 11V6z')]; break;
+      case 'range': kids=[p('M3 12h11'),p('M11 8l4 4-4 4'),p('M20 6v12')]; break;
+      case 'move': kids=[R('ellipse',{cx:8.5,cy:8,rx:2.6,ry:4,fill:color,stroke:'none'}),R('ellipse',{cx:15,cy:15,rx:2.6,ry:4,fill:color,stroke:'none'})]; break;
+      case 'chalice': kids=[p('M8 4h8'),p('M9.2 5c0 5 1.3 7.5 2.8 7.5S14.8 10 14.8 5'),p('M12 12.5V18'),p('M9 18h6'),p('M10 16h4')]; break;
+      case 'flail': kids=[p('M5 19l5.5-5.5'),c(16,8,3),p('M11 13l2.5-2.5')]; break;
+      case 'bow': kids=[p('M8 4a11 11 0 0 1 0 16'),p('M8 4l-1.2 8L8 20'),p('M6 12h11'),p('M13.5 9l3.5 3-3.5 3')]; break;
+      case 'horseshoe': kids=[p('M7 4a8 8 0 0 0-1 12'),p('M17 4a8 8 0 0 1 1 12'),p('M6 16h2'),p('M18 16h-2')]; break;
+      case 'spear': kids=[p('M5 19 19 5'),p('M19 5l-3.6.7L18.3 8z',{fill:color,stroke:'none'})]; break;
+      case 'cross': kids=[p('M12 4v15'),p('M7 9h10')]; break;
+      case 'star': kids=[p('M12 3.5l2.4 5.6 6 .5-4.6 4 1.4 5.9L12 16.3 6.4 19.5l1.4-5.9-4.6-4 6-.5z',{fill:color,stroke:'none'})]; break;
+      case 'wagon': kids=[p('M3.5 14c0-5 3.2-8.5 8.5-8.5S20.5 9 20.5 14'),p('M2.5 14h19'),c(7,17.5,2),c(16,17.5,2)]; break;
+      case 'target': kids=[c(12,12,8),c(12,12,3)]; break;
+      case 'diamond': kids=[p('M12 4l8 8-8 8-8-8z')]; break;
+      default: kids=[c(12,12,8)];
+    }
+    return R('svg', {width:size,height:size,viewBox:'0 0 24 24',fill:'none',stroke:color,strokeWidth:1.7,strokeLinecap:'round',strokeLinejoin:'round'}, kids.map((k,i)=>React.cloneElement(k,{key:i})));
+  }
+
+  navStyle(a){ return Object.assign({display:'flex',alignItems:'center',cursor:'pointer',borderRadius:'7px',padding:'7px 14px',fontFamily:'Cinzel,serif',fontSize:'12px',letterSpacing:'.07em',fontWeight:600,transition:'all .15s'}, a?{border:'1px solid transparent',background:'linear-gradient(180deg,#ecd283,#c8a03a)',color:'#241803',boxShadow:'0 1px 5px rgba(0,0,0,.4)'}:{border:'1px solid rgba(214,178,84,.22)',background:'rgba(40,32,20,.5)',color:'#bda873'}); }
+  btnPrimary(){ return {display:'flex',alignItems:'center',justifyContent:'center',gap:'12px',border:'none',cursor:'pointer',borderRadius:'8px',fontFamily:'Cinzel,serif',fontWeight:700,fontSize:'16px',letterSpacing:'.07em',color:'#2a1c08',background:'linear-gradient(180deg,#f2da8a 0%,#dab44e 46%,#c39a32 100%)',boxShadow:'0 2px 0 #856420,0 7px 16px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.55)'}; }
+  btnSecondary(){ return {display:'flex',alignItems:'center',justifyContent:'center',gap:'12px',cursor:'pointer',borderRadius:'8px',fontFamily:'Cinzel,serif',fontWeight:600,fontSize:'15px',letterSpacing:'.05em',color:'#e6d09a',background:'linear-gradient(180deg,#2c2417 0%,#1c1610 100%)',border:'1px solid rgba(214,178,84,.3)',boxShadow:'0 2px 8px rgba(0,0,0,.4),inset 0 1px 0 rgba(214,178,84,.08)'}; }
+  tabStyle(a){ return Object.assign({cursor:'pointer',borderRadius:'7px 7px 0 0',padding:'8px 15px',fontFamily:'Cinzel,serif',fontSize:'12px',letterSpacing:'.06em',fontWeight:600,marginBottom:'-1px'}, a?{border:'1px solid rgba(214,178,84,.6)',borderBottomColor:'transparent',background:'linear-gradient(180deg,#ecd283,#c8a03a)',color:'#241803'}:{border:'1px solid rgba(214,178,84,.18)',background:'linear-gradient(180deg,#2a2216,#1c160e)',color:'#b89f63'}); }
+  eraStyle(a){ return Object.assign({cursor:'pointer',borderRadius:'9px',padding:'12px 8px',textAlign:'center',fontFamily:'Cinzel,serif',transition:'all .15s'}, a?{border:'1px solid rgba(236,208,127,.6)',background:'linear-gradient(180deg,#ecd07f,#c69b34)',color:'#241803',boxShadow:'0 2px 8px rgba(0,0,0,.4)'}:{border:'1px solid rgba(214,178,84,.2)',background:'linear-gradient(180deg,#251e13,#191309)',color:'#c8b079'}); }
+  missionStyle(a){ return Object.assign({display:'flex',gap:'16px',alignItems:'flex-start',cursor:'pointer',borderRadius:'11px',padding:'16px 18px',transition:'all .15s'}, a?{border:'1px solid rgba(236,208,127,.7)',background:'linear-gradient(180deg,rgba(120,92,30,.4),rgba(70,54,18,.25))',boxShadow:'0 0 0 1px rgba(236,208,127,.2),0 4px 16px rgba(0,0,0,.4)'}:{border:'1px solid rgba(214,178,84,.18)',background:'linear-gradient(180deg,#241d12,#191309)'}); }
+
+  buildMap(){
+    const R=React.createElement;
+    const cols=12, rows=9, W=58, H=66, vStep=49;
+    const key=(r,c)=>r+'-'+c, clip='polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%)';
+    const moveSet={'6-3':1,'7-3':1,'5-3':1,'6-4':1,'7-2':1}, atkSet={'5-6':1};
+    const cells=[];
+    for(let r=0;r<rows;r++){ for(let cc=0;cc<cols;cc++){
+      const x=cc*W+(r%2?W/2:0), y=r*vStep;
+      let bg='linear-gradient(155deg,#74a04c,#5a8438)', terr='grass';
+      if(r<2&&cc<3){ bg='linear-gradient(155deg,#3f7fb8,#2b5b8c)'; terr='water'; }
+      else if((r===4&&cc>=2&&cc<=5)||(r===5&&cc>=3&&cc<=6)){ bg='linear-gradient(155deg,#cdac6c,#a98a4f)'; terr='sand'; }
+      else if(r>=6&&cc>=9){ bg='linear-gradient(155deg,#c9aa6e,#a3814b)'; terr='hill'; }
+      cells.push(R('div',{key:key(r,cc),style:{position:'absolute',left:x+'px',top:y+'px',width:(W+1)+'px',height:H+'px',clipPath:clip,background:bg,boxShadow:'inset 0 0 0 1px rgba(20,30,10,.22)',overflow:'hidden'}}, this.hexDecor(terr,(r*7+cc*13)%5)));
+      if(moveSet[key(r,cc)]) cells.push(R('div',{key:'m'+key(r,cc),style:{position:'absolute',left:x+'px',top:y+'px',width:(W+1)+'px',height:H+'px',clipPath:clip,background:'rgba(233,207,134,.28)',boxShadow:'inset 0 0 0 2px rgba(244,224,160,.85)'}}));
+      if(atkSet[key(r,cc)]) cells.push(R('div',{key:'a'+key(r,cc),style:{position:'absolute',left:x+'px',top:y+'px',width:(W+1)+'px',height:H+'px',clipPath:clip,background:'rgba(180,50,63,.32)',boxShadow:'inset 0 0 0 2px rgba(220,90,100,.9)'}}));
+    }}
+    const center=(r,cc)=>({cx:cc*W+(r%2?W/2:0)+W/2, cy:r*vStep+H/2});
+    const features=[];
+    [{r:1,c:4,t:'trees'},{r:2,c:8,t:'trees'},{r:0,c:10,t:'trees'},{r:8,c:4,t:'trees'},{r:3,c:1,t:'trees'},{r:2,c:10,t:'village'},{r:8,c:7,t:'village'}].forEach((f,i)=>{ const ctr=center(f.r,f.c); features.push(R('div',{key:'f'+i,style:{position:'absolute',left:(ctr.cx-20)+'px',top:(ctr.cy-22)+'px',zIndex:3,pointerEvents:'none',filter:'drop-shadow(0 2px 2px rgba(0,0,0,.35))'}}, this.feature(f.t))); });
+    const blue=[{r:6,c:0,g:'flag',hp:100},{r:5,c:1,g:'bow',hp:50},{r:6,c:1,g:'flail',sel:true,hp:78},{r:7,c:1,g:'horseshoe',hp:90},{r:5,c:2,g:'spear',hp:100},{r:7,c:2,g:'chalice',hp:60},{r:8,c:1,g:'wagon',hp:100}];
+    const red=[{r:3,c:6,g:'spear',hp:100},{r:5,c:6,g:'swords',hp:85},{r:4,c:7,g:'bow',hp:100},{r:5,c:8,g:'horseshoe',hp:100},{r:4,c:9,g:'cross',star:true,hp:95},{r:6,c:8,g:'swords',hp:100}];
+    const tok=(u,faction)=>{
+      const ctr=center(u.r,u.c), cx=ctr.cx, cy=ctr.cy, D=38;
+      const ring=u.sel?'#f4e0a0':(faction==='blue'?'#6f9bd8':'#cf6a78');
+      const fill=faction==='blue'?'radial-gradient(circle at 38% 32%,#4f7cbe,#1f3c66)':'radial-gradient(circle at 38% 32%,#c14a59,#6e1f2a)';
+      const els=[];
+      els.push(R('div',{key:'t',style:{position:'absolute',left:(cx-D/2)+'px',top:(cy-D/2)+'px',width:D+'px',height:D+'px',borderRadius:'50%',background:fill,border:'2.5px solid '+ring,boxShadow:(u.sel?'0 0 0 3px rgba(244,224,160,.35),':'')+'0 3px 6px rgba(0,0,0,.5),inset 0 2px 3px rgba(255,255,255,.2)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:u.sel?6:5}}, this.icon(u.g,'#f3ecd8',19)));
+      els.push(R('div',{key:'h',style:{position:'absolute',left:(cx-16)+'px',top:(cy+D/2-3)+'px',width:'32px',height:'5px',borderRadius:'3px',background:'rgba(0,0,0,.55)',border:'1px solid rgba(0,0,0,.5)',zIndex:6}}, R('div',{style:{height:'100%',width:u.hp+'%',borderRadius:'2px',background:'linear-gradient(90deg,#6fae3f,#9bd05a)'}})));
+      if(u.star) els.push(R('div',{key:'s',style:{position:'absolute',left:(cx+D/2-13)+'px',top:(cy-D/2-7)+'px',zIndex:7}}, this.icon('star','#f4d35e',16)));
+      return R('div',{key:faction+u.r+'-'+u.c}, els);
+    };
+    const tokens=[].concat(blue.map(u=>tok(u,'blue')), red.map(u=>tok(u,'red')));
+    return R('div',{style:{position:'relative',width:(cols*W+W/2)+'px',height:(rows*vStep+H)+'px'}}, cells.concat(features, tokens));
+  }
+
+  hexDecor(terr, seed){
+    const R=React.createElement;
+    const wrap=(kids)=>R('svg',{width:'100%',height:'100%',viewBox:'0 0 58 66',fill:'none',style:{position:'absolute',inset:0}}, kids);
+    if(terr==='grass'){
+      const spots=[[14,42],[31,26],[41,48],[22,55],[45,32],[29,46]];
+      const n=2+(seed%3), blades=[];
+      for(let i=0;i<n;i++){ const s=spots[(i+seed)%spots.length], x=s[0], y=s[1];
+        blades.push(R('path',{key:i,d:'M'+x+' '+y+'l-3 -7M'+x+' '+y+'l0 -8.5M'+x+' '+y+'l3 -7',stroke:'rgba(38,66,22,.5)',strokeWidth:1.4,strokeLinecap:'round'})); }
+      return wrap(blades);
+    }
+    if(terr==='water') return wrap([
+      R('path',{key:0,d:'M9 25q6 -4 12 0t12 0',stroke:'rgba(255,255,255,.3)',strokeWidth:1.5,strokeLinecap:'round'}),
+      R('path',{key:1,d:'M13 39q6 -4 12 0t12 0',stroke:'rgba(255,255,255,.2)',strokeWidth:1.5,strokeLinecap:'round'})
+    ]);
+    if(terr==='sand') return wrap([
+      R('path',{key:0,d:'M11 30h36',stroke:'rgba(92,62,28,.45)',strokeWidth:2,strokeDasharray:'4 4',strokeLinecap:'round'}),
+      R('path',{key:1,d:'M11 40h36',stroke:'rgba(92,62,28,.4)',strokeWidth:2,strokeDasharray:'4 4',strokeLinecap:'round'})
+    ]);
+    if(terr==='hill') return wrap([
+      R('path',{key:0,d:'M15 41q9 -11 18 0',stroke:'rgba(108,76,38,.5)',strokeWidth:1.6}),
+      R('path',{key:1,d:'M24 47q9 -11 18 0',stroke:'rgba(108,76,38,.4)',strokeWidth:1.6}),
+      R('circle',{key:2,cx:20,cy:30,r:1.6,fill:'rgba(88,62,30,.5)'})
+    ]);
+    return null;
+  }
+
+  feature(type){
+    const R=React.createElement;
+    if(type==='trees'){
+      const tree=(x,sc)=>R('g',{key:x,transform:'translate('+x+',0) scale('+sc+')'},[
+        R('path',{key:0,d:'M8 1 L13 13 L3 13 Z',fill:'#3f6b2a',stroke:'#274916',strokeWidth:1}),
+        R('path',{key:1,d:'M8 7 L14.5 21 L1.5 21 Z',fill:'#4a7d33',stroke:'#274916',strokeWidth:1}),
+        R('rect',{key:2,x:6.5,y:21,width:3,height:5,fill:'#5a3d22'})
+      ]);
+      return R('svg',{width:44,height:40,viewBox:'0 0 44 30'},[tree(2,1),tree(20,1.15),tree(13,.82)]);
+    }
+    const house=(x,y,sc)=>R('g',{key:x+'-'+y,transform:'translate('+x+','+y+') scale('+sc+')'},[
+      R('path',{key:0,d:'M1 11 L10 3 L19 11 Z',fill:'#9c3f2c',stroke:'#4d1f15',strokeWidth:1}),
+      R('rect',{key:1,x:4,y:11,width:12,height:9,fill:'#cdac79',stroke:'#6e4d2c',strokeWidth:1}),
+      R('rect',{key:2,x:8.5,y:14,width:3.5,height:6,fill:'#5a3d22'})
+    ]);
+    return R('svg',{width:44,height:32,viewBox:'0 0 44 26'},[house(0,5,1),house(17,0,1.12)]);
+  }
+
+  buildMini(){
+    const R=React.createElement;
+    const dots=[];
+    const blue=[[16,46],[26,52],[24,60],[32,56],[36,50],[22,68]];
+    const red=[[74,38],[84,52],[92,46],[96,60],[78,62]];
+    blue.forEach((d,i)=>dots.push(R('div',{key:'b'+i,style:{position:'absolute',left:d[0]+'%',top:d[1]+'%',width:'7px',height:'7px',borderRadius:'50%',background:'#4f86c6',boxShadow:'0 0 0 1px rgba(0,0,0,.4)'}})));
+    red.forEach((d,i)=>dots.push(R('div',{key:'r'+i,style:{position:'absolute',left:d[0]+'%',top:d[1]+'%',width:'7px',height:'7px',borderRadius:'50%',background:'#c4505e',boxShadow:'0 0 0 1px rgba(0,0,0,.4)'}})));
+    dots.push(R('div',{key:'vp',style:{position:'absolute',left:'12%',top:'40%',width:'46%',height:'40%',border:'1.5px solid rgba(244,224,160,.85)',borderRadius:'2px'}}));
+    return R('div',{style:{position:'relative',width:'100%',height:'100%',background:'linear-gradient(155deg,#557e36,#3a5526)',borderRadius:'5px',overflow:'hidden'}}, dots);
+  }
+
+  renderVals(){
+    const S=this.state;
+    const navItems=[['menu','Menu'],['kampan','Kampaň'],['enc','Encyklopedie'],['bitva','Bitva']].map(a=>({id:a[0],l:a[1],style:this.navStyle(S.screen===a[0]),go:()=>this.setState({screen:a[0]})}));
+
+    const mb=[
+      {l:'NOVÁ HRA',ic:'swords',primary:true,go:()=>this.setState({screen:'kampan'})},
+      {l:'POKRAČOVAT',ic:'scroll',go:()=>this.setState({screen:'bitva'})},
+      {l:'ENCYKLOPEDIE',ic:'book',go:()=>this.setState({screen:'enc',encTab:'historie'})},
+      {l:'RYCHLÁ BITVA',ic:'bolt',go:()=>this.setState({screen:'bitva'})},
+      {l:'O HŘE',ic:'info',go:()=>this.setState({screen:'enc',encTab:'ohre'})},
+      {l:'NASTAVENÍ',ic:'gear',go:()=>{}}
+    ];
+    const menuBtns=mb.map(b=>({l:b.l,style:b.primary?this.btnPrimary():this.btnSecondary(),icon:this.icon(b.ic, b.primary?'#3a2607':'#dcc07a',20),go:b.go}));
+
+    const tabsDef=[['historie','Historie'],['jednotky','Jednotky'],['osobnosti','Osobnosti'],['taktika','Taktika'],['teren','Terén'],['pravidla','Pravidla'],['ovladani','Ovládání'],['ohre','O hře']];
+    const encTabs=tabsDef.map(a=>({id:a[0],l:a[1],style:this.tabStyle(S.encTab===a[0]),go:()=>this.setState({encTab:a[0]})}));
+    const titles={historie:'Husitské války (1419–1437)',jednotky:'Jednotky v bitvě',osobnosti:'Významné osobnosti',taktika:'Bojová taktika',teren:'Typy terénu',pravidla:'Herní pravidla',ovladani:'Ovládání',ohre:'O hře'};
+    const content={
+      historie:[{h:'Příčiny konfliktu'},{p:'Husitské války vznikly jako reakce na upálení mistra Jana Husa na kostnickém koncilu roku 1415. Hus kritizoval prodej odpustků, bohatství církve a požadoval reformy. Jeho smrt vyvolala v Čechách vlnu odporu proti katolické církvi a římskému králi Zikmundovi Lucemburskému.'},{h:'Čtyři pražské artikuly'},{p:'Husité formulovali své požadavky ve čtyřech artikulech: svobodné kázání slova božího, přijímání pod obojí způsobou (kalich), zákaz světského panování kněží a trestání smrtelných hříchů. Kalich se stal symbolem husitského hnutí.'},{h:'Křížové výpravy'},{p:'Proti husitům bylo vyhlášeno pět křížových výprav. Vojska křižáků však opakovaně podléhala Žižkově vozové hradbě a polní taktice — nezřídka prchala už při zaslechnutí husitského chorálu.'}],
+      osobnosti:[{h:'Jan Žižka z Trocnova'},{p:'Geniální vojevůdce a tvůrce vozové hradby. Neprohrál jedinou bitvu — a to ani poté, co zcela oslepl. Zemřel roku 1424 u Přibyslavi.'},{h:'Prokop Holý'},{p:'Kněz a vojevůdce, který po Žižkově smrti vedl husitská polní vojska do tzv. spanilých jízd za hranice Čech.'},{h:'Petr ze Šternberka'},{p:'Katolický velmož ve službách krále Zikmunda. Jeden z prvních protivníků husitů v jižních Čechách.'}],
+      taktika:[{h:'Vozová hradba'},{p:'Spojte vozy do souvislé linie. Každý sousedící vůz zvyšuje obranu celé formace. Pěchotu a střelce ukryjte za hradbu a nechte nepřítele tříštit se o vozy.'},{h:'Terén a výška'},{p:'Kopce dávají bonus k dosahu i obraně. Les zpomaluje jízdu a poskytuje kryt. Řeku lze překročit jen v brodu.'},{h:'Morálka a chorál'},{p:'Husitský chorál posiluje morálku spojenců a oslabuje nepřítele. Včas zazpívaná píseň dokáže rozhodnout bitvu.'}],
+      teren:[{h:'Louka'},{p:'Základní terén bez postihu. Plný pohyb i dostřel.'},{h:'Kopec'},{p:'+1 dosah, +20 % obrana. Pohyb stojí 2 body.'},{h:'Les'},{p:'Kryt proti střelbě (+obrana). Jízda výrazně zpomalena.'},{h:'Brod / řeka'},{p:'Řeku lze přejít jen brodem; pohyb skrz vodu je velmi pomalý.'}],
+      pravidla:[{h:'Tahový systém'},{p:'Hráči se střídají po tazích. V jednom kole se každá jednotka může jednou pohnout a poté zaútočit.'},{h:'Morálka'},{p:'Ztráty a obklíčení snižují morálku armády. Při nízké morálce začnou jednotky prchat z boje.'},{h:'Vítězství'},{p:'Splňte hlavní cíl mise. Vedlejší cíle přinášejí hvězdy a bonusy do další bitvy.'}],
+      ovladani:[{h:'Výběr a pohyb'},{p:'Klikněte na jednotku, poté na zvýrazněné pole pro pohyb. Pravým tlačítkem výběr zrušíte.'},{h:'Útok'},{p:'Vyberte jednotku a klikněte na nepřítele v dosahu — náhled ukáže odhadované poškození.'},{h:'Kamera'},{p:'Tažením posouváte mapu, kolečkem přibližujete. Minimapa vpravo dole slouží k rychlému přesunu.'}],
+      ohre:[{h:'Husitské války — Alpha 0.1'},{p:'Tahová strategie z období husitských válek (1419–1437). Veďte Žižkovy polní šiky, budujte vozovou hradbu a odrážejte křížové výpravy v historických bitvách.'},{p:'Verze Alpha 0.1 · 03.02.2026'}]
+    };
+    const blocksRaw=content[S.encTab]||[];
+    const encBlocks=blocksRaw.map(x=> x.h?{isHead:true,isText:false,text:x.h}:{isHead:false,isText:true,text:x.p});
+    const showUnits=S.encTab==='jednotky';
+    const unitsRaw=[
+      {n:'Bojový vůz',cat:'VOZY',hp:100,atk:25,def:40,rng:2,mov:1,ic:'wagon',ab:'Vozová hradba (+15 % obrana / vůz)',desc:'Opevněný vůz. Tvoří vozovou hradbu s dalšími vozy.'},
+      {n:'Cepníci',cat:'PĚCHOTA',hp:80,atk:35,def:20,rng:1,mov:3,ic:'flail',ab:'Cep — ignoruje 50 % brnění',desc:'Sedláci s okovanými cepy. Drtí i těžké rytířské brnění.'},
+      {n:'Kušiníci',cat:'STŘELCI',hp:50,atk:30,def:10,rng:3,mov:2,ic:'bow',ab:'Pavéza — kryt při střelbě',desc:'Střelci z kuše za velkým štítem. Smrtící na dálku, slabí zblízka.'},
+      {n:'Lehká jízda',cat:'JÍZDA',hp:60,atk:32,def:15,rng:1,mov:5,ic:'horseshoe',ab:'Výpad — bonus po pohybu',desc:'Rychlí jezdci pro výpady do boků a pronásledování prchajících.'}
+    ];
+    const units=unitsRaw.map(u=>Object.assign({},u,{icon:this.icon(u.ic,'#f3ecd8',22)}));
+
+    const eras=[['i','I. Zrození','1419–1420'],['ii','II. Žižkova éra','1421–1424'],['iii','III. Prokopova éra','1425–1431'],['iv','IV. Konec','1433–1437']].map(a=>({id:a[0],t:a[1],d:a[2],style:this.eraStyle(S.era===a[0]),go:()=>this.setState({era:a[0],selMission:null})}));
+    const missionsByEra={
+      i:[{t:'Bitva u Živohoště',d:'4. listopadu 1419',stars:3,max:3,desc:'První střet. Šternberk přepadá unavené jihočeské poutníky u Živohoště. Ubraňte se do příchodu posil.'},{t:'Bitva u Nekmíře',d:'prosinec 1419',stars:1,max:3,desc:'Žižka poprvé použije vozovou hradbu proti přesile plzeňského landfrýdu.'},{t:'Vítkov',d:'14. července 1420',stars:2,max:4,desc:'Obrana pražského předmostí na vrchu Vítkov proti první křížové výpravě.'}],
+      ii:[{t:'Obrana Žatce',d:'10. září 1421',stars:3,max:3,desc:'Druhá křížová výprava obléhá „pevnost Slunce". Obrovská přesila proti žatecké posádce. Udržte hradby do soumraku.'},{t:'Bitva u Kutné Hory',d:'21.–22. prosince 1421',stars:4,max:4,desc:'Žižka obklíčen přesilou u Kutné Hory po zradě měšťanů. Musí v noci prorazit vozovou hradbou!'},{t:'Bitva u Německého Brodu',d:'8.–10. ledna 1422',stars:2,max:4,desc:'Pronásledování prchajících křižáků. Zlomte jejich ústup u zamrzlé Sázavy.'}],
+      iii:[{t:'Ústí nad Labem',d:'16. června 1426',stars:3,max:4,desc:'Prokop Holý čelí saské a míšeňské přesile u Na Běhání. Velká polní bitva.'},{t:'Tachov',d:'srpen 1427',stars:2,max:3,desc:'Čtvrtá křížová výprava prchá ještě před bojem. Dostihněte ji u Tachova.'},{t:'Domažlice',d:'14. srpna 1431',stars:4,max:4,desc:'Pátá křížová výprava se rozpadá při zaslechnutí chorálu. Završte rozprášení.'}],
+      iv:[{t:'Bitva u Lipan',d:'30. května 1434',stars:0,max:5,desc:'Bratrovražedný střet. Polní vojska proti panské jednotě. Konec radikálního husitství.'}]
+    };
+    const ms=missionsByEra[S.era]||[];
+    const missions=ms.map((m,i)=>{ const id=S.era+'-'+i; const active=S.selMission?S.selMission===id:i===0; const starArr=[]; for(let k=0;k<m.max;k++) starArr.push({el:this.icon('star', k<m.stars?'#f4d35e':'#574a2b',15)}); return Object.assign({},m,{n:i+1,style:this.missionStyle(active),starArr,go:()=>this.setState({selMission:id})}); });
+
+    const selUnit={n:'Cepníci',cat:'PĚCHOTA',hp:80,max:100,atk:35,def:20,rng:1,mov:3,ab:'Cep — ignoruje 50 % brnění',hpPct:'80%',icon:this.icon('flail','#f3ecd8',30)};
+    const hus=[['Václav Koranda',60,'chalice'],['Sudličníci',75,'spear'],['Sudličníci',75,'spear'],['Cepníci',80,'flail'],['Kušiníci',50,'bow'],['Lehká jízda',60,'horseshoe']];
+    const kri=[['Petr ze Šternberka',95,'star'],['Těžký rytíř',110,'horseshoe'],['Pěší žoldnéř',70,'swords'],['Kušiník',55,'bow'],['Sudličník',65,'spear']];
+    const husiteUnits=hus.map(a=>({n:a[0],hp:a[1],icon:this.icon(a[2],'#e9d3a0',16)}));
+    const krizaciUnits=kri.map(a=>({n:a[0],hp:a[1],icon:this.icon(a[2],'#bcd2ee',16)}));
+    const objectives=[
+      {el:this.icon('target','#f4d35e',18),color:'#ecdcb0',text:'Přežijte do příchodu posil (kolo 5) s alespoň 40 % jednotek.'},
+      {el:this.icon('diamond','#b89a52',15),color:'#c4b083',text:'Udržte kopec Červenka.'},
+      {el:this.icon('diamond','#b89a52',15),color:'#c4b083',text:'Zajměte nebo zabijte Petra ze Šternberka.'}
+    ];
+
+    return {
+      isMenu:S.screen==='menu', isKampan:S.screen==='kampan', isEnc:S.screen==='enc', isBitva:S.screen==='bitva',
+      setStage:(el)=>{this.stage=el; if(el) this.fit();},
+      navItems, menuBtns, music:S.music, toggleMusic:()=>this.setState({music:!S.music}),
+      encTabs, encTitle:titles[S.encTab], encBlocks, showUnits, showBlocks:!showUnits, units,
+      eras, missions, campaignSub:'1419–1437',
+      selUnit, husiteUnits, krizaciUnits, objectives, titleEvent:'Šternberk útočí na unavené jihočeské poutníky.',
+      battleMap:this.buildMap(), miniMap:this.buildMini(),
+      goMenu:()=>this.setState({screen:'menu'})
+    };
+  }
+}
+</script>
+</body>
+</html>
