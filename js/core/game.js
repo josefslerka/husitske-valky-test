@@ -69,6 +69,10 @@ class Game {
         this.armyMorale = { hussites: 100, crusaders: 100 };
         this.wavering = { hussites: false, crusaders: false };
 
+        // Přeskočení animace tahu AI (klik na indikátor "Křižáci přemýšlí")
+        // - sticky pro celou bitvu: jakmile zapnuto, AI tahy běží zrychleně
+        this.fastForwardAI = false;
+
         // Tutoriál
         this.isTutorial = false;
         this.tutorialStep = 0;
@@ -1000,6 +1004,18 @@ class Game {
             }
             this.endTurn();
         }, { signal });
+
+        // Klik na indikátor "Křižáci přemýšlí" zrychlí (přeskočí) animaci tahu AI.
+        // Sticky: jakmile hráč klikne, AI tahy běží zrychleně až do konce bitvy.
+        const aiThinking = document.getElementById('ai-thinking');
+        if (aiThinking) {
+            aiThinking.addEventListener('click', () => {
+                if (this.currentFaction !== 'hussites' && !this.fastForwardAI) {
+                    this.fastForwardAI = true;
+                    aiThinking.classList.add('skipping');
+                }
+            }, { signal });
+        }
 
         // Tlačítko útoku - zvýrazní platné cíle vybrané jednotky
         const attackBtn = document.getElementById('btn-attack');

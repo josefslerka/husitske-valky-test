@@ -4357,6 +4357,49 @@ body {
     }
 }
 
+/* Klikatelný indikátor AI - klik zrychlí (přeskočí) tah křižáků */
+.ai-thinking {
+    cursor: pointer;
+    user-select: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ai-thinking:hover,
+.ai-thinking:focus-visible {
+    border-color: var(--gold-light);
+    box-shadow: 0 4px 24px var(--shadow-color), 0 0 0 3px rgba(201, 162, 39, 0.25);
+    outline: none;
+}
+
+.ai-thinking-skip {
+    color: var(--gold-light);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding-left: 6px;
+    border-left: 1px solid var(--gold-dark);
+    opacity: 0.85;
+    white-space: nowrap;
+}
+
+.ai-thinking:hover .ai-thinking-skip {
+    opacity: 1;
+}
+
+/* Zapnutý rychlý režim: hráč už klikl, prodlevy jsou zrušené pro celou bitvu */
+.ai-thinking.skipping {
+    border-color: var(--gold-light);
+}
+
+.ai-thinking.skipping .ai-thinking-skip {
+    color: var(--parchment-light);
+    opacity: 0.6;
+}
+
+.ai-thinking.skipping .ai-thinking-spinner {
+    animation-duration: 0.35s;
+}
+
 /* Hover efekt pro jednotky v přehledu */
 .army-section li {
     transition: all 0.2s ease;

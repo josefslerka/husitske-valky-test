@@ -71,7 +71,7 @@ const AI = {
             if (game.showAIThinking) game.showAIThinking(false);
             // Ukončíme tah pouze pokud hra stále běží
             if (game.gameState === 'playing') {
-                setTimeout(() => game.endTurn(), 300);
+                setTimeout(() => game.endTurn(), game.fastForwardAI ? 50 : 300);
             }
             return;
         }
@@ -96,7 +96,13 @@ const AI = {
         const speedFactor = { fast: 0.4, normal: 1, slow: 1.8 }[
             (window.gameSettings && window.gameSettings.aiSpeed) || 'normal'
         ] || 1;
-        const delay = (action && action.type === 'attack' ? 700 : 500) * speedFactor;
+        let delay = (action && action.type === 'attack' ? 700 : 500) * speedFactor;
+        // Hráč klikl na "přeskočit tah AI": minimální prodlevy.
+        // Útok drží 320 ms (delší než animace zásahu ~300 ms, jinak by se
+        // překrývaly damage-timeouty a hrozily race-y), pohyb je skoro instantní.
+        if (game.fastForwardAI) {
+            delay = (action && action.type === 'attack') ? 320 : 40;
+        }
         setTimeout(() => {
             this.processUnits(game, units, index + 1);
         }, delay);

@@ -42,6 +42,8 @@
     "returnToMenu": "Return to Menu",
     "confirmReturn": "Do you really want to leave the battle and return to the main menu?",
     "aiThinking": "Crusaders are thinking...",
+    "skipAiTurn": "▶▶ skip",
+    "skipAiHint": "Click to speed up the enemy's turns",
     "moraleLabel": "Morale",
     "wavering": "WAVERING!"
   },

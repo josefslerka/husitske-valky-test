@@ -42,6 +42,8 @@
     "returnToMenu": "Návrat do menu",
     "confirmReturn": "Opravdu chcete opustit bitvu a vrátit se do hlavního menu?",
     "aiThinking": "Křižáci přemýšlí...",
+    "skipAiTurn": "▶▶ přeskočit",
+    "skipAiHint": "Klikni pro zrychlení tahů nepřítele",
     "moraleLabel": "Morálka",
     "wavering": "KOLÍSÁ!"
   },
