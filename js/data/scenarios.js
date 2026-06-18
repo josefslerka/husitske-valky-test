@@ -2969,20 +2969,24 @@ const Scenarios = {
         date: '20. dubna 1423',
         type: 'field_battle',
         difficulty: 3,
-        description: 'Žižka a Diviš Bořek s orebitskou pěchotou a jízdou čelí katolické šlechtě na kopci Gothard. Bitva bez vozové hradby - čistá polní bitva.',
-        historicalSignificance: 'Rozhodující porážka katolické šlechty v severovýchodních Čechách. Husité ukořistili katolické vozy a děla.',
+        description: 'Žižka (slepý) a Diviš Bořek brání vozovou hradbu na kopci Gothard proti panské jednotě - koalici české šlechty. Husitská občanská válka.',
+        historicalSignificance: 'Rozhodující porážka panské jednoty v severovýchodních Čechách. Slepý Žižka ubránil kopec vozovou hradbou a ukořistil nepřátelské vozy a děla.',
 
         briefing: {
-            hussites: 'Zaujměte výhodnou pozici na kopci Gothard. Nemáte vozy, ale kopec poskytuje přirozenou obranu. Katolická šlechta pod Čeňkem z Vartenberka se blíží s přesilou jízdy. Využijte terén a palné zbraně!',
-            crusaders: 'Husitští kacíři se opevnili na kopci bez vozů. Máte početní převahu v jízdě - rozdrťte je dříve, než se zformují!'
+            hussites: 'Sražte vozovou hradbu na kopci Gothard a děla do ní. Panská jednota pod Čeňkem z Vartenberka se blíží s přesilou jízdy. Nechte rytíře vyjet do svahu, sesednout a unavit se - pak je rozbijte palbou a vyrazte jízdou dolů!',
+            crusaders: 'Žižkovi radikálové se opevnili na kopci. Za panskou jednotu - máte převahu v jízdě, rozdrťte je dříve, než se zformují!'
         },
 
         mapSize: { width: 18, height: 14 },
 
         terrain: {
+            // Kostel sv. Gotharda na vrcholu kopce
+            church: [
+                [10,4]
+            ],
             // Kopec Gothard (357m) - střed mapy, vyvýšená pozice
             hills: [
-                [8,4], [9,4], [10,4], [11,4],
+                [8,4], [9,4], [11,4],
                 [7,5], [8,5], [9,5], [10,5], [11,5], [12,5],
                 [7,6], [8,6], [9,6], [10,6], [11,6], [12,6],
                 [8,7], [9,7], [10,7], [11,7]
@@ -3015,31 +3019,32 @@ const Scenarios = {
             hussites: {
                 commander: 'Jan Žižka z Trocnova',
                 units: [
-                    // VELITELÉ
+                    // VELITELÉ - uprostřed za hradbou
                     { type: 'JAN_ZIZKA', col: 9, row: 5 },
                     { type: 'DIVIS_BOREK', col: 10, row: 5 },
-                    // Orebitská pěchota - hlavní síla (cepníci a sudličníci)
-                    { type: 'CEPNICI', col: 8, row: 4 },
-                    { type: 'CEPNICI', col: 10, row: 4 },
-                    { type: 'CEPNICI', col: 8, row: 5 },
-                    { type: 'CEPNICI', col: 11, row: 5 },
+                    // VOZOVÁ HRADBA - dvě řady na jižním svahu (čelí útoku do svahu),
+                    // děla uvnitř. Žižka měl u Hořic ~120 vozů (Dolejší: "dvě řady vozů").
+                    { type: 'VOZOVA_HRADBA', col: 8, row: 7 },
+                    { type: 'VOZOVA_HRADBA', col: 9, row: 7 },
+                    { type: 'VOZOVA_HRADBA', col: 10, row: 7 },
+                    { type: 'VOZOVA_HRADBA', col: 11, row: 7 },
+                    { type: 'VOZOVA_HRADBA', col: 7, row: 6 },
+                    { type: 'VOZOVA_HRADBA', col: 12, row: 6 },
+                    // Děla v hradbě
+                    { type: 'HOUFNICE', col: 9, row: 6 },
+                    { type: 'TARASNICE', col: 10, row: 6 },
+                    // Střelci za vozy
+                    { type: 'RUCNICARI', col: 8, row: 6 },
+                    { type: 'RUCNICARI', col: 11, row: 6 },
+                    { type: 'KUSINICI_HUSITI', col: 8, row: 5 },
+                    { type: 'KUSINICI_HUSITI', col: 11, row: 5 },
+                    // Pěchota uvnitř/za hradbou
                     { type: 'SUDLICNICI', col: 7, row: 5 },
                     { type: 'SUDLICNICI', col: 12, row: 5 },
-                    { type: 'SUDLICNICI', col: 8, row: 6 },
-                    { type: 'SUDLICNICI', col: 11, row: 6 },
-                    // Kopiníci s pavézami - obrana proti jízdě
-                    { type: 'KOPINICI_HUSITI', col: 7, row: 6 },
-                    { type: 'KOPINICI_HUSITI', col: 12, row: 6 },
+                    { type: 'CEPNICI', col: 8, row: 4 },
                     { type: 'PAVEZNICI', col: 9, row: 4 },
                     { type: 'PAVEZNICI', col: 11, row: 4 },
-                    // Střelci na vrcholu kopce
-                    { type: 'KUSINICI_HUSITI', col: 9, row: 6 },
-                    { type: 'KUSINICI_HUSITI', col: 10, row: 6 },
-                    { type: 'RUCNICARI', col: 8, row: 7 },
-                    { type: 'RUCNICARI', col: 10, row: 7 },
-                    // Děla (lehké polní kusy)
-                    { type: 'HOUFNICE', col: 9, row: 7 },
-                    // Orebitská jízda na křídlech
+                    // Orebitská jízda na křídlech - VÝPAD dolů ze svahu po zlomení nepřítele
                     { type: 'JIZDA_HUSITI', col: 5, row: 5 },
                     { type: 'JIZDA_HUSITI', col: 6, row: 6 },
                     { type: 'JIZDA_HUSITI', col: 13, row: 5 },
@@ -3078,7 +3083,7 @@ const Scenarios = {
                     // Střelci
                     { type: 'KUSNICI', col: 5, row: 11 },
                     { type: 'KUSNICI', col: 13, row: 11 }
-                    // Poznámka: Katolické vozy byly ukořistěny až PO bitvě, nejsou v počátečním setupu
+                    // Poznámka: Nepřátelské vozy byly ukořistěny až PO bitvě, nejsou v počátečním setupu
                 ]
             }
         },
@@ -3088,10 +3093,10 @@ const Scenarios = {
                 id: 1,
                 name: 'Zaujmutí pozic',
                 turnRange: [1, 2],
-                description: 'Husité se opevňují na kopci Gothard, katolíci se shromažďují.',
+                description: 'Husité se opevňují na kopci Gothard, panská jednota se shromažďuje.',
                 events: [
                     { trigger: 'turn_1', message: 'Žižka: "Na kopec! Držte svahy, střelci dopředu!"' },
-                    { trigger: 'turn_2', message: 'Katolická šlechta se formuje k útoku pod kopcem.' }
+                    { trigger: 'turn_2', message: 'Panská jednota se formuje k útoku pod kopcem.' }
                 ]
             },
             {
@@ -3100,7 +3105,7 @@ const Scenarios = {
                 turnRange: [3, 5],
                 description: 'Čeněk z Vartenberka vrhá jízdu do čelního útoku na kopec.',
                 events: [
-                    { trigger: 'turn_3', message: 'Čeněk z Vartenberka: "Vpřed! Rozdrťte kacíře!"' },
+                    { trigger: 'turn_3', message: 'Čeněk z Vartenberka: "Vpřed! Rozbijte Žižkovy radikály!"' },
                     { trigger: 'turn_4', message: 'Těžká jízda naráží na husitskou pěchotu! Útok vázne ve strmém svahu.' },
                     { trigger: 'turn_5', type: 'cavalry_charge_blocked', text: 'Jízda nemůže překonat strmý svah a sudlice!' }
                 ]
@@ -3109,11 +3114,11 @@ const Scenarios = {
                 id: 3,
                 name: 'Tříhodinový boj',
                 turnRange: [6, 8],
-                description: 'Zuřivé boje na svazích Gothardu. Katolíci utrpí těžké ztráty.',
+                description: 'Zuřivé boje na svazích Gothardu. Panská jednota utrpí těžké ztráty.',
                 events: [
                     { trigger: 'turn_6', message: 'Husitské houfnice a střelci kosí útočníky!' },
                     { trigger: 'turn_7', message: 'Arnošt Flaška padl v boji!' },
-                    { trigger: 'turn_7', type: 'morale_drop', faction: 'crusaders', amount: 2, text: 'Smrt Arnošta Flašky otřásla katolíky.' }
+                    { trigger: 'turn_7', type: 'morale_drop', faction: 'crusaders', amount: 2, text: 'Smrt Arnošta Flašky otřásla panskou jednotou.' }
                 ]
             },
             {
@@ -3123,16 +3128,16 @@ const Scenarios = {
                 description: 'Žižka nařizuje protiútok. Orebitská jízda a pěchota vyráží z kopce.',
                 events: [
                     { trigger: 'turn_9', message: 'Žižka: "Teď! Vpřed, za kalich!"' },
-                    { trigger: 'turn_10', message: 'Katolíci se dávají na útěk! Čeněk prchá s hrstkou mužů!' }
+                    { trigger: 'turn_10', message: 'Panská jednota se dává na útěk! Čeněk prchá s hrstkou mužů!' }
                 ]
             },
             {
                 id: 5,
                 name: 'Pronásledování',
                 turnRange: [12, 14],
-                description: 'Husité pronásledují prchající katolíky a ukořisťují jejich vozy.',
+                description: 'Husité pronásledují prchající pány a ukořisťují jejich vozy.',
                 events: [
-                    { trigger: 'turn_12', message: 'Ukořistěny všechny katolické vozy a děla!' },
+                    { trigger: 'turn_12', message: 'Ukořistěny všechny nepřátelské vozy a děla!' },
                     { trigger: 'turn_13', message: 'Čeněk z Vartenberka uprchl. Husitské vítězství je úplné.' }
                 ]
             }
@@ -3142,7 +3147,7 @@ const Scenarios = {
             primary: {
                 type: 'destroy_percent',
                 percent: 60,
-                description: 'Zničte 60% katolického vojska'
+                description: 'Zničte 60% vojska panské jednoty'
             },
             secondary: [
                 { type: 'hold_position', positions: [[8,5], [9,5], [10,5], [11,5]], description: 'Udržte kopec Gothard po celou bitvu' }
@@ -3150,8 +3155,8 @@ const Scenarios = {
         },
 
         debriefing: {
-            victory: 'Rozhodující vítězství na Gothardu! Orebité pod vedením Žižky a Diviše Bořka prokázali, že i bez vozové hradby dokáží porazit přesilu jízdy. Čeněk z Vartenberka ztratil všechny vozy a děla, která husité ukořistili. Katolická šlechta v severovýchodních Čechách je zlomena.',
-            defeat: 'Katolická přesila prolomena. Kopec Gothard padl a s ním i naděje na udržení východních Čech. Husitské síly jsou rozptýleny a Čeněk z Vartenberka slaví vítězství.'
+            victory: 'Rozhodující vítězství na Gothardu! Slepý Žižka a Diviš Bořek rozbili přesilu jízdy o vozovou hradbu - rytíři museli sesednout a unaveni padli pod palbou děl. Čeněk z Vartenberka ztratil všechny vozy a děla. Panská jednota v severovýchodních Čechách je zlomena.',
+            defeat: 'Panská jednota prolomila obranu. Kopec Gothard padl a s ním i naděje na udržení východních Čech. Husitské síly jsou rozptýleny a Čeněk z Vartenberka slaví vítězství.'
         },
 
         maxTurns: 14,
