@@ -3172,12 +3172,12 @@ const Scenarios = {
         date: '7. června 1424',
         type: 'field_battle',
         difficulty: 4,
-        description: 'Žižkovo mistrovské dílo. Slepý hejtman využívá terén k drtivé porážce protihusitské koalice.',
+        description: 'Žižkovo mistrovské dílo. Slepý hejtman využívá terén k drtivé porážce protižižkovské koalice (Pražané a panská jednota).',
         historicalSignificance: 'Nejkrvavější bitva husitských válek. Padlo 1200 koaličních vojáků proti 200 husitům. Žižka se stal nejmocnějším mužem v Čechách.',
 
         briefing: {
             hussites: 'Protižižkovská koalice vás dostihla u Malešova. Využijte svah nad údolím potoka Bohynka. Nepřítel má početní převahu, ale terén je na vaší straně!',
-            crusaders: 'Konečně jsme Žižku dostihli! Má méně mužů. Vtrhneme do údolí a rozdrtíme kacíře jednou provždy!'
+            crusaders: 'Konečně jsme Žižku dostihli! Má méně mužů. Vtrhneme do údolí a rozdrtíme Žižkovce jednou provždy!'
         },
 
         mapSize: { width: 18, height: 14 },
@@ -3259,10 +3259,11 @@ const Scenarios = {
                 ]
             },
             crusaders: {
-                commander: 'Čeněk z Vartenberka',
+                commander: 'Diviš Bořek z Miletínka',
                 units: [
-                    // VELITELÉ koalice
-                    { type: 'CENEK_VARTENBERK', col: 9, row: 11 },
+                    // VELITELÉ koalice - Diviš Bořek vede pražské vojsko. Žižkův
+                    // spojenec u Hořic 1423, o rok později jeho protivník (občanská válka).
+                    { type: 'DIVIS_BOREK', col: 9, row: 11 },
                     { type: 'ARNOST_FLASKA', col: 7, row: 11 },
                     { type: 'JINDRICH_BERKA', col: 11, row: 11 },
                     // Těžká jízda - hlavní síla (7-8000 mužů historicky)
@@ -3290,7 +3291,7 @@ const Scenarios = {
                     { type: 'KOPINICI', col: 12, row: 12 },
                     { type: 'HALAPARTNICI', col: 5, row: 12 },
                     { type: 'HALAPARTNICI', col: 13, row: 12 },
-                    // Katoličtí střelci
+                    // Pražští střelci
                     { type: 'KUSNICI', col: 5, row: 11 },
                     { type: 'KUSNICI', col: 13, row: 11 },
                     { type: 'KUSNICI', col: 6, row: 11 },
@@ -3321,7 +3322,7 @@ const Scenarios = {
                 turnRange: [3, 5],
                 description: 'Protižižkovská koalice vrhá jízdu do údolí. Nepřítel se nemůže plně rozvinout.',
                 events: [
-                    { trigger: 'turn_3', message: 'Čeněk z Vartenberka: "Do útoku! Rozdrtíme slepce jednou provždy!"' },
+                    { trigger: 'turn_3', message: 'Diviš Bořek: "Do útoku! Rozdrtíme slepce jednou provždy!"' },
                     { trigger: 'turn_4', message: 'Těžká jízda vjíždí do úzkého údolí... Řady se tísní!' },
                     { trigger: 'turn_5', type: 'terrain_penalty', faction: 'crusaders', text: 'Jízda ztrácí hybnost v bažinatém údolí!' }
                 ]
@@ -3330,8 +3331,11 @@ const Scenarios = {
                 id: 3,
                 name: 'Krvavé údolí',
                 turnRange: [6, 8],
-                description: 'Husitská palba z vrchu kosí útočníky. Nejkrvavější fáze bitvy.',
+                description: 'Žižka spouští vozy plné kamení dolů a palba z vrchu kosí útočníky. Nejkrvavější fáze bitvy.',
                 events: [
+                    // KAMENNÉ VOZY (Dolejší) - spustí se, až je nepřítel namačkaný v údolí
+                    // pod kopcem; rozbijí jeho šiky (panika). Vázáno na units_in_area.
+                    { trigger: 'turn_5', triggerBefore: 'turn_10', condition: { type: 'units_in_area', faction: 'crusaders', area: { minCol: 4, maxCol: 14, minRow: 5, maxRow: 9 }, minCount: 4 }, type: 'panic', faction: 'crusaders', level: 3, title: 'Kamenné vozy!', text: 'Žižka dal naplnit pícní vozy kamením a spustil je dolů ze svahu - šiky nepřítele se v údolí tříští!' },
                     { trigger: 'turn_6', message: 'Houfnice a ručnice pálí do natěsnaných řad nepřítele!' },
                     { trigger: 'turn_7', message: 'Ztráty koalice rostou! Údolí se barví krví!' },
                     { trigger: 'turn_8', type: 'morale_drop', faction: 'crusaders', amount: 3, text: 'Koaliční vojsko ztrácí odvahu v zabijácké palbě.' }
@@ -3355,7 +3359,7 @@ const Scenarios = {
                 description: 'Koaliční vojsko se hroutí. Zadní voje prchají bez boje.',
                 events: [
                     { trigger: 'turn_12', message: 'Koalice se hroutí! Muži prchají směrem k Malešovu!' },
-                    { trigger: 'turn_13', message: 'Čeněk z Vartenberka: "Zpět! Všichni zpět!" Zadní voje už ani nevstoupily do boje.' },
+                    { trigger: 'turn_13', message: 'Diviš Bořek: "Zpět! Všichni zpět!" Zadní voje už ani nevstoupily do boje.' },
                     { trigger: 'turn_14', message: '1200 koaličních vojáků padlo. Husité ztratili jen 200 mužů.' },
                     { trigger: 'turn_15', message: 'Žižka ovládl bojiště. Cesta na Kutnou Horu je volná!' }
                 ]
@@ -3376,7 +3380,7 @@ const Scenarios = {
         },
 
         debriefing: {
-            victory: 'Geniální vítězství slepého vojevůdce! Žižka využil terénu a disciplíny svých mužů k drtivé porážce koalice Pražanů a katolíků. 1200 koaličních vojáků padlo, zatímco husité ztratili pouze 200 mužů. Cesta na Kutnou Horu je volná!',
+            victory: 'Geniální vítězství slepého vojevůdce! Žižka využil terénu a disciplíny svých mužů k drtivé porážce koalice Pražanů a panské jednoty. 1200 koaličních vojáků padlo, zatímco husité ztratili pouze 200 mužů. Cesta na Kutnou Horu je volná!',
             defeat: 'Koalice překonala Žižkovu obranu. Táborité a sirotci utrpěli těžké ztráty. Slepý vojevůdce přišel o svou reputaci neporazitelnosti a husitské hnutí je opět rozděleno.'
         },
 
