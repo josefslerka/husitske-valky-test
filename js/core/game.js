@@ -51,6 +51,9 @@ class Game {
         this.choralActive = false;
         this.choralTurnsRemaining = 0;
 
+        // Skriptovaný postoj AI (WP0) - řízení chování nepřítele přes eventy
+        this.aiStance = { mode: 'default', target: null, untilTurn: null, proximity: 3 };
+
         // Regenerace - sledování jednotek které již regenerovaly
         this.regeneratedUnits = new Set();
 
@@ -115,6 +118,7 @@ class Game {
         this.choralUsed = false;
         this.choralActive = false;
         this.choralTurnsRemaining = 0;
+        this.aiStance = { mode: 'default', target: null, untilTurn: null, proximity: 3 };
         this.regeneratedUnits = new Set();
         this.escapedUnits = 0;
 
@@ -222,6 +226,7 @@ class Game {
         this.choralUsed = false;
         this.choralActive = false;
         this.choralTurnsRemaining = 0;
+        this.aiStance = { mode: 'default', target: null, untilTurn: null, proximity: 3 };
         this.regeneratedUnits = new Set();
         this.escapedUnits = 0;
         this.objectiveHeldTurns = {};  // Pro dual_objective sledování
@@ -484,6 +489,27 @@ class Game {
                         this.showEventNotification('Panika!', event.text);
                     }
                     this.addLog(i18n.t('gameLog.enemyPanic', {penalty: panicLevel * 5}), 'morale');
+                }
+                break;
+
+            case 'ai_stance':
+                // Skriptovaný postoj AI (WP0): lure/retreat/hold/defensive/aggressive/default.
+                // Souřadnice targetu jsou ve scénářových souřadnicích - převedeme na mapové
+                // stejně jako umisťování jednotek (scenarioToMap; dnes identita, ale robustně).
+                {
+                    let mappedTarget = null;
+                    if (event.target && typeof event.target.col === 'number') {
+                        mappedTarget = this.hexGrid.scenarioToMap(event.target.col, event.target.row);
+                    }
+                    this.aiStance = {
+                        mode: event.mode || 'default',
+                        target: mappedTarget,
+                        untilTurn: (typeof event.untilTurn === 'number') ? event.untilTurn : null,
+                        proximity: (typeof event.proximity === 'number') ? event.proximity : 3
+                    };
+                    if (event.text) {
+                        this.showEventNotification(event.title || 'Rozkaz', event.text);
+                    }
                 }
                 break;
 

@@ -111,8 +111,12 @@ const implementedEventTypes = [
     'wagon_bonus',
     'terrain_penalty',
     'charge_bonus',
-    'massacre'
+    'massacre',
+    'ai_stance'
 ];
+
+// Platné módy pro event typu ai_stance (WP0)
+const validAiStanceModes = ['aggressive', 'default', 'defensive', 'hold', 'retreat', 'lure'];
 
 // Typy podmínek eventů implementované v ScenarioManager.checkEventCondition
 // (neznámá podmínka se tiše vyhodnotí jako splněná - default: return true)
@@ -332,9 +336,26 @@ function validateScenario(scenario) {
                 if (event.type && !implementedEventTypes.includes(event.type)) {
                     errors.push(`Event typ '${event.type}' (fáze ${phase.id}) není implementovaný v processEvent - event se tiše zahodí`);
                 }
+                if (event.type === 'ai_stance' && event.mode && !validAiStanceModes.includes(event.mode)) {
+                    errors.push(`ai_stance event (fáze ${phase.id}) má neplatný mode '${event.mode}' - povolené: ${validAiStanceModes.join(', ')}`);
+                }
                 if (event.condition && event.condition.type &&
                     !implementedEventConditionTypes.includes(event.condition.type)) {
                     errors.push(`Podmínka eventu '${event.condition.type}' (fáze ${phase.id}) není implementovaná - vyhodnotí se vždy jako splněná`);
+                }
+            }
+        }
+
+        // WP0: pokud scénář nařizuje AI ústup/léčku, ale AI vozy nejsou 'open',
+        // po WP1 by zůstaly zavřené a nemohly by couvat (AI toggle nedělá).
+        const hasRetreatStance = scenario.phases.some(p =>
+            (p.events || []).some(e => e.type === 'ai_stance' && (e.mode === 'lure' || e.mode === 'retreat')));
+        if (hasRetreatStance) {
+            const aiFaction = playerFaction === 'hussites' ? 'crusaders' : 'hussites';
+            for (const u of (scenario.forces[aiFaction]?.units || [])) {
+                const t = UnitTypes[u.type.toUpperCase()] || UnitTypes[u.type];
+                if (t && t.unitClass === 'wagon' && u.formation !== 'open') {
+                    warnings.push(`AI vůz ${u.type} [${u.col},${u.row}] není formation:'open', ale scénář má ai_stance lure/retreat - po WP1 nebude moci couvat`);
                 }
             }
         }

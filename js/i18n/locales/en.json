@@ -1815,7 +1815,7 @@
           "message": "Moderates begin attack on wagon fort!"
         },
         {
-          "message": "Attack fails - infantry retreats in disorder!"
+          "message": "The moderates' attack fails - infantry and wagons pull back in disorder! Are they fleeing?"
         },
         {
           "message": "Warning! Noble cavalry charges from ambush!"
@@ -1847,7 +1847,7 @@
           "description": "Coalition sends infantry in seemingly desperate attack.",
           "events": [
             {"message": "Moderates begin attack on wagon fort!"},
-            {"message": "Attack fails - infantry retreats in disorder!"}
+            {"message": "The moderates' attack fails - infantry and wagons pull back in disorder! Are they fleeing?"}
           ]
         },
         {
@@ -2898,6 +2898,7 @@
     "unitsTitle": "Units in Battle"
   },
   "gameLog": {
+    "aiTrapSprung": "A trap! The enemy turns on you!",
     "selectAttackTarget": "Click a highlighted hex to choose an attack target.",
     "overwatchFire": "⚡ Covering fire! {unit} shoots at the advancing {target}!",
     "gameStart": "Game started. Hussites begin.",

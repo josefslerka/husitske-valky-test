@@ -275,6 +275,7 @@
     "unitsTitle": "Jednotky v bitvě"
   },
   "gameLog": {
+    "aiTrapSprung": "Léčka! Nepřítel se obrací proti vám!",
     "selectAttackTarget": "Vyber cíl útoku kliknutím na zvýrazněný hex.",
     "overwatchFire": "⚡ Krycí palba! {unit} pálí na postupující jednotku {target}!",
     "gameStart": "Hra zahájena. Husité začínají.",
@@ -2066,7 +2067,7 @@
           "message": "Umírnění zahajují útok na vozovou hradbu!"
         },
         {
-          "message": "Útok selhává - pěchota ustupuje v nepořádku!"
+          "message": "Útok umírněných selhává - pěchota i vozy couvají v nepořádku! Že by prchali?"
         },
         {
           "message": "Pozor! Šlechtická jízda vyráží z úkrytu!"
@@ -2098,7 +2099,7 @@
           "description": "Koalice vysílá pěchotu do zdánlivě zoufalého útoku.",
           "events": [
             {"message": "Umírnění zahajují útok na vozovou hradbu!"},
-            {"message": "Útok selhává - pěchota ustupuje v nepořádku!"}
+            {"message": "Útok umírněných selhává - pěchota i vozy couvají v nepořádku! Že by prchali?"}
           ]
         },
         {

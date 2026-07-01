@@ -2676,9 +2676,11 @@ const Scenarios = {
                     // jinak je podmínka splněná automaticky - every() na prázdném poli)
                     { type: 'DIVIS_BOREK', col: 6, row: 4 },
                     // Vozová hradba umírněných (pražské vozy - modré)
-                    { type: 'VOZOVA_HRADBA_PRASKY', col: 7, row: 5 },
-                    { type: 'VOZOVA_HRADBA_PRASKY', col: 7, row: 6 },
-                    { type: 'VOZOVA_HRADBA_PRASKY', col: 7, row: 7 },
+                    // formation:'open' - aby mohly předstírat ústup (WP0 lure; AII toggle nedělá).
+                    // Pole je před WP1 neškodné (engine ho zatím ignoruje).
+                    { type: 'VOZOVA_HRADBA_PRASKY', col: 7, row: 5, formation: 'open' },
+                    { type: 'VOZOVA_HRADBA_PRASKY', col: 7, row: 6, formation: 'open' },
+                    { type: 'VOZOVA_HRADBA_PRASKY', col: 7, row: 7, formation: 'open' },
                     // Pěchota (pražští cepníci - modří)
                     { type: 'CEPNICI_PRASKY', col: 8, row: 5 },
                     { type: 'CEPNICI_PRASKY', col: 8, row: 6 },
@@ -2718,7 +2720,7 @@ const Scenarios = {
                 description: 'Koalice vysílá pěchotu do zdánlivě zoufalého útoku.',
                 events: [
                     { trigger: 'turn_5', message: 'Umírnění zahajují útok na vozovou hradbu!' },
-                    { trigger: 'turn_6', message: 'Útok selhává - pěchota ustupuje v nepořádku!' }
+                    { trigger: 'turn_6', type: 'ai_stance', mode: 'lure', target: { col: 2, row: 6 }, untilTurn: 7, proximity: 3, message: 'Útok umírněných selhává - pěchota i vozy couvají v nepořádku! Že by prchali?' }
                 ]
             },
             {
@@ -3528,7 +3530,12 @@ const ScenarioManager = {
                             duration: event.duration,
                             modifier: event.modifier,
                             changes: event.changes,
-                            area: event.condition?.area
+                            area: event.condition?.area,
+                            // ai_stance (WP0) parametry
+                            mode: event.mode,
+                            target: event.target,
+                            untilTurn: event.untilTurn,
+                            proximity: event.proximity
                         });
                     } else {
                         // Zpětná kompatibilita - prosté zprávy

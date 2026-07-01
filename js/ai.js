@@ -61,8 +61,44 @@ const AI = {
             return;
         }
 
+        // WP0: aktualizace skriptovaného postoje (expirace, spuštění léčky)
+        this.updateAiStance(game);
+
         // Zpracování jednotek postupně s prodlevou pro vizuální efekt
         this.processUnits(game, units, 0);
+    },
+
+    // WP0: kontrola stavu skriptovaného postoje na začátku tahu AI.
+    // - untilTurn: po vypršení lure -> aggressive (spustí léčku), ostatní -> default
+    // - lure: pokud se hráč přiblíží na <= proximity hexů k targetu, léčka se spustí hned
+    updateAiStance: function(game) {
+        const stance = game.aiStance;
+        if (!stance || stance.mode === 'default' || stance.mode === 'aggressive') return;
+
+        const springTrap = () => {
+            stance.mode = 'aggressive';
+            stance.target = null;
+            game.addLog(i18n.t('gameLog.aiTrapSprung'), 'combat');
+        };
+
+        // Vypršení časového limitu postoje
+        if (typeof stance.untilTurn === 'number' && game.turnNumber > stance.untilTurn) {
+            if (stance.mode === 'lure') { springTrap(); return; }
+            stance.mode = 'default';
+            return;
+        }
+
+        // Léčka: hráč (nepřítel AI) se přiblížil k cílovému bodu ústupu
+        if (stance.mode === 'lure' && stance.target) {
+            const players = game.getEnemyUnits('crusaders');
+            for (const p of players) {
+                if (p.health <= 0) continue;
+                if (game.hexGrid.getDistance(p.col, p.row, stance.target.col, stance.target.row) <= stance.proximity) {
+                    springTrap();
+                    return;
+                }
+            }
+        }
     },
 
     processUnits: function(game, units, index) {
@@ -111,6 +147,13 @@ const AI = {
     decideAction: function(game, unit) {
         const enemies = game.getEnemyUnits('crusaders');
         const isCommander = unit.isCommander && unit.isCommander();
+
+        // WP0: skriptovaný postoj přebírá rozhodování (kromě default/aggressive,
+        // které používají standardní chování níže). Vrací akci definitivně.
+        const stance = game.aiStance;
+        if (stance && stance.mode !== 'default' && stance.mode !== 'aggressive') {
+            return this.decideStanceAction(game, unit, enemies, stance);
+        }
 
         // Pursuit mechanic - AI ustupuje směrem k cílovému bodu
         if (game.currentScenario && game.currentScenario.specialMechanics &&
@@ -205,6 +248,83 @@ const AI = {
         }
 
         return null;
+    },
+
+    // WP0: rozhodování jednotky pod skriptovaným postojem.
+    // Vrací akci definitivně (move/attack/defend) nebo null - NEspadne do agresivní AI.
+    decideStanceAction: function(game, unit, enemies, stance) {
+        const mode = stance.mode;
+
+        // Ve všech pasivních postojích: útok jen na cíl v dosahu z AKTUÁLNÍ pozice
+        // (findBestAttackTarget kontroluje distance <= range, bez pohybu = žádné pronásledování).
+        const attackInRange = () => {
+            if (!unit.canAttack()) return null;
+            const t = this.findBestAttackTarget(game, unit, enemies);
+            return t ? { type: 'attack', target: t } : null;
+        };
+
+        if (mode === 'lure' || mode === 'retreat') {
+            const atk = attackInRange();
+            if (atk) return atk;
+            if (unit.canMove()) {
+                let mv = null;
+                if (stance.target) {
+                    mv = this.findMoveTowardPoint(game, unit, stance.target.col, stance.target.row);
+                } else {
+                    mv = this.findSafeMove(game, unit, enemies); // bez cíle: ustup od nepřítele
+                }
+                if (mv) return { type: 'move', col: mv.col, row: mv.row };
+            }
+            return unit.canAct() ? { type: 'defend' } : null;
+        }
+
+        if (mode === 'hold') {
+            const atk = attackInRange();
+            if (atk) return atk;
+            return unit.canAct() ? { type: 'defend' } : null; // drží pozici, nehýbe se
+        }
+
+        if (mode === 'defensive') {
+            const atk = attackInRange();
+            if (atk) return atk;
+            // Pohyb max 1 hex jen pokud tím jednotka získá cíl v dosahu útoku
+            if (unit.canMove()) {
+                for (const move of game.getValidMoves(unit)) {
+                    if (game.hexGrid.getDistance(unit.col, unit.row, move.col, move.row) > 1) continue;
+                    for (const enemy of enemies) {
+                        if (enemy.health <= 0) continue;
+                        if (game.hexGrid.getDistance(move.col, move.row, enemy.col, enemy.row) <= unit.range) {
+                            return { type: 'move', col: move.col, row: move.row };
+                        }
+                    }
+                }
+            }
+            return unit.canAct() ? { type: 'defend' } : null;
+        }
+
+        // Neznámý mód - bezpečný fallback, ať AI nezamrzne
+        return unit.canAct() ? { type: 'defend' } : null;
+    },
+
+    // WP0: platný tah, který nejvíc přiblíží jednotku k bodu (targetCol,targetRow).
+    // null, pokud je jednotka už <= 1 hex od cíle nebo žádný tah vzdálenost nezkracuje.
+    findMoveTowardPoint: function(game, unit, targetCol, targetRow) {
+        const validMoves = game.getValidMoves(unit);
+        if (validMoves.length === 0) return null;
+
+        const currentDist = game.hexGrid.getDistance(unit.col, unit.row, targetCol, targetRow);
+        if (currentDist <= 1) return null; // už jsme u cíle
+
+        let bestMove = null;
+        let bestDist = currentDist;
+        for (const move of validMoves) {
+            const dist = game.hexGrid.getDistance(move.col, move.row, targetCol, targetRow);
+            if (dist < bestDist) {
+                bestDist = dist;
+                bestMove = move;
+            }
+        }
+        return bestMove; // null pokud žádný tah nezkracuje vzdálenost
     },
 
     // Hledání příležitosti pro charge útok (pohyb + útok)
