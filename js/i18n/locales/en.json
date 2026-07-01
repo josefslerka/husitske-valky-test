@@ -42,6 +42,7 @@
     "returnToMenu": "Return to Menu",
     "confirmReturn": "Do you really want to leave the battle and return to the main menu?",
     "aiThinking": "Crusaders are thinking...",
+    "aiThinkingNamed": "{faction} is thinking...",
     "skipAiTurn": "▶▶ skip",
     "skipAiHint": "Click to speed up the enemy's turns",
     "moraleLabel": "Morale",
@@ -1221,6 +1222,7 @@
       "date": "November 1, 1420"
     },
     "kutna_hora_1421": {
+      "factionNames": { "crusaders": "Sigismund's army" },
       "name": "Battle of Kutná Hora",
       "description": "Žižka surrounded by superior forces at Kutná Hora after townsmen's betrayal. Must break through with wagon fort at night!",
       "historicalSignificance": "First offensive use of firearms from moving wagon fort. Brilliant tactical retreat.",
@@ -1288,6 +1290,7 @@
       "date": "December 21-22, 1421"
     },
     "nemecky_brod_1422": {
+      "factionNames": { "crusaders": "Sigismund's army" },
       "name": "Battle of Německý Brod",
       "description": "Pursuit of retreating Sigismund's army from Kutná Hora. Ice on Sázava breaks under heavy wagons.",
       "historicalSignificance": "End of 2nd crusade. Sigismund's last campaign in Bohemia. Loot of 500 wagons.",
@@ -1452,6 +1455,7 @@
       "date": "August 5, 1421"
     },
     "usti_1426": {
+      "factionNames": { "crusaders": "Saxons and Meisseners" },
       "name": "Battle of Ústí nad Labem",
       "description": "Bloodiest defeat of crusaders. Hussites with double wagon fort decimate attacking Saxons.",
       "historicalSignificance": "Last major frontal attack of heavy cavalry on a wagon fort. According to the Old Annals only 19 Czechs fell (and no one of note except the burgher Jan Bradatý); chronicles put German losses in the thousands, up to 15,000.",
@@ -1800,6 +1804,7 @@
       "date": "November 1433 - February 1434"
     },
     "lipany_1434": {
+      "factionNames": { "hussites": "Field Armies", "crusaders": "Lords' League" },
       "name": "Battle of Lipany",
       "description": "Fratricidal battle between Hussites. Moderate Utraquists and Catholics defeat radical Taborites and Orphans.",
       "historicalSignificance": "End of Hussite Wars. Death of Prokop the Great. Victory of moderates.",
@@ -1960,6 +1965,7 @@
       "date": "April-August 1437"
     },
     "horice_1423": {
+      "factionNames": { "crusaders": "Lords' League" },
       "name": "Battle of Hořice",
       "description": "Žižka and Diviš Bořek with Orebite infantry and cavalry face Catholic nobility on Gothard hill. Battle without wagon fort - pure field battle.",
       "historicalSignificance": "Decisive defeat of Catholic nobility in northeastern Bohemia. Hussites captured Catholic wagons and guns.",
@@ -2062,6 +2068,7 @@
       "date": "April 20, 1423"
     },
     "malesov_1424": {
+      "factionNames": { "crusaders": "Prague League" },
       "name": "Battle of Malešov",
       "description": "Žižka's masterpiece. Blind hetman uses terrain for crushing defeat of anti-Hussite coalition.",
       "historicalSignificance": "Bloodiest battle of Hussite Wars. 1,200 coalition soldiers fell versus 200 Hussites. Žižka became most powerful man in Bohemia.",

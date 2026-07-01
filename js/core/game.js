@@ -2004,6 +2004,11 @@ class Game {
         const indicator = document.getElementById('ai-thinking');
         if (indicator) {
             if (show) {
+                // WP5: text nese jméno strany, která je právě na tahu (AI = currentFaction)
+                const textEl = indicator.querySelector('.ai-thinking-text');
+                if (textEl) {
+                    textEl.textContent = i18n.t('game.aiThinkingNamed', { faction: this.factionLabel(this.currentFaction) });
+                }
                 indicator.classList.remove('hidden');
             } else {
                 indicator.classList.add('hidden');
@@ -2012,11 +2017,26 @@ class Game {
     }
 
 
+    // WP5: zobrazované jméno strany pro aktuální scénář.
+    // Živý lookup přes i18n (scenarios.<id>.factionNames.<faction>) - přežije přepnutí
+    // jazyka; fallback na generické factions.<faction> (Husité/Křižáci).
+    factionLabel(faction) {
+        const id = this.currentScenario && this.currentScenario.id;
+        if (id && typeof i18n !== 'undefined') {
+            const key = `scenarios.${id}.factionNames.${faction}`;
+            if (i18n.hasTranslation(key)) return i18n.t(key);
+            // fallback na kanonickou hodnotu ze scénáře (pro jazyk bez locale záznamu)
+            const fn = this.currentScenario.factionNames;
+            if (fn && fn[faction]) return fn[faction];
+        }
+        return i18n.t(`factions.${faction}`);
+    }
+
     // Aktualizace UI
     updateUI() {
         // Aktuální hráč
         const playerSpan = document.getElementById('current-player');
-        const factionName = i18n.t(`factions.${this.currentFaction}`);
+        const factionName = this.factionLabel(this.currentFaction);
         playerSpan.textContent = `${i18n.t('game.turnLabel')} ${factionName}`;
         playerSpan.className = this.currentFaction === 'crusaders' ? 'crusaders' : '';
 
@@ -2139,6 +2159,12 @@ class Game {
         const crusaderCount = crusaderSection?.querySelector('.faction-count');
         if (hussiteCount) hussiteCount.textContent = `${hussiteAlive}/${hussiteTotal}`;
         if (crusaderCount) crusaderCount.textContent = `${crusaderAlive}/${crusaderTotal}`;
+
+        // WP5: per-scénář jména stran v hlavičkách (data-i18n odstraněn v HTML, řídíme ručně)
+        const hussiteName = hussiteSection?.querySelector('.faction-name');
+        const crusaderName = crusaderSection?.querySelector('.faction-name');
+        if (hussiteName) hussiteName.textContent = this.factionLabel('hussites');
+        if (crusaderName) crusaderName.textContent = this.factionLabel('crusaders');
 
         // Lišty morálky armád (okno protiútoku)
         this.renderMoraleBar('hussite', 'hussites', hussiteAlive);

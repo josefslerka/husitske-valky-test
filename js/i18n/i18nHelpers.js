@@ -74,6 +74,17 @@ function getLocalizedScenario(scenarioId, baseScenario) {
         };
     }
 
+    // WP5: per-scénář jména stran (volitelné, jen kde je scénář definuje)
+    if (baseScenario.factionNames) {
+        localizedScenario.factionNames = { ...baseScenario.factionNames };
+        for (const side of ['hussites', 'crusaders']) {
+            const key = `${scenarioKey}.factionNames.${side}`;
+            if (i18n.hasTranslation(key)) {
+                localizedScenario.factionNames[side] = i18n.t(key);
+            }
+        }
+    }
+
     // Victory conditions
     if (baseScenario.victoryConditions) {
         localizedScenario.victoryConditions = { ...baseScenario.victoryConditions };
@@ -300,6 +311,15 @@ function getLocalizedBattleLore(battleId, baseLore) {
 function updateGameDataLocalization() {
     // Tato funkce se zavolá po změně jazyka
     // Aktualizuje všechny zobrazené popisy, pokud jsou nějaké panely otevřené
+
+    // WP5: pokud běží bitva, přegeneruj jména stran (tah, přehled armád, indikátor AI)
+    if (window.game && window.game.gameState === 'playing' && typeof window.game.updateUI === 'function') {
+        window.game.updateUI();
+        const aiIndicator = document.getElementById('ai-thinking');
+        if (aiIndicator && !aiIndicator.classList.contains('hidden')) {
+            window.game.showAIThinking(true); // re-set textu indikátoru v novém jazyce
+        }
+    }
 
     // Pokud je otevřený help modal s jednotkami, aktualizuj ho
     const helpModal = document.getElementById('help-modal');

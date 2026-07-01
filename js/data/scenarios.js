@@ -1104,6 +1104,7 @@ const Scenarios = {
     // ==========================================
     kutna_hora_1421: {
         id: 'kutna_hora_1421',
+        factionNames: { crusaders: 'Zikmundovo vojsko' },
         name: 'Bitva u Kutné Hory',
         date: '21. prosince 1421',
         type: 'breakout_battle',
@@ -1294,6 +1295,7 @@ const Scenarios = {
     // ==========================================
     nemecky_brod_1422: {
         id: 'nemecky_brod_1422',
+        factionNames: { crusaders: 'Zikmundovo vojsko' },
         name: 'Bitva u Německého Brodu',
         date: '8. ledna 1422',
         type: 'pursuit_battle',
@@ -1724,6 +1726,7 @@ const Scenarios = {
     // ==========================================
     usti_1426: {
         id: 'usti_1426',
+        factionNames: { crusaders: 'Sasové a Míšeňané' },
         name: 'Bitva u Ústí nad Labem',
         date: '16. června 1426',
         type: 'field_battle',
@@ -2601,6 +2604,7 @@ const Scenarios = {
     // ==========================================
     lipany_1434: {
         id: 'lipany_1434',
+        factionNames: { hussites: 'Polní vojska', crusaders: 'Panská jednota' },
         name: 'Bitva u Lipan',
         date: '30. května 1434',
         type: 'civil_war',
@@ -2977,6 +2981,7 @@ const Scenarios = {
     // ==========================================
     horice_1423: {
         id: 'horice_1423',
+        factionNames: { crusaders: 'Panská jednota' },
         name: 'Bitva u Hořic',
         date: '20. dubna 1423',
         type: 'field_battle',
@@ -3180,6 +3185,7 @@ const Scenarios = {
     // ==========================================
     malesov_1424: {
         id: 'malesov_1424',
+        factionNames: { crusaders: 'Pražský svaz' },
         name: 'Bitva u Malešova',
         date: '7. června 1424',
         type: 'field_battle',
