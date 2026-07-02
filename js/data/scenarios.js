@@ -1021,7 +1021,10 @@ const Scenarios = {
                     { type: 'KUSINICI_HUSITI', col: 9, row: 6 },
                     // Záloha
                     { type: 'CEPNICI', col: 10, row: 4 },
-                    { type: 'KUSINICI_HUSITI', col: 10, row: 6 }
+                    { type: 'KUSINICI_HUSITI', col: 10, row: 6 },
+                    // Balanc: posílení obrany "pevnosti Slunce" (ratio bylo 0.46, neubránitelné)
+                    { type: 'TARASNICE', col: 10, row: 5 },
+                    { type: 'KUSINICI_HUSITI', col: 11, row: 6 }
                 ]
             },
             crusaders: {
@@ -1070,10 +1073,10 @@ const Scenarios = {
             {
                 id: 3,
                 name: 'Požár ležení',
-                turnRange: [9, 12],
+                turnRange: [8, 12],
                 description: 'Křižácké ležení hoří, knížata se hádají, tábor svírá hlad.',
                 events: [
-                    { trigger: 'turn_10', type: 'panic', faction: 'crusaders', level: 2, title: 'Požár ležení!', text: 'Křižácké ležení vzplálo! Hlad, spory knížat a zprávy o blížících se posilách lámou výpravu.' }
+                    { trigger: 'turn_8', type: 'panic', faction: 'crusaders', level: 2, title: 'Požár ležení!', text: 'Křižácké ležení vzplálo! Hlad, spory knížat a zprávy o blížících se posilách lámou výpravu.' }
                 ]
             }
         ],
@@ -1082,8 +1085,8 @@ const Scenarios = {
             primary: {
                 type: 'survive',
                 turns: 12,
-                minUnitsPercent: 50,
-                description: 'Udržte hradby do kola 12 s alespoň 50% obránců'
+                minUnitsPercent: 40,
+                description: 'Udržte hradby do kola 12 s alespoň 40% obránců'
             },
             secondary: [
                 { type: 'kill_commander', description: 'Zabijte Erkingera ze Seinsheim' }
