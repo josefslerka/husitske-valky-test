@@ -2672,6 +2672,12 @@ class Game {
     // protiútok, plošný útok, eventy) musí projít tudy - jinak smrt
     // velitele nespustí kolaps morálky a zničený vůz neotevře průlom.
     handleUnitDeath(victim, killer = null) {
+        // Dedup (stejný důvod jako trackUnitDeath): jinak by dvojí volání
+        // dvakrát srazilo morálku armády, dvakrát řešilo smrt velitele/vozu
+        // a dvakrát odměnilo zabijáka.
+        if (victim._deathHandled) return;
+        victim._deathHandled = true;
+
         if (victim.isCommander && victim.isCommander()) {
             this.onCommanderDeath(victim);
         }
@@ -2956,6 +2962,12 @@ class Game {
 
     // Sledování smrti jednotek pro statistiky
     trackUnitDeath(deadUnit, killer) {
+        // Dedup: dva útoky na týž cíl v jednom 300ms okně (damage se aplikuje
+        // se zpožděním) jinak započítají smrt dvakrát - nafoukne enemiesKilled
+        // (a tím destroy_percent vítězství), ztráty i čísla v kronice.
+        if (deadUnit._deathCounted) return;
+        deadUnit._deathCounted = true;
+
         const playerFaction = this.currentScenario?.playerFaction || 'hussites';
         this.recordLoss(deadUnit);
 
