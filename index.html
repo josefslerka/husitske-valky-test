@@ -18,7 +18,7 @@
     <meta property="twitter:title" content="Husitské Války - Tahová Strategie">
     <meta property="twitter:description" content="Historická tahová strategie o husitských válkách. Veďte husitská vojska Jana Žižky v bitvách 15. století.">
 
-    <link rel="stylesheet" href="style.css?v=2.9">
+    <link rel="stylesheet" href="style.css?v=3.2">
 </head>
 <body>
     <!-- Hlavní menu -->
@@ -41,6 +41,10 @@
                     <button id="btn-encyclopedia" class="menu-btn">
                         <span class="btn-icon">📚</span>
                         <span class="btn-text" data-i18n="menu.encyclopedia"></span>
+                    </button>
+                    <button id="btn-chronicle" class="menu-btn">
+                        <span class="btn-icon">📜</span>
+                        <span class="btn-text" data-i18n="menu.chronicle"></span>
                     </button>
                     <button id="btn-quick-battle" class="menu-btn">
                         <span class="btn-icon">⚡</span>
@@ -873,6 +877,16 @@
         </div>
     </div>
 
+    <!-- WP2b: Kronika - nespolehlivý vypravěč -->
+    <div id="chronicle-modal" class="modal hidden">
+        <div class="modal-content help-modal-content">
+            <button id="chronicle-close" class="help-close-btn">&times;</button>
+            <h2 data-i18n="menu.chronicle">Kronika</h2>
+            <p class="chronicle-subtitle" data-i18n="chronicle.subtitle"></p>
+            <div id="chronicle-list" class="help-content"></div>
+        </div>
+    </div>
+
     <!-- AI Thinking Indicator (klik = přeskočit/zrychlit tah AI) -->
     <div id="ai-thinking" class="ai-thinking hidden" role="button" tabindex="0"
          data-i18n-title="game.skipAiHint" title="Klikni pro zrychlení tahů křižáků">
@@ -962,9 +976,9 @@
     </div>
 
     <!-- i18n - lokalizační systém (načíst jako první) -->
-    <script src="js/i18n/i18n.js?v=2.9"></script>
-    <script src="js/i18n/i18nHelpers.js?v=2.9"></script>
-    <script src="js/i18n/encyclopediaRenderer.js?v=2.9"></script>
+    <script src="js/i18n/i18n.js?v=3.2"></script>
+    <script src="js/i18n/i18nHelpers.js?v=3.2"></script>
+    <script src="js/i18n/encyclopediaRenderer.js?v=3.2"></script>
     <script>
         // Inicializace i18n při načtení stránky
         document.addEventListener('DOMContentLoaded', async () => {
@@ -973,22 +987,23 @@
     </script>
 
     <!-- ?v= cache-busting: bumpni číslo při každém vydání, ať hráči nedostanou starý JS -->
-    <script src="js/ui/sound.js?v=2.9"></script>
-    <script src="js/ui/music.js?v=2.9"></script>
-    <script src="js/core/hex.js?v=2.9"></script>
-    <script src="js/data/unitTypes.js?v=2.9"></script>
-    <script src="js/entities/Unit.js?v=2.9"></script>
-    <script src="js/entities/UnitFactory.js?v=2.9"></script>
-    <script src="js/data/battleLore.js?v=2.9"></script>
-    <script src="js/data/campaign.js?v=2.9"></script>
-    <script src="js/data/scenarios.js?v=2.9"></script>
-    <script src="js/systems/CombatSystem.js?v=2.9"></script>
-    <script src="js/systems/FogOfWarSystem.js?v=2.9"></script>
-    <script src="js/systems/VictoryConditionsSystem.js?v=2.9"></script>
-    <script src="js/systems/TutorialSystem.js?v=2.9"></script>
-    <script src="js/systems/MoraleSystem.js?v=2.9"></script>
-    <script src="js/core/game.js?v=2.9"></script>
-    <script src="js/ai.js?v=2.9"></script>
-    <script src="js/ui/main.js?v=2.9"></script>
+    <script src="js/ui/sound.js?v=3.2"></script>
+    <script src="js/ui/music.js?v=3.2"></script>
+    <script src="js/core/hex.js?v=3.2"></script>
+    <script src="js/data/unitTypes.js?v=3.2"></script>
+    <script src="js/entities/Unit.js?v=3.2"></script>
+    <script src="js/entities/UnitFactory.js?v=3.2"></script>
+    <script src="js/data/battleLore.js?v=3.2"></script>
+    <script src="js/data/campaign.js?v=3.2"></script>
+    <script src="js/data/scenarios.js?v=3.2"></script>
+    <script src="js/systems/CombatSystem.js?v=3.2"></script>
+    <script src="js/systems/FogOfWarSystem.js?v=3.2"></script>
+    <script src="js/systems/VictoryConditionsSystem.js?v=3.2"></script>
+    <script src="js/systems/TutorialSystem.js?v=3.2"></script>
+    <script src="js/systems/MoraleSystem.js?v=3.2"></script>
+    <script src="js/systems/ChronicleSystem.js?v=3.2"></script>
+    <script src="js/core/game.js?v=3.2"></script>
+    <script src="js/ai.js?v=3.2"></script>
+    <script src="js/ui/main.js?v=3.2"></script>
 </body>
 </html>

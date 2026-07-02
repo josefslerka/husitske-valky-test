@@ -217,6 +217,7 @@ class Game {
         this.unitsLost = 0;
         this.lossesByFaction = { hussites: 0, crusaders: 0 };  // WP2a
         this.fledByFaction = { hussites: 0, crusaders: 0 };
+        this.chronicleRecorded = false;  // WP2b: zápis do kroniky jen jednou za bitvu
 
         // Reset rozšířených statistik
         this.gameDuration = Date.now();
@@ -1996,6 +1997,28 @@ class Game {
         };
         this.gameOverReason = null;
         this.gameOverTurn = null;
+
+        // WP2b: zápis do Kroniky (jednou za bitvu, jen scénáře - ne rychlá bitva)
+        if (typeof ChronicleSystem !== 'undefined' && !this.chronicleRecorded
+            && this.currentScenario && this.currentScenario.id) {
+            this.chronicleRecorded = true;
+            const alive = stats.aliveByFaction;
+            const pLost = (this.lossesByFaction.hussites || 0) + (this.fledByFaction.hussites || 0);
+            const eKilled = this.lossesByFaction.crusaders || 0;
+            const eFled = this.fledByFaction.crusaders || 0;
+            ChronicleSystem.record({
+                scenarioId: this.currentScenario.id,
+                result: isVictory ? 'victory' : 'defeat',
+                playerLosses: pLost,
+                playerTotal: (alive.hussites || 0) + pLost,
+                enemyLosses: eKilled,
+                enemyTotal: (alive.crusaders || 0) + eKilled + eFled,
+                fled: eFled,
+                turns: completedTurns,
+                blind: this.blindMode || false,
+                ts: Date.now()
+            });
+        }
 
         // Použít nový gameover modal pokud existuje
         if (typeof window.showGameOver === 'function') {

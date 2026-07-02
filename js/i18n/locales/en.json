@@ -3,6 +3,7 @@
     "newGame": "New Game",
     "continue": "Continue",
     "encyclopedia": "Encyclopedia",
+    "chronicle": "Chronicle",
     "tutorial": "Tutorial",
     "quickBattle": "Quick Battle",
     "about": "About",
@@ -142,6 +143,22 @@
     "damage": "damage",
     "bonusObjectives": "Bonus Objectives",
     "trivia": "Did you know...?"
+  },
+  "chronicle": {
+    "subtitle": "Period accounts of your battles — and what really lay behind them.",
+    "frame": "In the Year of Our Lord {year} was fought the battle of {battle}. {body}",
+    "victoryBody": "{enemyLosses}, {ownLosses}.",
+    "victoryOwnLosses": "and of ours fell scarcely {n} companies",
+    "victoryEnemyMany": "of the enemy, slain beyond counting, many thousands",
+    "victoryEnemySome": "of the enemy, a great multitude was slain",
+    "defeatBody": "The Czechs were that day defeated {excuse}.",
+    "defeatExcuse0": "by the treachery of traitors",
+    "defeatExcuse1": "through foul weather and the will of God",
+    "defeatExcuse2": "against a tenfold host",
+    "blindLine": "And all this the blind captain saw only through the ears of his faithful.",
+    "sourceCritic": "Source criticism",
+    "truth": "In truth: losses {pLoss} of {pTotal} units, enemy {eLoss} of {eTotal}, {fled} fled. The chronicler, as is his wont, has shrunk and multiplied.",
+    "empty": "The chronicle is empty. Win your first battle."
   },
   "victory": {
     "totalWipeout": "Crushing victory! The enemy was completely destroyed with minimal losses.",

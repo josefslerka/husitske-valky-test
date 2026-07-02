@@ -120,6 +120,22 @@ document.addEventListener('DOMContentLoaded', () => {
         showEncyclopedia();
     });
 
+    // WP2b: Tlačítko Kronika
+    const chronicleModal = document.getElementById('chronicle-modal');
+    const btnChronicle = document.getElementById('btn-chronicle');
+    if (btnChronicle) {
+        btnChronicle.addEventListener('click', () => showChronicle());
+    }
+    const chronicleClose = document.getElementById('chronicle-close');
+    if (chronicleClose) {
+        chronicleClose.addEventListener('click', () => chronicleModal.classList.add('hidden'));
+    }
+    if (chronicleModal) {
+        chronicleModal.addEventListener('click', (e) => {
+            if (e.target === chronicleModal) chronicleModal.classList.add('hidden');
+        });
+    }
+
     // Tlačítko Nastavení
     document.getElementById('btn-settings').addEventListener('click', () => {
         showSettings();
@@ -991,6 +1007,56 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         helpModal.classList.remove('hidden');
+    }
+
+    // WP2b: Kronika - vygeneruje dobové (lživé) zápisy + pramennou kritiku
+    function showChronicle() {
+        const modal = document.getElementById('chronicle-modal');
+        const list = document.getElementById('chronicle-list');
+        if (!modal || !list) return;
+
+        const entries = (typeof ChronicleSystem !== 'undefined') ? ChronicleSystem.getEntries() : [];
+
+        if (!entries.length) {
+            list.innerHTML = `<p class="chronicle-empty">${i18n.t('chronicle.empty')}</p>`;
+            modal.classList.remove('hidden');
+            return;
+        }
+
+        // Seřadit podle pořadí bitev v KAMPANI (campaign.js), ne podle pořadí
+        // definice v scenarios.js - to se liší (Malešov 1424 je v kampani před Ústím 1426).
+        const order = (typeof Campaign !== 'undefined' && Array.isArray(Campaign.acts))
+            ? Campaign.acts.reduce((acc, a) => acc.concat((a.battles || []).map(b => b.id)), [])
+            : ScenarioManager.getScenarioList().map(s => s.id);
+        const sorted = entries.slice().sort((a, b) => {
+            const ia = order.indexOf(a.scenarioId), ib = order.indexOf(b.scenarioId);
+            return (ia < 0 ? 999 : ia) - (ib < 0 ? 999 : ib);
+        });
+
+        list.innerHTML = sorted.map((entry, i) => {
+            const text = ChronicleSystem.generateText(entry);
+            const initial = text.charAt(0);
+            const rest = text.slice(1);
+            const truth = ChronicleSystem.truthText(entry);
+            const cls = entry.result === 'victory' ? 'chronicle-victory' : 'chronicle-defeat';
+            return `
+                <div class="chronicle-entry ${cls}">
+                    <p class="chronicle-text"><span class="chronicle-initial">${initial}</span>${rest}</p>
+                    <button class="chronicle-critic-btn" data-idx="${i}">🔍 ${i18n.t('chronicle.sourceCritic')}</button>
+                    <p class="chronicle-truth hidden" data-truth="${i}">${truth}</p>
+                </div>
+            `;
+        }).join('');
+
+        list.querySelectorAll('.chronicle-critic-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const idx = btn.getAttribute('data-idx');
+                const truthEl = list.querySelector(`[data-truth="${idx}"]`);
+                if (truthEl) truthEl.classList.toggle('hidden');
+            });
+        });
+
+        modal.classList.remove('hidden');
     }
 
     // =============================================

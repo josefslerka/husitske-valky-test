@@ -3,6 +3,7 @@
     "newGame": "Nová hra",
     "continue": "Pokračovat",
     "encyclopedia": "Encyklopedie",
+    "chronicle": "Kronika",
     "tutorial": "Tutoriál",
     "quickBattle": "Rychlá bitva",
     "about": "O hře",
@@ -142,6 +143,22 @@
     "damage": "poškození",
     "bonusObjectives": "Bonusové cíle",
     "trivia": "Věděli jste, že...?"
+  },
+  "chronicle": {
+    "subtitle": "Dobové zápisy vašich bitev — a co za nimi skutečně bylo.",
+    "frame": "Léta Páně {year} svedena bitva {battle}. {body}",
+    "victoryBody": "{enemyLosses}, {ownLosses}.",
+    "victoryOwnLosses": "a našich padlo sotva {n} houfů",
+    "victoryEnemyMany": "nepřátel pak pobito bez čísla, na mnoho tisíc",
+    "victoryEnemySome": "nepřátel pobito veliké množství",
+    "defeatBody": "Čechové byli toho dne poraženi {excuse}.",
+    "defeatExcuse0": "zradou zrádných",
+    "defeatExcuse1": "pro nepřízeň počasí a vůli boží",
+    "defeatExcuse2": "proti přesile desateronásobné",
+    "blindLine": "A to vše slepý hejtman viděl toliko ušima svých věrných.",
+    "sourceCritic": "Pramenná kritika",
+    "truth": "Ve skutečnosti: ztráty {pLoss} z {pTotal} jednotek, nepřítel {eLoss} z {eTotal}, {fled} rozprchlých. Kronikář, jak bývá zvykem, umenšil a rozmnožil.",
+    "empty": "Kronika je prázdná. Vybojujte první bitvu."
   },
   "victory": {
     "totalWipeout": "Drtivé vítězství! Nepřítel byl zcela vyhlazený s minimálními ztrátami.",
