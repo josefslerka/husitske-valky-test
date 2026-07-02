@@ -459,6 +459,9 @@ class Game {
 
                     this.updateChoralButton();
 
+                    // WP4: psychologický šok na nepřítele (stejně jako u ručního chorálu)
+                    this.applyChoralShock();
+
                     // Přehrát zvuk chorálu
                     if (typeof Music !== 'undefined' && Music.playChoral) {
                         Music.playChoral();
@@ -3038,11 +3041,43 @@ class Game {
         phaseName.textContent = '⚔️ Chorál!';
         phaseDesc.textContent = '+50% útok, -20% obrana (2 kola)';
 
+        // WP4: psychologický šok chorálu na nepřítele + přehrání hymnu
+        this.applyChoralShock();
+        if (typeof Music !== 'undefined' && Music.playChoral) {
+            Music.playChoral();
+        }
+
         // Aktualizace tlačítka
         this.updateChoralButton();
 
         this.render();
         return true;
+    }
+
+    // WP4: chorál jako psychologická zbraň. U Domažlic ho slyšeli na kilometry a
+    // křižáci se dali na útěk od pouhého zvuku. Nepřítel -8 morálka (+ 30% test
+    // okamžitého útěku při morálce <25), husité +5. Volá se při každé aktivaci chorálu.
+    applyChoralShock() {
+        let routed = 0;
+        for (const unit of this.units) {
+            if (unit.health <= 0) continue;
+            if (unit.faction === 'hussites') {
+                unit.morale = Math.min(unit.maxMorale, unit.morale + 5);
+            } else {
+                unit.morale = Math.max(0, unit.morale - 8);
+                // Po zásahu nízká morálka -> okamžitý útěk (zrcadlí panic level 3)
+                if (unit.morale < 25 && Math.random() < 0.3) {
+                    this.routingUnits.add(unit);
+                    unit.isRouting = true;
+                    routed++;
+                    this.addLog(i18n.t('gameLog.panicFlee', {unit: unit.name}), 'morale');
+                }
+            }
+        }
+        this.addLog(i18n.t('gameLog.choralShockEnemy'), 'morale');
+        this.updateWaveringState();   // morálka armád se změnila -> okno protiútoku
+        this.updateArmyOverview();
+        return routed;
     }
 
     // Aktualizace stavu tlačítka chorálu

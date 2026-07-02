@@ -2346,7 +2346,8 @@ const Scenarios = {
                     { trigger: 'turn_4', type: 'activate_choral', duration: 3, text: 'Zvuk chorálu děsí křižáky!' },
                     { trigger: 'turn_4', type: 'panic', faction: 'crusaders', level: 2, text: 'Křižáci slyší husitský chorál a propadají strachu!' },
                     { trigger: 'turn_5', message: 'Kardinál Cesarini prchá a ztrácí kardinálský klobouk!' },
-                    { trigger: 'turn_5', type: 'panic', faction: 'crusaders', level: 3, text: 'Panika se šíří křižáckým táborem!' }
+                    { trigger: 'turn_5', type: 'panic', faction: 'crusaders', level: 3, text: 'Panika se šíří křižáckým táborem!' },
+                    { trigger: 'turn_4', type: 'ai_stance', mode: 'retreat', target: { col: 23, row: 6 }, message: 'Křižáci slyší chorál a rachot vozů - a dávají se na útěk!' }
                 ]
             },
             {

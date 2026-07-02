@@ -281,6 +281,7 @@
   },
   "gameLog": {
     "aiTrapSprung": "Léčka! Nepřítel se obrací proti vám!",
+    "choralShockEnemy": "Nepřátelé slyší chorál — strach se šíří šiky!",
     "wagonClosed": "{unit}: řetězy sepnuty — hradba drží.",
     "wagonOpened": "{unit}: řetězy rozpojeny — vůz může vyrazit.",
     "wagonLineClosed": "Sepnuto {count} vozů do hradby.",
@@ -1961,7 +1962,8 @@
             {"text": "Zvuk chorálu děsí křižáky!"},
             {"text": "Křižáci slyší husitský chorál a propadají strachu!"},
             {"message": "Kardinál Cesarini prchá a ztrácí kardinálský klobouk!"},
-            {"text": "Panika se šíří křižáckým táborem!"}
+            {"text": "Panika se šíří křižáckým táborem!"},
+            {"message": "Křižáci slyší chorál a rachot vozů - a dávají se na útěk!"}
           ]
         },
         {

@@ -1705,7 +1705,8 @@
             {"text": "Sound of choral terrifies crusaders!"},
             {"text": "Crusaders hear Hussite choral and fall into fear!"},
             {"message": "Cardinal Cesarini flees and loses cardinal hat!"},
-            {"text": "Panic spreads through crusader camp!"}
+            {"text": "Panic spreads through crusader camp!"},
+            {"message": "The crusaders hear the chorale and the rumble of wagons - and break into flight!"}
           ]
         },
         {
@@ -2910,6 +2911,7 @@
   },
   "gameLog": {
     "aiTrapSprung": "A trap! The enemy turns on you!",
+    "choralShockEnemy": "The enemy hears the chorale — dread spreads through their ranks!",
     "wagonClosed": "{unit}: wagons chained — the fort holds.",
     "wagonOpened": "{unit}: chains released — the wagon can sally.",
     "wagonLineClosed": "{count} wagons chained into a fort.",
