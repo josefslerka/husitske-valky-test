@@ -1181,6 +1181,30 @@ document.addEventListener('DOMContentLoaded', () => {
             triviaSection.classList.add('hidden');
         }
 
+        // WP2a: Vy vs. kronika - srovnání tvého výsledku s údaji kronik
+        const chronicleEl = document.getElementById('gameover-chronicle');
+        if (chronicleEl) {
+            const sid = stats?.scenarioId || selectedScenario?.id;
+            let lore = (sid && typeof getBattleLore === 'function') ? getBattleLore(sid) : null;
+            if (lore && typeof getLocalizedBattleLore === 'function') lore = getLocalizedBattleLore(sid, lore);
+            const lossesBy = stats?.lossesByFaction || {};
+            const fledBy = stats?.fledByFaction || {};
+            const aliveBy = stats?.aliveByFaction || {};
+            if (lore && lore.casualties) {
+                const gone = (f) => (lossesBy[f] || 0) + (fledBy[f] || 0);
+                const pLost = gone('hussites'), pTotal = (aliveBy.hussites || 0) + pLost;
+                const eLost = gone('crusaders'), eTotal = (aliveBy.crusaders || 0) + eLost;
+                document.getElementById('chronicle-yours').textContent =
+                    i18n.t('gameover.yourLosses', { x: pLost, y: pTotal, a: eLost, b: eTotal, n: turns });
+                document.getElementById('chronicle-says').textContent =
+                    i18n.t('gameover.chronicleSays', { h: lore.casualties.hussites, e: lore.casualties.enemy });
+                document.getElementById('chronicle-note').textContent = i18n.t('gameover.chronicleNote');
+                chronicleEl.classList.remove('hidden');
+            } else {
+                chronicleEl.classList.add('hidden');
+            }
+        }
+
         } catch (e) {
             console.error('Chyba v showGameOver:', e);
         }

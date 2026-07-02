@@ -27,6 +27,9 @@ class Game {
         // Statistiky hry
         this.enemiesKilled = 0;
         this.unitsLost = 0;
+        // WP2a: přesné ztráty per frakce (zabití vs. uprchlí) pro "Vy vs. kronika"
+        this.lossesByFaction = { hussites: 0, crusaders: 0 };
+        this.fledByFaction = { hussites: 0, crusaders: 0 };
         this.initialPlayerUnits = 0;
         this.initialEnemyUnits = 0;
 
@@ -212,6 +215,8 @@ class Game {
         // Reset statistik
         this.enemiesKilled = 0;
         this.unitsLost = 0;
+        this.lossesByFaction = { hussites: 0, crusaders: 0 };  // WP2a
+        this.fledByFaction = { hussites: 0, crusaders: 0 };
 
         // Reset rozšířených statistik
         this.gameDuration = Date.now();
@@ -1979,7 +1984,15 @@ class Game {
             unitsLost: this.unitsLost || 0,
             secondaryObjectives: this.secondaryResults || [],
             // Konkrétní důvod výsledku (nastavuje VictoryConditionsSystem.outcome)
-            reason: this.gameOverReason || null
+            reason: this.gameOverReason || null,
+            // WP2a: data pro "Vy vs. kronika"
+            scenarioId: this.currentScenario && this.currentScenario.id,
+            lossesByFaction: this.lossesByFaction,
+            fledByFaction: this.fledByFaction,
+            aliveByFaction: this.units.reduce((acc, u) => {
+                if (u.health > 0) acc[u.faction] = (acc[u.faction] || 0) + 1;
+                return acc;
+            }, { hussites: 0, crusaders: 0 })
         };
         this.gameOverReason = null;
         this.gameOverTurn = null;
@@ -2488,6 +2501,8 @@ class Game {
             objectiveHeldTurns: this.objectiveHeldTurns || {},
             enemiesKilled: this.enemiesKilled,
             unitsLost: this.unitsLost,
+            lossesByFaction: this.lossesByFaction,  // WP2a
+            fledByFaction: this.fledByFaction,
             escapedUnits: this.escapedUnits || 0,
             stats: this.stats,
             initialPlayerUnits: this.initialPlayerUnits,
@@ -2555,6 +2570,8 @@ class Game {
             this.objectiveHeldTurns = saveData.objectiveHeldTurns || {};
             this.enemiesKilled = saveData.enemiesKilled || 0;
             this.unitsLost = saveData.unitsLost || 0;
+            this.lossesByFaction = saveData.lossesByFaction || { hussites: 0, crusaders: 0 };  // WP2a
+            this.fledByFaction = saveData.fledByFaction || { hussites: 0, crusaders: 0 };
             this.escapedUnits = saveData.escapedUnits || 0;
             if (saveData.stats) {
                 this.stats = saveData.stats;
@@ -2904,9 +2921,20 @@ class Game {
         }
     }
 
+    // WP2a: přesné počítání ztrát per frakce (zabití vs. uprchlí). Volá se z OBOU
+    // death-path (Game.trackUnitDeath i CombatSystem.trackUnitDeath), ať sedí i led
+    // u Německého Brodu (utonulí se z this.units odebírají).
+    recordLoss(deadUnit) {
+        if (!this.lossesByFaction) this.lossesByFaction = { hussites: 0, crusaders: 0 };
+        if (!this.fledByFaction) this.fledByFaction = { hussites: 0, crusaders: 0 };
+        const bucket = deadUnit.escaped ? this.fledByFaction : this.lossesByFaction;
+        bucket[deadUnit.faction] = (bucket[deadUnit.faction] || 0) + 1;
+    }
+
     // Sledování smrti jednotek pro statistiky
     trackUnitDeath(deadUnit, killer) {
         const playerFaction = this.currentScenario?.playerFaction || 'hussites';
+        this.recordLoss(deadUnit);
 
         if (deadUnit.faction === playerFaction) {
             // Hráč ztratil jednotku

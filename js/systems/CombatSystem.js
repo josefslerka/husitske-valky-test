@@ -523,6 +523,7 @@ class CombatSystem {
 
     trackUnitDeath(deadUnit, killer) {
         const playerFaction = this.game.currentScenario?.playerFaction || 'hussites';
+        this.game.recordLoss(deadUnit);  // WP2a: přesné ztráty per frakce
 
         if (deadUnit.faction === playerFaction) {
             this.game.unitsLost++;

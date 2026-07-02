@@ -4673,3 +4673,30 @@ body {
     border-left: 3px solid #ffd700;
     border-radius: 4px;
 }
+
+/* WP2a: Vy vs. kronika */
+.gameover-chronicle {
+    margin: 10px 0 14px;
+    padding: 10px 16px;
+    background: rgba(201, 162, 39, 0.08);
+    border: 1px solid var(--gold-dark, #5c4a1f);
+    border-radius: 6px;
+    text-align: center;
+}
+.gameover-chronicle .chronicle-line {
+    color: var(--parchment-light, #f0e6d2);
+    font-size: 0.95em;
+    margin: 3px 0;
+}
+.gameover-chronicle .chronicle-says {
+    color: var(--gold-light, #e6c200);
+    font-family: Georgia, 'Times New Roman', serif;
+    font-style: italic;
+}
+.gameover-chronicle .chronicle-note {
+    color: #a89968;
+    font-size: 0.82em;
+    font-style: italic;
+    margin-top: 6px;
+    opacity: 0.9;
+}
