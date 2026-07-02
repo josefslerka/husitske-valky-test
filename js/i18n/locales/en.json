@@ -45,6 +45,10 @@
     "aiThinkingNamed": "{faction} is thinking...",
     "skipAiTurn": "▶▶ skip",
     "skipAiHint": "Click to speed up the enemy's turns",
+    "closeFort": "⛓ Chain the wagons",
+    "openFort": "⛓ Open the wall",
+    "toggleFortLine": "⛓ Whole line",
+    "wagonChainedHint": "Chained — the wagon cannot move",
     "moraleLabel": "Morale",
     "wavering": "WAVERING!"
   },
@@ -2906,6 +2910,10 @@
   },
   "gameLog": {
     "aiTrapSprung": "A trap! The enemy turns on you!",
+    "wagonClosed": "{unit}: wagons chained — the fort holds.",
+    "wagonOpened": "{unit}: chains released — the wagon can sally.",
+    "wagonLineClosed": "{count} wagons chained into a fort.",
+    "wagonLineOpened": "{count} wagons unchained — the fort opens.",
     "selectAttackTarget": "Click a highlighted hex to choose an attack target.",
     "overwatchFire": "⚡ Covering fire! {unit} shoots at the advancing {target}!",
     "gameStart": "Game started. Hussites begin.",

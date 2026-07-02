@@ -1058,6 +1058,20 @@ class Game {
         // Tlačítko obrany
         document.getElementById('btn-defend').addEventListener('click', () => this.combatSystem.defendSelectedUnit(), { signal });
 
+        // WP1: tlačítka vozové hradby - sepnout/rozevřít jeden vůz nebo celou linii
+        const formationBtn = document.getElementById('btn-formation');
+        if (formationBtn) {
+            formationBtn.addEventListener('click', () => {
+                if (this.selectedUnit) this.toggleWagonFormation(this.selectedUnit);
+            }, { signal });
+        }
+        const formationLineBtn = document.getElementById('btn-formation-line');
+        if (formationLineBtn) {
+            formationLineBtn.addEventListener('click', () => {
+                if (this.selectedUnit) this.toggleWagonFormationLine(this.selectedUnit);
+            }, { signal });
+        }
+
         // Tlačítko undo (vrátit pohyb)
         document.getElementById('btn-undo').addEventListener('click', () => this.undoLastMove(), { signal });
 
@@ -2322,6 +2336,10 @@ class Game {
         if (unit.isDefending) {
             statusHtml += '<span style="color: #4488ff; font-size: 0.85rem;">🛡️ Obranný postoj (-30% poškození)</span><br>';
         }
+        // WP1: sepnutý vůz - vysvětli, proč se nemůže hýbat
+        if (unit.isWagon() && unit.formationClosed) {
+            statusHtml += `<span style="color: #c9a227; font-size: 0.85rem;">⛓ ${i18n.t('game.wagonChainedHint')}</span><br>`;
+        }
         if (unit.isRouting) {
             statusHtml += '<span style="color: #ff4444; font-size: 0.85rem;">🏃 PRCHÁ!</span><br>';
         }
@@ -2382,6 +2400,21 @@ class Game {
         if (unit.faction === this.currentFaction) {
             actionsDiv.classList.remove('hidden');
             attackBtn.disabled = !unit.canAttack();
+
+            // WP1: tlačítka hradby - jen pro hráčův vůz, který ještě nejednal
+            const formationBtn = document.getElementById('btn-formation');
+            const formationLineBtn = document.getElementById('btn-formation-line');
+            if (formationBtn && formationLineBtn) {
+                if (unit.isWagon() && !unit.hasMoved) {
+                    formationBtn.textContent = i18n.t(unit.formationClosed ? 'game.openFort' : 'game.closeFort');
+                    formationLineBtn.textContent = i18n.t('game.toggleFortLine');
+                    formationBtn.classList.remove('hidden');
+                    formationLineBtn.classList.remove('hidden');
+                } else {
+                    formationBtn.classList.add('hidden');
+                    formationLineBtn.classList.add('hidden');
+                }
+            }
 
             // Tlačítko undo - zobrazit pouze pokud je možné vrátit pohyb
             const undoBtn = document.getElementById('btn-undo');
@@ -3078,6 +3111,8 @@ class Game {
     // Kontrola, zda je jednotka v linii vozové hradby (3+ vozy vedle sebe)
     isInWagonLine(unit) {
         if (!unit.isWagon || !unit.isWagon()) return null;
+        // WP1: jen SEPNUTÝ vůz drží linii; rozpojený z ní vypadává
+        if (!unit.formationClosed) return null;
 
         const neighbors = this.hexGrid.getNeighbors(unit.col, unit.row);
         let adjacentWagons = 0;
@@ -3088,7 +3123,8 @@ class Game {
             if (adjacentUnit &&
                 adjacentUnit.faction === unit.faction &&
                 adjacentUnit.health > 0 &&
-                adjacentUnit.isWagon && adjacentUnit.isWagon()) {
+                adjacentUnit.isWagon && adjacentUnit.isWagon() &&
+                adjacentUnit.formationClosed) {  // WP1: jen sepnutí sousedé tvoří řetěz
                 adjacentWagons++;
                 wagonNeighbors.push(adjacentUnit);
             }
@@ -3104,6 +3140,49 @@ class Game {
         }
 
         return null;
+    }
+
+    // WP1: přepnutí stavu jednoho vozu (sepnout/rozevřít). Utratí pohyb, střílet smí dál.
+    toggleWagonFormation(unit) {
+        if (!unit || !unit.isWagon() || unit.faction !== this.currentFaction) return false;
+        if (unit.hasMoved) return false; // vůz už v tomto tahu jednal
+        unit.formationClosed = !unit.formationClosed;
+        unit.hasMoved = true;
+        this.addLog(i18n.t(unit.formationClosed ? 'gameLog.wagonClosed' : 'gameLog.wagonOpened', { unit: unit.name }), 'turn');
+        this.updateUnitPanel(unit);
+        this.render();
+        return true;
+    }
+
+    // WP1: přepne celou souvisle propojenou řadu vozů (BFS přes hex-sousednost).
+    // Cílový stav udá výchozí vůz; už jednavší vozy se přeskočí, ale souvislost drží.
+    toggleWagonFormationLine(startUnit) {
+        if (!startUnit || !startUnit.isWagon() || startUnit.faction !== this.currentFaction) return false;
+        const targetState = !startUnit.formationClosed;
+        const visited = new Set([startUnit.id]);
+        const queue = [startUnit];
+        let toggled = 0;
+        while (queue.length) {
+            const w = queue.shift();
+            if (!w.hasMoved && w.formationClosed !== targetState) {
+                w.formationClosed = targetState;
+                w.hasMoved = true;
+                toggled++;
+            }
+            for (const n of this.hexGrid.getNeighbors(w.col, w.row)) {
+                const u = this.getUnitAt(n.col, n.row);
+                if (u && u.health > 0 && u.faction === startUnit.faction && u.isWagon() && !visited.has(u.id)) {
+                    visited.add(u.id);
+                    queue.push(u);
+                }
+            }
+        }
+        if (toggled > 0) {
+            this.addLog(i18n.t(targetState ? 'gameLog.wagonLineClosed' : 'gameLog.wagonLineOpened', { count: toggled }), 'turn');
+        }
+        this.updateUnitPanel(startUnit);
+        this.render();
+        return toggled > 0;
     }
 
     // Kontrola, zda je střelec za vozovou hradbou (střílna)

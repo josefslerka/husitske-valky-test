@@ -135,7 +135,11 @@ class CombatSystem {
             terrainTrapPenalty: scenarioMechanics.terrainTrapPenalty || 0,
             lastStandBonus: scenarioMechanics.lastStandBonus || 0,
             // Okno protiútoku - bonus proti kolísající armádě
-            defenderWavering: this.game.wavering && this.game.wavering[defender.faction] || false
+            defenderWavering: this.game.wavering && this.game.wavering[defender.faction] || false,
+            // WP1: výpad z hradby - +10 % útok, pokud útočník stojí vedle ROZPOJENÉHO
+            // vozu A cíl je v kolísající armádě (aplikuje se jen uvnitř okna protiútoku)
+            attackerSallyBonus: (this.game.wavering && this.game.wavering[defender.faction] &&
+                this.isNextToOpenWagon(attacker)) ? 0.10 : 0
         };
 
         // Zpoždění pro zobrazení animace
@@ -467,7 +471,37 @@ class CombatSystem {
             bonuses.description.push(`Střílna (+${shooterBonus.attackBonus} útok, +${shooterBonus.defenseBonus}% obrana)`);
         }
 
+        // WP1: kryt za sepnutou hradbou - NE-vozová jednotka vedle spřáteleného
+        // ZAVŘENÉHO vozu dostane +5 % obrana ("kryjeme se za vozy").
+        if (unit.isWagon && !unit.isWagon() && this.isBehindClosedWagon(unit)) {
+            bonuses.defense += 5;
+            bonuses.description.push('Kryt za hradbou (+5% obrana)');
+        }
+
         return bonuses;
+    }
+
+    // WP1: stojí jednotka vedle spřáteleného SEPNUTÉHO vozu? (kryt za hradbou)
+    isBehindClosedWagon(unit) {
+        for (const n of this.game.hexGrid.getNeighbors(unit.col, unit.row)) {
+            const u = this.game.getUnitAt(n.col, n.row);
+            if (u && u.health > 0 && u.faction === unit.faction && u.isWagon() && u.formationClosed) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // WP1: stojí jednotka vedle spřáteleného ROZPOJENÉHO vozu? (výpad z hradby)
+    isNextToOpenWagon(unit) {
+        if (!unit || unit.isWagon()) return false; // výpad dělá pěchota/jízda, ne vůz sám
+        for (const n of this.game.hexGrid.getNeighbors(unit.col, unit.row)) {
+            const u = this.game.getUnitAt(n.col, n.row);
+            if (u && u.health > 0 && u.faction === unit.faction && u.isWagon() && !u.formationClosed) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // Sledování poškození a úmrtí pro statistiky

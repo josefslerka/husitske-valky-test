@@ -39,6 +39,9 @@ class Unit {
         this.hasAttacked = false;
         this.attackCount = 0;  // Počet provedených útoků (pro rapidFire)
         this.isDefending = false;
+        // WP1: vozová hradba jako sloveso - vozy startují SEPNUTÉ (řetězy).
+        // Sepnutý vůz se nehýbe, ale drží linii a kryje pěchotu; rozpojený se hýbe.
+        this.formationClosed = this.isWagon();
         this.isTerrified = false;  // Efekt děsu z ručnic
         this.chargeBonus = false;  // Bonus z nárazu
         this.isRouting = false;    // Jednotka prchá
@@ -287,6 +290,11 @@ class Unit {
         // vyražení ve správnou chvíli - husitská doktrína výpadu zpoza vozů.
         if (gameContext && gameContext.defenderWavering) {
             damage *= 1.3;
+            // WP1: výpad z hradby - jednotka vedle ROZPOJENÉHO vozu přidá +10 %.
+            // Odměna za správné načasování rozevření hradby v okně protiútoku.
+            if (gameContext.attackerSallyBonus) {
+                damage *= (1 + gameContext.attackerSallyBonus);
+            }
         }
 
         // === ÚTOČNÝ BONUS ZA TERÉN ===
@@ -613,6 +621,8 @@ class Unit {
     }
 
     canMove() {
+        // WP1: sepnutý vůz (řetězy) se nemůže hýbat - hráč ho musí nejdřív rozevřít
+        if (this.isWagon() && this.formationClosed) return false;
         return !this.hasMoved;
     }
 
@@ -764,6 +774,7 @@ class Unit {
             isTerrified: this.isTerrified,
             movement: this.movement,  // Uložit i změněný pohyb (dismount)
             morale: this.morale,
+            formationClosed: this.formationClosed,  // WP1: stav vozové hradby
             isRouting: this.isRouting,
             rallyAttempts: this.rallyAttempts,
             // Hodnoty, které mohou být za hry přepsány (strana scénáře,
@@ -794,6 +805,10 @@ class Unit {
         }
         unit.isRouting = data.isRouting || false;
         unit.rallyAttempts = data.rallyAttempts || 0;
+        // WP1: stav vozové hradby (starší sejvy pole nemají -> default dle typu)
+        if (data.formationClosed !== undefined) {
+            unit.formationClosed = data.formationClosed;
+        }
         // Přepsané hodnoty - bez nich by jednotka po načtení spadla
         // zpět na šablonu (a posila s přepsanou frakcí by změnila stranu)
         if (data.faction !== undefined) unit.faction = data.faction;

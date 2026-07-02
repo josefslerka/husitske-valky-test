@@ -695,6 +695,9 @@ class HexGrid {
             this.ctx.restore();
         }
 
+        // WP1: řetězy mezi sepnutými vozy (kreslíme POD jednotkami)
+        this.drawWagonChains(units);
+
         // Vykreslení jednotek
         for (const unit of units) {
             this.drawUnitDetailed(unit);
@@ -702,6 +705,34 @@ class HexGrid {
 
         // Vykreslení animací
         this.renderAnimations();
+    }
+
+    // WP1: řetězy spojující sousední SEPNUTÉ vozy stejné frakce ("kolo na kolo").
+    // Dedup přes u.id < nb.id, ať se každý pár nakreslí jen jednou.
+    drawWagonChains(units) {
+        const at = new Map();
+        for (const u of units) {
+            if (u.health > 0) at.set(`${u.col},${u.row}`, u);
+        }
+        this.ctx.save();
+        this.ctx.strokeStyle = 'rgba(90, 74, 31, 0.75)'; // tmavě zlatá (řetěz)
+        this.ctx.lineWidth = 3;
+        this.ctx.lineCap = 'round';
+        for (const u of units) {
+            if (u.health <= 0 || !u.isWagon() || !u.formationClosed) continue;
+            const a = this.hexToPixel(u.col, u.row);
+            for (const n of this.getNeighbors(u.col, u.row)) {
+                const nb = at.get(`${n.col},${n.row}`);
+                if (nb && nb.isWagon() && nb.formationClosed && nb.faction === u.faction && u.id < nb.id) {
+                    const b = this.hexToPixel(nb.col, nb.row);
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(a.x, a.y);
+                    this.ctx.lineTo(b.x, b.y);
+                    this.ctx.stroke();
+                }
+            }
+        }
+        this.ctx.restore();
     }
 
     blendColors(color1, color2, ratio) {

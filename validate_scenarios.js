@@ -190,6 +190,10 @@ function validateScenario(scenario) {
         if (!UnitTypes[upperType]) {
             errors.push(`Unit type '${unit.type}' neexistuje v UnitTypes`);
         }
+        // WP1: volitelné pole formation musí být 'open' nebo 'closed'
+        if (unit.formation !== undefined && unit.formation !== 'open' && unit.formation !== 'closed') {
+            errors.push(`Unit ${unit.type}: formation='${unit.formation}' musí být 'open' nebo 'closed'`);
+        }
     }
 
     // 3. Validace victory conditions

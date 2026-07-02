@@ -3477,6 +3477,8 @@ const ScenarioManager = {
                 // Strana ve scénáři přebíjí frakci šablony (např. Diviš Bořek je
                 // husitská šablona, ale u Lipan velí straně protivníka)
                 unit.faction = 'hussites';
+                // WP1: volitelný startovní stav hradby (default sepnuto; 'open' = rozpojeno)
+                if (unit.isWagon() && unitDef.formation === 'open') unit.formationClosed = false;
                 units.push(unit);
             } catch (e) {
                 console.error(`Failed to create hussite unit: ${unitDef.type}`, e);
@@ -3490,6 +3492,8 @@ const ScenarioManager = {
                 const mapped = hexGrid.scenarioToMap(unitDef.col, unitDef.row);
                 const unit = unitFactory.createUnit(unitDef.type, mapped.col, mapped.row);
                 unit.faction = 'crusaders';
+                // WP1: volitelný startovní stav hradby (default sepnuto; 'open' = rozpojeno)
+                if (unit.isWagon() && unitDef.formation === 'open') unit.formationClosed = false;
                 units.push(unit);
             } catch (e) {
                 console.error(`Failed to create crusader unit: ${unitDef.type}`, e);

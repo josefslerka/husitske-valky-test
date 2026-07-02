@@ -45,6 +45,10 @@
     "aiThinkingNamed": "{faction} přemýšlí...",
     "skipAiTurn": "▶▶ přeskočit",
     "skipAiHint": "Klikni pro zrychlení tahů nepřítele",
+    "closeFort": "⛓ Sepnout hradbu",
+    "openFort": "⛓ Rozevřít hradbu",
+    "toggleFortLine": "⛓ Celá linie",
+    "wagonChainedHint": "Sepnuto řetězy — vůz se nemůže hýbat",
     "moraleLabel": "Morálka",
     "wavering": "KOLÍSÁ!"
   },
@@ -277,6 +281,10 @@
   },
   "gameLog": {
     "aiTrapSprung": "Léčka! Nepřítel se obrací proti vám!",
+    "wagonClosed": "{unit}: řetězy sepnuty — hradba drží.",
+    "wagonOpened": "{unit}: řetězy rozpojeny — vůz může vyrazit.",
+    "wagonLineClosed": "Sepnuto {count} vozů do hradby.",
+    "wagonLineOpened": "Rozpojeno {count} vozů — hradba se otevírá.",
     "selectAttackTarget": "Vyber cíl útoku kliknutím na zvýrazněný hex.",
     "overwatchFire": "⚡ Krycí palba! {unit} pálí na postupující jednotku {target}!",
     "gameStart": "Hra zahájena. Husité začínají.",
