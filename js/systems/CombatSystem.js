@@ -521,21 +521,10 @@ class CombatSystem {
         }
     }
 
+    // Sjednoceno (task_cce80430): jediná implementace žije na Game (kde jsou i
+    // statistiky a recordLoss). Tato metoda jen deleguje, aby se počítadla -
+    // včetně recordLoss pro kroniku - počítala právě jednou bez ohledu na cestu.
     trackUnitDeath(deadUnit, killer) {
-        const playerFaction = this.game.currentScenario?.playerFaction || 'hussites';
-        this.game.recordLoss(deadUnit);  // WP2a: přesné ztráty per frakce
-
-        if (deadUnit.faction === playerFaction) {
-            this.game.unitsLost++;
-        } else {
-            this.game.enemiesKilled++;
-
-            if (killer && killer.faction === playerFaction) {
-                if (!this.game.stats.unitKills[killer.id]) {
-                    this.game.stats.unitKills[killer.id] = 0;
-                }
-                this.game.stats.unitKills[killer.id]++;
-            }
-        }
+        this.game.trackUnitDeath(deadUnit, killer);
     }
 }
