@@ -27,11 +27,12 @@ class MoraleSystem {
                 continue;
             }
 
-            // Kontrola, zda je poblíž velitel (jednotka s 'veteran' nebo 'elite')
-            const leaderNearby = this.isLeaderNearby(unit);
+            // Bonus k rally od blízkého velitele (podle jeho rallyBonus) a/nebo
+            // zkušeného souseda (veteran/elite)
+            const rallyBonus = this.isLeaderNearby(unit);
 
             // Pokus o rally
-            const rallyResult = unit.attemptRally(leaderNearby);
+            const rallyResult = unit.attemptRally(rallyBonus);
 
             if (rallyResult.deserted) {
                 // Jednotka dezertovala - odstraníme ji
@@ -49,8 +50,20 @@ class MoraleSystem {
         }
     }
 
-    // Kontrola, zda je velitel (veteran/elite) poblíž
+    // Rally bonus z blízkosti skutečného velitele (podle jeho auraRange a
+    // rallyBonus, stejně jako getCommanderBonuses) + samostatný bonus za
+    // sousedního veterána/elitu. Dřív se místo velitele kontrolovaly jednotky
+    // se special 'veteran'/'elite' na 1 hexu - žádný velitel (special:
+    // 'commander') tak rally nikdy neovlivnil, přestože UI jeho rallyBonus
+    // hráči ukazovalo.
     isLeaderNearby(unit) {
+        let bonus = 0;
+
+        const auraInfo = this.game.isInCommanderAura(unit);
+        if (auraInfo) {
+            bonus += auraInfo.abilities.rallyBonus || 0;
+        }
+
         const neighbors = this.game.hexGrid.getNeighbors(unit.col, unit.row);
         for (const neighbor of neighbors) {
             const nearbyUnit = this.game.getUnitAt(neighbor.col, neighbor.row);
@@ -58,10 +71,12 @@ class MoraleSystem {
                 nearbyUnit.faction === unit.faction &&
                 nearbyUnit.health > 0 &&
                 (nearbyUnit.special === 'veteran' || nearbyUnit.special === 'elite')) {
-                return true;
+                bonus += 20;
+                break;
             }
         }
-        return false;
+
+        return bonus;
     }
 
     // Pohyb prchající jednotky směrem od nejbližšího nepřítele

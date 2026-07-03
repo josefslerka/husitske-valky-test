@@ -365,6 +365,12 @@ class Unit {
         if (gameContext && gameContext.defenderCommanderBonus) {
             defenseValue += gameContext.defenderCommanderBonus;
         }
+        // Postih za strach z nepřátelského velitele (zrcadlí attackerFearPenalty
+        // výše - dřív se počítal, ale nikde nepoužíval, takže strach fungoval
+        // jen když obránce útočil, ne když byl v obraně u nepřátelského velitele)
+        if (gameContext && gameContext.defenderFearPenalty) {
+            defenseValue *= (1 - gameContext.defenderFearPenalty / 100);
+        }
         // Postih za obklíčení (-10% až -30%)
         if (gameContext && gameContext.defenderSurroundedPenalty) {
             defenseValue *= (1 - gameContext.defenderSurroundedPenalty / 100);
@@ -700,15 +706,16 @@ class Unit {
     }
 
     // Pokus o rally (zastavení útěku)
-    attemptRally(leaderNearby = false) {
+    // rallyBonus: % navíc z blízkosti velitele (podle jeho rallyBonus statu)
+    // a/nebo zkušeného souseda - viz MoraleSystem.isLeaderNearby
+    attemptRally(rallyBonus = 0) {
         if (!this.isRouting) return { success: true, message: 'Jednotka neprchá' };
 
         this.rallyAttempts++;
 
         // Základní šance na rally: 30% + 5% za každý bod morálky nad 0
-        // Bonus +20% pokud je velitel poblíž
         let chance = 30 + (this.morale * 0.5);
-        if (leaderNearby) chance += 20;
+        chance += rallyBonus;
         if (this.special === 'veteran' || this.special === 'elite') chance += 15;
 
         // Maximální 3 pokusy, pak jednotka dezertuje
