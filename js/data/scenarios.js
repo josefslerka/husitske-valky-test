@@ -407,6 +407,12 @@ const Scenarios = {
                     // hráč táhne v kole první, takže má jistý 1. tah na sepnutí.
                     { type: 'VOZOVA_HRADBA', col: 9, row: 5, formation: 'open' },
                     { type: 'VOZOVA_HRADBA', col: 9, row: 6, formation: 'open' },
+                    // 3. vůz na (8,6) - společný soused obou předchozích, kryje
+                    // i severní okraj bahenního rybníka (jediný obchvat hradby).
+                    // isInWagonLine chce 2+ sousední vozy na bonus - trojice
+                    // (9,5)-(9,6)-(8,6) je vzájemně sousedící trojúhelník, takže
+                    // po sepnutí bonus dostanou všechny tři, ne jen jedna z nich.
+                    { type: 'VOZOVA_HRADBA', col: 8, row: 6, formation: 'open' },
                     // Střelci - TĚSNĚ za vozy, dostřel kryje úžinu (col 9) i
                     // severní okraj bahna (řady 7-8) - bagrující jízda dostane palbu
                     { type: 'KUSINICI_HUSITI', col: 10, row: 5 },
