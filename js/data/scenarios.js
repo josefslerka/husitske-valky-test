@@ -399,9 +399,14 @@ const Scenarios = {
             hussites: {
                 commander: 'Jan Žižka z Trocnova',
                 units: [
-                    // Vozová hradba - čelní zeď, ucpává úžinu mezi rybníky
-                    { type: 'VOZOVA_HRADBA', col: 9, row: 5 },
-                    { type: 'VOZOVA_HRADBA', col: 9, row: 6 },
+                    // Vozová hradba - čelní zeď, ucpává úžinu mezi rybníky.
+                    // formation:'open' - Žižkovu kolonu na útěku z Plzně dostihli
+                    // v poli, hradbu musel sbít na hrázi narychlo (Dolejší). Hráč
+                    // ji musí sám sepnout - viz briefing "postavte vozovou hradbu".
+                    // Bezpečné: nejbližší rytíři jsou ~6 hexů daleko (pohyb 3),
+                    // hráč táhne v kole první, takže má jistý 1. tah na sepnutí.
+                    { type: 'VOZOVA_HRADBA', col: 9, row: 5, formation: 'open' },
+                    { type: 'VOZOVA_HRADBA', col: 9, row: 6, formation: 'open' },
                     // Střelci - TĚSNĚ za vozy, dostřel kryje úžinu (col 9) i
                     // severní okraj bahna (řady 7-8) - bagrující jízda dostane palbu
                     { type: 'KUSINICI_HUSITI', col: 10, row: 5 },
