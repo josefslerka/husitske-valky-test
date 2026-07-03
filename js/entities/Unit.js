@@ -444,7 +444,7 @@ class Unit {
         // Jen těžká pěchota (útok ≥ 28) může provést protiútok
         if (!result.killed && target.range === 1 && this.range === 1 &&
             target.unitClass === 'infantry' && target.attack >= 28) {
-            result.counterDamage = this.calculateCounterDamage(target, attackerTerrain);
+            result.counterDamage = this.calculateCounterDamage(target, attackerTerrain, gameContext);
             this.health -= result.counterDamage;
             result.attackerKilled = this.health <= 0;
         }
@@ -453,7 +453,7 @@ class Unit {
     }
 
     // Výpočet poškození protiútoku (25% síly normálního útoku)
-    calculateCounterDamage(defender, attackerTerrain) {
+    calculateCounterDamage(defender, attackerTerrain, gameContext = null) {
         let counterDamage = defender.attack * 0.25;
 
         // Bonus za terén útočníka (nyní obránce protiútokem)
@@ -463,8 +463,16 @@ class Unit {
         // Náhodný faktor
         counterDamage *= 0.8 + Math.random() * 0.4;
 
-        // Odečtení obrany útočníka
-        counterDamage = Math.max(3, counterDamage - this.defense * 0.3);
+        // Odečtení obrany útočníka (this = původní útočník, teď přijímá protiúder)
+        let myDefense = this.defense;
+        // WP1: formační obrana (linie vozů / kryt za hradbou) se dřív počítala do
+        // gameContext.attackerFormationDefense, ale calculateCounterDamage
+        // gameContext vůbec nedostávala - vůz v linii dostával plný protiútok
+        // stejně jako kdyby stál osamocený.
+        if (gameContext && gameContext.attackerFormationDefense) {
+            myDefense *= (1 + gameContext.attackerFormationDefense / 100);
+        }
+        counterDamage = Math.max(3, counterDamage - myDefense * 0.3);
 
         return Math.round(counterDamage);
     }

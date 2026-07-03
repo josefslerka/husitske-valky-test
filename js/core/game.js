@@ -1480,6 +1480,11 @@ class Game {
     }
 
     getValidMoves(unit) {
+        // Obrana proti budoucím voláním, co zapomenou zkontrolovat canMove()
+        // (řešilo se per-call-site u AI/hráče, ale sepnutý vůz nemá pohybovat
+        // ani při pozdějším přidaném volání, které na to zapomene)
+        if (!unit.canMove()) return [];
+
         const range = unit.movement;
 
         // Dijkstra s terénními cenami (dřív uniformní BFS - bahno, les
@@ -3256,6 +3261,7 @@ class Game {
     // Cílový stav udá výchozí vůz; už jednavší vozy se přeskočí, ale souvislost drží.
     toggleWagonFormationLine(startUnit) {
         if (!startUnit || !startUnit.isWagon() || startUnit.faction !== this.currentFaction) return false;
+        if (startUnit.hasMoved) return false; // vůz už v tomto tahu jednal (souměrné s toggleWagonFormation)
         const targetState = !startUnit.formationClosed;
         const visited = new Set([startUnit.id]);
         const queue = [startUnit];
