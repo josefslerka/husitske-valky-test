@@ -6643,3 +6643,41 @@ body {
     background: transparent;
     text-decoration: none;
 }
+
+/* Oprava mobilních lišt: composition pass výše nastavuje panelům pevné šířky
+   (218/232/292 px) bezpodmínečně, a protože je v souboru později, přebíjí
+   42px lišty z bloku @media (max-width: 900px). Bez tohohle dodatku zůstával
+   na mobilu místo úzké lišty tlustý prázdný pergamenový sloup. Rozbalené
+   (.expanded) panely si šířky z composition passu nechávají. */
+@media (max-width: 900px) {
+    /* Starý mobilní blok výše přepíná #game-main do sloupce (panely nad mapou),
+       lišty polního rukopisu ale počítají s řádkem - vracíme řádek, jinak se
+       kompozice rozpadne (mapa mimo obraz, panely přes celou šířku). */
+    #game-main {
+        flex-direction: row;
+    }
+
+    #unit-panel:not(.expanded),
+    #info-panel:not(.expanded) {
+        width: 42px;
+        min-width: 42px;
+        max-height: none;
+        padding: 10px 5px;
+    }
+
+    #unit-panel.expanded,
+    #info-panel.expanded {
+        max-height: none;
+        overflow-y: auto;
+    }
+}
+
+/* Totéž pro desktopové sbalení šipkou: composition pass drží 218-292px
+   i na .collapsed panelu, takže sbalení nechávalo prázdný široký sloup. */
+#unit-panel.collapsed,
+#unit-panel.empty-unit-panel.collapsed,
+#info-panel.collapsed {
+    width: 42px;
+    min-width: 42px;
+    padding: 10px 5px;
+}

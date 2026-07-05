@@ -639,19 +639,33 @@ document.addEventListener('DOMContentLoaded', () => {
     const toggleLeft = document.getElementById('toggle-left');
     const toggleRight = document.getElementById('toggle-right');
 
-    // Toggle levého panelu
+    // Toggle levého panelu.
+    // Na šířkách <=1200px (vč. mobilních lišt "polního rukopisu" <=900px) media
+    // query obsah panelu skrývá a zpět ho umí přivést jen třída .expanded -
+    // tu ale tenhle handler nikdy nenastavoval (přepínal jen .collapsed),
+    // takže se panely na malých obrazovkách nedaly rozbalit vůbec.
     if (toggleLeft && unitPanel) {
         toggleLeft.addEventListener('click', () => {
-            unitPanel.classList.toggle('collapsed');
-            toggleLeft.textContent = unitPanel.classList.contains('collapsed') ? '▶' : '◀';
+            if (window.innerWidth <= 1200) {
+                unitPanel.classList.toggle('expanded');
+                toggleLeft.textContent = unitPanel.classList.contains('expanded') ? '◀' : '▶';
+            } else {
+                unitPanel.classList.toggle('collapsed');
+                toggleLeft.textContent = unitPanel.classList.contains('collapsed') ? '▶' : '◀';
+            }
         });
     }
 
-    // Toggle pravého panelu
+    // Toggle pravého panelu (zrcadlově k levému)
     if (toggleRight && infoPanel) {
         toggleRight.addEventListener('click', () => {
-            infoPanel.classList.toggle('collapsed');
-            toggleRight.textContent = infoPanel.classList.contains('collapsed') ? '◀' : '▶';
+            if (window.innerWidth <= 1200) {
+                infoPanel.classList.toggle('expanded');
+                toggleRight.textContent = infoPanel.classList.contains('expanded') ? '▶' : '◀';
+            } else {
+                infoPanel.classList.toggle('collapsed');
+                toggleRight.textContent = infoPanel.classList.contains('collapsed') ? '◀' : '▶';
+            }
         });
     }
 
@@ -660,9 +674,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!unitPanel || !infoPanel || !toggleLeft || !toggleRight) return;
 
         const width = window.innerWidth;
-        if (width <= 1200 && width > 900) {
-            // Na středních obrazovkách - panely jsou defaultně sbalené
-            // Ale můžou se rozbalit kliknutím (pomocí .expanded třídy)
+        if (width <= 1200) {
+            // Malé a střední obrazovky - obsah panelů skrývá media query,
+            // rozbaluje se kliknutím na šipku (třída .expanded). Šipky ukažme
+            // směrem "rozbalit", dokud rozbaleno není.
             if (!unitPanel.classList.contains('expanded')) {
                 unitPanel.classList.add('collapsed');
                 toggleLeft.textContent = '▶';
@@ -671,10 +686,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 infoPanel.classList.add('collapsed');
                 toggleRight.textContent = '◀';
             }
-        } else if (width > 1200) {
-            // Na velkých obrazovkách - normální stav
-            unitPanel.classList.remove('collapsed');
-            infoPanel.classList.remove('collapsed');
+        } else {
+            // Na velkých obrazovkách - normální stav (expanded už není potřeba)
+            unitPanel.classList.remove('collapsed', 'expanded');
+            infoPanel.classList.remove('collapsed', 'expanded');
             toggleLeft.textContent = '◀';
             toggleRight.textContent = '▶';
         }
