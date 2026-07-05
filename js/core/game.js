@@ -310,35 +310,63 @@ class Game {
             this.tutorialSystem.initTutorial(scenario.tutorialSteps);
         }
 
-        // Vycentruj pohled na střed husitských jednotek
+        // Vycentruj pohled na taktické ohnisko bitvy
         this.centerOnPlayerForces();
     }
 
-    // Vycentrování pohledu na střed hráčových jednotek při startu
+    // Vycentrování pohledu na počáteční situaci: rámuj střet armád jako
+    // taktickou scénu, ne surový roh mapy ani čistě vlastní okraj.
     centerOnPlayerForces() {
         const mapContainer = document.getElementById('map-container');
         if (!mapContainer) return;
 
-        // Najdi všechny husitské jednotky
-        const playerUnits = this.units.filter(u => u.faction === 'hussites');
-        if (playerUnits.length === 0) return;
+        const framedUnits = this.units.filter(u => u.health > 0);
+        if (framedUnits.length === 0) return;
 
-        // Spočítej střed jejich pozic
-        let sumX = 0, sumY = 0;
-        for (const unit of playerUnits) {
+        let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+        for (const unit of framedUnits) {
             const pos = this.hexGrid.hexToPixel(unit.col, unit.row);
-            sumX += pos.x;
-            sumY += pos.y;
+            minX = Math.min(minX, pos.x);
+            minY = Math.min(minY, pos.y);
+            maxX = Math.max(maxX, pos.x);
+            maxY = Math.max(maxY, pos.y);
         }
-        const centerX = sumX / playerUnits.length;
-        const centerY = sumY / playerUnits.length;
 
-        // Centruj pohled
-        const containerWidth = mapContainer.clientWidth;
-        const containerHeight = mapContainer.clientHeight;
+        const padding = this.hexGrid.hexSize * 2.2;
 
-        mapContainer.scrollLeft = centerX - containerWidth / 2;
-        mapContainer.scrollTop = centerY - containerHeight / 2;
+        const applyScroll = () => {
+            const containerWidth = mapContainer.clientWidth;
+            const containerHeight = mapContainer.clientHeight;
+            const maxLeft = Math.max(0, this.hexGrid.canvas.width - containerWidth);
+            const maxTop = Math.max(0, this.hexGrid.canvas.height - containerHeight);
+
+            const focusX = (minX + maxX) / 2;
+            const focusY = (minY + maxY) / 2;
+            const encounterWidth = maxX - minX + padding * 2;
+            const encounterHeight = maxY - minY + padding * 2;
+
+            let left = focusX - containerWidth / 2;
+            let top = focusY - containerHeight / 2;
+
+            if (encounterWidth <= containerWidth) {
+                left = minX - (containerWidth - encounterWidth) / 2 - padding;
+            }
+
+            if (encounterHeight <= containerHeight) {
+                top = minY - (containerHeight - encounterHeight) / 2 - padding;
+            }
+
+            if (minY < this.hexGrid.canvas.height * 0.58) {
+                top = minY - containerHeight * 0.43;
+            }
+
+            mapContainer.scrollLeft = Math.max(0, Math.min(maxLeft, left));
+            mapContainer.scrollTop = Math.max(0, Math.min(maxTop, top));
+        };
+
+        applyScroll();
+        requestAnimationFrame(applyScroll);
+        setTimeout(applyScroll, 80);
     }
 
     // Aktualizace aktuální fáze
@@ -1444,15 +1472,16 @@ class Game {
         const mapContainer = document.getElementById('map-container');
         if (!mapContainer || !unit) return;
 
-        // Získej pozici jednotky v pixelech
-        const pos = this.hexGrid.hexToPixel(unit.col, unit.row);
+        requestAnimationFrame(() => {
+            const pos = this.hexGrid.hexToPixel(unit.col, unit.row);
+            const containerWidth = mapContainer.clientWidth;
+            const containerHeight = mapContainer.clientHeight;
+            const maxLeft = Math.max(0, this.hexGrid.canvas.width - containerWidth);
+            const maxTop = Math.max(0, this.hexGrid.canvas.height - containerHeight);
 
-        // Centruj pohled na jednotku
-        const containerWidth = mapContainer.clientWidth;
-        const containerHeight = mapContainer.clientHeight;
-
-        mapContainer.scrollLeft = pos.x - containerWidth / 2;
-        mapContainer.scrollTop = pos.y - containerHeight / 2;
+            mapContainer.scrollLeft = Math.max(0, Math.min(maxLeft, pos.x - containerWidth / 2));
+            mapContainer.scrollTop = Math.max(0, Math.min(maxTop, pos.y - containerHeight / 2));
+        });
     }
 
     getUnitAt(col, row) {
@@ -2268,11 +2297,18 @@ class Game {
         const infoDiv = document.getElementById('unit-info');
         const actionsDiv = document.getElementById('unit-actions');
         const attackBtn = document.getElementById('btn-attack');
+        const unitPanel = document.getElementById('unit-panel');
 
         if (!unit) {
+            if (unitPanel) {
+                unitPanel.classList.add('empty-unit-panel');
+            }
             infoDiv.innerHTML = '<p class="no-selection">Vyberte jednotku</p>';
             actionsDiv.classList.add('hidden');
             return;
+        }
+        if (unitPanel) {
+            unitPanel.classList.remove('empty-unit-panel');
         }
 
         // Popis speciálních schopností

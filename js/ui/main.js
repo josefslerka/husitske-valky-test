@@ -490,14 +490,20 @@ document.addEventListener('DOMContentLoaded', () => {
         // Aktualizace cílů mise v panelu
         updateObjectivesPanel(scenario);
 
-        // Zobrazit dialog s cíli mise na začátku
+        // Cíle jsou dostupné v dolní liště; na startu nekolidují s úvodní
+        // událostí/tipem, aby první pohled zůstal čistý.
         if (objectivesPanel) {
-            objectivesPanel.classList.remove('hidden');
+            objectivesPanel.classList.add('hidden');
         }
 
         // Export pro debugging
         window.game = game;
         window.hexGrid = hexGrid;
+
+        // Kamera až po dokončení UI startu mise, jinak se rámování počítá
+        // proti přechodnému layoutu modalu/panelů.
+        requestAnimationFrame(() => game.centerOnPlayerForces());
+        setTimeout(() => game.centerOnPlayerForces(), 120);
     }
 
     function startQuickBattle() {

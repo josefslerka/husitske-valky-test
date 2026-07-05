@@ -607,7 +607,7 @@ class HexGrid {
         this.animationFrame++;
 
         // Pozadí
-        this.ctx.fillStyle = '#1a1a1a';
+        this.ctx.fillStyle = '#25301f';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
         // Mlha války nastavení

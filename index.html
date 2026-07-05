@@ -18,7 +18,7 @@
     <meta property="twitter:title" content="Husitské Války - Tahová Strategie">
     <meta property="twitter:description" content="Historická tahová strategie o husitských válkách. Veďte husitská vojska Jana Žižky v bitvách 15. století.">
 
-    <link rel="stylesheet" href="style.css?v=3.9">
+    <link rel="stylesheet" href="style.css?v=5.5-polni-rukopis">
 </head>
 <body>
     <!-- Hlavní menu -->
@@ -27,6 +27,10 @@
             <div class="menu-content">
                 <div class="game-logo">
                     <img src="imgs/novelogo.png" alt="Hussite Wars" class="logo-image">
+                    <div class="menu-title-mark">
+                        <span class="menu-title-main">Husitské války</span>
+                        <span class="menu-title-sub">1419-1437</span>
+                    </div>
                 </div>
 
                 <nav class="menu-buttons-grid">
@@ -100,7 +104,7 @@
             <!-- Minimapa - fixně pozicovaná v rámci game-main -->
             <canvas id="minimap"></canvas>
 
-            <aside id="unit-panel">
+            <aside id="unit-panel" class="empty-unit-panel">
                 <button class="panel-toggle" id="toggle-left" title="Sbalit/Rozbalit">◀</button>
                 <h2 data-i18n="game.unit"></h2>
                 <div id="unit-info">
@@ -989,7 +993,7 @@
     <!-- ?v= cache-busting: bumpni číslo při každém vydání, ať hráči nedostanou starý JS -->
     <script src="js/ui/sound.js?v=3.9"></script>
     <script src="js/ui/music.js?v=3.9"></script>
-    <script src="js/core/hex.js?v=3.9"></script>
+    <script src="js/core/hex.js?v=5.5-polni-rukopis"></script>
     <script src="js/data/unitTypes.js?v=3.9"></script>
     <script src="js/entities/Unit.js?v=3.9"></script>
     <script src="js/entities/UnitFactory.js?v=3.9"></script>
@@ -1002,8 +1006,8 @@
     <script src="js/systems/TutorialSystem.js?v=3.9"></script>
     <script src="js/systems/MoraleSystem.js?v=3.9"></script>
     <script src="js/systems/ChronicleSystem.js?v=3.9"></script>
-    <script src="js/core/game.js?v=3.9"></script>
+    <script src="js/core/game.js?v=5.5-polni-rukopis"></script>
     <script src="js/ai.js?v=3.9"></script>
-    <script src="js/ui/main.js?v=3.9"></script>
+    <script src="js/ui/main.js?v=5.5-polni-rukopis"></script>
 </body>
 </html>
