@@ -1250,16 +1250,31 @@ class Game {
                 html += `<div class="tooltip-info">Zbývá ${2 - unit.attackCount} útok</div>`;
             }
 
-            // Preview poškození při útoku - pokud je vybraná jednotka a toto je nepřítel
+            // Náhled šancí při útoku - pokud je vybraná jednotka a toto je nepřítel
             if (this.selectedUnit && this.selectedUnit.faction !== unit.faction) {
-                const damagePreview = this.combatSystem.calculateDamagePreview(this.selectedUnit, unit);
-                if (damagePreview) {
+                const p = this.combatSystem.calculateDamagePreview(this.selectedUnit, unit);
+                if (p) {
+                    const dmg = p.min === p.max ? `${p.min}` : `${p.min} - ${p.max}`;
+                    let killLine = '';
+                    if (p.killsCertain) {
+                        killLine = '<div class="damage-range" style="color: #ff6b6b; font-weight: bold;">💀 Zabije cíl</div>';
+                    } else if (p.killsPossible) {
+                        killLine = '<div class="damage-range" style="color: #ffb86b;">Může zabít</div>';
+                    }
+                    let counterLine = '';
+                    if (p.counter) {
+                        const c = p.counter.min === p.counter.max ? `${p.counter.min}` : `${p.counter.min} - ${p.counter.max}`;
+                        const counterKill = p.counter.killsAttackerCertain
+                            ? ' <span style="color: #ff6b6b; font-weight: bold;">(padneš!)</span>'
+                            : (p.counter.killsAttackerPossible ? ' <span style="color: #ffb86b;">(riziko smrti)</span>' : '');
+                        counterLine = `<div class="damage-range" style="color: #ff9999;">↩️ Protiútok: ${c} HP${counterKill}</div>`;
+                    }
                     html += `
                         <div class="tooltip-damage-preview">
                             <div class="damage-title">⚔️ Odhad poškození:</div>
-                            <div class="damage-value">${damagePreview.min} - ${damagePreview.max} HP</div>
-                            ${damagePreview.special ? `<div class="damage-range">${damagePreview.special}</div>` : ''}
-                            ${unit.health <= damagePreview.max ? '<div class="damage-range" style="color: #ff6b6b;">Možné zabití!</div>' : ''}
+                            <div class="damage-value">${dmg} HP</div>
+                            ${killLine}
+                            ${counterLine}
                         </div>
                     `;
                 }

@@ -75,27 +75,11 @@ class CombatSystem {
     }
 
     // Provedení útoku
-    performAttack(attacker, defender) {
-        const defenderTerrain = this.game.hexGrid.getTerrain(defender.col, defender.row);
-        const attackerTerrain = this.game.hexGrid.getTerrain(attacker.col, attacker.row);
-        const hasMovedThisTurn = attacker.hasMoved;
-
-        // Zrušit možnost undo - útok je nevratná akce
-        if (this.game.lastMove && this.game.lastMove.unit === attacker) {
-            this.game.lastMove = null;
-        }
-
-        // Animace útoku
-        this.game.hexGrid.addAttackAnimation(attacker.col, attacker.row, defender.col, defender.row);
-
-        // Zvuk útoku podle dosahu
-        if (attacker.range > 1) {
-            Sound.playRangedAttack();
-        } else {
-            Sound.playMeleeAttack();
-        }
-
-        // Vytvoření gameContext pro speciální schopnosti
+    // Sestaví gameContext (bonusy velitelů, formací, chorálu, mechanik scénáře,
+    // okna protiútoku) - jen čtení stavu, žádná mutace. Sdílené mezi reálným
+    // útokem (performAttack) a náhledem šancí (calculateDamagePreview), aby se
+    // předpověď a skutečnost počítaly ze stejných vstupů.
+    buildGameContext(attacker, defender) {
         const attackerBonuses = this.game.getCommanderBonuses(attacker);
         const defenderBonuses = this.game.getCommanderBonuses(defender);
         const attackerFearPenalty = this.game.getEnemyCommanderFearPenalty(attacker);
@@ -113,7 +97,7 @@ class CombatSystem {
         // Speciální mechaniky scénáře
         const scenarioMechanics = this.getActiveScenarioMechanics(attacker, defender);
 
-        const gameContext = {
+        return {
             getNeighbors: (col, row) => this.game.hexGrid.getNeighbors(col, row),
             getUnitAt: (col, row) => this.game.getUnitAt(col, row),
             // Velitelské bonusy
@@ -141,6 +125,30 @@ class CombatSystem {
             attackerSallyBonus: (this.game.wavering && this.game.wavering[defender.faction] &&
                 this.isNextToOpenWagon(attacker)) ? 0.10 : 0
         };
+    }
+
+    performAttack(attacker, defender) {
+        const defenderTerrain = this.game.hexGrid.getTerrain(defender.col, defender.row);
+        const attackerTerrain = this.game.hexGrid.getTerrain(attacker.col, attacker.row);
+        const hasMovedThisTurn = attacker.hasMoved;
+
+        // Zrušit možnost undo - útok je nevratná akce
+        if (this.game.lastMove && this.game.lastMove.unit === attacker) {
+            this.game.lastMove = null;
+        }
+
+        // Animace útoku
+        this.game.hexGrid.addAttackAnimation(attacker.col, attacker.row, defender.col, defender.row);
+
+        // Zvuk útoku podle dosahu
+        if (attacker.range > 1) {
+            Sound.playRangedAttack();
+        } else {
+            Sound.playMeleeAttack();
+        }
+
+        // gameContext se staví ve sdílené metodě (stejné bonusy dostane i náhled šancí)
+        const gameContext = this.buildGameContext(attacker, defender);
 
         // Zpoždění pro zobrazení animace
         setTimeout(() => {
@@ -266,93 +274,20 @@ class CombatSystem {
         this.game.render();
     }
 
-    // Výpočet odhadu poškození pro tooltip
+    // Náhled šancí před útokem pro tooltip. Deleguje na čistý výpočet z Unit
+    // (stejný vzorec jako reálný útok), takže se náhled a skutečnost nikdy
+    // nerozejdou. Vrací { min, max, killsCertain, killsPossible, counter } nebo null.
     calculateDamagePreview(attacker, defender) {
         if (!attacker || !defender) return null;
         if (attacker.faction === defender.faction) return null;
 
-        // Základní poškození
-        let baseDamage = attacker.attack;
-        let special = '';
+        const defenderTerrain = this.game.hexGrid.getTerrain(defender.col, defender.row);
+        const attackerTerrain = this.game.hexGrid.getTerrain(attacker.col, attacker.row);
+        const gameContext = this.buildGameContext(attacker, defender);
 
-        // RapidFire - snížené poškození
-        if (attacker.special === 'rapidFire') {
-            baseDamage *= 0.75;
-            special = 'Rychlostřelba (2x útok)';
-        }
-
-        // Charge bonus
-        if (attacker.special === 'charge' && !attacker.hasMoved) {
-            const chargeBonus = attacker.type === 'TEZKY_RYTIR' ? 0.5 : 0.3;
-            baseDamage *= (1 + chargeBonus);
-            special = 'Náraz po pohybu';
-        }
-
-        // ArmorPiercing
-        if (attacker.special === 'armorPiercing' && (defender.isHeavyCavalry() || defender.isWagon())) {
-            baseDamage *= 1.3;
-            special = 'Drtivý úder vs obrněné';
-        }
-
-        // AntiCavalry
-        if (attacker.special === 'antiCavalry' && defender.isCavalry()) {
-            baseDamage *= 1.5;
-            special = 'Bonus vs jízda';
-        }
-
-        // Pursuit
-        if (attacker.special === 'pursuit' && defender.health < defender.maxHealth * 0.5) {
-            baseDamage *= 1.3;
-            special = 'Pronásledování oslabených';
-        }
-
-        // Siege
-        if (attacker.special === 'siege' && defender.isWagon()) {
-            baseDamage *= 2.0;
-            special = 'Obléhání vozů';
-        }
-
-        // Elite/Veteran
-        if (attacker.special === 'elite' || attacker.special === 'veteran') {
-            baseDamage *= 1.1;
-        }
-
-        // Terror efekt
-        if (attacker.isTerrified) {
-            baseDamage *= 0.9;
-        }
-
-        // Obranný postoj obránce
-        if (defender.isDefending) {
-            baseDamage *= 0.7;
-        }
-
-        // AntiCavalry obrana
-        if (defender.special === 'antiCavalry' && attacker.isCavalry()) {
-            baseDamage *= 0.7;
-        }
-
-        // Terénní bonus obránce
-        const terrain = this.game.hexGrid.getTerrain(defender.col, defender.row);
-        const terrainBonus = {
-            plains: 0, forest: 0.2, hills: 0.3, town: 0.4, swamp: 0.1,
-            road: 0, road2: 0, dam: 0.2, slope: 0.1, trenches: 0.3, church: 0.2
-        };
-        baseDamage *= (1 - (terrainBonus[terrain] || 0));
-
-        // Odpočet obrany
-        let defenseReduction = defender.defense * 0.5;
-        baseDamage = Math.max(5, baseDamage - defenseReduction);
-
-        // Náhodný faktor ±20%
-        const minDamage = Math.round(baseDamage * 0.8);
-        const maxDamage = Math.round(baseDamage * 1.2);
-
-        return {
-            min: minDamage,
-            max: maxDamage,
-            special: special
-        };
+        return attacker.previewAttackOutcome(
+            defender, defenderTerrain, attackerTerrain, attacker.hasMoved, gameContext
+        );
     }
 
     // Zobrazení floating damage čísla

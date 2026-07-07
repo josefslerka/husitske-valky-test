@@ -201,7 +201,82 @@ class Unit {
             this.hasAttacked = true;
         }
 
-        // Výpočet poškození útočníka
+        // === VÝPOČET POŠKOZENÍ ===
+        // Čistý výpočet je vytažený do computeDamage() (sdílí ho i náhled šancí),
+        // aby existoval jediný vzorec. Náhodný ±20% faktor se předává jako
+        // parametr, aby šel výsledek předpovědět (min/max) i reálně zahrát.
+        const attackRandom = 0.8 + Math.random() * 0.4;
+        let damage = this.computeDamage(target, terrain, attackerTerrain, hasMovedThisTurn, gameContext, attackRandom);
+
+        // Charge nastaví vizuální flag pro render (jediná mutace z výpočtu poškození)
+        if (this.special === 'charge' && hasMovedThisTurn) {
+            this.chargeBonus = true;
+        }
+
+        target.health -= damage;
+
+        const result = {
+            damage: damage,
+            killed: target.health <= 0,
+            counterDamage: 0,
+            attackerKilled: false,
+            specialEffects: [],
+            areaDamage: []  // Plošné poškození sousedním jednotkám
+        };
+
+        // === PLOŠNÝ ÚTOK (areaAttack) ===
+        // Houfnice způsobují poškození sousedním nepřátelským jednotkám
+        if (this.special === 'areaAttack' && gameContext) {
+            const areaTargets = this.getAreaDamageTargets(target, gameContext);
+            for (const areaTarget of areaTargets) {
+                // 50% poškození pro sousední jednotky
+                const areaDmg = Math.round(damage * 0.5);
+                areaTarget.unit.health -= areaDmg;
+                result.areaDamage.push({
+                    unit: areaTarget.unit,
+                    damage: areaDmg,
+                    killed: areaTarget.unit.health <= 0
+                });
+            }
+            if (areaTargets.length > 0) {
+                result.specialEffects.push('areaAttack');
+            }
+        }
+
+        // === SPECIÁLNÍ EFEKTY PO ÚTOKU ===
+
+        // Terror - ručničáři způsobují děs
+        if (this.special === 'terror' && !result.killed) {
+            target.isTerrified = true;
+            result.specialEffects.push('terror');
+        }
+
+        // Dismount - halapartníci mohou sesadit jezdce
+        if (this.special === 'dismount' && target.isCavalry() && !result.killed) {
+            if (Math.random() < 0.3) {  // 30% šance
+                target.movement = Math.max(1, target.movement - 2);
+                result.specialEffects.push('dismount');
+            }
+        }
+
+        // Protiútok - pouze pokud obránce přežil a může útočit (melee vs melee)
+        // Jen těžká pěchota (útok ≥ 28) může provést protiútok
+        if (!result.killed && target.range === 1 && this.range === 1 &&
+            target.unitClass === 'infantry' && target.attack >= 28) {
+            result.counterDamage = this.calculateCounterDamage(target, attackerTerrain, gameContext);
+            this.health -= result.counterDamage;
+            result.attackerKilled = this.health <= 0;
+        }
+
+        return result;
+    }
+
+    // === ČISTÝ VÝPOČET POŠKOZENÍ ÚTOKU ===
+    // Bez jakékoli mutace stavu. randomFactor (0.8-1.2) nahrazuje náhodný ±20%
+    // faktor, takže stejný vzorec poslouží reálnému útoku (attackTarget zavolá
+    // s Math.random) i náhledu šancí (previewAttackOutcome dosadí meze).
+    // Pořadí operací je záměrně shodné s původním kódem attackTarget.
+    computeDamage(target, terrain, attackerTerrain, hasMovedThisTurn, gameContext, randomFactor) {
         let damage = this.attack;
 
         // RapidFire - snížené poškození za rychlostřelbu (75% za každý útok)
@@ -210,12 +285,10 @@ class Unit {
         }
 
         // === SPECIÁLNÍ SCHOPNOSTI ÚTOČNÍKA ===
-
-        // Charge (náraz) - bonus při útoku z pohybu
+        // Charge (náraz) - bonus při útoku z pohybu (flag chargeBonus nastavuje attackTarget)
         if (this.special === 'charge' && hasMovedThisTurn) {
             const chargeBonus = this.type === 'TEZKY_RYTIR' ? 0.5 : 0.3;
             damage *= (1 + chargeBonus);
-            this.chargeBonus = true;
         }
 
         // ArmorPiercing (drtivý úder) - bonus proti obrněným (těžká jízda, vozy)
@@ -291,26 +364,22 @@ class Unit {
         if (gameContext && gameContext.defenderWavering) {
             damage *= 1.3;
             // WP1: výpad z hradby - jednotka vedle ROZPOJENÉHO vozu přidá +10 %.
-            // Odměna za správné načasování rozevření hradby v okně protiútoku.
             if (gameContext.attackerSallyBonus) {
                 damage *= (1 + gameContext.attackerSallyBonus);
             }
         }
 
         // === ÚTOČNÝ BONUS ZA TERÉN ===
-        // Bonus/malus k útoku podle terénu, na kterém útočník stojí
         const terrainAttackBonus = this.getTerrainAttackBonus(attackerTerrain);
         damage *= (1 + terrainAttackBonus);
 
         // === WEAKNESS BONUS (Slabiny cíle) ===
-        // Bonus k útoku pokud útočník využívá slabinu cíle
         const weaknessBonus = this.getWeaknessBonus(target, hasMovedThisTurn);
         if (weaknessBonus > 0) {
             damage *= (1 + weaknessBonus);
         }
 
         // === OBRANNÉ BONUSY CÍLE ===
-
         // Bonus za obranný postoj
         if (target.isDefending) {
             damage *= 0.7;
@@ -318,22 +387,19 @@ class Unit {
 
         // AntiCavalry obrana - kopiníci mají bonus proti jízdě
         if (target.special === 'antiCavalry' && this.isCavalry()) {
-            damage *= 0.7;  // Snížení poškození od jízdy
+            damage *= 0.7;
         }
 
         // === WAGENBURG (Vozová hradba) ===
-        // Vozy vedle sebe dostávají bonus k obraně
         if (target.special === 'wagenburg' && gameContext) {
             const adjacentWagons = this.countAdjacentWagons(target, gameContext);
             if (adjacentWagons > 0) {
-                // +15% obrana za každý sousední vůz (max +45%)
                 const wagonBonus = Math.min(0.45, adjacentWagons * 0.15);
                 damage *= (1 - wagonBonus);
             }
         }
 
         // === SHIELD WALL (Štítová zeď) ===
-        // Střelci vedle pavézníků dostávají bonus k obraně
         if (target.isRanged() && gameContext) {
             const shieldBonus = this.getShieldWallBonus(target, gameContext);
             if (shieldBonus > 0) {
@@ -345,15 +411,13 @@ class Unit {
         const terrainDefenseBonus = this.getTerrainDefenseBonus(terrain);
         damage *= (1 - terrainDefenseBonus);
 
-        // Náhodný faktor (±20%)
-        damage *= 0.8 + Math.random() * 0.4;
+        // Náhodný faktor (±20%) - parametrizovaný pro předpověď i reálný útok
+        damage *= randomFactor;
 
         // === BODYGUARD (Ochrana velitele) ===
-        // Velitel dostává redukované poškození, pokud má kolem sebe spojence
         if (target.isCommander && target.isCommander() && gameContext) {
             const adjacentAllies = this.countAdjacentAllies(target, gameContext);
             if (adjacentAllies > 0) {
-                // -15% poškození za každého spojence (max -60%)
                 const bodyguardReduction = Math.min(0.60, adjacentAllies * 0.15);
                 damage *= (1 - bodyguardReduction);
             }
@@ -361,29 +425,21 @@ class Unit {
 
         // Odečtení obrany (armorPiercing střelci ignorují část)
         let defenseValue = target.defense;
-        // Velitelský bonus k obraně
         if (gameContext && gameContext.defenderCommanderBonus) {
             defenseValue += gameContext.defenderCommanderBonus;
         }
-        // Postih za strach z nepřátelského velitele (zrcadlí attackerFearPenalty
-        // výše - dřív se počítal, ale nikde nepoužíval, takže strach fungoval
-        // jen když obránce útočil, ne když byl v obraně u nepřátelského velitele)
         if (gameContext && gameContext.defenderFearPenalty) {
             defenseValue *= (1 - gameContext.defenderFearPenalty / 100);
         }
-        // Postih za obklíčení (-10% až -30%)
         if (gameContext && gameContext.defenderSurroundedPenalty) {
             defenseValue *= (1 - gameContext.defenderSurroundedPenalty / 100);
         }
-        // Postih za chorál (-20% obrana pro husity během chorálu)
         if (gameContext && gameContext.choralDefensePenalty) {
             defenseValue *= (1 - gameContext.choralDefensePenalty);
         }
-        // Bonus z formace vozové hradby (linie + střílna)
         if (gameContext && gameContext.defenderFormationDefense) {
             defenseValue *= (1 + gameContext.defenderFormationDefense / 100);
         }
-        // lastStand bonus - obrana hradu/města (Sion)
         if (gameContext && gameContext.lastStandBonus) {
             defenseValue *= (1 + gameContext.lastStandBonus);
         }
@@ -393,67 +449,42 @@ class Unit {
         }
         damage = Math.max(5, damage - defenseReduction);
 
-        damage = Math.round(damage);
-        target.health -= damage;
-
-        const result = {
-            damage: damage,
-            killed: target.health <= 0,
-            counterDamage: 0,
-            attackerKilled: false,
-            specialEffects: [],
-            areaDamage: []  // Plošné poškození sousedním jednotkám
-        };
-
-        // === PLOŠNÝ ÚTOK (areaAttack) ===
-        // Houfnice způsobují poškození sousedním nepřátelským jednotkám
-        if (this.special === 'areaAttack' && gameContext) {
-            const areaTargets = this.getAreaDamageTargets(target, gameContext);
-            for (const areaTarget of areaTargets) {
-                // 50% poškození pro sousední jednotky
-                const areaDmg = Math.round(damage * 0.5);
-                areaTarget.unit.health -= areaDmg;
-                result.areaDamage.push({
-                    unit: areaTarget.unit,
-                    damage: areaDmg,
-                    killed: areaTarget.unit.health <= 0
-                });
-            }
-            if (areaTargets.length > 0) {
-                result.specialEffects.push('areaAttack');
-            }
-        }
-
-        // === SPECIÁLNÍ EFEKTY PO ÚTOKU ===
-
-        // Terror - ručničáři způsobují děs
-        if (this.special === 'terror' && !result.killed) {
-            target.isTerrified = true;
-            result.specialEffects.push('terror');
-        }
-
-        // Dismount - halapartníci mohou sesadit jezdce
-        if (this.special === 'dismount' && target.isCavalry() && !result.killed) {
-            if (Math.random() < 0.3) {  // 30% šance
-                target.movement = Math.max(1, target.movement - 2);
-                result.specialEffects.push('dismount');
-            }
-        }
-
-        // Protiútok - pouze pokud obránce přežil a může útočit (melee vs melee)
-        // Jen těžká pěchota (útok ≥ 28) může provést protiútok
-        if (!result.killed && target.range === 1 && this.range === 1 &&
-            target.unitClass === 'infantry' && target.attack >= 28) {
-            result.counterDamage = this.calculateCounterDamage(target, attackerTerrain, gameContext);
-            this.health -= result.counterDamage;
-            result.attackerKilled = this.health <= 0;
-        }
-
-        return result;
+        return Math.round(damage);
     }
 
-    // Výpočet poškození protiútoku (25% síly normálního útoku)
-    calculateCounterDamage(defender, attackerTerrain, gameContext = null) {
+    // === NÁHLED ŠANCÍ PŘED ÚTOKEM ===
+    // Čistý, nemutuje stav. Dosadí meze náhodného faktoru (0.8 a 1.2) do
+    // computeDamage/computeCounterDamage a vrátí rozsahy + kill-flagy.
+    // damage je monotónní v náhodném faktoru, takže min=faktor 0.8, max=1.2.
+    previewAttackOutcome(target, terrain, attackerTerrain, hasMovedThisTurn, gameContext) {
+        const dmgMin = this.computeDamage(target, terrain, attackerTerrain, hasMovedThisTurn, gameContext, 0.8);
+        const dmgMax = this.computeDamage(target, terrain, attackerTerrain, hasMovedThisTurn, gameContext, 1.2);
+
+        const killsCertain = dmgMin >= target.health;   // zabije i nejhorší hod
+        const killsPossible = dmgMax >= target.health;  // zabije nejlepší hod
+
+        // Protiútok nastane jen když obránce přežije a splňuje podmínky
+        // (melee vs melee, těžká pěchota s útokem >= 28) - zrcadlí gate v attackTarget.
+        let counter = null;
+        const counterEligible = target.range === 1 && this.range === 1 &&
+            target.unitClass === 'infantry' && target.attack >= 28;
+        if (counterEligible && !killsCertain) {
+            const cMin = this.computeCounterDamage(target, attackerTerrain, gameContext, 0.8);
+            const cMax = this.computeCounterDamage(target, attackerTerrain, gameContext, 1.2);
+            counter = {
+                min: cMin,
+                max: cMax,
+                killsAttackerCertain: cMin >= this.health,
+                killsAttackerPossible: cMax >= this.health
+            };
+        }
+
+        return { min: dmgMin, max: dmgMax, killsCertain, killsPossible, counter };
+    }
+
+    // === ČISTÝ VÝPOČET PROTIÚTOKU (25% síly normálního útoku) ===
+    // randomFactor parametrizuje náhodu jako u computeDamage.
+    computeCounterDamage(defender, attackerTerrain, gameContext, randomFactor) {
         let counterDamage = defender.attack * 0.25;
 
         // Bonus za terén útočníka (nyní obránce protiútokem)
@@ -461,20 +492,23 @@ class Unit {
         counterDamage *= (1 - terrainBonus);
 
         // Náhodný faktor
-        counterDamage *= 0.8 + Math.random() * 0.4;
+        counterDamage *= randomFactor;
 
         // Odečtení obrany útočníka (this = původní útočník, teď přijímá protiúder)
         let myDefense = this.defense;
-        // WP1: formační obrana (linie vozů / kryt za hradbou) se dřív počítala do
-        // gameContext.attackerFormationDefense, ale calculateCounterDamage
-        // gameContext vůbec nedostávala - vůz v linii dostával plný protiútok
-        // stejně jako kdyby stál osamocený.
+        // WP1: formační obrana (linie vozů / kryt za hradbou) - vůz v linii
+        // dostane snížený protiútok, ne plný jako osamocený.
         if (gameContext && gameContext.attackerFormationDefense) {
             myDefense *= (1 + gameContext.attackerFormationDefense / 100);
         }
         counterDamage = Math.max(3, counterDamage - myDefense * 0.3);
 
         return Math.round(counterDamage);
+    }
+
+    // Reálný protiútok - obálka nad čistým výpočtem s náhodou
+    calculateCounterDamage(defender, attackerTerrain, gameContext = null) {
+        return this.computeCounterDamage(defender, attackerTerrain, gameContext, 0.8 + Math.random() * 0.4);
     }
 
     getTerrainDefenseBonus(terrain) {
