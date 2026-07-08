@@ -353,6 +353,33 @@ class VictoryConditionsSystem {
                 }
                 break;
 
+            case 'breakthrough': {
+                // P5: dopředný průlom - obsaď >=count pozic hluboko v území nepřítele
+                // do kola `deadline`, jinak se nepřítel přeskupí a bitva je ztracena.
+                // Nutí opustit hradbu a postupovat (páruje s P4 mobilní hradbou).
+                const btPositions = primary.positions || [];
+                const btNeed = primary.count || 1;
+                const btDeadline = primary.deadline || this.game.currentScenario.maxTurns;
+                const btHeld = btPositions.filter(pos => {
+                    const u = this.game.getUnitAt(pos[0], pos[1]);
+                    return u && u.faction === playerFaction && u.health > 0;
+                }).length;
+
+                if (btHeld >= btNeed) {
+                    victoryAchieved = true;
+                    this.game.gameOverTurn = this.game.turnNumber;
+                    this.outcome(i18n.t('gameLog.victoryBreakthrough', { count: btHeld }));
+                    break; // -> vyhodnocení vítězství níže (showVictory hráče)
+                }
+                if (this.game.turnNumber > btDeadline) {
+                    this.game.gameOverTurn = btDeadline;
+                    this.outcome(i18n.t('gameLog.defeatBreakthrough', { deadline: btDeadline }));
+                    this.game.showVictory(enemyFaction);
+                    return;
+                }
+                return; // ještě je čas, hra pokračuje
+            }
+
             case 'dual_objective':
                 const objectives = primary.objectives || [];
                 let anyObjectiveAchieved = false;

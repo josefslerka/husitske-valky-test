@@ -62,6 +62,7 @@ const implementedVictoryTypes = [
     'escape',
     'survive_turns',
     'capture_position',
+    'breakthrough',
     'dual_objective',
     'destroy_or_rout',
     'dual_objective_battle',

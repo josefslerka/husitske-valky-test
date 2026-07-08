@@ -1463,9 +1463,13 @@ const Scenarios = {
 
         victoryConditions: {
             primary: {
-                type: 'destroy_percent',
-                percent: 70,
-                description: 'Zničte alespoň 70% královského vojska'
+                // P5: průlom k Německému Brodu - Žižka pronásledoval prchající
+                // královské vojsko a dobyl město. Musíš prorazit k řece, ne jen bránit.
+                type: 'breakthrough',
+                positions: [[7, 11], [8, 11], [9, 11]],
+                count: 1,
+                deadline: 9,
+                description: 'Proraz k Německému Brodu — obsaď městskou pozici u řeky do kola 9, než královské vojsko unikne za hradby'
             },
             secondary: [
                 { type: 'kill_commander', target: 'FILIPPO_SCOLARI', description: 'Porazte Filippo Scolariho' },
@@ -3401,9 +3405,13 @@ const Scenarios = {
 
         victoryConditions: {
             primary: {
-                type: 'destroy_percent',
-                percent: 55,
-                description: 'Zničte 55% koaličního vojska'
+                // P5: Malešov - Žižka spustil vozy z kopce do koaličního šiku.
+                // Přímá synergie s pochodovou hradbou: proraž jejich linii.
+                type: 'breakthrough',
+                positions: [[8, 11], [9, 11], [10, 11]],
+                count: 1,
+                deadline: 10,
+                description: 'Spusť vozovou hradbu z kopce a proraž koaliční šik — obsaď jejich pozici do kola 10'
             },
             secondary: [
                 { type: 'hold_position', positions: [[7,3], [8,3], [9,3], [10,3]], description: 'Udržte velitelskou pozici na svahu' },
