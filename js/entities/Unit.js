@@ -42,6 +42,8 @@ class Unit {
         // WP1: vozová hradba jako sloveso - vozy startují SEPNUTÉ (řetězy).
         // Sepnutý vůz se nehýbe, ale drží linii a kryje pěchotu; rozpojený se hýbe.
         this.formationClosed = this.isWagon();
+        // P4: pochodový šik - sepnutá hradba, která se hýbe ve skupině (poloviční kryt)
+        this.marching = false;
         this.isTerrified = false;  // Efekt děsu z ručnic
         this.chargeBonus = false;  // Bonus z nárazu
         this.isRouting = false;    // Jednotka prchá
@@ -104,7 +106,8 @@ class Unit {
         for (const neighbor of neighbors) {
             const unit = gameContext.getUnitAt(neighbor.col, neighbor.row);
             if (unit && unit.isWagon() && unit.faction === target.faction) {
-                wagonCount++;
+                // P4: pochodující vůz dává poloviční kryt (hradba za pohybu)
+                wagonCount += unit.marching ? 0.5 : 1;
             }
         }
 
@@ -669,8 +672,9 @@ class Unit {
     }
 
     canMove() {
-        // WP1: sepnutý vůz (řetězy) se nemůže hýbat - hráč ho musí nejdřív rozevřít
-        if (this.isWagon() && this.formationClosed) return false;
+        // WP1: sepnutý vůz (řetězy) se nemůže hýbat - hráč ho musí nejdřív rozevřít.
+        // P4: výjimka - pochodová hradba (marching) se hýbe ve skupině (skupinový pochod).
+        if (this.isWagon() && this.formationClosed && !this.marching) return false;
         return !this.hasMoved;
     }
 
@@ -824,6 +828,7 @@ class Unit {
             movement: this.movement,  // Uložit i změněný pohyb (dismount)
             morale: this.morale,
             formationClosed: this.formationClosed,  // WP1: stav vozové hradby
+            marching: this.marching,  // P4: pochodová hradba
             isRouting: this.isRouting,
             rallyAttempts: this.rallyAttempts,
             // Hodnoty, které mohou být za hry přepsány (strana scénáře,
@@ -857,6 +862,10 @@ class Unit {
         // WP1: stav vozové hradby (starší sejvy pole nemají -> default dle typu)
         if (data.formationClosed !== undefined) {
             unit.formationClosed = data.formationClosed;
+        }
+        // P4: pochodová hradba (starší sejvy pole nemají -> default false)
+        if (data.marching !== undefined) {
+            unit.marching = data.marching;
         }
         // Přepsané hodnoty - bez nich by jednotka po načtení spadla
         // zpět na šablonu (a posila s přepsanou frakcí by změnila stranu)

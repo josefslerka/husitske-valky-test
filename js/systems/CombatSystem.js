@@ -407,24 +407,30 @@ class CombatSystem {
         }
 
         // WP1: kryt za sepnutou hradbou - NE-vozová jednotka vedle spřáteleného
-        // ZAVŘENÉHO vozu dostane +5 % obrana ("kryjeme se za vozy").
-        if (unit.isWagon && !unit.isWagon() && this.isBehindClosedWagon(unit)) {
-            bonuses.defense += 5;
-            bonuses.description.push('Kryt za hradbou (+5% obrana)');
+        // ZAVŘENÉHO vozu dostane obranný bonus ("kryjeme se za vozy").
+        // P4: pochodující hradba dává poloviční kryt (váha 0.5).
+        const coverWeight = (unit.isWagon && !unit.isWagon()) ? this.isBehindClosedWagon(unit) : 0;
+        if (coverWeight > 0) {
+            const cover = Math.round(5 * coverWeight);
+            bonuses.defense += cover;
+            bonuses.description.push(`Kryt za hradbou (+${cover}% obrana)`);
         }
 
         return bonuses;
     }
 
-    // WP1: stojí jednotka vedle spřáteleného SEPNUTÉHO vozu? (kryt za hradbou)
+    // WP1: kryt za spřáteleným SEPNUTÝM vozem. P4: vrací VÁHU krytu - 1.0 za pevnou
+    // zaklíněnou hradbu, 0.5 za pochodující (poloviční kryt), 0 když žádný vůz.
     isBehindClosedWagon(unit) {
+        let weight = 0;
         for (const n of this.game.hexGrid.getNeighbors(unit.col, unit.row)) {
             const u = this.game.getUnitAt(n.col, n.row);
             if (u && u.health > 0 && u.faction === unit.faction && u.isWagon() && u.formationClosed) {
-                return true;
+                weight = Math.max(weight, u.marching ? 0.5 : 1);
+                if (weight === 1) break;
             }
         }
-        return false;
+        return weight;
     }
 
     // WP1: stojí jednotka vedle spřáteleného ROZPOJENÉHO vozu? (výpad z hradby)

@@ -50,6 +50,9 @@
     "openFort": "⛓ Rozevřít hradbu",
     "toggleFortLine": "⛓ Celá linie",
     "wagonChainedHint": "Sepnuto řetězy — vůz se nemůže hýbat",
+    "startMarch": "➡ Pochod",
+    "stopMarch": "⛓ Zastavit",
+    "wagonMarchHint": "Pochodová hradba — klikni na sousední hex a celá linie se posune (poloviční kryt)",
     "moraleLabel": "Morálka",
     "wavering": "KOLÍSÁ!"
   },
@@ -306,6 +309,14 @@
     "wagonOpened": "{unit}: řetězy rozpojeny — vůz může vyrazit.",
     "wagonLineClosed": "Sepnuto {count} vozů do hradby.",
     "wagonLineOpened": "Rozpojeno {count} vozů — hradba se otevírá.",
+    "wagonMarchOn": "Vozová hradba přechází do pochodu ({count} vozů).",
+    "wagonMarchOff": "Vozová hradba se zastavuje — pevná zeď ({count} vozů).",
+    "wagonMarched": "Vozová hradba pochoduje ({count} vozů).",
+    "wagonMarchBlocked": "Cesta zablokovaná — hradba nemůže pochodovat tím směrem.",
+    "wagonAlreadyMoved": "Vozy už tento tah jely.",
+    "wagonMustCloseFirst": "Nejdřív sepni hradbu, pak může pochodovat.",
+    "victoryBreakthrough": "Průlom! Obsadil jsi {count} klíčovou pozici — nepřítel je rozťat.",
+    "defeatBreakthrough": "Nestihl jsi prorazit do kola {deadline} — nepřítel se přeskupil a bitva je ztracena.",
     "selectAttackTarget": "Vyber cíl útoku kliknutím na zvýrazněný hex.",
     "overwatchFire": "⚡ Krycí palba! {unit} pálí na postupující jednotku {target}!",
     "gameStart": "Hra zahájena. Husité začínají.",
@@ -1606,7 +1617,7 @@
         }
       ],
       "objectives": {
-        "primary": "Zničte alespoň 70% královského vojska",
+        "primary": "Proraz k Německému Brodu — obsaď městskou pozici u řeky do kola 9, než královské vojsko unikne za hradby",
         "secondary": [
           "Porazte Filippo Scolariho",
           "Zvítězte do 10. kola"
@@ -2406,7 +2417,7 @@
         }
       ],
       "objectives": {
-        "primary": "Zničte 55% koaličního vojska",
+        "primary": "Spusť vozovou hradbu z kopce a proraž koaliční šik — obsaď jejich pozici do kola 10",
         "secondary": [
           "Udržte velitelskou pozici na svahu",
           "Jan Žižka musí přežít",

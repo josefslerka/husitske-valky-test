@@ -137,6 +137,35 @@ class HexGrid {
         return neighbors;
     }
 
+    inBounds(col, row) {
+        return col >= 0 && col < this.cols && row >= 0 && row < this.rows;
+    }
+
+    // P4: soused v daném směru (index 0-5), BEZ ořezu na okraje - vrací i pozici
+    // mimo mapu (volající si ošetří inBounds). Směrový index je konzistentní přes
+    // paritu sloupce, takže posun všech vozů o stejný index = tuhý (rigidní) posun
+    // celé skupiny stejným směrem (potřeba pro skupinový pochod vozové hradby).
+    getNeighborInDirection(col, row, dir) {
+        const isOddCol = col % 2 === 1;
+        const directions = isOddCol ? [
+            [0, -1], [1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0]
+        ] : [
+            [0, -1], [1, -1], [1, 0], [0, 1], [-1, 0], [-1, -1]
+        ];
+        const [dc, dr] = directions[dir];
+        return { col: col + dc, row: row + dr };
+    }
+
+    // P4: index směru (0-5), pokud je (c2,r2) bezprostřední soused (c1,r1) v tom
+    // směru; jinak -1. Slouží k odvození směru pochodu z kliknutého hexu.
+    directionTo(c1, r1, c2, r2) {
+        for (let d = 0; d < 6; d++) {
+            const n = this.getNeighborInDirection(c1, r1, d);
+            if (n.col === c2 && n.row === r2) return d;
+        }
+        return -1;
+    }
+
     getDistance(col1, row1, col2, row2) {
         const cube1 = this.offsetToCube(col1, row1);
         const cube2 = this.offsetToCube(col2, row2);
@@ -715,7 +744,6 @@ class HexGrid {
             if (u.health > 0) at.set(`${u.col},${u.row}`, u);
         }
         this.ctx.save();
-        this.ctx.strokeStyle = 'rgba(90, 74, 31, 0.75)'; // tmavě zlatá (řetěz)
         this.ctx.lineWidth = 3;
         this.ctx.lineCap = 'round';
         for (const u of units) {
@@ -725,6 +753,16 @@ class HexGrid {
                 const nb = at.get(`${n.col},${n.row}`);
                 if (nb && nb.isWagon() && nb.formationClosed && nb.faction === u.faction && u.id < nb.id) {
                     const b = this.hexToPixel(nb.col, nb.row);
+                    // P4: pochodová linie (poloviční kryt) se kreslí čárkovaně a světleji,
+                    // pevná zaklíněná hradba plnou tmavě zlatou čárou.
+                    const marching = u.marching || nb.marching;
+                    if (marching) {
+                        this.ctx.strokeStyle = 'rgba(150, 128, 70, 0.55)';
+                        this.ctx.setLineDash([5, 5]);
+                    } else {
+                        this.ctx.strokeStyle = 'rgba(90, 74, 31, 0.75)';
+                        this.ctx.setLineDash([]);
+                    }
                     this.ctx.beginPath();
                     this.ctx.moveTo(a.x, a.y);
                     this.ctx.lineTo(b.x, b.y);
@@ -732,6 +770,7 @@ class HexGrid {
                 }
             }
         }
+        this.ctx.setLineDash([]);
         this.ctx.restore();
     }
 

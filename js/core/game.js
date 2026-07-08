@@ -1108,6 +1108,13 @@ class Game {
                 if (this.selectedUnit) this.toggleWagonFormationLine(this.selectedUnit);
             }, { signal });
         }
+        // P4: pochod hradby (přepnout linii mezi pevnou zdí a pochodovým šikem)
+        const formationMarchBtn = document.getElementById('btn-formation-march');
+        if (formationMarchBtn) {
+            formationMarchBtn.addEventListener('click', () => {
+                if (this.selectedUnit) this.toggleWagonMarch(this.selectedUnit);
+            }, { signal });
+        }
 
         // Tlačítko undo (vrátit pohyb)
         document.getElementById('btn-undo').addEventListener('click', () => this.undoLastMove(), { signal });
@@ -1394,6 +1401,17 @@ class Game {
                 }
             }
 
+            // P4: skupinový pochod - klik na sousední hex se sepnutou POCHODOVOU
+            // hradbou posune celou linii tím směrem (místo pohybu jediného vozu).
+            if (!clickedUnit && this.selectedUnit.isWagon() && this.selectedUnit.marching &&
+                this.selectedUnit.formationClosed && !this.selectedUnit.hasMoved) {
+                const dir = this.hexGrid.directionTo(this.selectedUnit.col, this.selectedUnit.row, hex.col, hex.row);
+                if (dir !== -1) {
+                    this.marchWagonLine(this.selectedUnit, dir);
+                    return;
+                }
+            }
+
             // Klik na prázdný hex v dosahu pohybu
             if (!clickedUnit && this.canMoveTo(this.selectedUnit, hex.col, hex.row)) {
                 this.moveUnit(this.selectedUnit, hex.col, hex.row);
@@ -1528,6 +1546,12 @@ class Game {
         // (řešilo se per-call-site u AI/hráče, ale sepnutý vůz nemá pohybovat
         // ani při pozdějším přidaném volání, které na to zapomene)
         if (!unit.canMove()) return [];
+
+        // P4: pochodová hradba se hýbe jako SKUPINA - platné cíle jsou směry, kam
+        // se posune celá linie (ne kam dojde jeden vůz). Vrať skupinové cíle.
+        if (unit.isWagon() && unit.marching && unit.formationClosed) {
+            return this.getWagonMarchTargets(unit);
+        }
 
         const range = unit.movement;
 
@@ -1897,7 +1921,7 @@ class Game {
             // Po příchodu posil - okamžitá kontrola podmínky přežití
             if (this.currentScenario && this.currentScenario.victoryConditions) {
                 const primaryType = this.currentScenario.victoryConditions.primary?.type;
-                if (primaryType === 'survive' || primaryType === 'survive_turns') {
+                if (primaryType === 'survive' || primaryType === 'survive_turns' || primaryType === 'breakthrough') {
                     this.victoryConditionsSystem.checkScenarioVictoryConditions();
                     if (this.gameState !== 'playing') {
                         this.updateUI();
@@ -1967,7 +1991,7 @@ class Game {
         if (this.currentFaction === 'crusaders' && this.currentScenario && this.currentScenario.victoryConditions) {
             const primaryType = this.currentScenario.victoryConditions.primary?.type;
             // survive, hold_position, survive_turns mají vnitřní stráž na kola
-            if (primaryType === 'survive' || primaryType === 'hold_position' || primaryType === 'survive_turns') {
+            if (primaryType === 'survive' || primaryType === 'hold_position' || primaryType === 'survive_turns' || primaryType === 'breakthrough') {
                 this.victoryConditionsSystem.checkScenarioVictoryConditions();
                 if (this.gameState !== 'playing') return;
             }
@@ -2431,9 +2455,13 @@ class Game {
         if (unit.isDefending) {
             statusHtml += '<span style="color: #4488ff; font-size: 0.85rem;">🛡️ Obranný postoj (-30% poškození)</span><br>';
         }
-        // WP1: sepnutý vůz - vysvětli, proč se nemůže hýbat
+        // WP1/P4: stav vozové hradby - pevná zeď (nehýbe se) vs pochod (poloviční kryt)
         if (unit.isWagon() && unit.formationClosed) {
-            statusHtml += `<span style="color: #c9a227; font-size: 0.85rem;">⛓ ${i18n.t('game.wagonChainedHint')}</span><br>`;
+            if (unit.marching) {
+                statusHtml += `<span style="color: #d0b060; font-size: 0.85rem;">➡ ${i18n.t('game.wagonMarchHint')}</span><br>`;
+            } else {
+                statusHtml += `<span style="color: #c9a227; font-size: 0.85rem;">⛓ ${i18n.t('game.wagonChainedHint')}</span><br>`;
+            }
         }
         if (unit.isRouting) {
             statusHtml += '<span style="color: #ff4444; font-size: 0.85rem;">🏃 PRCHÁ!</span><br>';
@@ -2499,6 +2527,7 @@ class Game {
             // WP1: tlačítka hradby - jen pro hráčův vůz, který ještě nejednal
             const formationBtn = document.getElementById('btn-formation');
             const formationLineBtn = document.getElementById('btn-formation-line');
+            const formationMarchBtn = document.getElementById('btn-formation-march');
             if (formationBtn && formationLineBtn) {
                 if (unit.isWagon() && !unit.hasMoved) {
                     formationBtn.textContent = i18n.t(unit.formationClosed ? 'game.openFort' : 'game.closeFort');
@@ -2508,6 +2537,16 @@ class Game {
                 } else {
                     formationBtn.classList.add('hidden');
                     formationLineBtn.classList.add('hidden');
+                }
+            }
+            // P4: pochod hradby - dostupný pro sepnutý vůz (přepnutí zdarma; ukážeme
+            // i po pohybu, aby šlo zastavit a získat příště plný kryt)
+            if (formationMarchBtn) {
+                if (unit.isWagon() && unit.formationClosed) {
+                    formationMarchBtn.textContent = i18n.t(unit.marching ? 'game.stopMarch' : 'game.startMarch');
+                    formationMarchBtn.classList.remove('hidden');
+                } else {
+                    formationMarchBtn.classList.add('hidden');
                 }
             }
 
@@ -3289,7 +3328,8 @@ class Game {
             return {
                 inLine: true,
                 wagonCount: adjacentWagons + 1,
-                defenseBonus: 10 // Extra +10% obrana za formaci
+                // P4: pochodová linie drží jen POLOVIČNÍ formační kryt (hradba za pohybu)
+                defenseBonus: unit.marching ? 5 : 10
             };
         }
 
@@ -3338,6 +3378,144 @@ class Game {
         this.updateUnitPanel(startUnit);
         this.render();
         return toggled > 0;
+    }
+
+    // P4: souvislá řada spřátelených vozů (BFS přes hex-sousednost).
+    // closedOnly=true zahrne jen SEPNUTÉ vozy (pro pochodovou linii a hradbu).
+    connectedWagonLine(startUnit, closedOnly = false) {
+        const line = [];
+        const visited = new Set([startUnit.id]);
+        const queue = [startUnit];
+        while (queue.length) {
+            const w = queue.shift();
+            if (!closedOnly || w.formationClosed) line.push(w);
+            for (const n of this.hexGrid.getNeighbors(w.col, w.row)) {
+                const u = this.getUnitAt(n.col, n.row);
+                if (u && u.health > 0 && u.faction === startUnit.faction &&
+                    u.isWagon() && !visited.has(u.id) &&
+                    (!closedOnly || u.formationClosed)) {
+                    visited.add(u.id);
+                    queue.push(u);
+                }
+            }
+        }
+        return line;
+    }
+
+    // P4: přepne celou souvislou řadu SEPNUTÝCH vozů mezi pevnou hradbou a
+    // pochodovým šikem. Zdarma (neutratí tah) - je to změna postoje; cenu platí
+    // až samotný pochod. Rozpojený vůz nelze rozpochodovat - nejdřív sepni hradbu.
+    toggleWagonMarch(startUnit) {
+        if (!startUnit || !startUnit.isWagon() || startUnit.faction !== this.currentFaction) return false;
+        if (!startUnit.formationClosed) {
+            this.addLog(i18n.t('gameLog.wagonMustCloseFirst'), 'turn');
+            Sound.playInvalid();
+            return false;
+        }
+        const targetMarching = !startUnit.marching;
+        const line = this.connectedWagonLine(startUnit, true);
+        let changed = 0;
+        for (const w of line) {
+            if (w.marching !== targetMarching) {
+                w.marching = targetMarching;
+                changed++;
+            }
+        }
+        if (changed > 0) {
+            this.addLog(i18n.t(targetMarching ? 'gameLog.wagonMarchOn' : 'gameLog.wagonMarchOff', { count: changed }), 'turn');
+        }
+        this.updateUnitPanel(startUnit);
+        // pochodová hradba smí jet - přepočítej zvýraznění pohybu
+        if (this.selectedUnit === startUnit) {
+            this.hexGrid.setHighlighted(startUnit.canMove() ? this.getValidMoves(startUnit) : []);
+        }
+        this.render();
+        return changed > 0;
+    }
+
+    _marchBlocked() {
+        this.addLog(i18n.t('gameLog.wagonMarchBlocked'), 'turn');
+        Sound.playInvalid();
+        return false;
+    }
+
+    // P4: hexy, kam může pochodová linie (obsahující unit) šlápnout - jeden hex
+    // v každém ze 6 směrů, ale JEN pokud tam projdou VŠECHNY vozy linie (tuhý posun).
+    getWagonMarchTargets(unit) {
+        const line = this.connectedWagonLine(unit, true).filter(w => w.marching);
+        if (line.length === 0 || line.some(w => w.hasMoved)) return [];
+        const lineIds = new Set(line.map(w => w.id));
+        const frozen = this.currentScenario?.specialMechanics?.frozenRiver;
+        const result = [];
+        for (let dir = 0; dir < 6; dir++) {
+            let ok = true;
+            for (const w of line) {
+                const t = this.hexGrid.getNeighborInDirection(w.col, w.row, dir);
+                if (!this.hexGrid.inBounds(t.col, t.row)) { ok = false; break; }
+                if (this.hexGrid.getTerrain(t.col, t.row) === 'water' && !frozen) { ok = false; break; }
+                const occ = this.getUnitAt(t.col, t.row);
+                if (occ && !lineIds.has(occ.id)) { ok = false; break; }
+            }
+            if (ok) {
+                const t = this.hexGrid.getNeighborInDirection(unit.col, unit.row, dir);
+                result.push({ col: t.col, row: t.row });
+            }
+        }
+        return result;
+    }
+
+    // P4: skupinový pochod - posune celou souvislou pochodovou linii o 1 hex ve
+    // směru dir (index 0-5) jako TUHÝ celek. Buď se pohnou všechny vozy, nebo
+    // žádný (když je kterýkoli cíl mimo mapu / voda / obsazený cizí jednotkou).
+    marchWagonLine(startUnit, dir) {
+        if (!startUnit || !startUnit.isWagon() || !startUnit.marching) return false;
+        if (startUnit.faction !== this.currentFaction) return false;
+
+        const line = this.connectedWagonLine(startUnit, true).filter(w => w.marching);
+        if (line.some(w => w.hasMoved)) {
+            this.addLog(i18n.t('gameLog.wagonAlreadyMoved'), 'turn');
+            Sound.playInvalid();
+            return false;
+        }
+
+        const lineIds = new Set(line.map(w => w.id));
+        const frozen = this.currentScenario?.specialMechanics?.frozenRiver;
+        const targets = [];
+        for (const w of line) {
+            const t = this.hexGrid.getNeighborInDirection(w.col, w.row, dir);
+            if (!this.hexGrid.inBounds(t.col, t.row)) return this._marchBlocked();
+            if (this.hexGrid.getTerrain(t.col, t.row) === 'water' && !frozen) return this._marchBlocked();
+            const occ = this.getUnitAt(t.col, t.row);
+            if (occ && !lineIds.has(occ.id)) return this._marchBlocked();
+            targets.push({ w, col: t.col, row: t.row });
+        }
+
+        // Skupinový pochod je nevratný; undo neřešíme. Overwatch a zamrzlá řeka se
+        // u skupinového pochodu záměrně neaplikují - cenou pochodu je poloviční kryt.
+        this.lastMove = null;
+        Sound.playWagonFort();
+        for (const { w, col, row } of targets) {
+            w.col = col;
+            w.row = row;
+            w.hasMoved = true;
+        }
+        this.addLog(i18n.t('gameLog.wagonMarched', { count: line.length }), 'move');
+
+        if (this.fogOfWar) this.fogOfWarSystem.updateVisibility();
+        // escape zóny - pochodová hradba může odvézt jednotky do bezpečí
+        for (const { w } of targets) {
+            if (w.health > 0) this.checkEscapeZone(w);
+        }
+
+        // ponech výběr, přepočítej zvýraznění (linie už tento tah jela -> prázdné)
+        if (this.selectedUnit && lineIds.has(this.selectedUnit.id)) {
+            this.hexGrid.setSelected(this.selectedUnit.col, this.selectedUnit.row);
+            this.hexGrid.setHighlighted([]);
+            this.updateUnitPanel(this.selectedUnit);
+        }
+        this.render();
+        this.victoryConditionsSystem.checkVictory();
+        return true;
     }
 
     // Kontrola, zda je střelec za vozovou hradbou (střílna)

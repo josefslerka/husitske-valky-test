@@ -50,6 +50,9 @@
     "openFort": "⛓ Open the wall",
     "toggleFortLine": "⛓ Whole line",
     "wagonChainedHint": "Chained — the wagon cannot move",
+    "startMarch": "➡ March",
+    "stopMarch": "⛓ Halt",
+    "wagonMarchHint": "Marching fort — click an adjacent hex and the whole line advances (half cover)",
     "moraleLabel": "Morale",
     "wavering": "WAVERING!"
   },
@@ -1349,7 +1352,7 @@
         }
       ],
       "objectives": {
-        "primary": "Destroy at least 70% of royal army",
+        "primary": "Break through to Německý Brod — seize the town position by the river by turn 9, before the royal army escapes behind the walls",
         "secondary": [
           "Defeat Filippo Scolari",
           "Victory by turn 10"
@@ -2149,7 +2152,7 @@
         }
       ],
       "objectives": {
-        "primary": "Destroy 55% of coalition army",
+        "primary": "Roll the wagon fort down the hill and break the coalition line — seize their position by turn 10",
         "secondary": [
           "Hold command position on slope",
           "Jan Žižka must survive",
@@ -2936,6 +2939,14 @@
     "wagonOpened": "{unit}: chains released — the wagon can sally.",
     "wagonLineClosed": "{count} wagons chained into a fort.",
     "wagonLineOpened": "{count} wagons unchained — the fort opens.",
+    "wagonMarchOn": "The wagon fort shifts into marching order ({count} wagons).",
+    "wagonMarchOff": "The wagon fort halts — solid wall ({count} wagons).",
+    "wagonMarched": "The wagon fort advances ({count} wagons).",
+    "wagonMarchBlocked": "Path blocked — the fort cannot march that way.",
+    "wagonAlreadyMoved": "The wagons have already moved this turn.",
+    "wagonMustCloseFirst": "Chain the wagons first, then they can march.",
+    "victoryBreakthrough": "Breakthrough! You seized {count} key position — the enemy is split.",
+    "defeatBreakthrough": "You failed to break through by turn {deadline} — the enemy regrouped and the battle is lost.",
     "selectAttackTarget": "Click a highlighted hex to choose an attack target.",
     "overwatchFire": "⚡ Covering fire! {unit} shoots at the advancing {target}!",
     "gameStart": "Game started. Hussites begin.",
