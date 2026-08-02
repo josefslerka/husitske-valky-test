@@ -3,6 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+      // Husitské intro: přehraj jednou za session, pak rovnou do menu.
+      // Obejít lze vždy přes index.html?nointro
+      (function () {
+        try {
+          if (!sessionStorage.getItem('introSeen') && !/nointro/.test(location.search)) {
+            location.replace('intro.html');
+          }
+        } catch (e) {}
+      })();
+    </script>
     <title>Husitské Války - Tahová Strategie</title>
     <meta name="description" content="Historická tahová strategie o husitských válkách. Veďte husitská vojska Jana Žižky v bitvách 15. století. | Historical turn-based strategy about Hussite Wars. Lead Jan Žižka's armies in 15th century battles.">
     <meta name="keywords" content="husité, husitské války, Jan Žižka, tahová strategie, historická hra, středověk, Čechy, strategy game, turn-based, medieval, Bohemia">
