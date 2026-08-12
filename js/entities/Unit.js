@@ -804,12 +804,14 @@ class Unit {
 
     // Získat barvu morálky pro UI
     getMoraleColor() {
-        if (this.isRouting) return '#ff4444';
-        if (this.morale >= 80) return '#44ff44';
-        if (this.morale >= 60) return '#88cc44';
-        if (this.morale >= 40) return '#cccc44';
-        if (this.morale >= 20) return '#cc8844';
-        return '#ff4444';
+        // Ztmavené odstíny pro čitelnost na pergamenovém pozadí ("polní rukopis").
+        // Neonové barvy z původního tmavého tématu měly na krému nulový kontrast.
+        if (this.isRouting) return '#c02a2a';
+        if (this.morale >= 80) return '#2f7d31';  // vynikající – lesní zeleň
+        if (this.morale >= 60) return '#5c7a1c';  // dobrá – olivová
+        if (this.morale >= 40) return '#987316';  // kolísá – tmavá okrová
+        if (this.morale >= 20) return '#bd5a18';  // nízká – pálená oranžová
+        return '#c02a2a';                          // zlomená – tmavě rudá
     }
 
     // Serializace pro ukládání

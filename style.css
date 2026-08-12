@@ -6681,3 +6681,30 @@ body {
     min-width: 42px;
     padding: 10px 5px;
 }
+
+/* === Čitelnost vítězné/prohrané obrazovky na světlém pergamenu ("polní rukopis") ===
+   Modal má krémové pozadí, ale řada textů zůstala světlá z původního tmavého
+   tématu (debriefing byl světlý na světlém = neviditelný). Ztmavujeme je. */
+#gameover-modal #gameover-message {
+    color: var(--field-ink, #20150d);
+    opacity: 1;
+}
+#gameover-modal .gameover-reason {
+    color: #6e4e0c;
+    background: rgba(201, 162, 39, 0.14);
+    border-left-color: #8a6a12;
+}
+#gameover-modal .rating-label {
+    color: #6b5836;
+}
+#gameover-modal .gameover-chronicle .chronicle-line,
+#gameover-modal .gameover-chronicle #chronicle-yours {
+    color: #3a2c16;
+}
+#gameover-modal .gameover-chronicle .chronicle-says {
+    color: #7a5410;
+}
+#gameover-modal .gameover-chronicle .chronicle-note {
+    color: #5a4a28;
+    opacity: 1;
+}

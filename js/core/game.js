@@ -1232,6 +1232,16 @@ class Game {
             // Velitel - speciální zobrazení
             if (unit.special === 'commander' || unit.unitClass === 'commander') {
                 html += `<div class="tooltip-special" style="color: #ffd700;">👑 Velitel</div>`;
+            } else {
+                // Aura velitele - jednotka v dosahu spřáteleného velitele dostává bonus
+                const aura = this.getCommanderBonuses(unit);
+                if (aura && (aura.attack || aura.defense || aura.morale)) {
+                    const parts = [];
+                    if (aura.attack) parts.push(`+${aura.attack} útok`);
+                    if (aura.defense) parts.push(`+${aura.defense} obrana`);
+                    if (aura.morale) parts.push(`+${aura.morale} morálka`);
+                    html += `<div class="tooltip-bonus">👑 V auře: ${aura.commander} (${parts.join(', ')})</div>`;
+                }
             }
 
             if (unit.isDefending) {
@@ -1329,10 +1339,29 @@ class Game {
         );
         const locationName = mapLabel ? mapLabel.text : null;
 
+        // Terénní modifikátory KONKRÉTNÍ jednotky (skutečná čísla, co počítá souboj),
+        // ne generická. U střelců z kopce se tím ukáže i útočný bonus z výšiny.
+        let terrainLines;
+        if (unit) {
+            const tDef = Math.round(unit.getTerrainDefenseBonus(terrain) * 100);
+            const tAtk = Math.round(unit.getTerrainAttackBonus(terrain) * 100);
+            const line = (val, label, extra = '') => !val ? '' :
+                (val > 0
+                    ? `<div class="tooltip-bonus">+${val}% ${label}${extra}</div>`
+                    : `<div class="tooltip-bonus" style="color: #b02323">${val}% ${label}${extra}</div>`);
+            const highGround = (terrain === 'hills' || terrain === 'slope') && tAtk > 0 && unit.isRanged();
+            const moveNote = { road: 'Rychlý pohyb', road2: 'Rychlý pohyb', mud: 'Zpomaluje', swamp: 'Zpomaluje', slope: 'Zpomaluje',
+                water: hasFrozenRiver ? '⚠️ Tenký led – těžké jednotky riskují propadnutí' : 'Neprůchodné' }[terrain];
+            terrainLines = line(tDef, 'obrana') + line(tAtk, 'útok', highGround ? ' (z výšiny)' : '')
+                + (moveNote ? `<div class="tooltip-bonus" style="color: #6b5c38">${moveNote}</div>` : '');
+        } else {
+            terrainLines = terrainBonuses[terrain] ? `<div class="tooltip-bonus">${terrainBonuses[terrain]}</div>` : '';
+        }
+
         html += `
             <div class="tooltip-terrain">
                 <strong>${locationName || terrainNames[terrain] || terrain}</strong>
-                ${terrainBonuses[terrain] ? `<div class="tooltip-bonus">${terrainBonuses[terrain]}</div>` : ''}
+                ${terrainLines}
             </div>
         `;
 
@@ -2404,7 +2433,7 @@ class Game {
                         Bonusy: ${abilitiesText.join(', ')}
                     </div>
                     ${abilities.fearRange ? `<div style="color: #ff6b6b; font-size: 0.8rem; margin-top: 3px;">Strach: ${abilities.fearPenalty} morálky (${abilities.fearRange} polí)</div>` : ''}
-                    ${abilities.rallyBonus ? `<div style="color: #66ff66; font-size: 0.8rem; margin-top: 3px;">Rally bonus: +${abilities.rallyBonus}%</div>` : ''}
+                    ${abilities.rallyBonus ? `<div style="color: #2f7d31; font-size: 0.8rem; margin-top: 3px;">Rally bonus: +${abilities.rallyBonus}%</div>` : ''}
                 </div>
             `;
         }
