@@ -373,6 +373,36 @@ const UnitTypes = {
     },
 
     // Zvěd - průzkumná jednotka
+    POUTNICI: {
+        id: 'poutnici',
+        name: 'Poutníci',
+        faction: 'hussites',
+        symbol: '🚶',
+        maxHealth: 35,
+        attack: 8,       // chabě ozbrojený houf (hole, cepy) - skoro civilisté
+        defense: 10,
+        range: 1,
+        movement: 2,
+        vision: 3,
+        cost: 0,
+        description: 'Bezbranní poutníci — muži, ženy i děti s holemi. Chraň je: jsou to civilisté, ne vojáci.',
+        special: null,
+        unitClass: 'infantry',
+        abilities: {},
+        lore: {
+            description: 'Jihočeští poutníci z Plzeňska, Klatovska, Domažlicka a Sušicka, táhnoucí na hory k přijímání pod obojí. Kněz Koranda je vyzval „ne s holemi, ale se zbraní", přesto zůstali houfem chudiny — mužů, žen i dětí — jen chabě ozbrojeným.',
+            equipment: 'Poutní hole, cepy, kosy, občas nůž. Žádná zbroj.',
+            origin: 'Sedláci, řemeslníci, ženy a děti z jihozápadních Čech.',
+            historicalNote: '„Protož nechoďte se zbraní, ale s holemi" — a přesto je Petr ze Šternberka u brodu přepadl.'
+        },
+        tactics: {
+            terrain: { forest: 5, hill: 10, water: 0, road: 0, village: 5 },
+            weaknesses: ['cavalry', 'any_combat'],
+            zoc: false,
+            canRetreat: true
+        }
+    },
+
     ZVED: {
         id: 'zved',
         name: 'Zvěd',

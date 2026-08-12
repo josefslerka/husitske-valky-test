@@ -888,7 +888,7 @@
       "description": "First major clash of the Hussite Wars. South Bohemian pilgrims must survive the attack until reinforcements arrive.",
       "historicalSignificance": "Demonstration of necessity for organized defense, precursor to wagon fort.",
       "briefing": {
-        "hussites": "Your small group of South Bohemian pilgrims has been surprised at Živohošť. Retreat to Červenka hill and build improvised defenses. Reinforcements from Nový Knín are on their way!",
+        "hussites": "Petr ze Šternberka ambushed your band of South Bohemian pilgrims at the ford. Pull the defenceless — there are women and children among them — back to Červenka hill and hold until reinforcements from Nový Knín arrive!",
         "crusaders": "Catch up with the Hussite pilgrims before they get help. You have the advantage - use it!"
       },
       "reinforcements": {
@@ -902,7 +902,7 @@
           "text": "TIP: Your units are close to hill. Move them to green fields for defensive bonus."
         },
         {
-          "text": "TIP: Wagon provides protection to surrounding units. Shooters from hill get attack bonus."
+          "text": "TIP: Pull the defenceless pilgrims onto the hill behind your fighters. Shooters on high ground fire farther and harder (elevation bonus)."
         },
         {
           "message": "Břeněk Švihovský brings reinforcements! Hold positions!"
@@ -912,15 +912,15 @@
         }
       ],
       "objectives": {
-        "primary": "Survive until reinforcements arrive (turn 5) with at least 40% units",
+        "primary": "Pull the pilgrims onto Červenka hill and hold until the men of Knín arrive (turn 5). Protect the defenceless!",
         "secondary": [
           "Hold Červenka hill",
           "Capture or kill Petr ze Šternberka"
         ]
       },
       "debriefing": {
-        "victory": "Reinforcements from Nový Knín arrived in time! Petr ze Šternberka retreated when he saw determined defense on the hill. Improvised wagon as seed of future wagon fort showed the way to new method of warfare.",
-        "defeat": "South Bohemian pilgrims were scattered. Petr ze Šternberka celebrates victory. Hussite movement suffered heavy blow right at the beginning."
+        "victory": "Reinforcements from Nový Knín arrived in time! Petr ze Šternberka withdrew toward Kutná Hora when he saw the determined defence on Červenka hill. The pilgrims — men, women and children — survived. From a rabble of the poor an army is born; soon at Nekmíř they will first chain the wagons into a fort.",
+        "defeat": "The pilgrims were scattered and slaughtered at the ford. Petr ze Šternberka celebrates. The Hussite movement suffered a heavy blow at its very start."
       },
       "phases": [
         {
@@ -935,7 +935,7 @@
           "name": "Defense on the Hill",
           "description": "Hussites build improvised defenses.",
           "events": [
-            {"text": "TIP: Wagon provides protection to surrounding units. Shooters from hill get attack bonus."}
+            {"text": "TIP: Pull the defenceless pilgrims onto the hill behind your fighters. Shooters on high ground fire farther and harder (elevation bonus)."}
           ]
         },
         {

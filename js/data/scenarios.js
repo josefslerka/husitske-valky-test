@@ -14,7 +14,7 @@ const Scenarios = {
         historicalSignificance: 'Ukázka nutnosti organizované obrany, předchůdce vozové hradby.',
 
         briefing: {
-            hussites: 'Vaše malá skupina jihočeských poutníků byla překvapena u Živohoště. Ustupte na kopec Červenka a vybudujte improvizovanou obranu. Posily z Nového Knína jsou na cestě!',
+            hussites: 'Petr ze Šternberka přepadl u brodu váš houf jihočeských poutníků. Stáhněte bezbranné — jsou mezi nimi ženy a děti — na kopec Červenka a udržte se, dokud nedorazí posily z Nového Knína!',
             crusaders: 'Dohoňte husitské poutníky dříve, než se jim dostane pomoci. Máte převahu - využijte ji!'
         },
 
@@ -52,14 +52,16 @@ const Scenarios = {
                 commander: 'Břeněk Švihovský z Rýzmburka',
                 units: [
                     // Kněz Koranda - kazatel na vrcholu kopce, drží morálku poutníků
-                    { type: 'VACLAV_KORANDA', col: 13, row: 6 },
-                    // Jihočeští poutníci - blíže kopci, mají šanci ustoupit
-                    { type: 'SUDLICNICI', col: 10, row: 5 },
+                    { type: 'VACLAV_KORANDA', col: 14, row: 6 },
+                    // Ozbrojení bojovníci - kryjí ústup poutníků na kopec
+                    { type: 'CEPNICI', col: 10, row: 6 },
                     { type: 'SUDLICNICI', col: 10, row: 7 },
-                    { type: 'CEPNICI', col: 11, row: 6 },
-                    { type: 'KUSINICI_HUSITI', col: 12, row: 6 },
-                    // Lehká jízda - zdržuje nepřítele
-                    { type: 'JIZDA_HUSITI', col: 8, row: 7 }
+                    { type: 'KUSINICI_HUSITI', col: 13, row: 5 },  // na kopci - střílí z výšiny
+                    { type: 'JIZDA_HUSITI', col: 8, row: 7 },       // zdržuje nepřítele vpředu
+                    // Bezbranní poutníci (ženy, děti, chudina) - stáhni je na kopec Červenka!
+                    { type: 'POUTNICI', col: 11, row: 5 },
+                    { type: 'POUTNICI', col: 11, row: 7 },
+                    { type: 'POUTNICI', col: 12, row: 6 }
                 ],
                 reinforcements: {
                     turn: 5,
@@ -81,20 +83,18 @@ const Scenarios = {
             crusaders: {
                 commander: 'Petr Konopišťský ze Šternberka',
                 units: [
-                    // VELITEL - Petr ze Šternberka
+                    // VELITEL - Petr ze Šternberka (historicky ~1300 jezdců)
                     { type: 'PETR_STERNBERK', col: 4, row: 7 },
                     // Těžká jízda - hlavní útočná síla
                     { type: 'TEZKY_RYTIR', col: 3, row: 6 },
                     { type: 'TEZKY_RYTIR', col: 3, row: 7 },
                     { type: 'TEZKY_RYTIR', col: 3, row: 8 },
-                    { type: 'TEZKY_RYTIR', col: 4, row: 6 },
                     // Lehká jízda
                     { type: 'LEHKA_JIZDA', col: 5, row: 6 },
                     { type: 'LEHKA_JIZDA', col: 5, row: 8 },
                     // Pěchota
                     { type: 'KOPINICI', col: 2, row: 6 },
                     { type: 'KOPINICI', col: 2, row: 7 },
-                    { type: 'KOPINICI', col: 2, row: 8 },
                     { type: 'HALAPARTNICI', col: 1, row: 7 }
                 ]
             }
@@ -117,7 +117,7 @@ const Scenarios = {
                 turnRange: [3, 4],
                 description: 'Husité budují improvizovanou obranu.',
                 events: [
-                    { trigger: 'turn_3', type: 'tutorial', text: 'TIP: Vůz poskytuje ochranu okolním jednotkám. Střelci z kopce mají bonus k útoku.' }
+                    { trigger: 'turn_3', type: 'tutorial', text: 'TIP: Stáhni bezbranné poutníky na kopec za bojovníky. Střelci z kopce střílejí dál a silněji (bonus z výšiny).' }
                 ]
             },
             {
@@ -145,7 +145,7 @@ const Scenarios = {
                 type: 'survive',
                 turns: 5,
                 minUnitsPercent: 40,
-                description: 'Přežijte do příchodu posil (kolo 5) s alespoň 40% jednotek'
+                description: 'Stáhni poutníky na kopec Červenka a vydrž do příchodu Knínských (kolo 5). Ochraň bezbranné!'
             },
             secondary: [
                 { type: 'hold_position', positions: [[13,6], [14,6], [15,6]], description: 'Udržte kopec Červenka' },
@@ -154,8 +154,8 @@ const Scenarios = {
         },
 
         debriefing: {
-            victory: 'Posily z Nového Knína dorazily včas! Petr ze Šternberka ustoupil, když viděl odhodlanou obranu na kopci. Improvizovaný vůz jako zárodek budoucí vozové hradby ukázal cestu k novému způsobu boje.',
-            defeat: 'Jihočeští poutníci byli rozprášeni. Petr ze Šternberka slaví vítězství. Husitské hnutí utrpělo těžkou ránu hned v počátcích.'
+            victory: 'Posily z Nového Knína dorazily včas! Petr ze Šternberka se stáhl ke Kutné Hoře, když viděl odhodlanou obranu na kopci Červenka. Poutníci — muži, ženy i děti — přežili. Z houfu chudiny se rodí vojsko; brzy u Nekmíře poprvé sevřou vozy do hradby.',
+            defeat: 'Poutníci byli u brodu rozprášeni a pobiti. Petr ze Šternberka slaví. Husitské hnutí utrpělo těžkou ránu hned v počátcích.'
         },
 
         maxTurns: 10,

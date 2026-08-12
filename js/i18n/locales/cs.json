@@ -1153,7 +1153,7 @@
       "description": "První větší střetnutí husitských válek. Jihočeští poutníci musí přežít útok do příchodu posil.",
       "historicalSignificance": "Ukázka nutnosti organizované obrany, předchůdce vozové hradby.",
       "briefing": {
-        "hussites": "Vaše malá skupina jihočeských poutníků byla překvapena u Živohoště. Ustupte na kopec Červenka a vybudujte improvizovanou obranu. Posily z Nového Knína jsou na cestě!",
+        "hussites": "Petr ze Šternberka přepadl u brodu váš houf jihočeských poutníků. Stáhněte bezbranné — jsou mezi nimi ženy a děti — na kopec Červenka a udržte se, dokud nedorazí posily z Nového Knína!",
         "crusaders": "Dohoňte husitské poutníky dříve, než se jim dostane pomoci. Máte převahu - využijte ji!"
       },
       "reinforcements": {
@@ -1167,7 +1167,7 @@
           "text": "TIP: Vaše jednotky jsou blízko kopce. Přesuňte je na zelená pole pro obranný bonus."
         },
         {
-          "text": "TIP: Vůz poskytuje ochranu okolním jednotkám. Střelci z kopce mají bonus k útoku."
+          "text": "TIP: Stáhni bezbranné poutníky na kopec za bojovníky. Střelci z kopce střílejí dál a silněji (bonus z výšiny)."
         },
         {
           "message": "Břeněk Švihovský přivádí posily! Držte pozice!"
@@ -1177,15 +1177,15 @@
         }
       ],
       "objectives": {
-        "primary": "Přežijte do příchodu posil (kolo 5) s alespoň 40% jednotek",
+        "primary": "Stáhni poutníky na kopec Červenka a vydrž do příchodu Knínských (kolo 5). Ochraň bezbranné!",
         "secondary": [
           "Udržte kopec Červenka",
           "Zajměte nebo zabijte Petra ze Šternberka"
         ]
       },
       "debriefing": {
-        "victory": "Posily z Nového Knína dorazily včas! Petr ze Šternberka ustoupil, když viděl odhodlanou obranu na kopci. Improvizovaný vůz jako zárodek budoucí vozové hradby ukázal cestu k novému způsobu boje.",
-        "defeat": "Jihočeští poutníci byli rozprášeni. Petr ze Šternberka slaví vítězství. Husitské hnutí utrpělo těžkou ránu hned v počátcích."
+        "victory": "Posily z Nového Knína dorazily včas! Petr ze Šternberka se stáhl ke Kutné Hoře, když viděl odhodlanou obranu na kopci Červenka. Poutníci — muži, ženy i děti — přežili. Z houfu chudiny se rodí vojsko; brzy u Nekmíře poprvé sevřou vozy do hradby.",
+        "defeat": "Poutníci byli u brodu rozprášeni a pobiti. Petr ze Šternberka slaví. Husitské hnutí utrpělo těžkou ránu hned v počátcích."
       },
       "phases": [
         {
@@ -1200,7 +1200,7 @@
           "name": "Obrana na kopci",
           "description": "Husité budují improvizovanou obranu.",
           "events": [
-            {"text": "TIP: Vůz poskytuje ochranu okolním jednotkám. Střelci z kopce mají bonus k útoku."}
+            {"text": "TIP: Stáhni bezbranné poutníky na kopec za bojovníky. Střelci z kopce střílejí dál a silněji (bonus z výšiny)."}
           ]
         },
         {

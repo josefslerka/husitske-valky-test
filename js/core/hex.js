@@ -1421,6 +1421,24 @@ class HexGrid {
                 this.ctx.fill();
                 break;
 
+            case 'POUTNICI':
+                // Poutnická hůl s uzlíkem (bezbranní poutníci)
+                this.ctx.strokeStyle = '#8b6914';
+                this.ctx.lineWidth = 3;
+                this.ctx.beginPath();
+                this.ctx.moveTo(-4, 11);
+                this.ctx.lineTo(3, -9);
+                this.ctx.stroke();
+                // uzlík na holi
+                this.ctx.fillStyle = '#c9a227';
+                this.ctx.beginPath();
+                this.ctx.arc(4, -10, 4, 0, Math.PI * 2);
+                this.ctx.fill();
+                this.ctx.strokeStyle = '#6b5010';
+                this.ctx.lineWidth = 1;
+                this.ctx.stroke();
+                break;
+
             default:
                 this.ctx.font = 'bold 18px Arial';
                 this.ctx.fillStyle = '#ffffff';
