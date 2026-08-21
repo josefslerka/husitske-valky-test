@@ -175,7 +175,7 @@ const Scenarios = {
         historicalSignificance: 'Historicky první známé použití vozové hradby. Zrod taktiky, která změní válečnictví.',
 
         briefing: {
-            hussites: 'Vyrážíte z Plzně k nepřátelské tvrzi Nekmíř. Plzeňský landfrýd vás dostihl! Máte pouze 7 vozů - nestačí na uzavřený kruh. Vytvořte polokruh a braňte se!',
+            hussites: 'Táhnete z Plzně dobýt tvrz Nekmíř — vozy vezou obléhací děla („hady k boření zdí"). Jenže plzeňský landfrýd vás dostihl na pochodu! Ze sedmi vozů narychlo improvizujte hradbu: na uzavřený kruh nestačí, udělejte polokruh a braňte se!',
             crusaders: 'Dostihnete husitské kacíře, než stihnou zničit tvrz Nekmíř. Máte jasnou početní převahu. Zničte je!'
         },
 
@@ -208,15 +208,19 @@ const Scenarios = {
                 units: [
                     // VELITEL - Jan Žižka (jeho první známá bitva jako velitele!)
                     { type: 'JAN_ZIZKA', col: 11, row: 7 },
-                    // Vozová hradba - POUZE 7 VOZŮ (polokruh)
-                    { type: 'VOZOVA_HRADBA', col: 10, row: 6 },
-                    { type: 'VOZOVA_HRADBA', col: 10, row: 7 },
-                    { type: 'VOZOVA_HRADBA', col: 10, row: 8 },
-                    // Druhá linie vozů (jen 4 další)
-                    { type: 'VOZOVA_HRADBA', col: 11, row: 5 },
-                    { type: 'VOZOVA_HRADBA', col: 11, row: 6 },
-                    { type: 'VOZOVA_HRADBA', col: 11, row: 8 },
-                    { type: 'VOZOVA_HRADBA', col: 11, row: 9 },
+                    // POUZE 7 VOZŮ - startují ROZPOJENÉ (formation:'open'), protože
+                    // Žižka je vezl na pochodu (obléhací trén k Nekmíři) a landfrýd
+                    // ho dostihl v poli - hradbu si musel sbít NARYCHLO. Hráč si tedy
+                    // polokruh sepne SÁM (viz briefing), ne že by rozpojoval hotovou
+                    // hradbu. Bezpečné: nejbližší rytíři ~6 hexů (pohyb 3), hráč táhne
+                    // první -> jistý 1. tah na sepnutí.
+                    { type: 'VOZOVA_HRADBA', col: 10, row: 6, formation: 'open' },
+                    { type: 'VOZOVA_HRADBA', col: 10, row: 7, formation: 'open' },
+                    { type: 'VOZOVA_HRADBA', col: 10, row: 8, formation: 'open' },
+                    { type: 'VOZOVA_HRADBA', col: 11, row: 5, formation: 'open' },
+                    { type: 'VOZOVA_HRADBA', col: 11, row: 6, formation: 'open' },
+                    { type: 'VOZOVA_HRADBA', col: 11, row: 8, formation: 'open' },
+                    { type: 'VOZOVA_HRADBA', col: 11, row: 9, formation: 'open' },
                     // Pěchota za vozy
                     { type: 'CEPNICI', col: 12, row: 6 },
                     { type: 'CEPNICI', col: 12, row: 7 },
@@ -264,7 +268,7 @@ const Scenarios = {
                 description: 'Žižka vytahuje z Plzně směrem k Nekmíři.',
                 events: [
                     { trigger: 'turn_1', message: 'Plzeňský landfrýd dostihl husitskou kolonu! Rychle vytvořte vozovou hradbu!' },
-                    { trigger: 'turn_1', type: 'tutorial', text: 'TIP: Máte pouze 7 vozů - nestačí na uzavřený kruh. Vytvořte polokruh otevřený směrem k tvrzi.' }
+                    { trigger: 'turn_1', type: 'tutorial', text: 'TIP: Vozy máš na pochodu (rozpojené). Sepni je do vozové hradby — polokruh otevřený k tvrzi. Na uzavřený kruh 7 vozů nestačí.' }
                 ]
             },
             {
@@ -339,7 +343,7 @@ const Scenarios = {
         },
 
         debriefing: {
-            victory: 'První vozová hradba v historii obstála! Žižka prokázal, že i malá skupina s vozy může odolat přesile. Plzeňský landfrýd byl zahnán a tvrz Nekmíř dobyta. Zrodila se taktika, která změní evropské válečnictví.',
+            victory: 'První vozová hradba v historii obstála! Žižka prokázal, že i malá skupina s vozy odolá přesile — Švamberkova jízda se stáhla se ztrátou velikou a padl i Hynek z Nekmíře, pán tvrze. A Žižka nezaváhal: ještě té noci přepadl tři okolní posádky a zbořil jim tvrze. Zrodila se taktika, která změní evropské válečnictví.',
             defeat: 'Improvizovaná vozová hradba nevydržela nápor nepřítele. Husitský výpad skončil katastrofou. Žižka však přežil a poučil se - příště bude hradba silnější a uzavřená.'
         },
 

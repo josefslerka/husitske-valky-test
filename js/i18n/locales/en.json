@@ -960,7 +960,7 @@
       "description": "FIRST DOCUMENTED USE OF WAGON FORT! Jan Žižka with small group repels attack by Plzeň landfrieden.",
       "historicalSignificance": "Historically first known use of wagon fort. Birth of tactic that will change warfare.",
       "briefing": {
-        "hussites": "You're heading from Plzeň toward enemy fortress Nekmíř. Plzeň landfrieden caught up with you! You only have 7 wagons - not enough for closed circle. Form semicircle and defend!",
+        "hussites": "You march from Plzeň to take the fortress of Nekmíř — your wagons carry siege guns (\"serpents to breach walls\"). But the Plzeň landfrieden caught you on the march! Improvise a fort from your seven wagons: too few for a closed circle, so form a semicircle and hold!",
         "crusaders": "Catch up with Hussite heretics before they destroy Nekmíř fortress. You have clear numerical superiority. Destroy them!"
       },
       "events": [
@@ -968,7 +968,7 @@
           "message": "Plzeň landfrieden caught up with Hussite column! Quickly form wagon fort!"
         },
         {
-          "text": "TIP: You only have 7 wagons - not enough for closed circle. Form semicircle open toward fortress."
+          "text": "TIP: Your wagons are on the march (unchained). Chain them into a wagon fort — a semicircle open toward the fortress. 7 wagons is too few for a closed circle."
         },
         {
           "message": "Žižka: 'Pull wagons together! Shooters behind wagons, flailmen ready!'"
@@ -1000,7 +1000,7 @@
         ]
       },
       "debriefing": {
-        "victory": "First wagon fort in history held! Žižka proved even small group with wagons can withstand superior numbers. Plzeň landfrieden was driven away and Nekmíř fortress captured. Tactic was born that will change European warfare.",
+        "victory": "The first wagon fort in history held! Žižka proved that even a small band with wagons can withstand superior numbers — Švamberk's cavalry withdrew with heavy losses and Hynek of Nekmíř, lord of the fortress, fell. And Žižka did not hesitate: that very night he stormed three nearby garrisons and razed their strongholds. A tactic was born that will change European warfare.",
         "defeat": "Improvised wagon fort didn't withstand enemy pressure. Hussite raid ended in disaster. However Žižka survived and learned - next time fort will be stronger and closed."
       },
       "phases": [
@@ -1009,7 +1009,7 @@
           "description": "Žižka marches from Plzeň towards Nekmíř.",
           "events": [
             {"message": "Plzeň landfrieden caught up with Hussite column! Quickly form wagon fort!"},
-            {"text": "TIP: You only have 7 wagons - not enough for closed circle. Form semicircle open toward fortress."}
+            {"text": "TIP: Your wagons are on the march (unchained). Chain them into a wagon fort — a semicircle open toward the fortress. 7 wagons is too few for a closed circle."}
           ]
         },
         {
