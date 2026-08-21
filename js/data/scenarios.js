@@ -453,8 +453,24 @@ const Scenarios = {
                     { type: 'HALAPARTNICI', col: 1, row: 6 },
                     // Střelci
                     { type: 'KUSNICI', col: 0, row: 5 },
-                    { type: 'KUSNICI', col: 0, row: 6 }
-                ]
+                    { type: 'KUSNICI', col: 0, row: 6 },
+                    // Historická přesila jízdy - Sudoměř bylo ~400 husitů proti tisícům
+                    // jezdců. Rozšíření náporu na SUCHÉ řady 4 a 7 (rybníky jsou od col 6).
+                    { type: 'TEZKY_RYTIR', col: 3, row: 4 },
+                    { type: 'TEZKY_RYTIR', col: 4, row: 7 },
+                    { type: 'TEZKOODENCI', col: 3, row: 7 }
+                ],
+                // Druhá vlna - landfrýd dorážel na hráz opakovaně. Čerstvá jízda
+                // přijede od západu v kole 6, právě když hráč ubránil první nápor.
+                reinforcements: {
+                    turn: 6,
+                    units: [
+                        { type: 'TEZKY_RYTIR', col: 0, row: 4 },
+                        { type: 'TEZKY_RYTIR', col: 1, row: 7 },
+                        { type: 'TEZKOODENCI', col: 0, row: 7 }
+                    ],
+                    message: 'Druhá vlna! Čerstvá jízda landfrýdu se žene na hráz!'
+                }
             }
         },
 

@@ -1054,6 +1054,9 @@
         "hussites": "Your small group of pilgrims is pursued by army of Catholic lords. Use dam between fishponds and build wagon fort. You must survive until nightfall.",
         "crusaders": "Catch up and destroy Hussite heretics before they fortify. Attack quickly, before fog falls."
       },
+      "reinforcements": {
+        "crusaders": "Second wave! Fresh landfrieden cavalry charges the dam!"
+      },
       "events": [
         {
           "message": "Crusaders begin attack along narrow dam!"

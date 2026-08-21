@@ -1319,6 +1319,9 @@
         "hussites": "Vaše malá skupina poutníků je pronásledována vojskem katolických pánů. Využijte hráz mezi rybníky a postavte vozovou hradbu. Musíte přežít do setmění.",
         "crusaders": "Dohoňte a zničte husitské kacíře dříve, než se opevní. Útočte rychle, než padne mlha."
       },
+      "reinforcements": {
+        "crusaders": "Druhá vlna! Čerstvá jízda landfrýdu se žene na hráz!"
+      },
       "events": [
         {
           "message": "Křižáci zahajují útok po úzké hrázi!"
