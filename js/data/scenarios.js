@@ -631,7 +631,9 @@ const Scenarios = {
                 name: 'Útok na šíji',
                 turnRange: [1, 3],
                 description: 'Míšeňská a duryňská jízda se valí do úzkého hrdla šíje.',
-                events: []
+                events: [
+                    { trigger: 'turn_3', message: 'Obránkyně na hradbě volá: „Nesluší věrnému křesťanovi ustoupit!" — a padá zasažena.' }
+                ]
             },
             {
                 id: 2,
@@ -662,7 +664,7 @@ const Scenarios = {
         },
 
         debriefing: {
-            victory: 'Vítkov obstál! Žižka s hrstkou obránců, včetně žen, odrazil tisíce křižáků. Zikmund ztratil naději na rychlé dobytí Prahy. Toto vítězství povzbudilo husitské hnutí a ukázalo, že odhodlaní obránci mohou porazit i přesilu.',
+            victory: 'Vítkov obstál! Když obrana slábla, protiútok z Horské brány srazil křižáky ze severního srázu — z ústupu se stala panika. Padl i velitel útoku Heinrich z Isenburku a na 144 dalších. Zikmund ztratil naději na rychlé dobytí Prahy; králem se sice stal, ale do města nesměl. Hřeben od té doby nese jméno Žižkov — a hrstka obránců, včetně žen, dokázala, že odhodlání zlomí i přesilu.',
             defeat: 'Sruby na Vítkově padly a s nimi i naděje Prahy. Křižáci obsadili strategickou výšinu a Praha je v obležení. Husitská revoluce končí dříve, než mohla rozvinout svou sílu.'
         },
 

@@ -1116,14 +1116,16 @@
         ]
       },
       "debriefing": {
-        "victory": "Vítkov held! Žižka with handful of defenders, including women, repelled thousands of crusaders. Sigismund lost hope of quick conquest of Prague. This victory encouraged Hussite movement and showed that determined defenders can defeat even superior numbers.",
+        "victory": "Vítkov held! As the defence weakened, a counterattack from the Horská Gate hurled the crusaders off the northern cliff — the retreat turned to panic. The assault's commander, Henry of Isenburg, fell along with some 144 others. Sigismund lost hope of a quick conquest of Prague; he became king, but could not enter the city. The ridge has borne the name Žižkov ever since — and a handful of defenders, women among them, proved that resolve breaks even superior numbers.",
         "defeat": "Fortifications on Vítkov fell and with them Prague's hope. Crusaders occupied strategic height and Prague is under siege. Hussite revolution ends before it could develop its strength."
       },
       "phases": [
         {
           "name": "Attack on the neck",
           "description": "Meissen and Austrian cavalry attack through the forest.",
-          "events": []
+          "events": [
+            {"message": "A woman on the rampart cries: \"It does not befit a faithful Christian to retreat!\" — and falls, struck down."}
+          ]
         },
         {
           "name": "Fight for the fortifications",
@@ -2393,6 +2395,7 @@
       "trivia": [
         "3 WOMEN defended Vítkov",
         "Battle cry 'Hrrr at them!' became Hussite motto",
+        "The crusaders forgot their ladders — so they floundered in the ditches below the blockhouse",
         "Equestrian statue of Žižka on Vítkov - third largest in the world",
         "The day before, cavalry scattered Prague townsfolk who charged out against orders"
       ],

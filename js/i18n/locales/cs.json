@@ -574,6 +574,7 @@
       ],
       "trivia": [
         "3 ŽENY bránily Vítkov",
+        "Křižáci si zapomněli žebříky — proto marně uvázli v příkopech pod srubem",
         "Pokřik \"Hrrr na ně!\" se stal heslem husitů",
         "Jezdecká socha Žižky na Vítkově - třetí největší na světě",
         "Den před bitvou jízda rozprášila Pražany, kteří proti rozkazu vyrazili z brány"
@@ -1381,14 +1382,16 @@
         ]
       },
       "debriefing": {
-        "victory": "Vítkov obstál! Žižka s hrstkou obránců, včetně žen, odrazil tisíce křižáků. Zikmund ztratil naději na rychlé dobytí Prahy. Toto vítězství povzbudilo husitské hnutí a ukázalo, že odhodlaní obránci mohou porazit i přesilu.",
+        "victory": "Vítkov obstál! Když obrana slábla, protiútok z Horské brány srazil křižáky ze severního srázu — z ústupu se stala panika. Padl i velitel útoku Heinrich z Isenburku a na 144 dalších. Zikmund ztratil naději na rychlé dobytí Prahy; králem se sice stal, ale do města nesměl. Hřeben od té doby nese jméno Žižkov — a hrstka obránců, včetně žen, dokázala, že odhodlání zlomí i přesilu.",
         "defeat": "Sruby na Vítkově padly a s nimi i naděje Prahy. Křižáci obsadili strategickou výšinu a Praha je v obležení. Husitská revoluce končí dříve, než mohla rozvinout svou sílu."
       },
       "phases": [
         {
           "name": "Útok na šíji",
           "description": "Míšeňská a rakouská jízda útočí přes les.",
-          "events": []
+          "events": [
+            {"message": "Obránkyně na hradbě volá: „Nesluší věrnému křesťanovi ustoupit!“ — a padá zasažena."}
+          ]
         },
         {
           "name": "Boj o sruby",
