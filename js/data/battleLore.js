@@ -180,7 +180,11 @@ const BattleLore = {
             'Kutnohorští tajně spolupracovali se Zikmundem a otevřeli mu brány',
             'Zikmund strávil Vánoce v domnění, že vyhrál',
             'PRVNÍ mobilní dělostřelecký manévr v historii - noční průlom',
-            'Kutnohorští horníci házeli zajaté husity do dolových šachet - odtud ta zrada'
+            'Kutnohorští horníci házeli zajaté husity do dolových šachet - odtud ta zrada',
+            'Zikmund hnal na husity stáda volů a krav („Nepřítel rohatý"), aby je zastrašil - husité je zprvu vzali za ďábly, pak si je prohnali do vozové hradby jako zásobu',
+            'Zikmund ztratil u Kutné Hory přes 5 000 mužů takřka bez boje - sedminásobek ztrát z Vítkova',
+            'Slepý Žižka byl 11. ledna 1422 pasován na rytíře - „vítězil pro kalich i bez zraku"',
+            'Kořist: devět kop vozů plných zboží, klenotů a knih („jedna kniha znamenala celé jmění")'
         ],
         casualties: { hussites: '300-500', enemy: '2-12 000' },
         aftermath: 'Husitské vítězství. Geniální noční průlom vozovou hradbou.',

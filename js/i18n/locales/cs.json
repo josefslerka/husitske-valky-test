@@ -1526,7 +1526,7 @@
       "description": "Žižka obklíčen přesilou u Kutné Hory po zradě měšťanů. Musí v noci prorazit vozovou hradbou!",
       "historicalSignificance": "První ofenzivní použití palných zbraní z pohybující se vozové hradby. Geniální taktický ústup.",
       "briefing": {
-        "hussites": "Kutnohorští horníci vás zradili a vpustili křižáky do města! Jste v obklíčení. Připravte noční průlom vozovou hradbou - musíte prorazit na jihozápad ke Kolínu!",
+        "hussites": "Kutnohorští horníci vás zradili a vpustili křižáky do města! Jste v obklíčení - proti vám přes deset tisíc uherských jezdců Pipa Španského. Připravte noční průlom vozovou hradbou a prorazte na jihozápad ke Kolínu!",
         "crusaders": "Husité jsou v pasti! Obklíčili jsme je před městem. Zničte Žižkovu vozovou hradbu dříve, než unikne!"
       },
       "events": [
@@ -1550,14 +1550,14 @@
         }
       ],
       "objectives": {
-        "primary": "Dostaňte alespoň 5 jednotek na jihozápadní okraj mapy (ke Kolínu)",
+        "primary": "Probijte se z obklíčení ke Kolínu (alespoň 5 jednotek)",
         "secondary": [
           "Žižka musí přežít",
           "Zachraňte alespoň 4 vozy"
         ]
       },
       "debriefing": {
-        "victory": "Geniální noční průlom! Žižka vyvedl celou vozovou hradbu z obklíčení pod palbou vlastních hakovnic. Toto je první zdokumentované použití palných zbraní z jedoucích vozů. Kutnohorští zrádci budou potrestáni, ale Žižkovo vojsko uniklo do bezpečí.",
+        "victory": "Geniální noční průlom! Žižka vyvedl celou vozovou hradbu z obklíčení pod palbou vlastních hákovnic - první zdokumentované použití palných zbraní z jedoucích vozů. I „rohatého nepřítele\", stáda volů, jimiž vás chtěli zastrašit, jste obrátili v zásobu. Kutnohorští zrádci budou potrestáni, Žižkovo vojsko uniklo. O tři týdny později byl slepý hejtman pasován na rytíře - dokázal vítězit pro kalich i bez zraku.",
         "defeat": "Průlom selhal. Vozová hradba byla rozbita a Žižkova armáda zničena. Kutná Hora zůstává v rukou nepřítele a husitské hnutí přichází o svého nejschopnějšího vojevůdce."
       },
       "phases": [

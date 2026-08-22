@@ -1311,7 +1311,7 @@
       "description": "Žižka surrounded by superior forces at Kutná Hora after townsmen's betrayal. Must break through with wagon fort at night!",
       "historicalSignificance": "First offensive use of firearms from moving wagon fort. Brilliant tactical retreat.",
       "briefing": {
-        "hussites": "Kutná Hora miners betrayed you and let crusaders into city! You're encircled. Prepare night breakthrough with wagon fort - must break toward Kolín to southwest!",
+        "hussites": "Kutná Hora miners betrayed you and let the crusaders into the city! You are encircled - over ten thousand Hungarian horsemen under Pippo Spano stand against you. Prepare a night breakthrough with the wagon fort and break out southwest toward Kolín!",
         "crusaders": "Hussites are trapped! We've surrounded them before city. Destroy Žižka's wagon fort before he escapes!"
       },
       "events": [
@@ -1335,14 +1335,14 @@
         }
       ],
       "objectives": {
-        "primary": "Get at least 5 units to southwest edge of map (toward Kolín)",
+        "primary": "Fight your way out to Kolín (at least 5 units)",
         "secondary": [
           "Žižka must survive",
           "Save at least 4 wagons"
         ]
       },
       "debriefing": {
-        "victory": "Brilliant night breakthrough! Žižka led entire wagon fort out of encirclement under fire from own hand cannons. This is first documented use of firearms from moving wagons. Kutná Hora traitors will be punished, but Žižka's army escaped to safety.",
+        "victory": "Brilliant night breakthrough! Žižka led the entire wagon fort out of encirclement under fire from his own hand cannons - the first documented use of firearms from moving wagons. Even the \"horned enemy\", the herds of oxen meant to terrify you, you turned into provisions. The Kutná Hora traitors will be punished; Žižka's army escaped. Three weeks later the blind hejtman was knighted - he could win for the chalice even without sight.",
         "defeat": "Breakthrough failed. Wagon fort was broken and Žižka's army destroyed. Kutná Hora remains in enemy hands and Hussite movement loses its most capable commander."
       },
       "phases": [
@@ -1351,7 +1351,8 @@
           "description": "Kutná Hora people betrayed! Crusaders close in from all sides.",
           "events": [
             {"message": "Kutná Hora miners opened Kolín Gate! Crusaders pour into city - you are encircled!"},
-            {"message": "Žižka prepares night breakthrough. Form wagon fort toward southwest!"}
+            {"message": "Žižka prepares night breakthrough. Form wagon fort toward southwest!"},
+            {"message": "Horned ones! Hundreds of oxen and cows bellow in the royal host - Sigismund drives them at the wall to scare you. The Hussites do not break, and herd the cattle into the wagon fort as provisions."}
           ]
         },
         {
@@ -2588,7 +2589,11 @@
         "Kutná Hora citizens secretly cooperated with Sigismund and opened gates",
         "Sigismund spent Christmas believing he won",
         "FIRST mobile artillery maneuver in history - night breakthrough",
-        "Kutná Hora miners threw captured Hussites into mine shafts - hence the betrayal"
+        "Kutná Hora miners threw captured Hussites into mine shafts - hence the betrayal",
+        "Sigismund drove herds of oxen and cows at the Hussites (\"the Horned Enemy\") to frighten them - they first took them for devils, then herded them into the wagon fort as provisions",
+        "At Kutná Hora Sigismund lost over 5,000 men almost without a fight - sevenfold the losses at Vítkov",
+        "The blind Žižka was knighted on January 11, 1422 - he \"won for the chalice even without sight\"",
+        "Booty: 540 wagons full of goods, jewels and books (\"one book was worth a fortune\")"
       ],
       "reliability": "High - multiple sources"
     },

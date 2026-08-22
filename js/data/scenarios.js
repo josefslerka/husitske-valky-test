@@ -1150,7 +1150,7 @@ const Scenarios = {
         historicalSignificance: 'První ofenzivní použití palných zbraní z pohybující se vozové hradby. Geniální taktický ústup.',
 
         briefing: {
-            hussites: 'Kutnohorští horníci vás zradili a vpustili křižáky do města! Jste v obklíčení. Připravte noční průlom vozovou hradbou - musíte prorazit na jihozápad ke Kolínu!',
+            hussites: 'Kutnohorští horníci vás zradili a vpustili křižáky do města! Jste v obklíčení - proti vám přes deset tisíc uherských jezdců Pipa Španského. Připravte noční průlom vozovou hradbou a prorazte na jihozápad ke Kolínu!',
             crusaders: 'Husité jsou v pasti! Obklíčili jsme je před městem. Zničte Žižkovu vozovou hradbu dříve, než unikne!'
         },
 
@@ -1158,7 +1158,8 @@ const Scenarios = {
 
         mapLabels: [
             { text: 'Kutná Hora', hexes: [[12,1],[13,1],[14,1],[15,1],[12,2],[13,2],[14,2],[15,2],[12,3],[13,3],[14,3],[15,3]] },
-            { text: 'Kaňk', hexes: [[13,5],[14,5],[15,5],[14,6],[15,6]] }
+            { text: 'Kaňk', hexes: [[13,5],[14,5],[15,5],[14,6],[15,6]] },
+            { text: '↙ Kolín', hexes: [[2,12],[2,13],[3,12],[3,13]] }
         ],
 
         terrain: {
@@ -1262,7 +1263,8 @@ const Scenarios = {
                 description: 'Kutnohorští zradili! Křižáci svírají husity ze všech stran.',
                 events: [
                     { trigger: 'turn_1', message: 'Kutnohorští horníci otevřeli Kolínskou bránu! Křižáci proudí do města - jste v obklíčení!' },
-                    { trigger: 'turn_2', message: 'Žižka připravuje noční průlom. Formujte vozovou hradbu směrem na jihozápad!' }
+                    { trigger: 'turn_2', message: 'Žižka připravuje noční průlom. Formujte vozovou hradbu směrem na jihozápad!' },
+                    { trigger: 'turn_1', message: 'Rohatci! V královském houfu bučí stovky volů a krav - Zikmund je žene na hradbu, aby vás vylekal. Husité se nezlomí a dobytek si proženou do vozové tvrze jako zásobu.' }
                 ]
             },
             {
@@ -1292,7 +1294,7 @@ const Scenarios = {
                 type: 'escape',
                 escapeZone: [[2,12], [2,13], [3,12], [3,13]],
                 unitsRequired: 5,
-                description: 'Dostaňte alespoň 5 jednotek na jihozápadní okraj mapy (ke Kolínu)'
+                description: 'Probijte se z obklíčení ke Kolínu (alespoň 5 jednotek)'
             },
             secondary: [
                 { type: 'survive_commander', description: 'Žižka musí přežít' },
@@ -1319,7 +1321,7 @@ const Scenarios = {
         },
 
         debriefing: {
-            victory: 'Geniální noční průlom! Žižka vyvedl celou vozovou hradbu z obklíčení pod palbou vlastních hakovnic. Toto je první zdokumentované použití palných zbraní z jedoucích vozů. Kutnohorští zrádci budou potrestáni, ale Žižkovo vojsko uniklo do bezpečí.',
+            victory: 'Geniální noční průlom! Žižka vyvedl celou vozovou hradbu z obklíčení pod palbou vlastních hákovnic - první zdokumentované použití palných zbraní z jedoucích vozů. I „rohatého nepřítele", stáda volů, jimiž vás chtěli zastrašit, jste obrátili v zásobu. Kutnohorští zrádci budou potrestáni, Žižkovo vojsko uniklo. O tři týdny později byl slepý hejtman pasován na rytíře - dokázal vítězit pro kalich i bez zraku.',
             defeat: 'Průlom selhal. Vozová hradba byla rozbita a Žižkova armáda zničena. Kutná Hora zůstává v rukou nepřítele a husitské hnutí přichází o svého nejschopnějšího vojevůdce.'
         },
 
