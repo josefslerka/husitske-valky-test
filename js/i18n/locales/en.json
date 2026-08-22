@@ -1162,7 +1162,7 @@
           "text": "Prepared positions provide +3 to defense!"
         },
         {
-          "message": "Jindřich of Plumlov warns against attack through slope. Sigismund accuses him of cowardice!"
+          "message": "Jindřich of Plumlov warns the king: \"I greatly fear the peasant flails!\" Sigismund accuses him of cowardice and drives him to the attack!"
         },
         {
           "message": "Insulted Czech nobility attacks! Must dismount due to steep slope."
@@ -1221,7 +1221,7 @@
           "name": "Flank attack by Czech nobility",
           "description": "Czech and Moravian nobility attack from Podolí.",
           "events": [
-            {"message": "Jindřich of Plumlov warns against attack through slope. Sigismund accuses him of cowardice!"},
+            {"message": "Jindřich of Plumlov warns the king: \"I greatly fear the peasant flails!\" Sigismund accuses him of cowardice and drives him to the attack!"},
             {"message": "Insulted Czech nobility attacks! Must dismount due to steep slope."},
             {"text": "Czech nobility loses cavalry advantage on steep slope!"}
           ]
@@ -1230,7 +1230,7 @@
           "name": "Hussite counterattack",
           "description": "Hynek Krušina deploys reserves.",
           "events": [
-            {"message": "Hynek Krušina deploys Oreb flailmen from reserve!"},
+            {"message": "\"The enemies are fleeing!\" Hynek Krušina turns the pressed Praguers to counterattack and deploys the Oreb flailmen from reserve!"},
             {"text": "Units freed from besieging Vyšehrad join the battle!"}
           ]
         },
@@ -2440,6 +2440,7 @@
       ],
       "trivia": [
         "25 BANNER LORDS of Czech nobility fell",
+        "After the battle a pillar colored like a rainbow reportedly appeared at night over the field — read as an omen",
         "Vyšehrad garrison honored surrender agreement",
         "Dead lay NAKED for 3 DAYS on battlefield",
         "Sigismund came LATE - after 8:00, when garrison was to surrender"

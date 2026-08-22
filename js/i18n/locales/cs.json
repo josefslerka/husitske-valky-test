@@ -617,6 +617,7 @@
       ],
       "trivia": [
         "Padlo 25 KOROUHEVNÍCH PÁNŮ české šlechty",
+        "Po bitvě se prý v noci nad bojištěm zjevil sloup zbarvený jako duha — vyloženo jako znamení",
         "Posádka Vyšehradu dodržela čestnou dohodu o kapitulaci",
         "Mrtví leželi 3 DNY NAZÍ na bojišti",
         "Zikmund přišel POZDĚ - po 8:00, kdy měla posádka kapitulovat"
@@ -1428,7 +1429,7 @@
           "text": "Připravené pozice poskytují +3 k obraně!"
         },
         {
-          "message": "Jindřich z Plumlova varuje před útokem přes svah. Zikmund ho obviní ze zbabělosti!"
+          "message": "Jindřich z Plumlova varuje krále: „Bojím se selských cepů!“ Zikmund ho obviní ze zbabělosti a žene ho do útoku!"
         },
         {
           "message": "Uražená česká šlechta útočí! Musí sesednout kvůli strmému svahu."
@@ -1437,7 +1438,7 @@
           "text": "Česká šlechta ztrácí výhodu jízdy na strmém svahu!"
         },
         {
-          "message": "Hynek Krušina nasazuje orebské cepníky z rezervy!"
+          "message": "„Běží nepřátelé!“ Hynek Krušina obrací zatlačené Pražany do protiútoku a nasazuje orebské cepníky z rezervy!"
         },
         {
           "text": "Jednotky uvolněné z obléhání Vyšehradu se připojují k bitvě!"
@@ -1487,7 +1488,7 @@
           "name": "Boční útok české šlechty",
           "description": "Česká a moravská šlechta útočí od Podolí.",
           "events": [
-            {"message": "Jindřich z Plumlova varuje před útokem přes svah. Zikmund ho obviní ze zbabělosti!"},
+            {"message": "Jindřich z Plumlova varuje krále: „Bojím se selských cepů!“ Zikmund ho obviní ze zbabělosti a žene ho do útoku!"},
             {"message": "Uražená česká šlechta útočí! Musí sesednout kvůli strmému svahu."},
             {"text": "Česká šlechta ztrácí výhodu jízdy na strmém svahu!"}
           ]
@@ -1496,7 +1497,7 @@
           "name": "Husitský protiútok",
           "description": "Hynek Krušina nasazuje zálohy.",
           "events": [
-            {"message": "Hynek Krušina nasazuje orebské cepníky z rezervy!"},
+            {"message": "„Běží nepřátelé!“ Hynek Krušina obrací zatlačené Pražany do protiútoku a nasazuje orebské cepníky z rezervy!"},
             {"text": "Jednotky uvolněné z obléhání Vyšehradu se připojují k bitvě!"}
           ]
         },

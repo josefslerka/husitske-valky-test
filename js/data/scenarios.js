@@ -878,7 +878,7 @@ const Scenarios = {
                         trigger: 'turn_4',
                         triggerBefore: 'turn_7',
                         condition: { type: 'units_in_area', faction: 'crusaders', area: { minCol: 18, maxCol: 24, minRow: 15, maxRow: 21 }, minCount: 2 },
-                        message: 'Jindřich z Plumlova varuje před útokem přes svah. Zikmund ho obviní ze zbabělosti!'
+                        message: 'Jindřich z Plumlova varuje krále: „Bojím se selských cepů!“ Zikmund ho obviní ze zbabělosti a žene ho do útoku!'
                     },
                     {
                         id: 'nobility_dismount_msg',
@@ -904,7 +904,7 @@ const Scenarios = {
                 turnRange: [7, 9],
                 description: 'Hynek Krušina nasazuje zálohy.',
                 events: [
-                    { trigger: 'turn_7', message: 'Orebští cepníci vstupují do bitvy! Zálohy jsou nasazeny.' },
+                    { trigger: 'turn_7', message: '„Běží nepřátelé!“ Orebští cepníci vyrážejí do protiútoku — zálohy jsou nasazeny.' },
                     { trigger: 'turn_8', message: 'Jednotky z obléhání Vyšehradu se připojují k bitvě!' }
                 ]
             },
