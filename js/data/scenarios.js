@@ -1008,7 +1008,7 @@ const Scenarios = {
         historicalSignificance: 'Neúspěch u Žatce nalomil 2. křížovou výpravu - bez jediné polní bitvy se Žižkou.',
 
         briefing: {
-            hussites: 'Žatec - "pevnost Slunce" - obléhá obrovská křižácká výprava. Ohře vás chrání ze tří stran, útok jde jen na západní hradbu. Žádný slavný velitel zde není - drží celá obec. Odrazte útoky, než výpravu zlomí hlad a spory knížat.',
+            hussites: 'Žatec - "pevnost Slunce" - obléhá obrovská křižácká výprava. Ohře vás chrání ze tří stran, útok jde jen na západní hradbu. Žádný slavný velitel zde není - drží celá obec, na šest tisíc obránců i lidu z okolí. Odrazte útoky, než výpravu zlomí hlad a spory knížat.',
             crusaders: 'Rozbijte žateckou hradbu děly a vezměte město. Erkinger vede útok. Padne-li Žatec, husitský severozápad je váš.'
         },
 
@@ -1100,7 +1100,8 @@ const Scenarios = {
                 turnRange: [4, 8],
                 description: 'Erkinger žene pěchotu na hradby - jeden útok za druhým.',
                 events: [
-                    { trigger: 'turn_4', message: 'Erkinger zahajuje útok na západní hradbu! Držte linii!' }
+                    { trigger: 'turn_4', message: 'Erkinger zahajuje útok na západní hradbu! Držte linii!' },
+                    { trigger: 'turn_6', type: 'morale_boost', faction: 'hussites', modifier: 12, title: 'Výpad z bran!', text: 'Žatečtí vyrazili z bran, pobili množství obléhatelů a stáhli se zpět za hradby. Obránci nabírají odvahu!' }
                 ]
             },
             {
@@ -1109,7 +1110,7 @@ const Scenarios = {
                 turnRange: [8, 12],
                 description: 'Křižácké ležení hoří, knížata se hádají, tábor svírá hlad.',
                 events: [
-                    { trigger: 'turn_8', type: 'panic', faction: 'crusaders', level: 2, title: 'Požár ležení!', text: 'Křižácké ležení vzplálo! Hlad, spory knížat a zprávy o blížících se posilách lámou výpravu.' }
+                    { trigger: 'turn_8', type: 'panic', faction: 'crusaders', level: 2, title: 'Požár ležení!', text: 'Křižácké ležení vzplálo! Hlad, spory knížat a falešná zpráva o blížícím se pražském vojsku lámou výpravu.' }
                 ]
             }
         ],
@@ -1127,7 +1128,7 @@ const Scenarios = {
         },
 
         debriefing: {
-            victory: 'Žatec obstál! Šest útoků odraženo, ležení v plamenech - druhá křížová výprava se rozpadá, aniž stanula proti Žižkovi. "Pevnost Slunce" obhájila celá obec, beze jména jediného hrdiny. Sláva města, ne muže.',
+            victory: 'Žatec obstál! Šest útoků odraženo, ležení v plamenech - a na falešnou zprávu, že táhnou pražané, výprava 2. října prchá a Žatečtí ji ženou na útěku. Druhá křížová výprava se rozpadá, aniž stanula proti Žižkovi. "Pevnost Slunce" obhájila celá obec, beze jména jediného hrdiny - sláva města, ne muže.',
             defeat: 'Hradby Žatce padly. Křižáci vnikli do "pevnosti Slunce" a husitský severozápad leží otevřený. Druhá výprava slaví krvavý úspěch.'
         },
 

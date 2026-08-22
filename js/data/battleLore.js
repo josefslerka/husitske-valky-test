@@ -479,7 +479,7 @@ const BattleLore = {
         location: 'Žatec - ostrožna nad řekou Ohří, severozápadní Čechy',
         hussiteSide: {
             commanders: ['Žatecký hejtman (jméno nedoloženo)'],
-            strength: '~6 000 obránců (posádka a měšťané)',
+            strength: 'Posádka 5 400 pěších a 400 jezdců + množství lidu z okolí',
             composition: 'Městská posádka, sudličníci, cepníci, kuše i hákovnice'
         },
         enemySide: {
@@ -489,13 +489,18 @@ const BattleLore = {
         },
         terrain: 'Mohutná pevnost na ostrožně obtékané ze tří stran Ohří. Útok byl možný jen z jedné strany.',
         quotes: [
-            { text: 'Erkinger ze Seinsheimu podnikl proti Žatci celkem šest útoků za použití děl a hákovnic, ale nepodařilo se mu proniknout ani na předměstí.', source: 'J. Dolejší: Husité' }
+            { text: 'Erkinger ze Seinsheimu podnikl proti Žatci celkem šest útoků za použití děl a hákovnic, ale nepodařilo se mu proniknout ani na předměstí.', source: 'J. Dolejší: Husité' },
+            { text: 'Při útoku proti městu Žatci, které se mu zdálo lehkým soustem, byl napaden silným oddílem obránců.', source: 'J. Dolejší: Husité (o Erkingerovi r. 1420)' }
         ],
         trivia: [
             'Žatec = "pevnost Slunce" (Tábor, Žatec-Slunce, Louny-Luna, Slaný-Hvězda)',
-            'ŠEST útoků 19. září 1421 odraženo',
+            'ŠEST frontálních útoků od 19. září 1421 odraženo',
+            'Bránila celá obec: 5 400 pěších, 400 jezdců a lid z okolí',
+            'Odvážný výpad z bran 30. září - obránci pobili spoustu nepřátel a stáhli se za hradby',
             'Žádný velitel obrany se nedochoval - ubránila celá obec',
-            'Obléhání zlomil POŽÁR křižáckého ležení (2. října)'
+            'Obléhání zlomila falešná zpráva, že táhnou pražané - křižáci 2. října prchli a byli pronásledováni',
+            'Nad hořícím ležením prý stál "modrý sloup" - vyloženo jako boží znamení',
+            'Erkinger si rok předtím Žatec "zdál lehkým soustem" - obránci ho tehdy zmasakrovali'
         ],
         casualties: { hussites: 'Nízké - město bylo dobře předzásobené', enemy: 'Značné; navíc hlad v táboře' },
         aftermath: 'Druhá křížová výprava se rozpadla, aniž se střetla se Žižkou v poli.',

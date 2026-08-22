@@ -822,6 +822,58 @@
     }
   },
   "scenarios": {
+    "zatec_1421": {
+      "name": "Defense of Žatec",
+      "date": "September 10, 1421",
+      "description": "The Second Crusade besieges the \"Fortress of the Sun\". Overwhelming odds against the Žatec garrison. Hold the walls until the crusade breaks.",
+      "historicalSignificance": "Failure at Žatec cracked the Second Crusade - without a single field battle against Žižka.",
+      "briefing": {
+        "hussites": "Žatec - the \"Fortress of the Sun\" - is besieged by a vast crusading army. The Ohře shields you on three sides; the assault comes only against the western wall. No famous captain is here - the whole town holds, some six thousand defenders and folk from the countryside. Repel the assaults until hunger and the princes' quarrels break the crusade.",
+        "crusaders": "Smash the Žatec wall with cannon and take the town. Erkinger leads the assault. If Žatec falls, the Hussite northwest is yours."
+      },
+      "objectives": {
+        "primary": "Hold the walls to turn 12 with at least 40% of your defenders",
+        "secondary": [
+          "Kill Erkinger of Seinsheim"
+        ]
+      },
+      "phases": [
+        {
+          "name": "The Siege",
+          "description": "The crusaders encircle Žatec and open fire with their cannon.",
+          "events": [
+            {
+              "message": "The crusader army has encircled Žatec. Cannon batter the walls!"
+            }
+          ]
+        },
+        {
+          "name": "Six Assaults",
+          "description": "Erkinger drives his infantry at the walls - one assault after another.",
+          "events": [
+            {
+              "message": "Erkinger launches the assault on the western wall! Hold the line!"
+            },
+            {
+              "text": "The Žatec men sallied from the gates, cut down many besiegers and withdrew behind the walls. The defenders take heart!"
+            }
+          ]
+        },
+        {
+          "name": "The Camp Ablaze",
+          "description": "The crusader camp burns, the princes quarrel, hunger grips the camp.",
+          "events": [
+            {
+              "text": "The crusader camp has gone up in flames! Hunger, quarrels among the princes and a false report of an approaching Prague army break the crusade."
+            }
+          ]
+        }
+      ],
+      "debriefing": {
+        "victory": "Žatec held! Six assaults repelled, the camp in flames - and on a false report that the Praguers were marching, the crusade flees on October 2 with the Žatec men driving it in rout. The Second Crusade falls apart without ever facing Žižka. The \"Fortress of the Sun\" was held by the whole town, without the name of a single hero - glory to the city, not to a man.",
+        "defeat": "The walls of Žatec have fallen. The crusaders broke into the \"Fortress of the Sun\" and the Hussite northwest lies open. The Second Crusade celebrates a bloody success."
+      }
+    },
     "tutorial": {
       "name": "Training at Tábor",
       "description": "Learn combat basics in interactive training.",
@@ -2219,6 +2271,54 @@
     }
   },
   "battleLore": {
+    "zatec": {
+      "name": "Defense of Žatec",
+      "date": "September 10 - October 2, 1421",
+      "location": "Žatec - a promontory above the Ohře river, northwest Bohemia",
+      "hussiteSide": {
+        "commanders": [
+          "Žatec captain (name unrecorded)"
+        ],
+        "strength": "Garrison of 5,400 foot and 400 horse + a mass of country folk",
+        "composition": "Town garrison; billmen, flailmen, crossbows and hook-guns"
+      },
+      "enemySide": {
+        "commanders": [
+          "Louis III of the Palatinate",
+          "archbishops of Mainz, Cologne and Trier",
+          "Erkinger of Seinsheim (led the assaults)"
+        ],
+        "strength": "~20-30,000 crusaders",
+        "composition": "The Second Crusade - imperial princes, cavalry, siege guns"
+      },
+      "terrain": "A mighty fortress on a promontory encircled on three sides by the Ohře. Assault was possible from only one side.",
+      "quotes": [
+        {
+          "text": "Erkinger of Seinsheim made six assaults on Žatec with cannon and hook-guns, but failed to penetrate even the suburbs.",
+          "source": "J. Dolejší: Husité"
+        },
+        {
+          "text": "In the assault on Žatec, which had seemed to him an easy morsel, he was set upon by a strong body of defenders.",
+          "source": "J. Dolejší: Husité (on Erkinger, 1420)"
+        }
+      ],
+      "trivia": [
+        "Žatec = the \"Fortress of the Sun\" (Tábor; Žatec-Sun, Louny-Moon, Slaný-Star)",
+        "SIX frontal assaults from September 19, 1421 were repelled",
+        "The whole town defended it: 5,400 foot, 400 horse and country folk",
+        "A bold sally from the gates on September 30 - the defenders cut down many and withdrew behind the walls",
+        "No defense commander survives in the record - the whole town held it",
+        "The siege broke on a false report that the Praguers were coming - the crusaders fled on October 2 and were pursued",
+        "A \"blue pillar\" reportedly stood over the burning camp - read as a divine omen",
+        "A year earlier Erkinger had thought Žatec \"an easy morsel\" - the defenders butchered him then"
+      ],
+      "casualties": {
+        "hussites": "Low - the town was well provisioned",
+        "enemy": "Considerable; plus hunger in the camp"
+      },
+      "aftermath": "The Second Crusade fell apart without ever meeting Žižka in the field.",
+      "reliability": "High - a well-documented siege"
+    },
     "zivohost": {
       "name": "Battle of Živohošť",
       "date": "November 4, 1419",

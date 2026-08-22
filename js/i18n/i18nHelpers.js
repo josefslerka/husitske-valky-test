@@ -242,7 +242,7 @@ function getLocalizedBattleLore(battleId, baseLore) {
     const loreKey = `battleLore.${battleId}`;
 
     // Základní texty
-    const simpleFields = ['name', 'location', 'terrain', 'weather', 'outcome', 'aftermath', 'significance', 'reliability'];
+    const simpleFields = ['name', 'date', 'location', 'terrain', 'weather', 'outcome', 'aftermath', 'significance', 'reliability'];
     simpleFields.forEach(field => {
         if (i18n.hasTranslation(`${loreKey}.${field}`)) {
             localizedLore[field] = i18n.t(`${loreKey}.${field}`);
