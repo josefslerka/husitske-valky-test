@@ -599,6 +599,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         primaryObjective.textContent = scenario.victoryConditions.primary.description;
 
+        // Trvalý cíl v hlavičce - vždy viditelný během hry (ne jen v skrytém panelu)
+        const objectiveHud = document.getElementById('objective-hud');
+        const objectiveHudText = document.getElementById('objective-hud-text');
+        if (objectiveHud && objectiveHudText) {
+            objectiveHudText.textContent = scenario.victoryConditions.primary.description;
+            objectiveHud.classList.remove('hidden');
+        }
+
         secondaryObjectives.innerHTML = '';
         if (scenario.victoryConditions.secondary) {
             for (const secondary of scenario.victoryConditions.secondary) {

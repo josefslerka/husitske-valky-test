@@ -3001,6 +3001,36 @@ body {
     display: none;
 }
 
+/* Trvalý cíl mise v hlavičce - vždy viditelný během hry */
+#objective-hud {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    max-width: 92%;
+    margin: 4px auto 0;
+    padding: 3px 12px;
+    background: rgba(0, 0, 0, 0.18);
+    border: 1px solid var(--gold);
+    border-radius: 12px;
+    font-size: var(--font-size-sm);
+    line-height: 1.3;
+    text-align: left;
+}
+
+#objective-hud .objective-hud-icon {
+    flex-shrink: 0;
+    font-size: 0.95rem;
+}
+
+#objective-hud #objective-hud-text {
+    color: var(--parchment-light);
+    font-weight: bold;
+}
+
+#objective-hud.hidden {
+    display: none;
+}
+
 /* Event Notification */
 /* Event notification - středověký iluminovaný styl */
 .event-notification {

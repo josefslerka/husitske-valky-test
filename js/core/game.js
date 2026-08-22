@@ -2195,8 +2195,11 @@ class Game {
         playerSpan.textContent = `${i18n.t('game.turnLabel')} ${factionName}`;
         playerSpan.className = this.currentFaction === 'crusaders' ? 'crusaders' : '';
 
-        // Číslo kola
-        document.getElementById('turn-number').textContent = `${i18n.t('game.roundLabel')} ${this.turnNumber}`;
+        // Číslo kola - u misí s limitem ukaž i deadline (Kolo X/Y)
+        const maxT = this.currentScenario && this.currentScenario.maxTurns;
+        document.getElementById('turn-number').textContent = maxT
+            ? `${i18n.t('game.roundLabel')} ${this.turnNumber}/${maxT}`
+            : `${i18n.t('game.roundLabel')} ${this.turnNumber}`;
 
         // Přehled armád
         this.updateArmyOverview();
