@@ -1158,8 +1158,7 @@ const Scenarios = {
 
         mapLabels: [
             { text: 'Kutná Hora', hexes: [[12,1],[13,1],[14,1],[15,1],[12,2],[13,2],[14,2],[15,2],[12,3],[13,3],[14,3],[15,3]] },
-            { text: 'Kaňk', hexes: [[13,5],[14,5],[15,5],[14,6],[15,6]] },
-            { text: '↙ Kolín', hexes: [[2,12],[2,13],[3,12],[3,13]] }
+            { text: 'Kaňk', hexes: [[13,5],[14,5],[15,5],[14,6],[15,6]] }
         ],
 
         terrain: {
@@ -1294,6 +1293,7 @@ const Scenarios = {
                 type: 'escape',
                 escapeZone: [[2,12], [2,13], [3,12], [3,13]],
                 unitsRequired: 5,
+                zoneLabel: '↙ Kolín',
                 description: 'Probijte se z obklíčení ke Kolínu (alespoň 5 jednotek)'
             },
             secondary: [
@@ -1494,6 +1494,7 @@ const Scenarios = {
                 positions: [[7, 11], [8, 11], [9, 11]],
                 count: 1,
                 deadline: 9,
+                zoneLabel: '↓ Brod',
                 description: 'Proraz k Německému Brodu — obsaď městskou pozici u řeky do kola 9, než královské vojsko unikne za hradby'
             },
             secondary: [

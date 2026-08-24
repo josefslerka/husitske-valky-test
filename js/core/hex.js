@@ -35,6 +35,7 @@ class HexGrid {
         this.highlightedHexes = [];
         this.attackableHexes = [];
         this.escapeZoneHexes = [];
+        this.escapeZoneLabel = '';
         this.mapLabels = [];
 
         // Animace
@@ -710,26 +711,29 @@ class HexGrid {
             }
         }
 
-        // Vykreslení textu escape zóny
-        if (this.escapeZoneHexes.length > 0) {
-            // Najdi střed escape zóny
-            const avgCol = this.escapeZoneHexes.reduce((s, h) => s + h.col, 0) / this.escapeZoneHexes.length;
-            const avgRow = this.escapeZoneHexes.reduce((s, h) => s + h.row, 0) / this.escapeZoneHexes.length;
-            const center = this.hexToPixel(Math.round(avgCol), Math.round(avgRow));
-            this.ctx.save();
-            this.ctx.font = 'bold 14px sans-serif';
-            this.ctx.fillStyle = '#00aa00';
-            this.ctx.textAlign = 'center';
-            this.ctx.fillText('→ Kolín', center.x, center.y - this.hexSize * 0.8);
-            this.ctx.restore();
-        }
-
         // WP1: řetězy mezi sepnutými vozy (kreslíme POD jednotkami)
         this.drawWagonChains(units);
 
         // Vykreslení jednotek
         for (const unit of units) {
             this.drawUnitDetailed(unit);
+        }
+
+        // Text cílové zóny (data-driven label; kreslíme NAD jednotkami, ať ho nepřekryjí)
+        if (this.escapeZoneHexes.length > 0 && this.escapeZoneLabel) {
+            const avgCol = this.escapeZoneHexes.reduce((s, h) => s + h.col, 0) / this.escapeZoneHexes.length;
+            const avgRow = this.escapeZoneHexes.reduce((s, h) => s + h.row, 0) / this.escapeZoneHexes.length;
+            const center = this.hexToPixel(Math.round(avgCol), Math.round(avgRow));
+            const ty = center.y - this.hexSize * 0.95;
+            this.ctx.save();
+            this.ctx.font = 'bold 15px sans-serif';
+            this.ctx.textAlign = 'center';
+            this.ctx.lineWidth = 4;
+            this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
+            this.ctx.strokeText(this.escapeZoneLabel, center.x, ty);
+            this.ctx.fillStyle = '#0a7a0a';
+            this.ctx.fillText(this.escapeZoneLabel, center.x, ty);
+            this.ctx.restore();
         }
 
         // Vykreslení animací
@@ -1606,8 +1610,9 @@ class HexGrid {
         this.attackableHexes = hexes || [];
     }
 
-    setEscapeZone(hexes) {
+    setEscapeZone(hexes, label = '') {
         this.escapeZoneHexes = hexes || [];
+        this.escapeZoneLabel = label || '';
     }
 
     clearHighlights() {

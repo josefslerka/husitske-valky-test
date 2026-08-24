@@ -213,11 +213,14 @@ const BattleLore = {
         ],
         trivia: [
             'Žižka byl u Německého Brodu ÚDAJNĚ pasován na rytíře (kolem 10. ledna)',
-            'Podle kronikářské tradice se 548 rytířů utopilo pod ledem Sázavy - kritický Dolejší ale propadlý led vůbec nezmiňuje',
+            'Pod ledem Sázavy se prý utopilo 548 jezdců - Dolejší led NEvyvrací, počítá je mezi ~12 000 ztrátami tažení; jeho skepse míří na „sedm let pusté město"',
             'Město bylo NĚKOLIK LET PUSTÉ - vlci běhali ulicemi',
             'Masakr byl odvetou za vraždění husitů v Kutné Hoře',
             'Skutečnou hrůzou ústupu byl mráz - prchající ženy a děti umrzaly cestou (Dolejší)',
-            'Křižáci se bránili zády ke hradbám u kostelíka sv. Vojtěcha, kryla je i komenda německých rytířů'
+            'Křižáci se bránili zády ke hradbám u kostelíka sv. Vojtěcha, kryla je i komenda německých rytířů',
+            'Mezi zajatci byl Záviš Černý z Garbova - v závěru bojů nejspíš velel královské posádce ve městě',
+            'Návrší Táborec u Habrů, kde Pipo Scolari sešikoval vojsko k boji, se dnes jmenuje „Peklo"',
+            'Při dobytí 9. ledna byly ženy a panny z města vyvedeny bez úhony - teprve pak bylo vydáno plamenům'
         ],
         casualties: { hussites: 'Nízké', enemy: 'Tisíce mrtvých v poli + ve městě' },
         aftermath: 'Drtivá výhra. 2. křížová výprava končí naprostým debaklem.',

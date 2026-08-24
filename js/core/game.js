@@ -252,11 +252,16 @@ class Game {
         // Převod souřadnic ve victoryConditions na mapové souřadnice
         this.convertVictoryConditionPositions(scenario);
 
-        // Nastavení escape zóny (pokud existuje)
-        if (scenario.victoryConditions && scenario.victoryConditions.primary && scenario.victoryConditions.primary.type === 'escape') {
-            const escapeZone = scenario.victoryConditions.primary.escapeZone || [];
-            // escapeZone je již převedena v convertVictoryConditionPositions
-            this.hexGrid.setEscapeZone(escapeZone.map(([col, row]) => ({ col, row })));
+        // Nastavení zvýrazněné cílové zóny (escape zóna nebo breakthrough pozice)
+        // Souřadnice jsou už převedené v convertVictoryConditionPositions výše.
+        const _primary = scenario.victoryConditions && scenario.victoryConditions.primary;
+        if (_primary) {
+            const zoneHexes = _primary.type === 'escape' ? (_primary.escapeZone || [])
+                            : _primary.type === 'breakthrough' ? (_primary.positions || [])
+                            : [];
+            if (zoneHexes.length > 0) {
+                this.hexGrid.setEscapeZone(zoneHexes.map(([col, row]) => ({ col, row })), _primary.zoneLabel || '');
+            }
         }
 
         // Nastavení map labels (názvy měst, řek, etc.) - s převodem souřadnic
