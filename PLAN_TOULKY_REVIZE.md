@@ -26,10 +26,10 @@ Průběžná konfrontace 10 dosud neprojetých bitev proti Toulkám českou minu
 ## Syntéza pro odbavení (10/10 hotovo)
 Celkem **~62 📜 trivia · 9 ⚙️ strukturálních · 7 🎚️ balanc**. Návrh, jak to rozdělit do dávek:
 
-**A) ⚙️ STRUKTURÁLNÍ „dělat teď" (malá, konkrétní):**
-- **Vytvořit chybějící battleLore** pro `plzen` a `sion` (obě ji nemají vůbec — jako kdysi Žatec). Materiálu dost.
-- **Malešov: swap `HYNEK_PODEBRADY` → `VIKTORIN_BOCEK`** (Poděbradští byli na ŽIŽKOVĚ straně; jednotka existuje).
-- **Event-refinementy přes existující mechaniky** (žádný nový engine kód): Most = noční `panic` při příchodu Fridricha (kůň praporečníka); Hořice = `dismount` event (páni museli sesednout); Lipany = odjezd Bedřicha ze Strážnice s 300 jezdci; Tachov = `rout` s chorálním textem (⚠️ jen text, ne plný chorál — nechat unikátní Domažlicím).
+**A) ⚙️ STRUKTURÁLNÍ „dělat teď" — ✅ HOTOVO (commits cb41a28 + 2bca414):**
+- ✅ **Vytvořen chybějící battleLore** pro `plzen` a `sion` (CZ báze + EN overlay + mapování).
+- ✅ **Malešov: swap `HYNEK_PODEBRADY` → `VIKTORIN_BOCEK`**.
+- ✅ **Event-beaty** (nakonec balance-neutrálně, jen narativ/text — mechanické debuffy přesunuty do balancu): Most = zásah koně praporečníka (kolo 5); Lipany = odjezd Bedřicha ze Strážnice s 300 jezdci; Tachov = rout text s chorálem; Hořice = text o nuceném sesednutí. *(Pozn.: plný `panic`/`dismount` debuff NEudělán záměrně — je to balanc-park.)*
 
 **B) 📜 OPRAVY nepřesností (nešířit chyby o pramenech — nejcennější):**
 - Malešov: „Hynek Boček z Poděbrad (zajat)" mezi nepřáteli → byl s Žižkou; ztráty 1 400 „z OBOU stran".
