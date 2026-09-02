@@ -250,7 +250,8 @@ const BattleLore = {
             'PRVNÍ velká husitská porážka',
             'Vymazána z učebnic - nehodila se do obrazu neporazitelných husitů',
             'Panna Marie se stala ochránkyní Mostu',
-            'Žižka NEBYL PŘÍTOMEN - zotavoval se z oslepení'
+            'Žižka NEBYL PŘÍTOMEN - zotavoval se z oslepení',
+            'Husité si před bitvou dělili kořist a podcenili německou jízdu - porážka přišla ve zmatku a nočním útěku'
         ],
         casualties: { hussites: '~500+', enemy: 'Neznámé' },
         aftermath: 'HUSITSKÁ PORÁŽKA. Oslabení pozice Jana Želivského.',
@@ -282,7 +283,8 @@ const BattleLore = {
             'PRVNÍ velká bitva Prokopa Holého jako velitele',
             'Padlo 7 říšských hrabat a 23 korouhevních pánů',
             'Smírný list odmítnut → obě strany si slíbily nikoho nešetřit; 24 klečících pánů pobito',
-            'POSLEDNÍ BITVA kde jízda čelně napadla vozovou hradbu'
+            'POSLEDNÍ BITVA kde jízda čelně napadla vozovou hradbu',
+            'V husitském vojsku bojoval i ruský kníže Fedor z Ostrogu - Ústí přitáhlo i cizí šlechtu'
         ],
         casualties: { hussites: 'Údajně jen 19 mužů (Starý letopisec)', enemy: '~4 000 (kroniky až 15 000)' },
         aftermath: 'Drtivé vítězství. Saské vévodství zdecimováno.',
@@ -314,7 +316,8 @@ const BattleLore = {
             'Křižáci použili vlastní vozovou hradbu - neúčinná',
             'Anglické lučištníky najal kardinál Beaufort až roku 1429 - do Čech nedorazili, regent je odklonil do Francie',
             '"Nevidím, před kým utíkat, žádného nepřítele nevidím!" - sarkastický výrok rytíře Kamrovce',
-            'Na 4 roky zastaveny křížové výpravy'
+            'Na 4 roky zastaveny křížové výpravy',
+            'Rytíř Kamrovec, autor sarkasmu „nevidím nepřítele“, padl při dobývání Tachova v průlomu hradby - místu se dodnes říká „Krvavá ulička“'
         ],
         casualties: { hussites: 'Zanedbatelné', enemy: 'Stovky' },
         aftermath: 'Bez boje - křižáci prchli! 4. křížová výprava končí debaklem.',
@@ -344,7 +347,8 @@ const BattleLore = {
             'Součást první "SPANILÉ JÍZDY" do Slezska',
             'Ke dvěma tisícům Slezáků pobito nebo utopeno v řece Nise',
             'Vévoda z Lehnice-Břehu zbaběle uprchl',
-            'Jediná větší bitva slezské rejsy - města se pak vzdávala bez boje'
+            'Jediná větší bitva slezské rejsy - města se pak vzdávala bez boje',
+            'Systém výpalného začal smlouvou hejtmanů s radou Minstrberku; kdo neplatil, lehl popelem (Falkenberk, Břeh)'
         ],
         casualties: { hussites: 'Nezaznamenány', enemy: '~2 000' },
         aftermath: 'Drtivé vítězství. Města se vzdávají nebo platí výpalné.',
@@ -375,7 +379,9 @@ const BattleLore = {
             'KARDINÁLŮV KLOBOUK ztracen na útěku - symbol vítězství',
             'Chorál "Ktož jsú boží bojovníci" zněl před bitvou',
             'Cesarini později prosadil diplomatické vyjednávání',
-            'Křižáci prchli, aniž by se odvážili bojovat'
+            'Křižáci prchli, aniž by se odvážili bojovat',
+            'Chorál „Ktož sú boží bojovníci“ zaslechli křižáci na SEDM KILOMETRŮ - husité ještě nebyli ani vidět',
+            'Po kardinálu Cesarinim zůstala kořist: papežská bula, zlatý pektorál, klobouk i roucho - dvě století chované v Domažlicích'
         ],
         casualties: { hussites: 'Minimální', enemy: 'Stovky; ukořistěno ~2 000 vozů a ~300 děl' },
         aftermath: 'Legendární vítězství. Konec vojenského řešení, jednání na Basilejském koncilu.',
@@ -441,7 +447,9 @@ const BattleLore = {
             'Čeněk z Vartenberka - notorický PŘEBĚHLÍK (4-5x změnil stranu)',
             'Diviš Bořek z Miletínka - později vítěz u Lipan',
             'PRVNÍ VNITŘNÍ KONFLIKT HUSITŮ',
-            'Východní Čechy = kolébka husitských hejtmanů'
+            'Východní Čechy = kolébka husitských hejtmanů',
+            'Po vítězství Žižka dobyl tvrz Kozojedy a nechal tam upálit šedesát lidí',
+            'Žižka před tažením burcoval: „Pomněte na náš první boj - malí proti velikým, neodění proti oděným jste statečně bojovali!“'
         ],
         casualties: { hussites: 'Neznámé', enemy: 'Stovky zabitých a zajatých' },
         aftermath: 'Drtivé orebské vítězství. Ukázalo sílu východočeských husitů.',
@@ -473,7 +481,8 @@ const BattleLore = {
             'VOZY S KAMENÍM - legenda nebo skutečnost? Předchůdce tankové taktiky',
             'Vrchol Žižkovy kariéry - slepý porazil přesilu',
             'Koalice se pokusila o ATENTÁT na Žižku',
-            'Žižka zemřel 4 měsíce poté (11. října 1424)'
+            'Žižka zemřel 4 měsíce poté (11. října 1424)',
+            'Praporečník Turkovec padl s pražskou korouhví v ruce; mezi padlými byl i Žižkův zeť'
         ],
         casualties: { hussites: '~200', enemy: '~1 400 padlých z obou stran (z toho 326 pražských hospodářů)' },
         aftermath: 'Geniální vítězství slepého vojevůdce. NEJKRVAVĚJŠÍ bitva husitských válek.',
