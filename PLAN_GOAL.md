@@ -162,6 +162,19 @@ pokračovat v leštění — sólo hobby projekt umírá na nekonečné leštěn
 co tě nudilo? co jsi nepochopil v cíli? co bys chtěl vědět o bitvě a nedozvěděl ses?). Hráč našel HUD cíle,
 který já v kódu nenašel — reální hráči najdou víc.
 
+### Volitelně: iPad (PWA → Capacitor), výhledově — Josefova otázka 2026-09-02
+Žánrově sedí výborně (tahová hexovka + čtecí vrstva = lean-back). Schodiště, ne buď–anebo:
+1. **PWA** — hostovat statické soubory (GitHub Pages), `manifest.json` + viewport meta, volitelně service worker;
+   „Přidat na plochu" = fullscreen appka. Téměř zadarmo, řeší i distribuci Aktu I testerům (URL).
+2. **Capacitor** (moderní nástupce Cordovy) — WKWebView skořápka kolem stejného kódu, vlastní Xcode projekt;
+   až když bude chtít App Store / **TestFlight** (testeři přes ikonu bez veřejného listingu) / iCloud savy.
+   Cena: Developer Program ~$99/rok, review (guideline 4.2 — hra projde, ale musí se chovat nativně).
+3. Nativní přepis — ne.
+**Společná práce pro obě cesty = touch UX pass:** hover neexistuje → tap = vybrat, druhý tap = potvrdit,
+long-press = info (tooltipy nesou reálné info: terénní bonusy, aura velitele, náhled šancí P3); posun mapy
+prstem, velikost hexů vůči prstu, landscape. Layout už zvládá ~750 px šířku. ⚠️ U PWA riziko: Safari může
+localStorage (savy!) po 7 dnech nepoužívání smazat (ITP). Velikost: S–M. Zařadit **k milníku Aktu I, ne před AI.**
+
 ## Co NEdělat
 - Neladit čísla jednotek/HP před položkou 2.
 - Nepřepisovat scénáře, které sedí (revize A–D je uzavřená).
