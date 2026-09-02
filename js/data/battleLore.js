@@ -512,6 +512,71 @@ const BattleLore = {
         casualties: { hussites: 'Nízké - město bylo dobře předzásobené', enemy: 'Značné; navíc hlad v táboře' },
         aftermath: 'Druhá křížová výprava se rozpadla, aniž se střetla se Žižkou v poli.',
         reliability: 'Vysoká - dobře doložené obléhání'
+    },
+
+    // Obléhání Plzně
+    'plzen': {
+        name: 'Obléhání Plzně',
+        date: '14. července 1433 - 9. května 1434 (10 měsíců)',
+        location: 'Plzeň, západní Čechy',
+        hussiteSide: {
+            commanders: ['Prokop Holý', 'Jan Pardus z Horky', 'Jan Čapek ze Sán'],
+            strength: 'Spojená polní vojska táborů a sirotků',
+            composition: 'Táboři, sirotci; posily z Polska (Čapek ze Sán)'
+        },
+        enemySide: {
+            commanders: ['Vilém Švihovský z Rýzmberka', 'plzeňský landfrýd'],
+            strength: 'Městská posádka a landfrýd',
+            composition: 'Katoličtí Plzeňané, západočeská katolická šlechta'
+        },
+        terrain: 'Město obklíčeno příkopy a roubenou hradbou s devíti věžemi; husité měli na 40 těžkých bombard.',
+        quotes: [
+            { text: 'Plzeňští napotom ve znaku svém nosili velblouda.', source: 'J. Dolejší: Husité (o původu městského znaku)' }
+        ],
+        trivia: [
+            'Plzeň odolala husitům opakovaně (1421, 1427, 1431) a nakonec 10 měsíců 1433-34 za Prokopa Holého',
+            'Jan Čapek ze Sán přivezl z polského tažení velblouda a přivedl ho 11. října 1433 před obléhanou Plzeň',
+            'Plzeňané velblouda při výpadu ukořistili - dali si ho do znaku; po obléhání ho darovali Norimberským',
+            'Husité obklíčili město příkopy a roubenou hradbou s devíti věžemi a 40 bombardami',
+            'Obléhání zlomil hlad, únava a ZRADA - Přibík z Klenové útok inicioval a pak ho sabotoval',
+            'Legát Palomar úmyslně protahoval basilejská jednání, aby husity vnitřně rozložil',
+            'Neúspěch u Plzně rozložil polní vojska a otevřel cestu k bratrovražedným Lipanům'
+        ],
+        casualties: { hussites: 'Vysoké ztráty a dezerce', enemy: 'Město uhájeno' },
+        aftermath: 'Největší neúspěch husitů. Krize a rozpad jednoty polních vojsk - přímá cesta k Lipanům.',
+        reliability: 'Vysoká'
+    },
+
+    // Obléhání hradu Sion (poslední odpor Jana Roháče)
+    'sion': {
+        name: 'Obléhání hradu Sion',
+        date: 'květen - 6. září 1437',
+        location: 'Hrádek Sion u Kutné Hory (~1 ha, bez studny)',
+        hussiteSide: {
+            commanders: ['Jan Roháč z Dubé'],
+            strength: 'Malá posádka (~50-60 mužů)',
+            composition: 'Poslední táborsko-sirotčí odbojníci'
+        },
+        enemySide: {
+            commanders: ['Hynce Ptáček z Pirkštejna (Roháčův synovec)', 'Michal Országh (uherské posily)'],
+            strength: 'Zemská hotovost a uherské oddíly',
+            composition: 'Vojsko Zikmunda Lucemburského, pražští měšťané'
+        },
+        terrain: 'Malý nový hrádek, který Roháč sám pojmenoval "Sión". Neměl studnu - obránci trpěli žízní.',
+        quotes: [
+            { text: 'Jako příkladný válečník svůj boj nevzdal a nepokořil se.', source: 'J. Dolejší: Husité (o Janu Roháčovi)' }
+        ],
+        trivia: [
+            'Roháč nový hrad sám pojmenoval "Sión" - po biblické svaté hoře',
+            'Hrádek měl jen asi 1 hektar a NEMĚL studnu - obránci trpěli nedostatkem vody',
+            'Velitel obléhání Hynce Ptáček byl Roháčův synovec - proto zprvu s útokem váhal',
+            'Zikmund poslal koncem srpna uherské posily (Michal Országh), což útok urychlilo',
+            'V Praze byli všichni oběšeni podle stavu: Roháč na nejvyšší šibenici, kněz na prostřední, lapkové na nejnižší',
+            'Archeologie zpochybňuje hrdinskou verzi: na místě 4měsíčního obléhání jen 3-4 % válečných nálezů - snad "divadelní" obležení, kde příbuzný Ptáček předstíral boj'
+        ],
+        casualties: { hussites: '52 obránců popraveno v Praze', enemy: 'Nízké (dle archeologie)' },
+        aftermath: 'Poslední husitský odpor zlomen. Zikmund pomstychtivě popravil obránce - a prý pozdě litoval.',
+        reliability: 'Střední - archeologie relativizuje kronikářský obraz hrdinné řeže'
     }
 };
 
@@ -532,7 +597,9 @@ const ScenarioToBattleLore = {
     'domazlice': 'domazlice',
     'lipany': 'lipany',
     'horice': 'horice',
-    'malesov': 'malesov'
+    'malesov': 'malesov',
+    'oblehani_plzne': 'plzen',
+    'sion': 'sion'
 };
 
 // Funkce pro získání lore podle ID scénáře
