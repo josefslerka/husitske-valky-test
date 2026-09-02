@@ -39,12 +39,13 @@ Celkem **~62 📜 trivia · 9 ⚙️ strukturálních · 7 🎚️ balanc**. Ná
 - Lipany: „700–900 upáleno ve stodolách" → Toulky mají jen ~700 zajato; přeformulovat na tradici, ne jistotu.
 - Tachov: příčina paniky — harcovníci ODRAŽENI, ne „odmítli".
 
-**C) 📜 OBOHACENÍ (nejlepší nové beaty, dávkově):**
-Kamrovec padl v „Krvavé uličce" (Tachov) · Fedor z Ostrogu v husitském vojsku (Ústí) · chorál na 7 km + Cesariniho relikvie 2 století v Domažlicích · velbloud z Polska → znak → dar Norimberku (Plzeň) · Bedřich odjel s ½ jízdy (Lipany) · šibenice podle stavu + „divadelní" obléhání dle archeologie (Sion) · Turkovec padl s korouhví + Žižkův zeť (Malešov).
+**C) 📜 OBOHACENÍ — ✅ HOTOVO kurátorsky (commit 8c86ead):**
+9 perel do 7 bitev (Kamrovec/Krvavá ulička, Fedor z Ostrogu, chorál 7 km + Cesariniho relikvie, Kozojedy + Žižkova výzva, Minstrberk výpalné, Turkovec s korouhví, nedisciplína u Mostu). Plzeň/Sion/Lipany už obohaceny v bucketu A. *(Velbloud, Sion-archeologie, Bedřich = udělány v A.)*
 
-**D) ⚠️ DESIGN TENZE k rozhodnutí (2):**
-- **Tachov chorál** — plná mechanika vs. jen text (doporučeno text, ať Domažlice zůstanou „písničkou, která vyhrála bitvu").
-- **Sion „divadlo"** — archeologie naznačuje tichou domluvu, ne hrdinskou řež; doporučeno nechat hrdinský tón hry (finále), ale revizionistickou pochybnost dát do battleLore/trivia.
+**D) ⚠️ DESIGN TENZE — ✅ VYŘEŠENO defaultně už v bucketu A:**
+- **Tachov chorál** → jen text (ne plná mechanika) — Domažlice zůstávají unikátní. HOTOVO.
+- **Sion „divadlo"** → revizionistická archeologická pochybnost je v battleLore/trivia, hrdinský tón scénáře ponechán. HOTOVO.
+- *(Kdyby chtěl Josef některé rozhodnutí obrátit — plný chorál u Tachova, nebo Sion víc jako frašku — je to jednorázová změna.)*
 
 **E) 🎚️ BALANC — vše PARK do AI** (přesily, poměry jednotek). Neinvestovat teď.
 
