@@ -31,7 +31,7 @@ Celkem **~62 📜 trivia · 9 ⚙️ strukturálních · 7 🎚️ balanc**. Ná
 - ✅ **Malešov: swap `HYNEK_PODEBRADY` → `VIKTORIN_BOCEK`**.
 - ✅ **Event-beaty** (nakonec balance-neutrálně, jen narativ/text — mechanické debuffy přesunuty do balancu): Most = zásah koně praporečníka (kolo 5); Lipany = odjezd Bedřicha ze Strážnice s 300 jezdci; Tachov = rout text s chorálem; Hořice = text o nuceném sesednutí. *(Pozn.: plný `panic`/`dismount` debuff NEudělán záměrně — je to balanc-park.)*
 
-**B) 📜 OPRAVY nepřesností (nešířit chyby o pramenech — nejcennější):**
+**B) 📜 OPRAVY nepřesností — ✅ HOTOVO (commit d064b14):**
 - Malešov: „Hynek Boček z Poděbrad (zajat)" mezi nepřáteli → byl s Žižkou; ztráty 1 400 „z OBOU stran".
 - Domažlice: „8 000 vozů ukořistěno" → ~2 000 + 300 děl (9 000 byl jen plán).
 - Nisa: velitel Prokop (ne Velek); „2 000 pobito NEBO utopeno"; nahradit anglický citát.
