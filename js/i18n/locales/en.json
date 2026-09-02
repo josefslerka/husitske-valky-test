@@ -1640,7 +1640,7 @@
           "description": "Hussites advance from Stříbro. Crusaders send cavalry to slow advance.",
           "events": [
             {"message": "Hussite army approaches from Stříbro! 16,000 infantry and 1,500 cavalry under Prokop the Great."},
-            {"text": "Jindřich of Plavno's cavalry returns without fight - refused to attack Hussites!"}
+            {"text": "Jindřich of Plavno's skirmishers are beaten back by the Hussites on the march - they rush back to camp in disorder, spreading panic!"}
           ]
         },
         {
@@ -2081,10 +2081,10 @@
           "message": "Hussite howitzers and shooters mow down attackers!"
         },
         {
-          "message": "Arnošt Flaška fell in battle!"
+          "message": "Arnošt Flaška's troop collapses under fire!"
         },
         {
-          "text": "Death of Arnošt Flaška shook Catholics."
+          "text": "The collapse of Flaška's troop shook the Catholics."
         },
         {
           "message": "Žižka: 'Now! Forward, for the chalice!'"
@@ -2132,8 +2132,8 @@
           "description": "Furious fighting on Gothard slopes. Catholics suffer heavy losses.",
           "events": [
             {"message": "Hussite hand cannons and shooters mow down attackers!"},
-            {"message": "Arnošt Flaška fell in battle!"},
-            {"text": "Death of Arnošt Flaška shook Catholics."}
+            {"message": "Arnošt Flaška's troop collapses under fire!"},
+            {"text": "The collapse of Flaška's troop shook the Catholics."}
           ]
         },
         {
@@ -2911,13 +2911,13 @@
       "significance": "Part of first 'Beautiful Ride' into Silesia. Only major battle of Silesian raid - cities then surrendered without fight.",
       "quotes": [
         {
-          "text": "They arrived before Neisse quite unexpectedly... The peasants immediately fled.",
-          "source": "The Hussite Wars"
+          "text": "Some two thousand Silesians were slain or drowned in the river; the Czechs stormed the suburb and burned it with the enemy's own wagons.",
+          "source": "Staré letopisy české (Old Czech Annals)"
         }
       ],
       "trivia": [
         "Part of first 'BEAUTIFUL RIDE' into Silesia",
-        "2,000 defenders drowned in Nysa river",
+        "Up to 2,000 Silesians killed or drowned in the Nysa river",
         "Duke of Legnica-Brzeg cowardly fled",
         "Only major battle of Silesian raid - cities then surrendered without fight"
       ],
@@ -2941,14 +2941,14 @@
           "Sigismund REFUSED participation"
         ],
         "strength": "100,000+ - LARGEST crusade",
-        "composition": "9,000 wagons in Hussite style, hundreds of guns"
+        "composition": "Several thousand wagons in Hussite style (9,000 planned), hundreds of guns"
       },
       "terrain": "Road to Domažlice, Všeruby pass. Pass - narrow bottleneck for fleeing.",
       "weather": "Unknown",
       "outcome": "Legendary victory. End of military solution, negotiations at Basel Council.",
       "casualties": {
         "hussites": "Minimal",
-        "enemy": "Hundreds, 8,000 wagons captured"
+        "enemy": "Hundreds; ~2,000 wagons and ~300 guns captured"
       },
       "aftermath": "Legendary victory. End of military solution, negotiations at Basel Council.",
       "significance": "Peak of Hussite glory. Largest crusade fled without daring to fight. CARDINAL'S HAT lost in flight became symbol.",
@@ -3024,7 +3024,7 @@
       ],
       "trivia": [
         "George of Poděbrady (future king) participated at 14 years",
-        "700-900 prisoners BURNED in barns",
+        "~700 prisoners; by chronicle tradition some burned in barns (the radio history reports only capture)",
         "Body of Prokop the Great NEVER FOUND",
         "Jan Roháč of Dubá resisted until 1437 - then executed"
       ],
@@ -3046,7 +3046,7 @@
         "commanders": [
           "Čeněk of Wartenberg (4x turncoat!)",
           "Henry Berka of Dubá",
-          "Mikšík of Úlibice (fell)"
+          "Arnošt Flaška of Pardubice"
         ],
         "strength": "Unknown",
         "composition": "Cavalry formations of Catholic Czech nobility"
@@ -3094,7 +3094,7 @@
       "enemySide": {
         "commanders": [
           "St. Gall Coalition",
-          "Hynek Boček of Poděbrady (captured)"
+          "Diviš Bořek of Miletínek"
         ],
         "strength": "Greater than Žižka's",
         "composition": "Prague union + Plzeň landfrieden + moderate Utraquists"
@@ -3104,7 +3104,7 @@
       "outcome": "Brilliant victory of blind commander. BLOODIEST battle of Hussite Wars.",
       "casualties": {
         "hussites": "~200",
-        "enemy": "1,200-3,000 dead"
+        "enemy": "~1,400 fallen on both sides (326 of them Prague householders)"
       },
       "aftermath": "Brilliant victory of blind commander. BLOODIEST battle of Hussite Wars.",
       "significance": "Peak of Žižka's career - blind defeated superior numbers. Coalition attempted ASSASSINATION of Žižka. Žižka died 4 months later (October 11, 1424).",

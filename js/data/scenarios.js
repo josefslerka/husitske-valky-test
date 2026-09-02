@@ -2045,7 +2045,7 @@ const Scenarios = {
                 description: 'Husité postupují od Stříbra. Křižáci vysílají jízdu, aby zpomalila postup.',
                 events: [
                     { trigger: 'turn_1', message: 'Husitské vojsko se blíží od Stříbra! 16 000 pěších a 1500 jezdců pod Prokopem Holým.' },
-                    { trigger: 'turn_2', type: 'panic', faction: 'crusaders', level: 1, text: 'Jízda Jindřicha z Plavna se vrací bez boje - odmítli napadnout husity!' }
+                    { trigger: 'turn_2', type: 'panic', faction: 'crusaders', level: 1, text: 'Harcovníci Jindřicha z Plavna odraženi husity na pochodu - ve zmatku se ženou zpět do ležení a šíří paniku!' }
                 ]
             },
             {
@@ -2165,7 +2165,7 @@ const Scenarios = {
 
         forces: {
             hussites: {
-                commander: 'Velek z Březnice',
+                commander: 'Prokop Holý',
                 units: [
                     // Sirotci pod Velkem z Březnice
                     { type: 'VOZOVA_HRADBA', col: 3, row: 5 },
@@ -3181,8 +3181,8 @@ const Scenarios = {
                 description: 'Zuřivé boje na svazích Gothardu. Panská jednota utrpí těžké ztráty.',
                 events: [
                     { trigger: 'turn_6', message: 'Husitské houfnice a střelci kosí útočníky!' },
-                    { trigger: 'turn_7', message: 'Arnošt Flaška padl v boji!' },
-                    { trigger: 'turn_7', type: 'morale_drop', faction: 'crusaders', amount: 2, text: 'Smrt Arnošta Flašky otřásla panskou jednotou.' }
+                    { trigger: 'turn_7', message: 'Houf Arnošta Flašky se hroutí pod palbou!' },
+                    { trigger: 'turn_7', type: 'morale_drop', faction: 'crusaders', amount: 2, text: 'Zhroucení Flaškova houfu otřáslo panskou jednotou.' }
                 ]
             },
             {

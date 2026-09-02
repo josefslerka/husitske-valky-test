@@ -338,11 +338,11 @@ const BattleLore = {
         },
         terrain: 'Před městskými hradbami. Překvapení a rychlý manévr.',
         quotes: [
-            { text: 'They arrived before Neisse quite unexpectedly... The peasants immediately fled.', source: 'The Hussite Wars' }
+            { text: 'Ke dvěma tisícům Slezáků pobito aneb v řece utopeno; Čechové vtrhli do předměstí a popálili je i s vozy nepřátelskými.', source: 'Staré letopisy české' }
         ],
         trivia: [
             'Součást první "SPANILÉ JÍZDY" do Slezska',
-            '2 000 obránců utopeno v řece Nise',
+            'Ke dvěma tisícům Slezáků pobito nebo utopeno v řece Nise',
             'Vévoda z Lehnice-Břehu zbaběle uprchl',
             'Jediná větší bitva slezské rejsy - města se pak vzdávala bez boje'
         ],
@@ -364,7 +364,7 @@ const BattleLore = {
         enemySide: {
             commanders: ['Fridrich Hohenzollern', 'Kardinál Giuliano Cesarini', 'Zikmund ODMÍTL účast'],
             strength: '100 000+ - NEJVĚTŠÍ křížová výprava',
-            composition: '9 000 vozů podle husitského vzoru, stovky děl'
+            composition: 'Několik tisíc vozů po husitském vzoru (plán 9 000), stovky děl'
         },
         terrain: 'Cesta k Domažlicím, Všerubský průsmyk. Průsmyk - úzké hrdlo pro prchající.',
         quotes: [
@@ -377,7 +377,7 @@ const BattleLore = {
             'Cesarini později prosadil diplomatické vyjednávání',
             'Křižáci prchli, aniž by se odvážili bojovat'
         ],
-        casualties: { hussites: 'Minimální', enemy: 'Stovky, ukořistěno 8 000 vozů' },
+        casualties: { hussites: 'Minimální', enemy: 'Stovky; ukořistěno ~2 000 vozů a ~300 děl' },
         aftermath: 'Legendární vítězství. Konec vojenského řešení, jednání na Basilejském koncilu.',
         reliability: 'Vysoká'
     },
@@ -408,7 +408,7 @@ const BattleLore = {
         ],
         trivia: [
             'Jiří z Poděbrad (budoucí král) byl účastníkem ve 14 letech',
-            '700-900 zajatců UPÁLENO ve stodolách',
+            '~700 zajatců; dle kronikářské tradice část upálena ve stodolách (Toulky uvádějí jen zajetí)',
             'Tělo Prokopa Holého NIKDY NENALEZENO',
             'Jan Roháč z Dubé vzdoroval až do 1437 - pak byl popraven'
         ],
@@ -428,7 +428,7 @@ const BattleLore = {
             composition: 'Orebité (východočeští husité), 10% jízdní'
         },
         enemySide: {
-            commanders: ['Čeněk z Vartenberka (4x přeběhlík!)', 'Jindřich Berka z Dubé', 'Mikšík z Úlibic (padl)'],
+            commanders: ['Čeněk z Vartenberka (4x přeběhlík!)', 'Jindřich Berka z Dubé', 'Arnošt Flaška z Pardubic'],
             strength: 'Neznámá',
             composition: 'Jízdní sbory katolické české šlechty'
         },
@@ -459,7 +459,7 @@ const BattleLore = {
             composition: 'Orebité + malý oddíl táborů'
         },
         enemySide: {
-            commanders: ['Svatohavelská koalice', 'Hynek Boček z Poděbrad (zajat)'],
+            commanders: ['Svatohavelská koalice', 'Diviš Bořek z Miletínka'],
             strength: 'Větší než Žižkova',
             composition: 'Pražský svaz + plzeňský landfrýd + umírnění kališníci'
         },
@@ -475,7 +475,7 @@ const BattleLore = {
             'Koalice se pokusila o ATENTÁT na Žižku',
             'Žižka zemřel 4 měsíce poté (11. října 1424)'
         ],
-        casualties: { hussites: '~200', enemy: '1 200-3 000 mrtvých' },
+        casualties: { hussites: '~200', enemy: '~1 400 padlých z obou stran (z toho 326 pražských hospodářů)' },
         aftermath: 'Geniální vítězství slepého vojevůdce. NEJKRVAVĚJŠÍ bitva husitských válek.',
         reliability: 'Střední - přesná lokalizace bojiště není určena'
     },
