@@ -1869,7 +1869,7 @@
           "name": "Útěk k Bavorsku",
           "description": "Křižácká armáda prchá. Husité pronásledují a dobývají opuštěný tábor.",
           "events": [
-            {"text": "Zbytky křižácké armády se dávají na útěk k bavorským hranicím!"},
+            {"text": "Při zaslechnutí chorálu „Ktož sú boží bojovníci“, troubění a hluku válečných vozů se zbytky křižácké armády dávají na zběsilý útěk!"},
             {"message": "Husité nacházejí opuštěný křižácký tábor plný zásob a výzbroje."}
           ]
         }
@@ -2287,7 +2287,7 @@
           "message": "Těžká jízda naráží na husitskou pěchotu! Útok vázne ve strmém svahu."
         },
         {
-          "text": "Jízda nemůže překonat strmý svah a sudlice!"
+          "text": "Páni musí sesednout z koní - do strmého svahu na vozy a sudlice se koňmo zaútočit nedá."
         },
         {
           "message": "Husitské houfnice a střelci kosí útočníky!"
@@ -2336,7 +2336,7 @@
           "events": [
             {"message": "Čeněk z Vartenberka: \"Vpřed! Rozdrťte kacíře!\""},
             {"message": "Těžká jízda naráží na husitskou pěchotu! Útok vázne ve strmém svahu."},
-            {"text": "Jízda nemůže překonat strmý svah a sudlice!"}
+            {"text": "Páni musí sesednout z koní - do strmého svahu na vozy a sudlice se koňmo zaútočit nedá."}
           ]
         },
         {

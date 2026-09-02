@@ -1525,7 +1525,8 @@
           "description": "Meissen army! Margrave Friedrich comes from north!",
           "events": [
             {"message": "Meissen banners on horizon! Margrave Friedrich comes with reinforcements!"},
-            {"message": "Castle assault is now very risky. Consider alternative objective."}
+            {"message": "Castle assault is now very risky. Consider alternative objective."},
+            {"message": "A hit on the Hussite standard-bearer's horse throws the ranks into disorder - and with the Meissen reinforcements arriving, fear spreads among the Hussites."}
           ]
         },
         {
@@ -1655,7 +1656,7 @@
           "name": "Flight to Bavaria",
           "description": "Crusader army flees. Hussites pursue and capture abandoned camp.",
           "events": [
-            {"text": "Remnants of crusader army flee to Bavarian borders!"},
+            {"text": "At the sound of the chorale \"Ye Who Are Warriors of God\", the horns and the rumble of war wagons, the remnants of the crusader army break into headlong flight!"},
             {"message": "Hussites find abandoned crusader camp full of supplies and weapons."}
           ]
         }
@@ -1930,7 +1931,8 @@
           "name": "Stalemate",
           "description": "Both sides behind wagon fort, negotiations fail.",
           "events": [
-            {"message": "Fratricidal battle begins..."}
+            {"message": "Fratricidal battle begins..."},
+            {"message": "Bedřich of Strážnice rides off with 300 horsemen to negotiate a truce - the radicals lose half their cavalry."}
           ]
         },
         {
@@ -2122,7 +2124,7 @@
           "events": [
             {"message": "Čeněk of Wartenberg: \"Forward! Crush heretics!\""},
             {"message": "Heavy cavalry crashes into Hussite infantry! Attack bogs down on steep slope."},
-            {"text": "Cavalry cannot overcome steep slope and pikes!"}
+            {"text": "The lords must dismount - there is no charging uphill onto the wagons and pikes on horseback."}
           ]
         },
         {

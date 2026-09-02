@@ -1692,7 +1692,8 @@ const Scenarios = {
                 description: 'Míšeňská armáda! Markrabě Fridrich přichází ze severu!',
                 events: [
                     { trigger: 'turn_5', message: 'Na obzoru míšeňské prapory! Markrabě Fridrich přichází s posilami!' },
-                    { trigger: 'turn_6', message: 'Útok na hrad je nyní velmi riskantní. Zvažte alternativní cíl.' }
+                    { trigger: 'turn_6', message: 'Útok na hrad je nyní velmi riskantní. Zvažte alternativní cíl.' },
+                    { trigger: 'turn_5', message: 'Zásah koně husitského praporečníka rozvrací šik - a s příchodem míšeňských posil se mezi husity šíří strach.' }
                 ]
             },
             {
@@ -2064,7 +2065,7 @@ const Scenarios = {
                 turnRange: [6, 10],
                 description: 'Křižácká armáda prchá. Husité pronásledují a dobývají opuštěný tábor.',
                 events: [
-                    { trigger: 'turn_6', type: 'rout', faction: 'crusaders', text: 'Zbytky křižácké armády se dávají na útěk k bavorským hranicím!' },
+                    { trigger: 'turn_6', type: 'rout', faction: 'crusaders', text: 'Při zaslechnutí chorálu „Ktož sú boží bojovníci", troubení a hluku válečných vozů se zbytky křižácké armády dávají na zběsilý útěk!' },
                     { trigger: 'turn_7', message: 'Husité nacházejí opuštěný křižácký tábor plný zásob a výzbroje.' }
                 ]
             }
@@ -2759,7 +2760,8 @@ const Scenarios = {
                 turnRange: [1, 4],
                 description: 'Obě strany za vozovou hradbou, vyjednávání selhává.',
                 events: [
-                    { trigger: 'turn_1', message: 'Bratrovražedná bitva začíná...' }
+                    { trigger: 'turn_1', message: 'Bratrovražedná bitva začíná...' },
+                    { trigger: 'turn_2', message: 'Bedřich ze Strážnice odjíždí se 300 jezdci vyjednávat smír - radikálové přicházejí o polovinu své jízdy.' }
                 ]
             },
             {
@@ -3169,7 +3171,7 @@ const Scenarios = {
                 events: [
                     { trigger: 'turn_3', message: 'Čeněk z Vartenberka: "Vpřed! Rozbijte Žižkovy radikály!"' },
                     { trigger: 'turn_4', message: 'Těžká jízda naráží na husitskou pěchotu! Útok vázne ve strmém svahu.' },
-                    { trigger: 'turn_5', type: 'cavalry_charge_blocked', text: 'Jízda nemůže překonat strmý svah a sudlice!' }
+                    { trigger: 'turn_5', type: 'cavalry_charge_blocked', text: 'Páni musí sesednout z koní - do strmého svahu na vozy a sudlice se koňmo zaútočit nedá.' }
                 ]
             },
             {
@@ -3291,7 +3293,7 @@ const Scenarios = {
                     { type: 'JAN_ZIZKA', col: 8, row: 3 },
                     { type: 'JAN_ROHAC', col: 9, row: 3 },
                     { type: 'JAN_HVEZDA', col: 10, row: 3 },
-                    { type: 'HYNEK_PODEBRADY', col: 7, row: 3 },
+                    { type: 'VIKTORIN_BOCEK', col: 7, row: 3 },
                     // Vozová hradba na svahu (tvořící obrannou linii)
                     { type: 'VOZOVA_HRADBA', col: 5, row: 4 },
                     { type: 'VOZOVA_HRADBA', col: 6, row: 4 },
