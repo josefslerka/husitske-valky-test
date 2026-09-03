@@ -711,6 +711,10 @@ class HexGrid {
             }
         }
 
+        // Názvy míst (mapLabels) - kreslíme POD jednotkami jako "tištěnou mapu".
+        // Data ve scénářích existovala od začátku, ale sloužila jen tooltipu.
+        this.drawMapLabels(fogOfWar, exploredHexes);
+
         // WP1: řetězy mezi sepnutými vozy (kreslíme POD jednotkami)
         this.drawWagonChains(units);
 
@@ -738,6 +742,66 @@ class HexGrid {
 
         // Vykreslení animací
         this.renderAnimations();
+    }
+
+    // Vykreslí názvy míst (mapLabels) na střed jejich hexů - kurzívou se světlým halo,
+    // ať jsou čitelné na libovolném terénu. Respektuje fog of war: popisek se ukáže,
+    // jakmile je prozkoumaný aspoň jeden z jeho hexů.
+    drawMapLabels(fogOfWar, exploredHexes) {
+        if (!this.mapLabels || this.mapLabels.length === 0) return;
+        this.ctx.save();
+        this.ctx.textAlign = 'center';
+        this.ctx.textBaseline = 'middle';
+        this.ctx.font = `italic ${Math.round(this.hexSize * 0.55)}px Georgia, serif`;
+        this.ctx.lineWidth = 3;
+        this.ctx.lineJoin = 'round';
+        this.ctx.strokeStyle = 'rgba(255, 248, 230, 0.85)';
+        this.ctx.fillStyle = 'rgba(60, 40, 20, 0.85)';
+        const occupied = [];
+        for (const label of this.mapLabels) {
+            if (!label.hexes || label.hexes.length === 0) continue;
+            if (fogOfWar && exploredHexes) {
+                const anyExplored = label.hexes.some(([c, r]) => exploredHexes.has(`${c},${r}`));
+                if (!anyExplored) continue;
+            }
+            let sx = 0, sy = 0;
+            for (const [c, r] of label.hexes) {
+                const p = this.hexToPixel(c, r);
+                sx += p.x;
+                sy += p.y;
+            }
+            const offset = Array.isArray(label.offset) ? label.offset : [0, 0];
+            const cx = sx / label.hexes.length + offset[0] * this.hexSize;
+            const baseY = sy / label.hexes.length + offset[1] * this.hexSize;
+            const metrics = this.ctx.measureText(label.text);
+            const width = metrics.width + 8;
+            const height = Math.round(this.hexSize * 0.7);
+            let cy = baseY;
+
+            // Datový offset řeší zamýšlené umístění; tento fallback
+            // zabrání překrytí i po responzivním přepočtu mapy.
+            for (let attempt = 0; attempt < 4; attempt++) {
+                const box = {
+                    left: cx - width / 2,
+                    right: cx + width / 2,
+                    top: cy - height / 2,
+                    bottom: cy + height / 2
+                };
+                const overlaps = occupied.some(other =>
+                    box.left < other.right && box.right > other.left &&
+                    box.top < other.bottom && box.bottom > other.top
+                );
+                if (!overlaps) {
+                    occupied.push(box);
+                    break;
+                }
+                cy = baseY + (attempt % 2 === 0 ? 1 : -1) * Math.ceil((attempt + 1) / 2) * height;
+            }
+
+            this.ctx.strokeText(label.text, cx, cy);
+            this.ctx.fillText(label.text, cx, cy);
+        }
+        this.ctx.restore();
     }
 
     // WP1: řetězy spojující sousední SEPNUTÉ vozy stejné frakce ("kolo na kolo").

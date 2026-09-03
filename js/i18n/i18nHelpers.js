@@ -96,6 +96,15 @@ function getLocalizedScenario(scenarioId, baseScenario) {
             };
         }
 
+        const zoneLabelKey = baseScenario.victoryConditions.primary?.zoneLabelKey;
+        const localizedZoneLabelKey = zoneLabelKey ? `mapLabels.${zoneLabelKey}` : `${scenarioKey}.objectives.zoneLabel`;
+        if (baseScenario.victoryConditions.primary?.zoneLabel && i18n.hasTranslation(localizedZoneLabelKey)) {
+            localizedScenario.victoryConditions.primary = {
+                ...localizedScenario.victoryConditions.primary,
+                zoneLabel: i18n.t(localizedZoneLabelKey)
+            };
+        }
+
         // Secondary objectives
         if (baseScenario.victoryConditions.secondary) {
             localizedScenario.victoryConditions.secondary = baseScenario.victoryConditions.secondary.map((obj, index) => {
@@ -136,11 +145,27 @@ function getLocalizedScenario(scenarioId, baseScenario) {
                         localizedEvent.text = i18n.t(`${eventKey}.text`);
                     }
 
+                    if (event.title && i18n.hasTranslation(`${eventKey}.title`)) {
+                        localizedEvent.title = i18n.t(`${eventKey}.title`);
+                    }
+
                     return localizedEvent;
                 });
             }
 
             return localizedPhase;
+        });
+    }
+
+    // Názvy míst na mapě jsou indexově zarovnané stejně jako eventy.
+    // Souřadnice a offsety zůstávají v bázi, locale mění pouze text.
+    if (baseScenario.mapLabels) {
+        localizedScenario.mapLabels = baseScenario.mapLabels.map((label, index) => {
+            const key = label.i18nKey ? `mapLabels.${label.i18nKey}` : `${scenarioKey}.mapLabels.${index}`;
+            return {
+                ...label,
+                text: i18n.hasTranslation(key) ? i18n.t(key) : label.text
+            };
         });
     }
 
@@ -302,6 +327,18 @@ function getLocalizedBattleLore(battleId, baseLore) {
         });
     }
 
+    // P8: kontrafaktuální kronika protistrany. Pole counter* používá
+    // Sion pro souběh kronikářské a archeologické verze.
+    if (baseLore.enemyChronicle) {
+        localizedLore.enemyChronicle = { ...baseLore.enemyChronicle };
+        for (const field of ['text', 'source', 'counterText', 'counterSource']) {
+            const key = `enemyChronicles.${battleId}.${field}`;
+            if (i18n.hasTranslation(key)) {
+                localizedLore.enemyChronicle[field] = i18n.t(key);
+            }
+        }
+    }
+
     return localizedLore;
 }
 
@@ -309,23 +346,94 @@ function getLocalizedBattleLore(battleId, baseLore) {
  * Aktualizuje všechna zobrazená data po změně jazyka
  */
 function updateGameDataLocalization() {
-    // Tato funkce se zavolá po změně jazyka
-    // Aktualizuje všechny zobrazené popisy, pokud jsou nějaké panely otevřené
+    if (typeof window === 'undefined' || typeof document === 'undefined') return;
 
-    // WP5: pokud běží bitva, přegeneruj jména stran (tah, přehled armád, indikátor AI)
-    if (window.game && window.game.gameState === 'playing' && typeof window.game.updateUI === 'function') {
-        window.game.updateUI();
+    const activeGame = window.game;
+    if (activeGame) {
+        // Jednotky si při vytvoření ukládají lokalizované texty. Při změně
+        // jazyka je proto obnovíme z neměnné šablony, bojové statistiky zůstanou.
+        if (Array.isArray(activeGame.units) && typeof UnitTypes !== 'undefined') {
+            activeGame.units.forEach(unit => {
+                const template = UnitTypes[unit.type];
+                if (!template) return;
+                const localized = getLocalizedUnit(unit.type, template);
+                unit.name = localized.name;
+                unit.description = localized.description;
+            });
+        }
+
+        // Probíhající scénář obsahuje převedené souřadnice a dynamický stav,
+        // takže aktualizujeme pouze jeho textovou vrstvu.
+        const scenarioId = activeGame.currentScenario?.id;
+        if (scenarioId && typeof ScenarioManager !== 'undefined') {
+            const baseScenario = ScenarioManager.getScenario(scenarioId);
+            const localized = getLocalizedScenario(scenarioId, baseScenario);
+            const scenario = activeGame.currentScenario;
+
+            for (const field of ['name', 'date', 'description', 'briefing', 'debriefing', 'historicalSignificance', 'factionNames']) {
+                if (localized[field] !== undefined) scenario[field] = localized[field];
+            }
+
+            if (localized.victoryConditions && scenario.victoryConditions) {
+                const localizedPrimary = localized.victoryConditions.primary;
+                const currentPrimary = scenario.victoryConditions.primary;
+                if (localizedPrimary && currentPrimary) {
+                    currentPrimary.description = localizedPrimary.description;
+                    currentPrimary.zoneLabel = localizedPrimary.zoneLabel || '';
+                    if (activeGame.hexGrid) activeGame.hexGrid.escapeZoneLabel = currentPrimary.zoneLabel;
+                }
+                (scenario.victoryConditions.secondary || []).forEach((objective, index) => {
+                    const translated = localized.victoryConditions.secondary?.[index];
+                    if (translated) objective.description = translated.description;
+                });
+            }
+
+            scenario.phases = localized.phases || scenario.phases;
+            if (activeGame.currentPhase) {
+                activeGame.currentPhase = scenario.phases.find(phase => phase.id === activeGame.currentPhase.id)
+                    || ScenarioManager.getCurrentPhase(scenario, activeGame.turnNumber);
+                const phaseName = document.getElementById('phase-name');
+                const phaseDescription = document.getElementById('phase-description');
+                if (phaseName) {
+                    phaseName.textContent = activeGame.choralActive
+                        ? `⚔️ ${i18n.t('game.choralActive')}`
+                        : (activeGame.currentPhase?.name || '');
+                }
+                if (phaseDescription) {
+                    phaseDescription.textContent = activeGame.choralActive
+                        ? i18n.t('game.choralEffect', { turns: activeGame.choralTurnsRemaining })
+                        : (activeGame.currentPhase?.description || '');
+                }
+            }
+
+            scenario.mapLabels = localized.mapLabels || scenario.mapLabels;
+            if (activeGame.hexGrid && Array.isArray(activeGame.hexGrid.mapLabels)) {
+                activeGame.hexGrid.mapLabels.forEach((label, index) => {
+                    if (localized.mapLabels?.[index]) label.text = localized.mapLabels[index].text;
+                });
+            }
+
+            const battleName = document.getElementById('battle-name');
+            const battleDate = document.getElementById('battle-date');
+            if (battleName) battleName.textContent = scenario.name;
+            if (battleDate) battleDate.textContent = scenario.date;
+        }
+
+        if (typeof activeGame.updateUI === 'function') activeGame.updateUI();
+        if (typeof activeGame.updateUnitPanel === 'function') activeGame.updateUnitPanel(activeGame.selectedUnit || null);
+        if (typeof activeGame.render === 'function') activeGame.render();
+
         const aiIndicator = document.getElementById('ai-thinking');
         if (aiIndicator && !aiIndicator.classList.contains('hidden')) {
-            window.game.showAIThinking(true); // re-set textu indikátoru v novém jazyce
+            activeGame.showAIThinking(true); // re-set textu indikátoru v novém jazyce
         }
     }
 
     // Pokud je otevřený help modal s jednotkami, aktualizuj ho
     const helpModal = document.getElementById('help-modal');
     if (helpModal && !helpModal.classList.contains('hidden')) {
-        if (typeof populateHelpUnits === 'function' && window.game) {
-            populateHelpUnits(window.game);
+        if (typeof populateHelpUnits === 'function' && activeGame) {
+            populateHelpUnits(activeGame);
         }
         // Aktualizuj také encyklopedii
         if (typeof updateEncyclopediaContent === 'function') {
@@ -333,12 +441,6 @@ function updateGameDataLocalization() {
         }
     }
 
-    // Pokud je otevřený mission modal, aktualizuj ho
-    const missionModal = document.getElementById('mission-modal');
-    if (missionModal && !missionModal.classList.contains('hidden')) {
-        // Re-render mission list pokud existuje funkce
-        if (typeof showActBattles === 'function' && window.currentAct) {
-            showActBattles(window.currentAct);
-        }
-    }
+    // Výběr mise používá uzávěr v main.js; ten se obnoví přes událost
+    // languageChanged vyslanou po dokončení tohoto kroku.
 }

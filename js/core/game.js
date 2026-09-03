@@ -32,6 +32,8 @@ class Game {
         this.fledByFaction = { hussites: 0, crusaders: 0 };
         this.initialPlayerUnits = 0;
         this.initialEnemyUnits = 0;
+        this.campaignRecorded = false;
+        this.campaignReputation = 50;
 
         // Rozšířené statistiky
         this.gameDuration = Date.now(); // Čas začátku hry
@@ -56,6 +58,12 @@ class Game {
 
         // Skriptovaný postoj AI (WP0) - řízení chování nepřítele přes eventy
         this.aiStance = { mode: 'default', target: null, untilTurn: null, proximity: 3 };
+
+        // Příběhové notifikace se zobrazují postupně. Některá kola spouštějí
+        // 2-3 eventy zároveň; bez fronty se karty kreslily přes sebe.
+        this.eventNotificationQueue = [];
+        this.activeEventNotification = null;
+        this.eventNotificationTimer = null;
 
         // Regenerace - sledování jednotek které již regenerovaly
         this.regeneratedUnits = new Set();
@@ -102,6 +110,7 @@ class Game {
         this.stopAnimationLoop();
         this.eventAbortController.abort();
         this.hideTooltip();
+        this.clearEventNotifications();
         this.gameState = 'destroyed';
     }
 
@@ -112,10 +121,12 @@ class Game {
         this.turnNumber = 1;
         this.selectedUnit = null;
         this.gameState = 'playing';
-        this.log = [];
+        this.clearLog();
         this.currentScenario = null;
         this.currentPhase = null;
         this.processedEvents = new Set();
+        this.campaignRecorded = false;
+        this.campaignReputation = 50; // Rychlá bitva je vždy neutrální.
 
         // Reset speciálních schopností
         this.choralUsed = false;
@@ -207,7 +218,7 @@ class Game {
         this.turnNumber = 1;
         this.selectedUnit = null;
         this.gameState = 'playing';
-        this.log = [];
+        this.clearLog();
         this.currentScenario = scenario;
         this.processedEvents = new Set();
         this.currentPhase = null;  // Reset fáze při načtení scénáře
@@ -218,6 +229,10 @@ class Game {
         this.lossesByFaction = { hussites: 0, crusaders: 0 };  // WP2a
         this.fledByFaction = { hussites: 0, crusaders: 0 };
         this.chronicleRecorded = false;  // WP2b: zápis do kroniky jen jednou za bitvu
+        this.campaignRecorded = false;
+        this.campaignReputation = typeof CampaignProgressSystem !== 'undefined'
+            ? CampaignProgressSystem.getReputation()
+            : 50;
 
         // Reset rozšířených statistik
         this.gameDuration = Date.now();
@@ -267,6 +282,7 @@ class Game {
         // Nastavení map labels (názvy měst, řek, etc.) - s převodem souřadnic
         this.hexGrid.mapLabels = (scenario.mapLabels || []).map(label => ({
             text: label.text,
+            offset: Array.isArray(label.offset) ? [...label.offset] : [0, 0],
             hexes: label.hexes.map(([col, row]) => {
                 const mapped = this.hexGrid.scenarioToMap(col, row);
                 return [mapped.col, mapped.row];
@@ -278,14 +294,21 @@ class Game {
 
         // Aplikace speciální počáteční morálky (např. Tachov - demoralizovaní křižáci)
         if (scenario.specialMechanics && scenario.specialMechanics.startingMorale) {
+            const reputationModifier = typeof CampaignProgressSystem !== 'undefined'
+                ? CampaignProgressSystem.getStartingMoraleModifier(scenario.id, this.campaignReputation)
+                : 0;
             for (const [faction, morale] of Object.entries(scenario.specialMechanics.startingMorale)) {
                 for (const unit of this.units) {
                     if (unit.faction === faction) {
-                        unit.morale = morale;
+                        const adjustedMorale = faction === 'crusaders' ? morale + reputationModifier : morale;
+                        unit.morale = Math.max(0, Math.min(unit.maxMorale, adjustedMorale));
                     }
                 }
             }
             this.addLog(i18n.t('gameLog.enemyDemoralized'), 'morale');
+            if (typeof CampaignProgressSystem !== 'undefined' && CampaignProgressSystem.affectsReputationBattle(scenario.id)) {
+                this.addLog(i18n.t(CampaignProgressSystem.getNarrativeKey(this.campaignReputation)), 'morale');
+            }
         }
 
         // Uložení počátečních počtů jednotek pro statistiky
@@ -444,7 +467,7 @@ class Game {
     processEvent(event) {
         switch (event.type) {
             case 'message':
-                this.showEventNotification(event.title || 'Zpráva', event.text);
+                this.showEventNotification(event.title || i18n.t('messages.messageTitle'), event.text);
                 break;
 
             case 'reinforcement':
@@ -475,7 +498,7 @@ class Game {
                     }
                 }
                 if (event.text) {
-                    this.showEventNotification('Morálka', event.text);
+                    this.showEventNotification(event.title || i18n.t('messages.moraleTitle'), event.text);
                 }
                 break;
 
@@ -512,7 +535,14 @@ class Game {
                 // Panika - snížení morálky a možný útěk jednotek
                 if (event.faction) {
                     const affectedUnits = this.units.filter(u => u.faction === event.faction && u.health > 0);
-                    const panicLevel = event.level || 1; // 1 = mírná, 2 = střední, 3 = těžká
+                    const basePanicLevel = event.level || 1; // 1 = mírná, 2 = střední, 3 = těžká
+                    const panicLevel = typeof CampaignProgressSystem !== 'undefined'
+                        ? CampaignProgressSystem.adjustPanicLevel(
+                            basePanicLevel,
+                            this.currentScenario?.id,
+                            this.campaignReputation
+                        )
+                        : basePanicLevel;
 
                     for (const unit of affectedUnits) {
                         // Snížení útoku kvůli panice
@@ -521,14 +551,19 @@ class Game {
 
                         // Těžká panika může způsobit okamžitý útěk některých jednotek
                         if (panicLevel >= 3 && Math.random() < 0.3) {
-                            this.routingUnits.add(unit);
+                            this.routingUnits.add(unit.id || `${unit.col}-${unit.row}`);
                             unit.isRouting = true;
                             this.addLog(i18n.t('gameLog.panicFlee', {unit: unit.name}), 'morale');
                         }
                     }
 
                     if (event.text) {
-                        this.showEventNotification('Panika!', event.text);
+                        const reputationLine = typeof CampaignProgressSystem !== 'undefined'
+                            && CampaignProgressSystem.affectsReputationBattle(this.currentScenario?.id)
+                            && basePanicLevel >= 2
+                            ? `\n\n${i18n.t(CampaignProgressSystem.getNarrativeKey(this.campaignReputation))}`
+                            : '';
+                        this.showEventNotification(event.title || i18n.t('messages.panicTitle'), event.text + reputationLine);
                     }
                     this.addLog(i18n.t('gameLog.enemyPanic', {penalty: panicLevel * 5}), 'morale');
                 }
@@ -550,22 +585,32 @@ class Game {
                         proximity: (typeof event.proximity === 'number') ? event.proximity : 3
                     };
                     if (event.text) {
-                        this.showEventNotification(event.title || 'Rozkaz', event.text);
+                        this.showEventNotification(event.title || i18n.t('messages.orderTitle'), event.text);
                     }
                 }
                 break;
 
             case 'rout':
-                // Hromadný útěk - celá armáda začne prchat
+                // Hromadný útěk. U Tachova a Domažlic určí podíl prchajících
+                // pověst vybudovaná v předchozích bitvách; jinde zůstává 100 %.
                 if (event.faction) {
-                    const routingFaction = this.units.filter(u => u.faction === event.faction && u.health > 0);
-                    for (const unit of routingFaction) {
-                        this.routingUnits.add(unit);
+                    const routingFaction = this.units
+                        .filter(u => u.faction === event.faction && u.health > 0)
+                        .sort((a, b) => (a.morale - b.morale) || (a.health - b.health));
+                    const routFraction = typeof CampaignProgressSystem !== 'undefined'
+                        ? CampaignProgressSystem.getRoutFraction(
+                            this.currentScenario?.id,
+                            this.campaignReputation
+                        )
+                        : 1;
+                    const routingCount = Math.max(1, Math.ceil(routingFaction.length * routFraction));
+                    for (const unit of routingFaction.slice(0, routingCount)) {
+                        this.routingUnits.add(unit.id || `${unit.col}-${unit.row}`);
                         unit.isRouting = true;
                     }
-                    this.moraleBroken = true;
+                    this.moraleBroken = routFraction >= 0.75;
                     if (event.text) {
-                        this.showEventNotification('Hromadný útěk!', event.text);
+                        this.showEventNotification(event.title || i18n.t('messages.massRoutTitle'), event.text);
                     }
                     this.addLog(i18n.t('gameLog.armyRouting'), 'morale');
                 }
@@ -582,9 +627,9 @@ class Game {
                         unit.defense = (unit.defense || 0) + 3;
                     }
                     if (event.text) {
-                        this.showEventNotification(event.title || 'Příkopy', event.text);
+                        this.showEventNotification(event.title || i18n.t('messages.trenchesTitle'), event.text);
                     }
-                    this.addLog('Husitské jednotky v příkopech získávají +3 k obraně!', 'turn');
+                    this.addLog(i18n.t('gameLog.trenchBonus'), 'turn');
                 }
                 break;
 
@@ -603,10 +648,10 @@ class Game {
                         unit.dismounted = true;
                     }
                     if (event.text) {
-                        this.showEventNotification(event.title || 'Sesednutí!', event.text);
+                        this.showEventNotification(event.title || i18n.t('messages.dismountTitle'), event.text);
                     }
                     if (dismountedUnits.length > 0) {
-                        this.addLog(`${dismountedUnits.length} jízdních jednotek muselo sesednout na svahu!`, 'combat');
+                        this.addLog(i18n.t('gameLog.dismountedUnits', { count: dismountedUnits.length }), 'combat');
                     }
                 }
                 break;
@@ -614,7 +659,7 @@ class Game {
             case 'tutorial':
                 // Pozůstatek tutoriálových TIPů ve scénářích - jen zobrazit text
                 if (event.text) {
-                    this.showEventNotification('💡 TIP', event.text);
+                    this.showEventNotification(i18n.t('messages.tipTitle'), event.text);
                 }
                 break;
 
@@ -634,7 +679,7 @@ class Game {
                         }
                     }
                     if (event.text) {
-                        this.showEventNotification('Morálka', event.text);
+                        this.showEventNotification(event.title || i18n.t('messages.moraleTitle'), event.text);
                     }
                 }
                 break;
@@ -652,10 +697,10 @@ class Game {
                         }
                     }
                     if (event.text) {
-                        this.showEventNotification('Útok jízdy zastaven', event.text);
+                        this.showEventNotification(event.title || i18n.t('messages.cavalryStoppedTitle'), event.text);
                     }
                     if (blocked > 0) {
-                        this.addLog(`${blocked} jízdních jednotek ztratilo bonus nárazu!`, 'combat');
+                        this.addLog(i18n.t('gameLog.chargeBlocked', { count: blocked }), 'combat');
                     }
                 }
                 break;
@@ -678,10 +723,10 @@ class Game {
                         }
                     }
                     if (event.text) {
-                        this.showEventNotification('Vozová hradba', event.text);
+                        this.showEventNotification(event.title || i18n.t('messages.wagonFortTitle'), event.text);
                     }
                     if (boosted > 0) {
-                        this.addLog(`${boosted} jednotek za vozy získává +3 k obraně!`, 'turn');
+                        this.addLog(i18n.t('gameLog.wagonBonusApplied', { count: boosted }), 'turn');
                     }
                 }
                 break;
@@ -697,7 +742,7 @@ class Game {
                         }
                     }
                     if (event.text) {
-                        this.showEventNotification('Terén', event.text);
+                        this.showEventNotification(event.title || i18n.t('messages.terrainTitle'), event.text);
                     }
                 }
                 break;
@@ -713,7 +758,7 @@ class Game {
                         }
                     }
                     if (event.text) {
-                        this.showEventNotification('Útok!', event.text);
+                        this.showEventNotification(event.title || i18n.t('messages.attackTitle'), event.text);
                     }
                 }
                 break;
@@ -740,10 +785,10 @@ class Game {
                         }
                     }
                     if (event.text) {
-                        this.showEventNotification(event.title || 'Masakr!', event.text);
+                        this.showEventNotification(event.title || i18n.t('messages.massacreTitle'), event.text);
                     }
                     if (massacreTargets.length > 0) {
-                        this.addLog(`Masakr! ${massacreTargets.length} nepřátelských jednotek utrpělo těžké ztráty.`, 'combat');
+                        this.addLog(i18n.t('gameLog.massacreResult', { count: massacreTargets.length }), 'combat');
                     }
                     this.render();
                 }
@@ -753,7 +798,7 @@ class Game {
                 // Neznámý typ eventu - zobraz aspoň vyprávění, ať se text
                 // tiše neztratí, a upozorni do konzole
                 if (event.text || event.message) {
-                    this.showEventNotification(event.title || 'Událost', event.text || event.message);
+                    this.showEventNotification(event.title || i18n.t('messages.eventTitle'), event.text || event.message);
                 }
                 console.warn(`Neimplementovaný typ eventu: ${event.type}`);
                 break;
@@ -773,7 +818,7 @@ class Game {
 
                 // Zobrazit zprávu o posilách
                 if (hussiteForces.reinforcements.message) {
-                    this.showEventNotification('Posily!', hussiteForces.reinforcements.message);
+                    this.showEventNotification(i18n.t('messages.reinforcementsTitle'), hussiteForces.reinforcements.message);
                 }
 
                 // Vytvořit jednotky
@@ -799,7 +844,7 @@ class Game {
 
                 // Zobrazit zprávu o posilách
                 if (crusaderForces.reinforcements.message) {
-                    this.showEventNotification('Posily nepřítele!', crusaderForces.reinforcements.message);
+                    this.showEventNotification(i18n.t('messages.enemyReinforcementsTitle'), crusaderForces.reinforcements.message);
                 }
 
                 // Vytvořit jednotky
@@ -826,7 +871,9 @@ class Game {
 
                         // Zobrazit zprávu
                         if (reinf.message) {
-                            const title = reinf.faction === 'hussites' ? 'Posily!' : 'Posily nepřítele!';
+                            const title = i18n.t(reinf.faction === 'hussites'
+                                ? 'messages.reinforcementsTitle'
+                                : 'messages.enemyReinforcementsTitle');
                             this.showEventNotification(title, reinf.message);
                         }
 
@@ -885,30 +932,58 @@ class Game {
         this.render();
     }
 
-    // Zobrazení notifikace eventu
+    clearEventNotifications() {
+        this.eventNotificationQueue = [];
+        if (this.eventNotificationTimer) {
+            clearTimeout(this.eventNotificationTimer);
+            this.eventNotificationTimer = null;
+        }
+        if (this.activeEventNotification) {
+            this.activeEventNotification.remove();
+            this.activeEventNotification = null;
+        }
+    }
+
+    // Zařazení notifikace eventu. Jednotlivé zprávy se zobrazují sekvenčně,
+    // aby se při více událostech v jednom kole nepřekrývaly.
     showEventNotification(title, text) {
-        // Vytvoření notifikace
+        if (!text || this.gameState === 'destroyed') return;
+        this.eventNotificationQueue.push({ title, text });
+        this.showNextEventNotification();
+    }
+
+    showNextEventNotification() {
+        if (this.activeEventNotification || this.eventNotificationQueue.length === 0 ||
+            this.gameState === 'destroyed') return;
+
+        const { title, text } = this.eventNotificationQueue.shift();
         const notification = document.createElement('div');
         notification.className = 'event-notification';
-        notification.innerHTML = `
-            <h3>${title}</h3>
-            <p>${text}</p>
-            <button>Pokračovat</button>
-        `;
+        const heading = document.createElement('h3');
+        const body = document.createElement('p');
+        const button = document.createElement('button');
+        heading.textContent = title || '';
+        body.textContent = text;
+        button.textContent = i18n.t('menu.continue');
+        notification.append(heading, body, button);
 
         document.body.appendChild(notification);
+        this.activeEventNotification = notification;
 
-        // Zavření notifikace
-        notification.querySelector('button').addEventListener('click', () => {
-            notification.remove();
-        });
-
-        // Automatické zavření po 10 sekundách
-        setTimeout(() => {
-            if (notification.parentNode) {
-                notification.remove();
+        const closeNotification = () => {
+            if (this.eventNotificationTimer) {
+                clearTimeout(this.eventNotificationTimer);
+                this.eventNotificationTimer = null;
             }
-        }, 10000);
+            notification.remove();
+            if (this.activeEventNotification === notification) {
+                this.activeEventNotification = null;
+            }
+            this.showNextEventNotification();
+        };
+
+        button.addEventListener('click', closeNotification, { once: true });
+        this.eventNotificationTimer = setTimeout(closeNotification, 10000);
     }
 
     // ==========================================
@@ -1191,7 +1266,7 @@ class Game {
         let html = '';
 
         if (unit) {
-            const factionName = unit.faction === 'hussites' ? 'Husité' : 'Křižáci';
+            const factionName = i18n.t(`factions.${unit.faction}`);
             const healthPercent = Math.round((unit.health / unit.maxHealth) * 100);
 
             // Získej viditelnost jednotky
@@ -1202,74 +1277,57 @@ class Game {
                 <div class="tooltip-faction">${factionName}</div>
                 <div class="tooltip-stats">
                     <div class="tooltip-stat"><span class="label">HP:</span> ${unit.health}/${unit.maxHealth}</div>
-                    <div class="tooltip-stat"><span class="label">Útok:</span> ${unit.attack}</div>
-                    <div class="tooltip-stat"><span class="label">Obrana:</span> ${unit.defense}</div>
-                    <div class="tooltip-stat"><span class="label">Dosah:</span> ${unit.special === 'reach' && unit.range === 1 ? '1-2' : unit.range}</div>
-                    <div class="tooltip-stat"><span class="label">Pohyb:</span> ${unit.movement}</div>
-                    <div class="tooltip-stat"><span class="label">👁 Viditelnost:</span> ${visionRange}</div>
+                    <div class="tooltip-stat"><span class="label">${i18n.t('help.unitStats.attack')}:</span> ${unit.attack}</div>
+                    <div class="tooltip-stat"><span class="label">${i18n.t('help.unitStats.defense')}:</span> ${unit.defense}</div>
+                    <div class="tooltip-stat"><span class="label">${i18n.t('help.unitStats.range')}:</span> ${unit.special === 'reach' && unit.range === 1 ? '1-2' : unit.range}</div>
+                    <div class="tooltip-stat"><span class="label">${i18n.t('help.unitStats.movement')}:</span> ${unit.movement}</div>
+                    <div class="tooltip-stat"><span class="label">👁 ${i18n.t('tooltip.visibility')}:</span> ${visionRange}</div>
                 </div>
             `;
 
             // Speciální schopnost (přeskočíme commander - ten má vlastní sekci)
             if (unit.special && unit.special !== 'commander') {
-                const specialNames = {
-                    armorPiercing: 'Drtivý úder (+30% vs obrněné)',
-                    reach: 'Dosah (útok přes spojence)',
-                    shieldWall: 'Štítová zeď (chrání střelce)',
-                    antiCavalry: 'Proti jízdě (+50% poškození)',
-                    terror: 'Děs (-10% útok nepříteli)',
-                    areaAttack: 'Plošný útok (50% splash)',
-                    mobile: 'Mobilní (střelba po pohybu)',
-                    wagenburg: 'Vozová hradba (+obrana s vozy)',
-                    pursuit: 'Pronásledování (+30% vs oslabené)',
-                    charge: 'Náraz (+50% z pohybu)',
-                    scout: 'Zvěd (6 viditelnost, rychlý únik, skrytý pohyb)',
-                    dismount: 'Sesazení (30% šance)',
-                    elite: 'Elitní (+10% ke všemu)',
-                    rapidFire: 'Rychlostřelba (2 útoky/tah)',
-                    siege: 'Obléhání (+100% vs vozy)',
-                    veteran: 'Veterán (+10% ke všemu)'
-                };
-                const specialName = specialNames[unit.special] || unit.special;
+                const specialKey = `special.${unit.special}`;
+                const specialName = i18n.hasTranslation(specialKey) ? i18n.t(specialKey) : unit.special;
                 html += `<div class="tooltip-special">${specialName}</div>`;
             }
 
             // Velitel - speciální zobrazení
             if (unit.special === 'commander' || unit.unitClass === 'commander') {
-                html += `<div class="tooltip-special" style="color: #ffd700;">👑 Velitel</div>`;
+                html += `<div class="tooltip-special" style="color: #ffd700;">👑 ${i18n.t('tooltip.commander')}</div>`;
             } else {
                 // Aura velitele - jednotka v dosahu spřáteleného velitele dostává bonus
                 const aura = this.getCommanderBonuses(unit);
                 if (aura && (aura.attack || aura.defense || aura.morale)) {
                     const parts = [];
-                    if (aura.attack) parts.push(`+${aura.attack} útok`);
-                    if (aura.defense) parts.push(`+${aura.defense} obrana`);
-                    if (aura.morale) parts.push(`+${aura.morale} morálka`);
-                    html += `<div class="tooltip-bonus">👑 V auře: ${aura.commander} (${parts.join(', ')})</div>`;
+                    if (aura.attack) parts.push(i18n.t('tooltip.attackBonus', { value: aura.attack }));
+                    if (aura.defense) parts.push(i18n.t('tooltip.defenseBonus', { value: aura.defense }));
+                    if (aura.morale) parts.push(i18n.t('tooltip.moraleBonus', { value: aura.morale }));
+                    html += `<div class="tooltip-bonus">👑 ${i18n.t('tooltip.inAura')}: ${aura.commander} (${parts.join(', ')})</div>`;
                 }
             }
 
             if (unit.isDefending) {
-                html += `<div class="tooltip-bonus">Obranný postoj (+30% obrana)</div>`;
+                html += `<div class="tooltip-bonus">${i18n.t('tooltip.defensiveStance')}</div>`;
             }
 
             if (unit.isTerrified) {
-                html += `<div class="tooltip-debuff">Vyděšen (-10% útok)</div>`;
+                html += `<div class="tooltip-debuff">${i18n.t('tooltip.terrified')}</div>`;
             }
 
             // Morálka
             html += `<div class="tooltip-morale" style="margin-top: 5px; padding-top: 5px; border-top: 1px solid #444;">
-                <span class="label">Morálka:</span>
+                <span class="label">${i18n.t('game.moraleLabel')}:</span>
                 <span style="color: ${unit.getMoraleColor()}">${unit.getMoraleStatus()} (${Math.round(unit.morale)}%)</span>
             </div>`;
 
             if (unit.isRouting) {
-                html += `<div class="tooltip-debuff" style="color: #ff4444; font-weight: bold;">🏃 PRCHÁ!</div>`;
+                html += `<div class="tooltip-debuff" style="color: #ff4444; font-weight: bold;">🏃 ${i18n.t('tooltip.routing')}</div>`;
             }
 
             // Informace o zbývajících útocích pro rapidFire
             if (unit.special === 'rapidFire' && unit.attackCount > 0 && unit.attackCount < 2) {
-                html += `<div class="tooltip-info">Zbývá ${2 - unit.attackCount} útok</div>`;
+                html += `<div class="tooltip-info">${i18n.t('tooltip.attacksRemaining', { count: 2 - unit.attackCount })}</div>`;
             }
 
             // Náhled šancí při útoku - pokud je vybraná jednotka a toto je nepřítel
@@ -1279,21 +1337,21 @@ class Game {
                     const dmg = p.min === p.max ? `${p.min}` : `${p.min} - ${p.max}`;
                     let killLine = '';
                     if (p.killsCertain) {
-                        killLine = '<div class="damage-range" style="color: #ff6b6b; font-weight: bold;">💀 Zabije cíl</div>';
+                        killLine = `<div class="damage-range" style="color: #ff6b6b; font-weight: bold;">💀 ${i18n.t('tooltip.killsTarget')}</div>`;
                     } else if (p.killsPossible) {
-                        killLine = '<div class="damage-range" style="color: #ffb86b;">Může zabít</div>';
+                        killLine = `<div class="damage-range" style="color: #ffb86b;">${i18n.t('tooltip.mayKill')}</div>`;
                     }
                     let counterLine = '';
                     if (p.counter) {
                         const c = p.counter.min === p.counter.max ? `${p.counter.min}` : `${p.counter.min} - ${p.counter.max}`;
                         const counterKill = p.counter.killsAttackerCertain
-                            ? ' <span style="color: #ff6b6b; font-weight: bold;">(padneš!)</span>'
-                            : (p.counter.killsAttackerPossible ? ' <span style="color: #ffb86b;">(riziko smrti)</span>' : '');
-                        counterLine = `<div class="damage-range" style="color: #ff9999;">↩️ Protiútok: ${c} HP${counterKill}</div>`;
+                            ? ` <span style="color: #ff6b6b; font-weight: bold;">${i18n.t('tooltip.attackerFalls')}</span>`
+                            : (p.counter.killsAttackerPossible ? ` <span style="color: #ffb86b;">${i18n.t('tooltip.deathRisk')}</span>` : '');
+                        counterLine = `<div class="damage-range" style="color: #ff9999;">↩️ ${i18n.t('tooltip.counterattack', { damage: c })}${counterKill}</div>`;
                     }
                     html += `
                         <div class="tooltip-damage-preview">
-                            <div class="damage-title">⚔️ Odhad poškození:</div>
+                            <div class="damage-title">⚔️ ${i18n.t('tooltip.damageEstimate')}</div>
                             <div class="damage-value">${dmg} HP</div>
                             ${killLine}
                             ${counterLine}
@@ -1307,35 +1365,35 @@ class Game {
         const hasFrozenRiver = this.currentScenario?.specialMechanics?.frozenRiver;
 
         const terrainNames = {
-            plains: 'Pláně',
-            forest: 'Les',
-            hills: 'Kopce',
-            water: hasFrozenRiver ? '❄️ Zamrzlá řeka' : 'Voda',
-            town: 'Město',
-            road: 'Cesta',
-            road2: 'Cesta',
-            dam: 'Hráz',
-            mud: 'Bahno',
-            swamp: 'Bažina',
-            slope: 'Svah',
-            trenches: 'Příkopy',
-            church: 'Kostel'
+            plains: i18n.t('terrain.plains'),
+            forest: i18n.t('terrain.forest'),
+            hills: i18n.t('terrain.hills'),
+            water: hasFrozenRiver ? i18n.t('tooltip.frozenRiver') : i18n.t('terrain.water'),
+            town: i18n.t('terrain.town'),
+            road: i18n.t('terrain.road'),
+            road2: i18n.t('terrain.road'),
+            dam: i18n.t('terrain.dam'),
+            mud: i18n.t('terrain.mud'),
+            swamp: i18n.hasTranslation('terrain.swamp') ? i18n.t('terrain.swamp') : i18n.t('terrain.mud'),
+            slope: i18n.t('terrain.slope'),
+            trenches: i18n.t('terrain.trenches'),
+            church: i18n.t('terrain.church')
         };
 
         const terrainBonuses = {
             plains: '',
-            forest: '+20% obrana',
-            hills: '+30% obrana',
-            water: hasFrozenRiver ? '⚠️ Tenký led - těžké jednotky riskují propadnutí' : 'Neprůchodné',
-            town: '+40% obrana',
-            road: 'Rychlý pohyb',
-            road2: 'Rychlý pohyb',
-            dam: '+20% obrana',
-            mud: 'Zpomaluje',
-            swamp: 'Zpomaluje, +10% obrana',
-            slope: '+10% obrana',
-            trenches: '+30% obrana',
-            church: '+20% obrana'
+            forest: i18n.t('tooltip.defenseModifier', { value: '+20' }),
+            hills: i18n.t('tooltip.defenseModifier', { value: '+30' }),
+            water: hasFrozenRiver ? i18n.t('tooltip.thinIce') : i18n.t('tooltip.impassable'),
+            town: i18n.t('tooltip.defenseModifier', { value: '+40' }),
+            road: i18n.t('tooltip.fastMovement'),
+            road2: i18n.t('tooltip.fastMovement'),
+            dam: i18n.t('tooltip.defenseModifier', { value: '+20' }),
+            mud: i18n.t('tooltip.slows'),
+            swamp: `${i18n.t('tooltip.slows')}, ${i18n.t('tooltip.defenseModifier', { value: '+10' })}`,
+            slope: i18n.t('tooltip.defenseModifier', { value: '+10' }),
+            trenches: i18n.t('tooltip.defenseModifier', { value: '+30' }),
+            church: i18n.t('tooltip.defenseModifier', { value: '+20' })
         };
 
         // Najdi map label pro tento hex
@@ -1350,14 +1408,14 @@ class Game {
         if (unit) {
             const tDef = Math.round(unit.getTerrainDefenseBonus(terrain) * 100);
             const tAtk = Math.round(unit.getTerrainAttackBonus(terrain) * 100);
-            const line = (val, label, extra = '') => !val ? '' :
-                (val > 0
-                    ? `<div class="tooltip-bonus">+${val}% ${label}${extra}</div>`
-                    : `<div class="tooltip-bonus" style="color: #b02323">${val}% ${label}${extra}</div>`);
+            const line = (val, key, extra = '') => !val ? '' :
+                `<div class="tooltip-bonus"${val < 0 ? ' style="color: #b02323"' : ''}>${i18n.t(key, { value: val > 0 ? `+${val}` : val })}${extra}</div>`;
             const highGround = (terrain === 'hills' || terrain === 'slope') && tAtk > 0 && unit.isRanged();
-            const moveNote = { road: 'Rychlý pohyb', road2: 'Rychlý pohyb', mud: 'Zpomaluje', swamp: 'Zpomaluje', slope: 'Zpomaluje',
-                water: hasFrozenRiver ? '⚠️ Tenký led – těžké jednotky riskují propadnutí' : 'Neprůchodné' }[terrain];
-            terrainLines = line(tDef, 'obrana') + line(tAtk, 'útok', highGround ? ' (z výšiny)' : '')
+            const moveNote = { road: i18n.t('tooltip.fastMovement'), road2: i18n.t('tooltip.fastMovement'),
+                mud: i18n.t('tooltip.slows'), swamp: i18n.t('tooltip.slows'), slope: i18n.t('tooltip.slows'),
+                water: hasFrozenRiver ? i18n.t('tooltip.thinIce') : i18n.t('tooltip.impassable') }[terrain];
+            terrainLines = line(tDef, 'tooltip.defenseModifier')
+                + line(tAtk, 'tooltip.attackModifier', highGround ? i18n.t('tooltip.highGroundSuffix') : '')
                 + (moveNote ? `<div class="tooltip-bonus" style="color: #6b5c38">${moveNote}</div>` : '');
         } else {
             terrainLines = terrainBonuses[terrain] ? `<div class="tooltip-bonus">${terrainBonuses[terrain]}</div>` : '';
@@ -1857,12 +1915,17 @@ class Game {
 
         if (Math.random() < drownChance) {
             this.addLog(i18n.t('gameLog.iceBroke', {unit: unit.name}), 'combat');
-            this.showEventNotification('Propadnutí!', `${unit.name} se propadl pod tenký led!`);
+            this.showEventNotification(
+                i18n.t('messages.iceBreakTitle'),
+                i18n.t('messages.iceBreakText', { unit: unit.name })
+            );
             unit.health = 0;
             this.units = this.units.filter(u => u !== unit);
             this.trackUnitDeath(unit, null);
+            this.handleUnitDeath(unit, null);
             this.deselectUnit();
             this.render();
+            this.victoryConditionsSystem.checkVictory();
             return true;
         } else {
             this.addLog(i18n.t('gameLog.iceCrossed', {unit: unit.name}), 'move');
@@ -1998,6 +2061,8 @@ class Game {
         if (!this.isTutorial) {
             // Zpracování prchajících jednotek na konci tahu
             this.moraleSystem.processRoutingUnits();
+            this.victoryConditionsSystem.checkVictory();
+            if (this.gameState !== 'playing') return;
 
             // Kontrola šíření paniky při morálním zlomu
             this.moraleSystem.checkRoutSpread();
@@ -2058,13 +2123,23 @@ class Game {
                 : this.currentScenario.debriefing.defeat;
         }
 
+        if (this.currentScenario?.id && typeof ChronicleSystem !== 'undefined'
+            && typeof ChronicleSystem.getEnemyChronicleText === 'function') {
+            if (!isVictory) {
+                // Dějiny právě napsal vítěz: porážku rámuje jeho kronika,
+                // ne husitský debriefing.
+                message = ChronicleSystem.getEnemyChronicleText(this.currentScenario.id, true) || message;
+            } else if (this.currentScenario.id === 'sion_1437') {
+                const competingAccounts = ChronicleSystem.getEnemyChronicleText(this.currentScenario.id, true);
+                if (competingAccounts) {
+                    message = `${message}\n\n${i18n.t('chronicle.competingAccounts')}\n${competingAccounts}`;
+                }
+            }
+        }
+
         // Fallback na generické zprávy
         if (!message) {
-            if (isVictory) {
-                message = 'Boží bojovníci zvítězili! Křižácká vojska byla poražena.';
-            } else {
-                message = 'Křižácká výprava uspěla. Husité byli poraženi.';
-            }
+            message = i18n.t(isVictory ? 'gameLog.victoryDestroyArmy' : 'gameLog.defeatDestroyOrRout');
         }
 
         if (isVictory) {
@@ -2105,6 +2180,28 @@ class Game {
         this.gameOverReason = null;
         this.gameOverTurn = null;
 
+        // Trvalý postup kampaně a pověst. Zapisuje se jednou; opakované
+        // otevření modalu ani dvojí victory check reputaci nezmění.
+        if (typeof CampaignProgressSystem !== 'undefined' && !this.campaignRecorded
+            && this.currentScenario?.id) {
+            this.campaignRecorded = true;
+            const alive = stats.aliveByFaction;
+            const playerLosses = (this.lossesByFaction.hussites || 0) + (this.fledByFaction.hussites || 0);
+            const playerTotal = (alive.hussites || 0) + playerLosses;
+            stats.campaignProgress = CampaignProgressSystem.recordBattle({
+                scenarioId: this.currentScenario.id,
+                result: isVictory ? 'victory' : 'defeat',
+                turns: completedTurns,
+                maxTurns: maxTurns || null,
+                lossRatio: playerTotal > 0 ? playerLosses / playerTotal : 1
+            });
+
+            if (stats.campaignProgress?.actCompleted && typeof ChronicleSystem !== 'undefined'
+                && typeof ChronicleSystem.recordActSummary === 'function') {
+                ChronicleSystem.recordActSummary(stats.campaignProgress.actCompleted);
+            }
+        }
+
         // WP2b: zápis do Kroniky (jednou za bitvu, jen scénáře - ne rychlá bitva)
         if (typeof ChronicleSystem !== 'undefined' && !this.chronicleRecorded
             && this.currentScenario && this.currentScenario.id) {
@@ -2136,7 +2233,7 @@ class Game {
             const title = document.getElementById('victory-title');
             const msgEl = document.getElementById('victory-message');
 
-            title.textContent = isVictory ? 'Vítězství Husitů!' : 'Vítězství Křižáků!';
+            title.textContent = i18n.t(isVictory ? 'gameLog.victoryHussites' : 'gameLog.victoryCrusaders');
             msgEl.textContent = message;
             modal.classList.remove('hidden');
         }
@@ -2379,7 +2476,7 @@ class Game {
             if (unitPanel) {
                 unitPanel.classList.add('empty-unit-panel');
             }
-            infoDiv.innerHTML = '<p class="no-selection">Vyberte jednotku</p>';
+            infoDiv.innerHTML = `<p class="no-selection">${i18n.t('tooltip.selectUnit')}</p>`;
             actionsDiv.classList.add('hidden');
             return;
         }
@@ -2387,30 +2484,11 @@ class Game {
             unitPanel.classList.remove('empty-unit-panel');
         }
 
-        // Popis speciálních schopností
-        const specialNames = {
-            armorPiercing: 'Drtivý úder (+30% vs obrněné)',
-            reach: 'Dosah (útok přes spojence)',
-            shieldWall: 'Štítová zeď (+20% obrana střelcům)',
-            antiCavalry: 'Proti jízdě (+50% poškození)',
-            wagenburg: 'Vozová hradba (+15% obrana/vůz)',
-            terror: 'Děs (-10% útok nepříteli)',
-            pursuit: 'Pronásledování (+30% vs oslabené)',
-            charge: 'Náraz (+50% po pohybu)',
-            scout: 'Průzkum (+1 dohled)',
-            dismount: 'Sesazení (30% šance zpomalit)',
-            elite: 'Elitní (+10% ke všemu)',
-            veteran: 'Veterán (+10% ke všemu)',
-            rapidFire: 'Rychlostřelba (2 útoky, 75% poškození)',
-            siege: 'Obléhání (+100% vs vozy)',
-            areaAttack: 'Plošný útok (50% sousedům)',
-            mobile: 'Mobilní (střelba po pohybu)'
-        };
-
         // Speciální schopnost HTML
         let specialHtml = '';
         if (unit.special && unit.special !== 'commander') {
-            const specialName = specialNames[unit.special] || unit.special;
+            const specialKey = `special.${unit.special}`;
+            const specialName = i18n.hasTranslation(specialKey) ? i18n.t(specialKey) : unit.special;
             specialHtml = `
                 <div class="unit-special" style="margin: 10px 0; padding: 8px; background: rgba(212, 175, 55, 0.15); border: 1px solid #5c4a1f; border-radius: 4px;">
                     <span style="color: #d4af37; font-weight: bold;">⚡ ${specialName}</span>
@@ -2423,25 +2501,25 @@ class Game {
         if (unit.isCommander && unit.isCommander()) {
             const abilities = unit.getCommanderAbilities();
             let abilitiesText = [];
-            if (abilities.moraleBonus) abilitiesText.push(`+${abilities.moraleBonus} morálka`);
-            if (abilities.attackBonus) abilitiesText.push(`+${abilities.attackBonus} útok`);
-            if (abilities.defenseBonus) abilitiesText.push(`+${abilities.defenseBonus} obrana`);
-            if (abilities.wagonBonus) abilitiesText.push(`+${abilities.wagonBonus} vozy`);
-            if (abilities.cavalryBonus) abilitiesText.push(`+${abilities.cavalryBonus} jízda`);
+            if (abilities.moraleBonus) abilitiesText.push(i18n.t('tooltip.moraleBonus', { value: abilities.moraleBonus }));
+            if (abilities.attackBonus) abilitiesText.push(i18n.t('tooltip.attackBonus', { value: abilities.attackBonus }));
+            if (abilities.defenseBonus) abilitiesText.push(i18n.t('tooltip.defenseBonus', { value: abilities.defenseBonus }));
+            if (abilities.wagonBonus) abilitiesText.push(i18n.t('tooltip.wagonsBonus', { value: abilities.wagonBonus }));
+            if (abilities.cavalryBonus) abilitiesText.push(i18n.t('tooltip.cavalryBonus', { value: abilities.cavalryBonus }));
 
             commanderHtml = `
                 <div class="commander-info" style="margin: 10px 0; padding: 10px; background: rgba(139, 69, 19, 0.3); border: 2px solid #8b4513; border-radius: 6px;">
                     <div style="color: #ffd700; font-weight: bold; font-size: 1.1rem; margin-bottom: 8px;">
-                        👑 VELITEL
+                        👑 ${i18n.t('tooltip.commander').toUpperCase()}
                     </div>
                     <div style="color: #d4af37; font-size: 0.85rem; margin-bottom: 5px;">
-                        Dosah aury: ${abilities.auraRange} polí
+                        ${i18n.t('tooltip.auraRange', { value: abilities.auraRange })}
                     </div>
                     <div style="color: #aaa; font-size: 0.8rem;">
-                        Bonusy: ${abilitiesText.join(', ')}
+                        ${i18n.t('tooltip.bonuses', { values: abilitiesText.join(', ') })}
                     </div>
-                    ${abilities.fearRange ? `<div style="color: #ff6b6b; font-size: 0.8rem; margin-top: 3px;">Strach: ${abilities.fearPenalty} morálky (${abilities.fearRange} polí)</div>` : ''}
-                    ${abilities.rallyBonus ? `<div style="color: #2f7d31; font-size: 0.8rem; margin-top: 3px;">Rally bonus: +${abilities.rallyBonus}%</div>` : ''}
+                    ${abilities.fearRange ? `<div style="color: #ff6b6b; font-size: 0.8rem; margin-top: 3px;">${i18n.t('tooltip.fear', { penalty: abilities.fearPenalty, range: abilities.fearRange })}</div>` : ''}
+                    ${abilities.rallyBonus ? `<div style="color: #2f7d31; font-size: 0.8rem; margin-top: 3px;">${i18n.t('tooltip.rallyBonus', { value: abilities.rallyBonus })}</div>` : ''}
                 </div>
             `;
         }
@@ -2458,12 +2536,12 @@ class Game {
                     <div class="aura-effect aura-bonus">
                         <div class="aura-header">
                             <span class="aura-icon">👑</span>
-                            <span class="aura-title">V auře velitele${nearestInfo ? ` (${nearestInfo.commander.name})` : ''}</span>
+                            <span class="aura-title">${i18n.t('tooltip.inAura')}${nearestInfo ? ` (${nearestInfo.commander.name})` : ''}</span>
                         </div>
                         <div class="aura-values">
-                            ${bonuses.attack > 0 ? `<span class="aura-value positive">+${bonuses.attack} útok</span>` : ''}
-                            ${bonuses.defense > 0 ? `<span class="aura-value positive">+${bonuses.defense} obrana</span>` : ''}
-                            ${bonuses.morale > 0 ? `<span class="aura-value positive">+${bonuses.morale} morálka</span>` : ''}
+                            ${bonuses.attack > 0 ? `<span class="aura-value positive">${i18n.t('tooltip.attackBonus', { value: bonuses.attack })}</span>` : ''}
+                            ${bonuses.defense > 0 ? `<span class="aura-value positive">${i18n.t('tooltip.defenseBonus', { value: bonuses.defense })}</span>` : ''}
+                            ${bonuses.morale > 0 ? `<span class="aura-value positive">${i18n.t('tooltip.moraleBonus', { value: bonuses.morale })}</span>` : ''}
                         </div>
                     </div>
                 `;
@@ -2474,10 +2552,10 @@ class Game {
                     <div class="aura-effect aura-fear">
                         <div class="aura-header">
                             <span class="aura-icon">⚠️</span>
-                            <span class="aura-title">Nepřátelský velitel!</span>
+                            <span class="aura-title">${i18n.t('tooltip.enemyCommander')}</span>
                         </div>
                         <div class="aura-values">
-                            <span class="aura-value negative">-${fearPenalty} morálka</span>
+                            <span class="aura-value negative">-${i18n.t('tooltip.moraleBonus', { value: fearPenalty }).replace(/^\+/, '')}</span>
                         </div>
                     </div>
                 `;
@@ -2487,10 +2565,10 @@ class Game {
         // Status efekty
         let statusHtml = '';
         if (unit.isTerrified) {
-            statusHtml += '<span style="color: #ff8844; font-size: 0.85rem;">😨 Vyděšený (-10% útok)</span><br>';
+            statusHtml += `<span style="color: #ff8844; font-size: 0.85rem;">😨 ${i18n.t('tooltip.terrified')}</span><br>`;
         }
         if (unit.isDefending) {
-            statusHtml += '<span style="color: #4488ff; font-size: 0.85rem;">🛡️ Obranný postoj (-30% poškození)</span><br>';
+            statusHtml += `<span style="color: #4488ff; font-size: 0.85rem;">🛡️ ${i18n.t('tooltip.defensiveStance')}</span><br>`;
         }
         // WP1/P4: stav vozové hradby - pevná zeď (nehýbe se) vs pochod (poloviční kryt)
         if (unit.isWagon() && unit.formationClosed) {
@@ -2501,16 +2579,19 @@ class Game {
             }
         }
         if (unit.isRouting) {
-            statusHtml += '<span style="color: #ff4444; font-size: 0.85rem;">🏃 PRCHÁ!</span><br>';
+            statusHtml += `<span style="color: #ff4444; font-size: 0.85rem;">🏃 ${i18n.t('tooltip.routing')}</span><br>`;
         }
 
         // Obklíčení - dynamická kontrola
         const surroundInfo = this.checkSurrounded(unit);
         if (surroundInfo.surrounded) {
-            const levelText = surroundInfo.level === 1 ? 'Částečně obklíčen' :
-                              surroundInfo.level === 2 ? 'Silně obklíčen' : 'Zcela obklíčen';
+            const levelText = i18n.t(`tooltip.surrounded${surroundInfo.level}`);
             const penalty = surroundInfo.level * 10;
-            statusHtml += `<span style="color: #ff6666; font-size: 0.85rem;">⚔️ ${levelText} (-${penalty}% obrana, -${surroundInfo.level * 5} morálka/tah)</span><br>`;
+            statusHtml += `<span style="color: #ff6666; font-size: 0.85rem;">⚔️ ${i18n.t('tooltip.surroundedEffect', {
+                state: levelText,
+                defense: penalty,
+                morale: surroundInfo.level * 5
+            })}</span><br>`;
         }
 
         infoDiv.innerHTML = `
@@ -2523,19 +2604,19 @@ class Game {
 
             <div class="unit-stats-grid">
                 <div class="unit-stat">
-                    <span><span class="stat-icon">⚔</span><span class="label">Útok</span></span>
+                    <span><span class="stat-icon">⚔</span><span class="label">${i18n.t('help.unitStats.attack')}</span></span>
                     <span class="value">${unit.attack}</span>
                 </div>
                 <div class="unit-stat">
-                    <span><span class="stat-icon">🛡</span><span class="label">Obrana</span></span>
+                    <span><span class="stat-icon">🛡</span><span class="label">${i18n.t('help.unitStats.defense')}</span></span>
                     <span class="value">${unit.defense}</span>
                 </div>
                 <div class="unit-stat">
-                    <span><span class="stat-icon">📏</span><span class="label">Dosah</span></span>
+                    <span><span class="stat-icon">📏</span><span class="label">${i18n.t('help.unitStats.range')}</span></span>
                     <span class="value">${unit.range}</span>
                 </div>
                 <div class="unit-stat">
-                    <span><span class="stat-icon">👣</span><span class="label">Pohyb</span></span>
+                    <span><span class="stat-icon">👣</span><span class="label">${i18n.t('help.unitStats.movement')}</span></span>
                     <span class="value">${unit.movement}</span>
                 </div>
             </div>
@@ -2547,7 +2628,7 @@ class Game {
 
             <div class="morale-section" style="padding-top: 8px; border-top: 1px solid rgba(201, 162, 39, 0.3);">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                    <span style="font-size: 0.75rem; color: #888; text-transform: uppercase;">Morálka</span>
+                    <span style="font-size: 0.75rem; color: #888; text-transform: uppercase;">${i18n.t('game.moraleLabel')}</span>
                     <span style="color: ${unit.getMoraleColor()}; font-weight: bold;">${unit.getMoraleStatus()}</span>
                 </div>
                 <div class="morale-bar" style="width: 100%; height: 6px; background: rgba(0,0,0,0.4); border-radius: 3px; overflow: hidden;">
@@ -2599,6 +2680,12 @@ class Game {
         }
     }
 
+    clearLog() {
+        this.log = [];
+        const logDiv = document.getElementById('game-log');
+        if (logDiv) logDiv.replaceChildren();
+    }
+
     addLog(message, type = '') {
         const logDiv = document.getElementById('game-log');
         const p = document.createElement('p');
@@ -2643,7 +2730,7 @@ class Game {
     // Uložení hry do localStorage
     saveGame() {
         const saveData = {
-            version: 2,
+            version: 3,
             scenarioId: this.currentScenario ? this.currentScenario.id : null,
             turnNumber: this.turnNumber,
             currentFaction: this.currentFaction,
@@ -2662,6 +2749,15 @@ class Game {
             stats: this.stats,
             initialPlayerUnits: this.initialPlayerUnits,
             initialEnemyUnits: this.initialEnemyUnits,
+            elapsedGameTime: Math.max(0, Date.now() - this.gameDuration),
+            bridgeUsedThisTurn: Boolean(this.bridgeUsedThisTurn),
+            campaignReputation: this.campaignReputation,
+            aiStance: {
+                mode: this.aiStance?.mode || 'default',
+                target: this.aiStance?.target ? { ...this.aiStance.target } : null,
+                untilTurn: this.aiStance?.untilTurn ?? null,
+                proximity: this.aiStance?.proximity ?? 3
+            },
             // Chorál a morální zlom
             choralUsed: this.choralUsed,
             choralActive: this.choralActive,
@@ -2697,8 +2793,8 @@ class Game {
 
             const saveData = JSON.parse(saveString);
 
-            // Kontrola verze (v1 = staré savy bez stavu scénáře)
-            if (saveData.version !== 1 && saveData.version !== 2) {
+            // Kontrola verze (v1/v2 = staré savy bez úplného stavu scénáře)
+            if (saveData.version !== 1 && saveData.version !== 2 && saveData.version !== 3) {
                 this.addLog(i18n.t('gameLog.saveIncompatible'), 'combat');
                 return false;
             }
@@ -2734,6 +2830,22 @@ class Game {
             if (saveData.initialPlayerUnits !== undefined) {
                 this.initialPlayerUnits = saveData.initialPlayerUnits;
                 this.initialEnemyUnits = saveData.initialEnemyUnits;
+            }
+            if (typeof saveData.elapsedGameTime === 'number') {
+                this.gameDuration = Date.now() - Math.max(0, saveData.elapsedGameTime);
+            }
+            this.bridgeUsedThisTurn = Boolean(saveData.bridgeUsedThisTurn);
+            if (typeof saveData.campaignReputation === 'number') {
+                this.campaignReputation = Math.max(0, Math.min(100, saveData.campaignReputation));
+            }
+            this.campaignRecorded = false;
+            if (saveData.aiStance && typeof saveData.aiStance === 'object') {
+                this.aiStance = {
+                    mode: saveData.aiStance.mode || 'default',
+                    target: saveData.aiStance.target ? { ...saveData.aiStance.target } : null,
+                    untilTurn: saveData.aiStance.untilTurn ?? null,
+                    proximity: saveData.aiStance.proximity ?? 3
+                };
             }
 
             // Chorál a morální zlom
@@ -3149,7 +3261,7 @@ class Game {
         // Kontrola terénu - město (getTerrain vrací string, ne objekt)
         const terrain = this.hexGrid.getTerrain(unit.col, unit.row);
         if (terrain === 'town') {
-            return { type: 'town', name: 'město' };
+            return { type: 'town', name: i18n.t('terrain.town') };
         }
 
         // Kontrola sousedních polí pro vozy
@@ -3160,7 +3272,7 @@ class Game {
                 adjacentUnit.faction === unit.faction &&
                 adjacentUnit.health > 0 &&
                 adjacentUnit.isWagon && adjacentUnit.isWagon()) {
-                return { type: 'wagon', name: 'vozová hradba' };
+                return { type: 'wagon', name: i18n.t('messages.wagonFortTitle') };
             }
         }
 
@@ -3233,8 +3345,8 @@ class Game {
         const phaseDesc = document.getElementById('phase-description');
 
         phasePanel.classList.remove('hidden');
-        phaseName.textContent = '⚔️ Chorál!';
-        phaseDesc.textContent = '+50% útok, -20% obrana (2 kola)';
+        phaseName.textContent = `⚔️ ${i18n.t('game.choralActive')}`;
+        phaseDesc.textContent = i18n.t('game.choralEffect', { turns: 2 });
 
         // WP4: psychologický šok chorálu na nepřítele + přehrání hymnu
         this.applyChoralShock();
@@ -3254,15 +3366,22 @@ class Game {
     // okamžitého útěku při morálce <25), husité +5. Volá se při každé aktivaci chorálu.
     applyChoralShock() {
         let routed = 0;
+        const moraleDamage = typeof CampaignProgressSystem !== 'undefined'
+            ? CampaignProgressSystem.getChoralMoraleDamage(
+                this.currentScenario?.id,
+                8,
+                this.campaignReputation
+            )
+            : 8;
         for (const unit of this.units) {
             if (unit.health <= 0) continue;
             if (unit.faction === 'hussites') {
                 unit.morale = Math.min(unit.maxMorale, unit.morale + 5);
             } else {
-                unit.morale = Math.max(0, unit.morale - 8);
+                unit.morale = Math.max(0, unit.morale - moraleDamage);
                 // Po zásahu nízká morálka -> okamžitý útěk (zrcadlí panic level 3)
                 if (unit.morale < 25 && Math.random() < 0.3) {
-                    this.routingUnits.add(unit);
+                    this.routingUnits.add(unit.id || `${unit.col}-${unit.row}`);
                     unit.isRouting = true;
                     routed++;
                     this.addLog(i18n.t('gameLog.panicFlee', {unit: unit.name}), 'morale');
@@ -3284,16 +3403,16 @@ class Game {
             // Chorál je aktivní - zobrazit zbývající kola
             choralBtn.disabled = true;
             choralBtn.classList.add('active');
-            choralBtn.textContent = `⚔️ Chorál (${this.choralTurnsRemaining} kola)`;
+            choralBtn.textContent = `⚔️ ${i18n.t('game.choral')} (${this.choralTurnsRemaining})`;
         } else if (this.choralUsed) {
             // Chorál byl použit a už vypršel
             choralBtn.disabled = true;
             choralBtn.classList.remove('active');
-            choralBtn.textContent = '⚔️ Chorál (použit)';
+            choralBtn.textContent = `⚔️ ${i18n.t('game.choralUsed')}`;
         } else {
             choralBtn.disabled = this.currentFaction !== 'hussites';
             choralBtn.classList.remove('active');
-            choralBtn.textContent = '⚔️ Chorál';
+            choralBtn.textContent = `⚔️ ${i18n.t('game.choral')}`;
         }
     }
 
@@ -3324,7 +3443,7 @@ class Game {
             // Aktualizovat phase panel
             const phaseDesc = document.getElementById('phase-description');
             if (phaseDesc) {
-                phaseDesc.textContent = `+50% útok, -20% obrana (${this.choralTurnsRemaining} kolo)`;
+                phaseDesc.textContent = i18n.t('game.choralEffect', { turns: this.choralTurnsRemaining });
             }
         }
 

@@ -1,18 +1,18 @@
 # Husitské války - Tahová strategie
 
-Historická tahová strategická hra zasazená do období husitských válek (1419-1434). Hrajte za husitské armády pod vedením Jana Žižky, Prokopa Holého a dalších legendárních velitelů.
+Historická tahová strategická hra zasazená do období husitských válek (1419-1437). Hrajte za husitské armády pod vedením Jana Žižky, Prokopa Holého a dalších legendárních velitelů.
 
 ## 🎮 O hře
 
 Taktická tahovka na hexagonálním poli, která přináší historicky autentický pohled na husitské války. Využijte revoluční wagenburgovou taktiku, palné zbraně a důmyslné taktické manévry k porazení numericky i vojensky převažujících křižáckých armád.
 
-### Hlavní featury
+### Hlavní funkce
 
-- **18+ historických bitev** - Od Sudoměře až po Lipany
-- **Authentic unit types** - Cepníci, vozová hradba, píšťalníci, těžká jízda a mnoho dalších
+- **18 historických bitev** - Od Živohoště po poslední odpor na Sionu
+- **Historické typy jednotek** - Cepníci, vozová hradba, ručničáři, šlechtická jízda a další
 - **Komplexní bojový systém** - Terén, morálka, velitelé, speciální schopnosti
 - **Fog of War** - Omezená viditelnost, průzkum, skryté jednotky
-- **Morálkový systém** - Jednotky mohou prchát, rallovat nebo dezertovat
+- **Morálkový systém** - Jednotky mohou prchat, znovu se semknout nebo dezertovat
 - **Variabilní vítězné podmínky** - Držení pozic, zničení nepřítele, přežití, únik
 - **AI protivník** - Taktická AI pro křižácké armády
 - **Kampaňový režim** - Propojené scénáře s progresí příběhu
@@ -20,18 +20,26 @@ Taktická tahovka na hexagonálním poli, která přináší historicky autentic
 
 ## 🚀 Jak spustit
 
-Hra je čistý HTML/CSS/JavaScript bez závislostí. Jednoduše:
+Hra je čistý HTML/CSS/JavaScript bez instalačních závislostí. Kvůli načítání lokalizačních JSON souborů ji spouštějte přes lokální HTTP server:
 
 ```bash
-# Otevřete index.html v prohlížeči
-open index.html
-
-# Nebo spusťte lokální server
+# V kořeni projektu
 python3 -m http.server 8000
-# Pak otevřete http://localhost:8000
 ```
 
-**Doporučené prohlížeče:** Chrome, Firefox, Safari (moderní verze)
+Pak otevřete [http://localhost:8000](http://localhost:8000). Přímé otevření `index.html` přes `file://` nemusí kvůli bezpečnostním pravidlům prohlížeče načíst překlady.
+
+**Doporučené prohlížeče:** aktuální Chrome, Firefox nebo Safari.
+
+### Kontroly před testováním
+
+```bash
+node scripts/validate-locales.js
+node scripts/test-core.js
+node validate_scenarios.js
+```
+
+První řízený playtest je popsaný v [docs/ACT_I_PLAYTEST.md](docs/ACT_I_PLAYTEST.md).
 
 ## 📁 Struktura projektu
 
@@ -45,6 +53,7 @@ strategie/
 │   │   └── hex.js         # Hexagonální mřížka
 │   ├── systems/           # Herní systémy
 │   │   ├── CombatSystem.js         # Bojový systém
+│   │   ├── CampaignProgressSystem.js # Postup kampaně a pověst
 │   │   ├── FogOfWarSystem.js       # Systém viditelnosti
 │   │   ├── MoraleSystem.js         # Systém morálky
 │   │   ├── VictoryConditionsSystem.js  # Vítězné podmínky
@@ -120,10 +129,10 @@ Hra vychází z historických pramenů a odborné literatury:
 - Historické osobnosti s reálnými charakteristikami
 - Wagenburgová taktika a palné zbraně (husitská revoluce ve vojenství)
 
-## 📝 Development Status
+## 📝 Stav vývoje
 
-**Verze:** Alpha 0.1
-**Stav:** Alpha testing - aktivní vývoj
+**Verze:** Alpha 0.2 (vývojová)
+**Stav:** připraveno k playtestu Aktu I
 
 ### Dokončeno
 - ✅ Kompletní bojový systém
@@ -135,8 +144,19 @@ Hra vychází z historických pramenů a odborné literatury:
 - ✅ Tutorial
 - ✅ Encyklopedie
 - ✅ Save/Load system
+- ✅ Česká a anglická lokalizace
+- ✅ Doktríny AI, postup kampaně a pověst
+- ✅ Kronika hráče i vítězné protistrany
 
-### Plánované featury
+### Známé limity
+
+- AI používá čitelné historické doktríny, ale nenahrazuje lidského soupeře.
+- Balanc scénářů, hlavně v pozdějších aktech, potřebuje ověřit reálnými hráči.
+- Dotykové ovládání a iPad zatím nemají samostatný UX průchod.
+- Postup i savy jsou v `localStorage`; vymazání dat webu je odstraní a mezi prohlížeči se nesynchronizují.
+- Hra nemá backend, multiplayer ani cloudové ukládání.
+
+### Plánované funkce
 - 🔄 Multiplayer/hotseat mode
 - 🔄 Scenario editor
 - 🔄 Achievement system

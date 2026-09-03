@@ -416,7 +416,8 @@ class VictoryConditionsSystem {
                 // Vítězství pokud nepřítel je zničen NEBO prchá (morální zlom)
                 const enemyRouting = enemyUnits.filter(u => u.isRouting).length;
                 const enemyDestroyed = (this.game.enemiesKilled / this.game.initialEnemyUnits) * 100;
-                victoryAchieved = (enemyDestroyed >= 50) || (this.game.moraleBroken && enemyRouting > enemyUnits.length / 2);
+                victoryAchieved = (enemyDestroyed >= (primary.percent || 50)) ||
+                    (this.game.moraleBroken && enemyRouting > enemyUnits.length / 2);
 
                 if (victoryAchieved) {
                     if (this.game.moraleBroken) {

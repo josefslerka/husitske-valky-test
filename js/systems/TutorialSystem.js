@@ -149,7 +149,7 @@ class TutorialSystem {
             modal.style.pointerEvents = 'none';
         } else {
             continueBtn.style.display = 'block';
-            continueBtn.textContent = 'Pokračovat';
+            continueBtn.textContent = i18n.t('tutorial.continue');
             // Modal pozadí nepotřebuje pointer-events
             modal.style.pointerEvents = 'none';
         }
@@ -230,8 +230,8 @@ class TutorialSystem {
 
         // Zobrazení gratulace
         this.game.showEventNotification(
-            'Výcvik dokončen!',
-            'Naučil ses základy vedení boje. Nyní jsi připraven vést husitská vojska do skutečné bitvy!'
+            i18n.t('tutorial.completed'),
+            i18n.t('tutorial.completedText')
         );
 
         // Po 3 sekundách návrat do menu

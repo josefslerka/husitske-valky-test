@@ -119,7 +119,8 @@ const BattleLore = {
             '3 ŽENY bránily Vítkov',
             'Pokřik "Hrrr na ně!" se stal heslem husitů',
             'Jezdecká socha Žižky na Vítkově - třetí největší na světě',
-            'Den před bitvou jízda rozprášila Pražany, kteří proti rozkazu vyrazili z brány'
+            'Den před bitvou jízda rozprášila Pražany, kteří proti rozkazu vyrazili z brány',
+            'Křižáci si zapomněli žebříky — proto marně uvázli v příkopech pod srubem'
         ],
         casualties: { hussites: 'Jednotky až desítky', enemy: '100-300 padlých' },
         aftermath: 'Rozhodné vítězství. 30. července rozpuštění křížové výpravy.',
@@ -149,7 +150,8 @@ const BattleLore = {
             'Padlo 25 KOROUHEVNÍCH PÁNŮ české šlechty',
             'Posádka Vyšehradu dodržela čestnou dohodu o kapitulaci',
             'Mrtví leželi 3 DNY NAZÍ na bojišti',
-            'Zikmund přišel POZDĚ - po 8:00, kdy měla posádka kapitulovat'
+            'Zikmund přišel POZDĚ - po 8:00, kdy měla posádka kapitulovat',
+            'Po bitvě se prý v noci nad bojištěm zjevil sloup zbarvený jako duha — vyloženo jako znamení'
         ],
         casualties: { hussites: '~30 mužů', enemy: '400-500 včetně 25 pánů' },
         aftermath: 'Rozhodné vítězství - "podstatně větší než na Vítkově". Rozpad královské strany.',
@@ -588,6 +590,90 @@ const BattleLore = {
         reliability: 'Střední - archeologie relativizuje kronikářský obraz hrdinné řeže'
     }
 };
+
+// P8: Kronika protistrany. Nejde o doslovné citace, ale o krátké
+// kontrafaktuální zápisy stylizované podle pramenů uvedených u bitvy.
+// Při hráčově porážce se tato verze stane kanonickým zápisem Kroniky.
+const EnemyChronicles = {
+    zivohost: {
+        text: 'Páni dostihli houf poutníků u Vltavy a rozehnali jej dříve, než mohl proměnit kopec v pevnost. Zemský řád byl na cestě k Novému Knínu obnoven.',
+        source: 'Stylizováno podle Starých letopisů českých'
+    },
+    nekmir: {
+        text: 'Plzeňský landfrýd sevřel Žižkovy vozy v poli a rozbil káčířský houf. Tvrz Nekmíř zůstala v rukou pravověrných.',
+        source: 'Stylizováno podle Starých letopisů českých'
+    },
+    sudomer: {
+        text: 'Královští a rožmberští zlomili uprchlíky mezi rybníky a otevřeli cestu k Písku. Vozy ani bahno tentokrát neposlušné neuchránily.',
+        source: 'Stylizováno podle podání Vavřince z Březové'
+    },
+    vitkov: {
+        text: 'Křižáci dobyli dřevěné sruby na hoře a uvolnili cestu k Praze. Obránci byli potrestáni za vzdor císaři a církvi.',
+        source: 'Stylizováno jako křižácký protizápis k Vavřinci z Březové'
+    },
+    vysehrad: {
+        text: 'Král přivedl pomoc včas, prorazil k Vyšehradu a zachránil jeho posádku. Korouhevní páni splnili slib, že půjdou i tam, kam se jiní neodváží.',
+        source: 'Stylizováno podle okruhu Eberharda Windeckeho'
+    },
+    zatec: {
+        text: 'Pevnost Slunce podlehla po opakovaných útocích a její brány se otevřely vojsku kříže. Severozápadní Čechy se znovu podřídily pravé víře.',
+        source: 'Stylizováno jako letopis druhé křížové výpravy'
+    },
+    kutna_hora: {
+        text: 'Královské vojsko uzavřelo slepého hejtmana v Kutné Hoře a jeho vozy nedokázaly prorazit. Horní město zůstalo věrné králi Zikmundovi.',
+        source: 'Stylizováno jako kutnohorský královský zápis'
+    },
+    nemecky_brod: {
+        text: 'Scolari zastavil pronásledovatele u Habrů a převedl královské vojsko přes Sázavu. Německý Brod odolal a druhá výprava si uchovala čest.',
+        source: 'Stylizováno jako královský protizápis k pražské kronice'
+    },
+    most: {
+        text: 'Mostečtí a míšeňští obránci vyrazili od hradu, překvapili Pražany a zahnali je od města. Kacířská výprava skončila pod Hněvínem porážkou.',
+        source: 'Stylizováno podle katolického podání o Mostu'
+    },
+    horice: {
+        text: 'Čeňkova jízda dobyla Gothard a rozptýlila orebské vozy na svahu. Východní Čechy znovu poznaly moc panského vojska.',
+        source: 'Stylizováno jako zápis strany Čeňka z Vartenberka'
+    },
+    malesov: {
+        text: 'Pražané a panská hotovost sevřeli slepého hejtmana u Malešova a jeho vozy na svahu zadrželi. Země byla uchráněna další Žižkovy války proti Praze.',
+        source: 'Stylizováno jako pražský protizápis k Bartoškovi z Drahonic'
+    },
+    usti: {
+        text: 'Saské korouhve prolomily vozovou pevnost na Na Běhání a otevřely cestu k Ústí. Města za Krušnými horami byla pomstěna.',
+        source: 'Stylizováno jako saský protizápis ke Křížovnickému rukopisu'
+    },
+    tachov: {
+        text: 'Kardinál shromáždil rozkolísané oddíly u Tachova a odrazil pronásledovatele od bavorské hranice. Říšské korouhve nebyly vydány bez boje.',
+        source: 'Stylizováno jako zpráva tábora kardinála Beauforta'
+    },
+    nisa: {
+        text: 'Slezská města zastavila spanilou jízdu před Nisou a uchránila své hradby i kostely. Vetřelci odtáhli bez kořisti a bez výpalného.',
+        source: 'Stylizováno jako slezský městský zápis'
+    },
+    domazlice: {
+        text: 'Legát utišil zmatek, zformoval výpravu u Domažlic a zastavil husitský postup. Chorál se ukázal být jen písní, ne zbraní.',
+        source: 'Stylizováno jako zpráva papežského legáta Juliána Cesariniho'
+    },
+    plzen: {
+        text: 'Plzeňská obec přečkala hlad i devět měsíců obležení a odrazila generální útok. Uloupený velbloud zůstal znamením města, které polní vojska nedobyla.',
+        source: 'Stylizováno podle plzeňské městské tradice'
+    },
+    lipany: {
+        text: 'Panská jednota vylákala polní vojska z vozů, obrátila ústup v úder a ukončila jejich vládu. Prokop padl a země dostala cestu k míru.',
+        source: 'Stylizováno podle Bartoška z Drahonic'
+    },
+    sion: {
+        text: 'Královské vojsko po dlouhém obležení dobylo Sion útokem a zajalo Jana Roháče i jeho věrné. Poslední ozbrojený vzdor proti králi byl zlomen.',
+        source: 'Kronikářská verze — Staré letopisy české',
+        counterText: 'Archeologické nálezy tvoří jen malý zlomek toho, co by po čtyřměsíčním boji zůstalo. Obléhání mohlo být zčásti divadlem, v němž příbuzný Hynce Ptáček boj spíš předstíral.',
+        counterSource: 'Archeologický výzkum hradu Sion'
+    }
+};
+
+for (const [battleId, chronicle] of Object.entries(EnemyChronicles)) {
+    if (BattleLore[battleId]) BattleLore[battleId].enemyChronicle = chronicle;
+}
 
 // Mapování scenario ID na battle lore ID
 const ScenarioToBattleLore = {

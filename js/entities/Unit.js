@@ -1,11 +1,15 @@
 class Unit {
     constructor(type, col, row, id) {
-        const template = UnitTypes[type];
+        const baseTemplate = UnitTypes[type];
 
-        if (!template) {
+        if (!baseTemplate) {
             console.error('Unknown unit type:', type);
             throw new Error(`Unknown unit type: ${type}`);
         }
+
+        const template = typeof getLocalizedUnit === 'function'
+            ? getLocalizedUnit(type, baseTemplate)
+            : baseTemplate;
 
         this.id = id;
         this.type = type;
@@ -794,12 +798,20 @@ class Unit {
 
     // Získat stav morálky jako text
     getMoraleStatus() {
-        if (this.isRouting) return 'Prchá!';
-        if (this.morale >= 80) return 'Vynikající';
-        if (this.morale >= 60) return 'Dobrá';
-        if (this.morale >= 40) return 'Normální';
-        if (this.morale >= 20) return 'Nízká';
-        return 'Kritická';
+        const key = this.isRouting ? 'routing'
+            : this.morale >= 80 ? 'excellent'
+            : this.morale >= 60 ? 'good'
+            : this.morale >= 40 ? 'normal'
+            : this.morale >= 20 ? 'low'
+            : 'critical';
+        if (typeof i18n !== 'undefined' && i18n.hasTranslation(`moraleStatus.${key}`)) {
+            return i18n.t(`moraleStatus.${key}`);
+        }
+        const fallback = {
+            routing: 'Prchá!', excellent: 'Vynikající', good: 'Dobrá',
+            normal: 'Normální', low: 'Nízká', critical: 'Kritická'
+        };
+        return fallback[key];
     }
 
     // Získat barvu morálky pro UI

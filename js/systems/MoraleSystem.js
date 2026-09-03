@@ -24,6 +24,7 @@ class MoraleSystem {
                 this.game.addLog(i18n.t('gameLog.routedCaught', {unit: unit.name}), 'combat');
                 unit.health = 0;
                 this.game.combatSystem.trackUnitDeath(unit, null);
+                this.game.handleUnitDeath(unit, null);
                 continue;
             }
 
@@ -45,7 +46,10 @@ class MoraleSystem {
             } else {
                 // Jednotka dále prchá - posunout směrem od nepřítele
                 this.moveRoutingUnit(unit);
-                this.game.addLog(i18n.t('gameLog.rallyFailed', {unit: unit.name}) + ' ' + rallyResult.message, 'morale');
+                this.game.addLog(i18n.t('gameLog.rallyFailedAttempt', {
+                    unit: unit.name,
+                    attempt: unit.rallyAttempts
+                }), 'morale');
             }
         }
     }
@@ -87,6 +91,7 @@ class MoraleSystem {
             this.game.addLog(i18n.t('gameLog.unitTrapped', {unit: unit.name}), 'morale');
             unit.health = 0;
             this.game.combatSystem.trackUnitDeath(unit, null);
+            this.game.handleUnitDeath(unit, null);
             return;
         }
 

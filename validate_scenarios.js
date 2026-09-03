@@ -26,7 +26,7 @@ if (!scenariosCode.includes('module.exports')) {
 const battleLorePath = path.join(__dirname, 'js/data/battleLore.js');
 let battleLoreCode = fs.readFileSync(battleLorePath, 'utf8');
 if (!battleLoreCode.includes('module.exports')) {
-    battleLoreCode += '\nif (typeof module !== "undefined" && module.exports) { module.exports = { BattleLore }; }';
+    battleLoreCode += '\nif (typeof module !== "undefined" && module.exports) { module.exports = { BattleLore, getBattleLore }; }';
 }
 
 // Vytvoření dočasných souborů
@@ -46,7 +46,7 @@ fs.writeFileSync(tmpBattleLorePath, battleLoreCode);
 // Načtení modulů
 const { UnitTypes } = require(tmpUnitTypesPath);
 const { Scenarios } = require(tmpScenariosPath);
-const { BattleLore } = require(tmpBattleLorePath);
+const { BattleLore, getBattleLore } = require(tmpBattleLorePath);
 
 // Smazání dočasných souborů
 fs.unlinkSync(tmpUnitTypesPath);
@@ -140,14 +140,10 @@ function hexDistance(c1, r1, c2, r2) {
     return Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y), Math.abs(a.z - b.z));
 }
 
-// Má scénář lore záznam? (stejná normalizace jako getBattleLore)
+// Má scénář lore záznam? Použij stejnou aliasovou logiku jako hra
+// (např. oblehani_plzne_1433 -> plzen), ne jen přímý název klíče.
 function hasLore(scenarioId) {
-    const norm = s => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
-    const nid = norm(scenarioId);
-    return Object.keys(BattleLore).some(key => {
-        const nkey = norm(key);
-        return nid.includes(nkey) || nkey.includes(nid);
-    });
+    return Boolean(getBattleLore(scenarioId));
 }
 
 // Validační funkce

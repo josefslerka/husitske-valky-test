@@ -372,6 +372,50 @@ const UnitTypes = {
         }
     },
 
+    // U Ústí tvořila významnou část husitské jízdy ozbrojená šlechta.
+    // Samostatný typ ji odlišuje od lehkých průzkumných a stíhacích oddílů.
+    SLECHTICKA_JIZDA_HUSITI: {
+        id: 'slechticka_jizda_husiti',
+        name: 'Šlechtická jízda',
+        faction: 'hussites',
+        symbol: '♞',
+        maxHealth: 95,
+        attack: 42,
+        defense: 25,
+        range: 1,
+        movement: 3,
+        cost: 130,
+        description: 'Těžší husitská jízda šlechticů a jejich družin.',
+        special: 'charge',
+        unitClass: 'heavyCavalry',
+        baseMorale: 85,
+        lore: {
+            description: 'U Ústí nebojovali jen pěší táboři a sirotci. V husitském šiku stáli i čeští a moravští šlechtici se svými obrněnými družinami.',
+            equipment: 'Plátová a kroužková zbroj, dlouhé kopí, meč, štít a válečný kůň',
+            origin: 'Husitská šlechta a její ozbrojené družiny, mezi nimi lidé Viktorina a Hynka Bočka či Fedora z Ostrogu.',
+            historicalNote: 'Prameny odhadují jezdectvo u Ústí přibližně na třetinu husitského vojska; část tvořila těžká šlechtická jízda.'
+        },
+        tactics: {
+            terrain: {
+                forest: -20,
+                hill: -5,
+                water: -15,
+                road: 15,
+                village: -10
+            },
+            attackTerrain: {
+                forest: -25,
+                hill: -10,
+                water: -25,
+                road: 20,
+                village: -10
+            },
+            weaknesses: ['spears', 'wagenburg', 'firearms'],
+            zoc: true,
+            canRetreat: true
+        }
+    },
+
     // Zvěd - průzkumná jednotka
     POUTNICI: {
         id: 'poutnici',

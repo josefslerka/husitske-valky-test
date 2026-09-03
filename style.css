@@ -2383,6 +2383,43 @@ body {
 }
 
 /* Campaign Tabs */
+.campaign-reputation {
+    margin: 0 5px 12px;
+    padding: 9px 12px;
+    border: 1px solid rgba(201, 162, 39, 0.45);
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.reputation-heading {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    color: var(--parchment);
+    font-size: var(--font-size-xs);
+}
+
+.reputation-track {
+    height: 7px;
+    margin: 6px 0 4px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.55);
+}
+
+#campaign-reputation-fill {
+    display: block;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(90deg, var(--crimson-light), var(--gold), var(--forest-light));
+    transition: width 0.35s ease;
+}
+
+#campaign-reputation-tier {
+    color: var(--gold-light);
+    font-size: 0.72rem;
+}
+
 .campaign-tabs {
     display: flex;
     gap: 8px;
@@ -2491,6 +2528,15 @@ body {
 
 .mission-card.locked .mission-card-desc {
     color: var(--ink-light);
+}
+
+.mission-card.completed {
+    border-color: var(--forest-light);
+}
+
+.mission-card.completed .mission-card-number {
+    color: var(--forest-light);
+    border-color: var(--forest-light);
 }
 
 .mission-locked-overlay {
@@ -3862,6 +3908,17 @@ body {
     margin-bottom: 10px;
     font-style: italic;
     line-height: 1.3;
+    white-space: pre-line;
+}
+
+.gameover-act-summary {
+    margin: 0 0 10px;
+    padding: 9px 12px;
+    color: var(--parchment-light);
+    border-left: 3px solid var(--gold);
+    background: rgba(201, 162, 39, 0.1);
+    font-size: var(--font-size-xs);
+    line-height: 1.4;
 }
 
 /* Hodnocení bitvy - krátké shrnutí */
@@ -4755,12 +4812,22 @@ body {
 }
 .chronicle-entry.chronicle-victory { border-left-color: #6a9a4a; }
 .chronicle-entry.chronicle-defeat { border-left-color: #a0392e; }
+.chronicle-entry.chronicle-act-summary {
+    border-left-color: var(--gold-light, #e6c200);
+    background: rgba(201, 162, 39, 0.13);
+}
+.chronicle-act-summary h3 {
+    margin: 0 0 8px;
+    color: var(--gold-light, #e6c200);
+    font-size: 1rem;
+}
 .chronicle-text {
     font-family: Georgia, 'Times New Roman', serif;
     color: var(--parchment-light, #f0e6d2);
     line-height: 1.6;
     font-size: 1.02em;
     margin: 0;
+    white-space: pre-line;
 }
 .chronicle-initial {
     float: left;
@@ -5617,6 +5684,7 @@ body {
     color: var(--field-ink);
     font-size: 0.92rem;
     line-height: 1.28;
+    white-space: pre-line;
 }
 
 .event-notification button {
@@ -6699,6 +6767,26 @@ body {
     #info-panel.expanded {
         max-height: none;
         overflow-y: auto;
+    }
+
+    /* V kompaktním režimu zůstane jen skutečná ovládací lišta. Pozdější
+       pravidla pro empty-unit-panel dřív znovu ukázala text v šířce 42 px. */
+    #unit-panel:not(.expanded) h2,
+    #unit-panel:not(.expanded) #unit-info,
+    #unit-panel:not(.expanded) #unit-actions,
+    #info-panel:not(.expanded) h2,
+    #info-panel:not(.expanded) #army-overview {
+        display: none;
+    }
+
+    #unit-panel:not(.expanded) .panel-toggle,
+    #info-panel:not(.expanded) .panel-toggle {
+        display: flex;
+    }
+
+    #unit-panel.expanded .panel-toggle,
+    #info-panel.expanded .panel-toggle {
+        display: flex;
     }
 }
 

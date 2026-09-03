@@ -47,6 +47,11 @@ const Scenarios = {
             plains: 'default'
         },
 
+        mapLabels: [
+            { text: 'Červenka', hexes: [[13,5], [14,5], [15,5], [14,6], [15,6]] },
+            { text: 'Brod přes Vltavu', i18nKey: 'vltavaFord', hexes: [[0,2], [1,2], [2,2], [0,3], [1,3]], offset: [0.5, 0] }
+        ],
+
         forces: {
             hussites: {
                 commander: 'Břeněk Švihovský z Rýzmburka',
@@ -173,6 +178,7 @@ const Scenarios = {
         difficulty: 2,
         description: 'PRVNÍ DOLOŽENÉ POUŽITÍ VOZOVÉ HRADBY! Jan Žižka s malou skupinou odráží útok plzeňského landfrýdu.',
         historicalSignificance: 'Historicky první známé použití vozové hradby. Zrod taktiky, která změní válečnictví.',
+        aiDoctrine: { charge: 'reckless', pursueRouted: true, flankSeeking: true, fearThreshold: 18 },
 
         briefing: {
             hussites: 'Táhnete z Plzně dobýt tvrz Nekmíř — vozy vezou obléhací děla („hady k boření zdí"). Jenže plzeňský landfrýd vás dostihl na pochodu! Ze sedmi vozů narychlo improvizujte hradbu: na uzavřený kruh nestačí, udělejte polokruh a braňte se!',
@@ -201,6 +207,10 @@ const Scenarios = {
             ],
             plains: 'default'
         },
+
+        mapLabels: [
+            { text: 'Tvrz Nekmíř', i18nKey: 'nekmirFortress', hexes: [[18,7], [19,7], [18,8], [19,8]], offset: [-0.45, 0] }
+        ],
 
         forces: {
             hussites: {
@@ -399,6 +409,12 @@ const Scenarios = {
             plains: 'default'
         },
 
+        mapLabels: [
+            { text: 'Rybník Markovec', i18nKey: 'markovecPond', hexes: [[7,1], [9,1], [11,1], [13,1]] },
+            { text: 'Hráz', i18nKey: 'causeway', hexes: [[9,5], [9,6]], offset: [-2, -1.6] },
+            { text: 'Rybník Škaredý (vypuštěný)', i18nKey: 'skaredyPondDrained', hexes: [[7,9], [9,9], [11,9], [13,9]] }
+        ],
+
         forces: {
             hussites: {
                 commander: 'Jan Žižka z Trocnova',
@@ -575,6 +591,11 @@ const Scenarios = {
             plains: 'default'
         },
 
+        mapLabels: [
+            { text: 'Hřeben Vítkov', i18nKey: 'vitkovRidge', hexes: [[8,2], [9,2], [10,2], [11,2]], offset: [0, -0.25] },
+            { text: 'Špitálské pole', i18nKey: 'hospitalField', hexes: [[0,3], [1,3], [2,3], [3,3]], offset: [0.35, 0] }
+        ],
+
         forces: {
             hussites: {
                 commander: 'Jan Žižka z Trocnova',
@@ -683,6 +704,7 @@ const Scenarios = {
         difficulty: 4,
         description: 'Rozhodující husitské vítězství. Zikmund přichází pozdě a česká šlechta je pobita v úvozu pod Podolím.',
         historicalSignificance: 'Praha plně v husitských rukou. Ztráta důvěry české šlechty v Zikmunda. 25 korouhevních pánů padlo.',
+        aiDoctrine: { charge: 'reckless', pursueRouted: true, flankSeeking: true, fearThreshold: 20 },
 
         briefing: {
             hussites: 'Obléháte Vyšehrad od září. Posádka vyjednala kapitulaci na ráno (středověká "hodina patnáctá") - pokud Zikmund nepřijde dřív. Je Den všech svatých a královské vojsko se blíží. Braňte své pozice!',
@@ -747,6 +769,12 @@ const Scenarios = {
                 [15,24], [15,23], [15,22], [15,21], [15,20], [15,19], [15,18], [15,17], [15,16], [15,15]
             ]
         },
+
+        mapLabels: [
+            { text: 'Vyšehrad', hexes: [[25,5], [27,6], [29,7]], offset: [-0.5, 0] },
+            { text: 'Pankrácká pláň', i18nKey: 'pankracPlain', hexes: [[13,12], [15,12], [17,12], [15,14]], offset: [0, -0.35] },
+            { text: 'Úvoz k Podolí', i18nKey: 'podoliSunkenRoad', hexes: [[15,20], [15,21], [15,22], [15,23], [15,24]], offset: [0.65, 0] }
+        ],
 
         forces: {
             hussites: {
@@ -1006,6 +1034,7 @@ const Scenarios = {
         difficulty: 3,
         description: 'Druhá křížová výprava obléhá "pevnost Slunce". Obrovská přesila proti žatecké posádce. Udržte hradby, než se výprava zlomí.',
         historicalSignificance: 'Neúspěch u Žatce nalomil 2. křížovou výpravu - bez jediné polní bitvy se Žižkou.',
+        aiDoctrine: { charge: 'reckless', pursueRouted: false, flankSeeking: false, fearThreshold: 35 },
 
         briefing: {
             hussites: 'Žatec - "pevnost Slunce" - obléhá obrovská křižácká výprava. Ohře vás chrání ze tří stran, útok jde jen na západní hradbu. Žádný slavný velitel zde není - drží celá obec, na šest tisíc obránců i lidu z okolí. Odrazte útoky, než výpravu zlomí hlad a spory knížat.',
@@ -1035,6 +1064,12 @@ const Scenarios = {
             ],
             plains: 'default'
         },
+
+        mapLabels: [
+            { text: 'Ohře', hexes: [[8,2], [10,2], [12,2], [14,2]], offset: [0, -0.15] },
+            { text: 'Západní hradba', i18nKey: 'westernWall', hexes: [[6,3], [6,5], [6,7]], offset: [-0.45, 0] },
+            { text: 'Žatec', hexes: [[10,4], [12,5], [14,6]], offset: [0.35, 0] }
+        ],
 
         forces: {
             hussites: {
@@ -1294,6 +1329,7 @@ const Scenarios = {
                 escapeZone: [[2,12], [2,13], [3,12], [3,13]],
                 unitsRequired: 5,
                 zoneLabel: '↙ Kolín',
+                zoneLabelKey: 'towardKolin',
                 description: 'Probijte se z obklíčení ke Kolínu (alespoň 5 jednotek)'
             },
             secondary: [
@@ -1350,7 +1386,7 @@ const Scenarios = {
         mapSize: { width: 16, height: 16 },
 
         mapLabels: [
-            { text: 'Německý Brod', hexes: [[7,14],[8,14],[9,14],[7,15],[8,15],[9,15]] },
+            { text: 'Německý Brod', hexes: [[7,14],[8,14],[9,14],[7,15],[8,15],[9,15]], offset: [3, -2.2] },
             { text: 'Sázava', hexes: [[0,12],[1,12],[2,12],[3,12],[4,12],[5,12],[6,12],[7,12],[8,12],[9,12],[10,12],[11,12],[12,12],[13,12],[14,12],[15,12]] }
         ],
 
@@ -1495,6 +1531,7 @@ const Scenarios = {
                 count: 1,
                 deadline: 9,
                 zoneLabel: '↓ Brod',
+                zoneLabelKey: 'towardBrod',
                 description: 'Proraz k Německému Brodu — obsaď městskou pozici u řeky do kola 9, než královské vojsko unikne za hradby'
             },
             secondary: [
@@ -1550,9 +1587,9 @@ const Scenarios = {
         mapSize: { width: 18, height: 16 },
 
         mapLabels: [
-            { text: 'Hrad Hněvín', hexes: [[8,0],[9,0],[10,0],[8,1],[9,1],[10,1]] },
+            { text: 'Hrad Hněvín', i18nKey: 'hnevinCastle', hexes: [[8,0],[9,0],[10,0],[8,1],[9,1],[10,1]] },
             { text: 'Most', hexes: [[7,13],[8,13],[9,13],[10,13],[7,14],[8,14],[9,14],[10,14],[8,15],[9,15]] },
-            { text: 'Klášter', hexes: [[8,7],[9,7]] }
+            { text: 'Klášter', i18nKey: 'monastery', hexes: [[8,7],[9,7]] }
         ],
 
         terrain: {
@@ -1805,6 +1842,11 @@ const Scenarios = {
             plains: 'default'
         },
 
+        mapLabels: [
+            { text: 'Na Běhání', hexes: [[14,4], [16,5], [18,6]] },
+            { text: 'Ústí nad Labem', hexes: [[20,5], [21,5], [20,6], [21,6]], offset: [-0.25, 0] }
+        ],
+
         forces: {
             hussites: {
                 commander: 'Prokop Holý',
@@ -1831,9 +1873,11 @@ const Scenarios = {
                     { type: 'HOUFNICE', col: 18, row: 4 },
                     { type: 'TARASNICE', col: 17, row: 7 },
                     { type: 'TARASNICE', col: 18, row: 6 },
-                    // Jízda - křídla
+                    // Jízda - křídla a těžké družiny husitské šlechty
                     { type: 'JIZDA_HUSITI', col: 13, row: 5 },
-                    { type: 'JIZDA_HUSITI', col: 13, row: 7 }
+                    { type: 'JIZDA_HUSITI', col: 13, row: 7 },
+                    { type: 'SLECHTICKA_JIZDA_HUSITI', col: 13, row: 3 },
+                    { type: 'SLECHTICKA_JIZDA_HUSITI', col: 13, row: 8 }
                 ]
             },
             crusaders: {
@@ -1913,7 +1957,7 @@ const Scenarios = {
         },
 
         debriefing: {
-            victory: 'Masakr Na Běhání! Podle Starých letopisů padlo Čechů jen 19 - a nikdo významný kromě měšťana Jana Bradatého; německé ztráty kroniky kladou na tisíce, až k 15 000. Dvojitá vozová hradba se ukázala jako nepřekonatelná překážka. Vítězství ale neslo i temný stín: 24 klečících hrabat a korouhevních pánů, kteří prosili o milost, bylo pro vzájemný slib nešetřit nikoho do jednoho pobito. Pověst o české nepřemožitelnosti je na světě.',
+            victory: 'Masakr Na Běhání! Podle Starých letopisů padlo Čechů jen 19 - a nikdo významný kromě měšťana Jana Bradatého; německé ztráty kroniky kladou na tisíce, až k 15 000. Dvojitá vozová hradba se ukázala jako nepřekonatelná překážka. Vítězství ale neslo i temný stín: 24 klečících hrabat a korouhevních pánů, kteří prosili o milost, bylo pro vzájemný slib nešetřit nikoho do jednoho pobito. Pověst o české nepřemožitelnosti je na světě — a s ní nebezpečná víra, že vítězům je dovoleno vše.',
             defeat: 'Saská jízda prorazila vaši hradbu! Katastrofální porážka husitů mění rovnováhu sil. Bez vozové hradby jste bezbranní proti těžké jízdě.'
         },
 
@@ -1932,6 +1976,7 @@ const Scenarios = {
         difficulty: 1,
         description: 'Čtvrtá křížová výprava končí útěkem. Křižáci prchají před husity, aniž by se odvážili bojovat.',
         historicalSignificance: 'Psychologické vítězství husitů - samotná jejich pověst stačí k porážce křižáků. Kardinál Beaufort roztrhá říšské korouhve.',
+        aiDoctrine: { charge: 'cautious', pursueRouted: false, flankSeeking: false, fearThreshold: 50 },
 
         briefing: {
             hussites: 'Křižáci neúspěšně obléhali Stříbro a nyní se stahují k Tachovu. Přibližte se rychle a využijte jejich demoralizace. Pronásledujte prchající a zajměte Tachov!',
@@ -1975,9 +2020,9 @@ const Scenarios = {
 
         mapLabels: [
             { text: 'Tachov', hexes: [[16,5], [17,5], [16,6], [17,6]] },
-            { text: 'K Bavorsku', hexes: [[20,6], [21,6]] },
-            { text: 'Od Stříbra', hexes: [[0,6], [1,6]] },
-            { text: 'Vrch', hexes: [[18,4], [19,4]] }
+            { text: 'K Bavorsku', i18nKey: 'towardBavaria', hexes: [[20,6], [21,6]] },
+            { text: 'Od Stříbra', i18nKey: 'fromStribro', hexes: [[0,6], [1,6]] },
+            { text: 'Vrch', i18nKey: 'hill', hexes: [[18,4], [19,4]] }
         ],
 
         forces: {
@@ -2032,7 +2077,23 @@ const Scenarios = {
                     { type: 'TEZKY_RYTIR', col: 12, row: 6 },
                     // Oddíly plzeňského landfrýdu
                     { type: 'KUSNICI', col: 14, row: 6 },
-                    { type: 'KUSNICI', col: 15, row: 5 }
+                    { type: 'KUSNICI', col: 15, row: 5 },
+                    // Početní převaha kruciáty je na mapě komprimovaná, ale už
+                    // tvoří skutečnou masu, která se po zlomu pověsti dává na útěk.
+                    { type: 'KOPINICI', col: 12, row: 2 },
+                    { type: 'HALAPARTNICI', col: 13, row: 2 },
+                    { type: 'KOPINICI', col: 14, row: 2 },
+                    { type: 'HALAPARTNICI', col: 15, row: 2 },
+                    { type: 'KOPINICI', col: 16, row: 2 },
+                    { type: 'HALAPARTNICI', col: 17, row: 2 },
+                    { type: 'KOPINICI', col: 18, row: 2 },
+                    { type: 'LEHKA_JIZDA', col: 12, row: 8 },
+                    { type: 'KUSNICI', col: 13, row: 8 },
+                    { type: 'KUSNICI', col: 14, row: 8 },
+                    { type: 'KUSNICI', col: 15, row: 8 },
+                    { type: 'TEZKOODENCI', col: 16, row: 8 },
+                    { type: 'TEZKOODENCI', col: 17, row: 8 },
+                    { type: 'TEZKOODENCI', col: 18, row: 8 }
                 ]
             }
         },
@@ -2094,7 +2155,7 @@ const Scenarios = {
         },
 
         debriefing: {
-            victory: 'Čtvrtá křížová výprava končí naprostým debaklem! Křižáci prchli, aniž by se odvážili bojovat. Kardinál Beaufort v zoufalství roztrhal říšské korouhve. O několik dní později husité dobývají Tachov - 11. srpna město a 14. srpna hrad. Prokop Holý se stává nejmocnějším mužem v Čechách.',
+            victory: 'Čtvrtá křížová výprava končí naprostým debaklem! Křižáci prchli, aniž by se odvážili bojovat. Kardinál Beaufort v zoufalství roztrhal říšské korouhve. O několik dní později husité dobývají Tachov - 11. srpna město a 14. srpna hrad. Prokop Holý se stává nejmocnějším mužem v Čechách. Vítězství bez bitvy však svádí k představě, že pověst bude vítězit navždy.',
             defeat: 'Křižákům se podařilo překonat strach a zorganizovat obranu. Husitská pověst neporazitelnosti dostala trhlinu. Tachov zůstává v rukou nepřítele.'
         },
 
@@ -2159,8 +2220,8 @@ const Scenarios = {
 
         mapLabels: [
             { text: 'Nisa', hexes: [[16,5], [17,5], [18,5], [16,6], [17,6], [18,6]] },
-            { text: 'Předměstí', hexes: [[13,5], [14,5], [13,6], [14,6]] },
-            { text: 'Řeka Nisa', hexes: [[16,9], [17,9], [18,9]] }
+            { text: 'Předměstí', i18nKey: 'suburb', hexes: [[13,5], [14,5], [13,6], [14,6]] },
+            { text: 'Řeka Nisa', i18nKey: 'nysaRiver', hexes: [[16,9], [17,9], [18,9]] }
         ],
 
         forces: {
@@ -2269,7 +2330,7 @@ const Scenarios = {
         },
 
         debriefing: {
-            victory: 'Drtivé vítězství! Slezské vojsko je rozprášeno, na dva tisíce obránců padlo nebo utonulo v řece Nise. Předměstí je v plamenech. Půta z Častolovic udržel město, ale už žádné slezské město se neodváží postavit husitům. Spanilá jízda pokračuje - města se vzdávají nebo platí výpalné.',
+            victory: 'Drtivé vítězství! Slezské vojsko je rozprášeno, na dva tisíce obránců padlo nebo utonulo v řece Nise. Předměstí je v plamenech. Půta z Častolovic udržel město, ale už žádné slezské město se neodváží postavit husitům. Spanilá jízda pokračuje - města se vzdávají nebo platí výpalné. Kořist živí další výpravy a hranice mezi posláním a mocí se ztrácí.',
             defeat: 'Slezská obrana vydržela. Půta z Častolovic úspěšně ubránil Nisu. Spanilá jízda musí pokračovat jinudy a husitská pověst neporazitelnosti utrpěla trhlinu.'
         },
 
@@ -2292,6 +2353,7 @@ const Scenarios = {
         difficulty: 1,
         description: 'Největší husitské vítězství. Samotný zvuk husitského chorálu způsobí útěk křižácké armády.',
         historicalSignificance: 'Křižáci prchají při zaslechnutí "Ktož jsú boží bojovníci". Konec čtvrté křížové výpravy.',
+        aiDoctrine: { charge: 'cautious', pursueRouted: false, flankSeeking: false, fearThreshold: 58 },
 
         briefing: {
             hussites: 'Blížíte se k Domažlicím rychlým pochodem. Křižáci jsou v panice - zpívejte chorál a pronásledujte prchající!',
@@ -2323,6 +2385,12 @@ const Scenarios = {
             ],
             plains: 'default'
         },
+
+        mapLabels: [
+            { text: 'Baldov', hexes: [[12,5], [13,5], [12,6], [13,6]], offset: [0, -0.25] },
+            { text: 'Domažlice', hexes: [[16,6], [17,6], [16,7], [17,7]], offset: [0, 0.35] },
+            { text: 'Všerubský průsmyk', i18nKey: 'vserubyPass', hexes: [[22,6], [23,6], [22,7], [23,7]], offset: [-0.8, 0] }
+        ],
 
         forces: {
             hussites: {
@@ -2366,7 +2434,27 @@ const Scenarios = {
                     { type: 'HALAPARTNICI', col: 14, row: 6 },
                     { type: 'HALAPARTNICI', col: 14, row: 7 },
                     { type: 'KUSNICI', col: 12, row: 5 },
-                    { type: 'KUSNICI', col: 12, row: 8 }
+                    { type: 'KUSNICI', col: 12, row: 8 },
+                    // Vizuálně komprimovaná masa páté kruciáty: další šiky
+                    // zaplní tábor, aby chorál skutečně obrátil početní přesilu.
+                    { type: 'KOPINICI', col: 11, row: 3 },
+                    { type: 'KOPINICI', col: 12, row: 3 },
+                    { type: 'KOPINICI', col: 13, row: 3 },
+                    { type: 'KOPINICI', col: 14, row: 3 },
+                    { type: 'KOPINICI', col: 15, row: 3 },
+                    { type: 'KOPINICI', col: 16, row: 3 },
+                    { type: 'KOPINICI', col: 17, row: 3 },
+                    { type: 'KOPINICI', col: 18, row: 3 },
+                    { type: 'HALAPARTNICI', col: 11, row: 4 },
+                    { type: 'HALAPARTNICI', col: 12, row: 4 },
+                    { type: 'HALAPARTNICI', col: 13, row: 4 },
+                    { type: 'HALAPARTNICI', col: 14, row: 4 },
+                    { type: 'KUSNICI', col: 15, row: 4 },
+                    { type: 'KUSNICI', col: 16, row: 4 },
+                    { type: 'KUSNICI', col: 17, row: 4 },
+                    { type: 'KUSNICI', col: 18, row: 4 },
+                    { type: 'TEZKOODENCI', col: 17, row: 9 },
+                    { type: 'TEZKOODENCI', col: 18, row: 9 }
                 ]
             }
         },
@@ -2408,7 +2496,7 @@ const Scenarios = {
 
         victoryConditions: {
             primary: {
-                type: 'destroy_percent',
+                type: 'destroy_or_rout',
                 percent: 60,
                 description: 'Způsobte útěk křižácké armády (zničte 60%)'
             },
@@ -2417,8 +2505,14 @@ const Scenarios = {
             ]
         },
 
+        specialMechanics: {
+            // Pověst z kampaně tuto hodnotu posouvá: při vysoké pověsti
+            // začínají některé oddíly pod prahem strachu, při nízké vydrží.
+            startingMorale: { crusaders: 65 }
+        },
+
         debriefing: {
-            victory: 'Slavné vítězství! Samotný zvuk "Ktož jsú boží bojovníci" způsobil panický útěk křižácké armády. 5. křížová výprava končí absolutním debaklem - křižáci prchají, aniž by se pokusili o boj. Toto je vrchol husitské slávy!',
+            victory: 'Slavné vítězství! Samotný zvuk „Ktož jsú boží bojovníci“ způsobil panický útěk křižácké armády. 5. křížová výprava končí absolutním debaklem - křižáci prchají, aniž by se pokusili o boj. Toto je vrchol husitské slávy — a každý vrchol už míří dolů. Evropa místo další výpravy nabídne jednání.',
             defeat: 'Křižáci překonali svůj strach a zformovali obranu. I přes váš chorál se nezhroutili. Husitská pověst neporazitelnosti je otřesena.'
         },
 
@@ -2437,6 +2531,7 @@ const Scenarios = {
         difficulty: 3,
         description: 'Generální útok na katolickou Plzeň. Devět měsíců obléhání vyvrcholí pokusem o průlom hradeb.',
         historicalSignificance: 'Největší neúspěch husitů. Plzeň odolala téměř rok a získala velblouda do znaku.',
+        aiDoctrine: { charge: 'cautious', pursueRouted: false, flankSeeking: false, fearThreshold: 16, holdWagonFort: true },
 
         briefing: {
             hussites: 'Po měsících obléhání je čas na rozhodující útok! Prorazte hradby a dobyjte město. Prokop Holý sleduje z týla - nesmi selhat!',
@@ -2492,11 +2587,11 @@ const Scenarios = {
         },
 
         mapLabels: [
-            { text: 'Plzeň', hexes: [[17,5], [18,5], [17,6], [18,6], [17,7], [18,7]] },
-            { text: 'Sv. Bartoloměj', hexes: [[17,6], [18,6]] },
-            { text: 'Řeka Mže', hexes: [[16,10], [17,10], [18,10]] },
-            { text: 'Husitský tábor', hexes: [[0,6], [1,6], [0,7], [1,7]] },
-            { text: 'Příkopy', hexes: [[6,5], [6,6], [6,7]] }
+            { text: 'Plzeň', hexes: [[17,5], [18,5], [17,6], [18,6], [17,7], [18,7]], offset: [0, -3.4] },
+            { text: 'Sv. Bartoloměj', hexes: [[17,6], [18,6]], offset: [2.5, 2.2] },
+            { text: 'Řeka Mže', i18nKey: 'mzeRiver', hexes: [[16,10], [17,10], [18,10]] },
+            { text: 'Husitský tábor', i18nKey: 'hussiteCamp', hexes: [[0,6], [1,6], [0,7], [1,7]] },
+            { text: 'Příkopy', i18nKey: 'trenches', hexes: [[6,5], [6,6], [6,7]] }
         ],
 
         forces: {
@@ -2610,7 +2705,7 @@ const Scenarios = {
                 description: 'Útok buď uspěje, nebo husité budou muset ustoupit.',
                 events: [
                     { trigger: 'turn_11', message: 'Poslední šance na průlom! Prokop Holý posílá zálohy.' },
-                    { trigger: 'turn_13', message: 'Husitské ztráty jsou příliš vysoké. Někteří vojáci dezertují.' }
+                    { trigger: 'turn_13', type: 'morale', faction: 'hussites', amount: 2, text: 'Hlad, násilné „picování“ okolí a spory mezi hejtmany lámou tábor. Někteří vojáci dezertují.' }
                 ]
             }
         ],
@@ -2637,7 +2732,7 @@ const Scenarios = {
         },
 
         debriefing: {
-            victory: 'Neuvěřitelný úspěch! Hradby Plzně padly po devíti měsících obléhání. Prokop Holý triumfuje a katolická bašta na západě Čech je dobyta. Historie se mění - bez Plzně ztrácí umírnění klíčového spojence a radikálové upevňují svou moc.',
+            victory: 'Neuvěřitelný úspěch! Hradby Plzně padly po devíti měsících obléhání. Prokop Holý triumfuje a katolická bašta na západě Čech je dobyta. Historie se mění - bez Plzně ztrácí umírnění klíčového spojence a radikálové upevňují svou moc. Vyhráli jste město, ne však ztracenou jednotu; hlad, dezerce a rozkol zůstávají.',
             defeat: 'Plzeň odolala! Navzdory měsícům obléhání a opakovaným útokům hradby vydržely. Husité utrpěli těžké ztráty a musí odtáhnout. Toto fiasko oslabí Prokopa Holého a posílí jeho odpůrce. Plzeň získá za svou statečnost velblouda do znaku od císaře Zikmunda.'
         },
 
@@ -2657,6 +2752,7 @@ const Scenarios = {
         difficulty: 3,
         description: 'Bratrovražedná bitva mezi husity. Umírnění kališníci a katolíci porazí radikální Tábory a Sirotky.',
         historicalSignificance: 'Konec husitských válek. Smrt Prokopa Holého. Vítězství umírněných.',
+        aiDoctrine: { charge: 'cautious', pursueRouted: true, flankSeeking: true, fearThreshold: 18, feignedRetreat: true },
 
         briefing: {
             hussites: 'Jako velitel radikálů musíte odrazit útok umírněných. Pozor na jejich léčku - klamný útěk!',
@@ -2686,6 +2782,11 @@ const Scenarios = {
             ],
             plains: 'default'
         },
+
+        mapLabels: [
+            { text: 'Lipská hora', i18nKey: 'lipskaHill', hexes: [[14,3], [15,3], [16,3], [15,4], [15,5]] },
+            { text: 'Hřiby', hexes: [[18,6], [19,6]], offset: [0, 0.35] }
+        ],
 
         forces: {
             hussites: {
@@ -2806,7 +2907,7 @@ const Scenarios = {
         },
 
         debriefing: {
-            victory: 'Prokop Holý odhalil léčku umírněných včas! Radikálové zůstali ve vozové hradbě a odrazili klamný útěk. Koalice umírněných je poražena a radikální husitství přežívá. Historie se píše jinak...',
+            victory: 'Prokop Holý odhalil léčku umírněných včas! Radikálové zůstali ve vozové hradbě a odrazili klamný útěk. Koalice umírněných je poražena a radikální husitství přežívá. Vyhráli jste bitvu, kterou historie prohrála — rozdělená země však nezmizela a žádný klamný ústup ji nesjednotí.',
             defeat: 'Tragédie u Lipan. Radikálové uvěřili klamnému útěku a vyběhli z vozové hradby. Jízda umírněných udeřila z boku. Prokop Holý padl a s ním naděje radikálního husitství. Husitské války končí porážkou těch, kteří je začali.'
         },
 
@@ -2874,9 +2975,9 @@ const Scenarios = {
         },
 
         mapLabels: [
-            { text: 'Hrad Sion', hexes: [[11,5], [11,6]] },
-            { text: 'Potok Vrchlice', hexes: [[9,9], [10,9], [11,9]] },
-            { text: 'Příkopy', hexes: [[9,5], [9,6]] }
+            { text: 'Hrad Sion', i18nKey: 'sionCastle', hexes: [[11,5], [11,6]] },
+            { text: 'Potok Vrchlice', i18nKey: 'vrchliceBrook', hexes: [[9,9], [10,9], [11,9]] },
+            { text: 'Příkopy', i18nKey: 'trenches', hexes: [[9,5], [9,6]] }
         ],
 
         forces: {
@@ -3015,7 +3116,7 @@ const Scenarios = {
         },
 
         debriefing: {
-            victory: 'Neuvěřitelné! Jan Roháč a jeho věrní vydrželi do setmění. Pod rouškou noci se podařilo části posádky uniknout. Roháč žije a stává se legendou - symbolem nezlomného odporu. Husitský duch nikdy nezemře!',
+            victory: 'Neuvěřitelné! Jan Roháč a jeho věrní vydrželi do setmění. Pod rouškou noci se podařilo části posádky uniknout. Roháč žije a stává se legendou - symbolem nezlomného odporu. Zachránili jste člověka a změnili kroniku, ale ne běh země: doba polních vojsk už skončila.',
             defeat: 'Hrad Sion padl. Jan Roháč byl zajat při obědě, když nepočítal s tak rychlým útokem Uhrů. Spolu s 52 obránci byl odvlečen do Prahy. 9. září 1437 byli všichni popraveni na Staroměstském náměstí. Roháč visel nejvýše - na zlatém řetězu. Husitské války skončily na šibenici.'
         },
 
@@ -3035,6 +3136,7 @@ const Scenarios = {
         difficulty: 3,
         description: 'Žižka (slepý) a Diviš Bořek brání vozovou hradbu na kopci Gothard proti panské jednotě - koalici české šlechty. Husitská občanská válka.',
         historicalSignificance: 'Rozhodující porážka panské jednoty v severovýchodních Čechách. Slepý Žižka ubránil kopec vozovou hradbou a ukořistil nepřátelské vozy a děla.',
+        aiDoctrine: { charge: 'reckless', pursueRouted: true, flankSeeking: true, fearThreshold: 18 },
 
         briefing: {
             hussites: 'Sražte vozovou hradbu na kopci Gothard a děla do ní. Panská jednota pod Čeňkem z Vartenberka se blíží s přesilou jízdy. Nechte rytíře vyjet do svahu, sesednout a unavit se - pak je rozbijte palbou a vyrazte jízdou dolů!',
@@ -3078,6 +3180,11 @@ const Scenarios = {
             ],
             plains: 'default'
         },
+
+        mapLabels: [
+            { text: 'Gothard', hexes: [[8,4], [10,5], [12,6]], offset: [0, 0.35] },
+            { text: 'Hořice', hexes: [[8,0], [10,0], [8,1], [10,1]], offset: [0, 0.45] }
+        ],
 
         forces: {
             hussites: {
@@ -3146,7 +3253,28 @@ const Scenarios = {
                     { type: 'HALAPARTNICI', col: 9, row: 12 },
                     // Střelci
                     { type: 'KUSNICI', col: 5, row: 11 },
-                    { type: 'KUSNICI', col: 13, row: 11 }
+                    { type: 'KUSNICI', col: 13, row: 11 },
+                    // Prameny mluví nejméně o trojnásobné přesile. Plný poměr by
+                    // zahltil tahy AI; tyto dva šiky jej herně komprimují, ale
+                    // dávají panské jednotě zřetelnou početní převahu bez HP buffů.
+                    { type: 'TEZKY_RYTIR', col: 4, row: 9 },
+                    { type: 'TEZKY_RYTIR', col: 5, row: 9 },
+                    { type: 'TEZKY_RYTIR', col: 6, row: 9 },
+                    { type: 'TEZKY_RYTIR', col: 7, row: 9 },
+                    { type: 'TEZKY_RYTIR', col: 8, row: 9 },
+                    { type: 'TEZKY_RYTIR', col: 9, row: 9 },
+                    { type: 'TEZKY_RYTIR', col: 10, row: 9 },
+                    { type: 'TEZKY_RYTIR', col: 11, row: 9 },
+                    { type: 'TEZKY_RYTIR', col: 12, row: 9 },
+                    { type: 'TEZKY_RYTIR', col: 13, row: 9 },
+                    { type: 'KOPINICI', col: 5, row: 13 },
+                    { type: 'HALAPARTNICI', col: 6, row: 13 },
+                    { type: 'KOPINICI', col: 7, row: 13 },
+                    { type: 'HALAPARTNICI', col: 8, row: 13 },
+                    { type: 'KOPINICI', col: 9, row: 13 },
+                    { type: 'HALAPARTNICI', col: 10, row: 13 },
+                    { type: 'KOPINICI', col: 11, row: 13 },
+                    { type: 'HALAPARTNICI', col: 12, row: 13 }
                     // Poznámka: Nepřátelské vozy byly ukořistěny až PO bitvě, nejsou v počátečním setupu
                 ]
             }
@@ -3285,6 +3413,11 @@ const Scenarios = {
             plains: 'default'
         },
 
+        mapLabels: [
+            { text: 'Potok Bohynka', i18nKey: 'bohynkaBrook', hexes: [[1,7], [3,7], [5,7], [13,7], [15,7], [17,7]], offset: [0, 0.25] },
+            { text: 'Tvrz Malešov', i18nKey: 'malesovFortress', hexes: [[14,11], [15,11], [14,12], [15,12]], offset: [-0.35, 0] }
+        ],
+
         forces: {
             hussites: {
                 commander: 'Jan Žižka z Trocnova',
@@ -3398,12 +3531,12 @@ const Scenarios = {
                 turnRange: [6, 8],
                 description: 'Žižka spouští vozy plné kamení dolů a palba z vrchu kosí útočníky. Nejkrvavější fáze bitvy.',
                 events: [
-                    // KAMENNÉ VOZY (Dolejší) - spustí se, až je nepřítel namačkaný v údolí
-                    // pod kopcem; rozbijí jeho šiky (panika). Vázáno na units_in_area.
-                    { trigger: 'turn_5', triggerBefore: 'turn_10', condition: { type: 'units_in_area', faction: 'crusaders', area: { minCol: 4, maxCol: 14, minRow: 5, maxRow: 9 }, minCount: 4 }, type: 'panic', faction: 'crusaders', level: 3, title: 'Kamenné vozy!', text: 'Žižka dal naplnit pícní vozy kamením a spustil je dolů ze svahu - šiky nepřítele se v údolí tříští!' },
                     { trigger: 'turn_6', message: 'Houfnice a ručnice pálí do natěsnaných řad nepřítele!' },
                     { trigger: 'turn_7', message: 'Ztráty koalice rostou! Údolí se barví krví!' },
-                    { trigger: 'turn_8', type: 'morale_drop', faction: 'crusaders', amount: 3, text: 'Koaliční vojsko ztrácí odvahu v zabijácké palbě.' }
+                    { trigger: 'turn_8', type: 'morale_drop', faction: 'crusaders', amount: 3, text: 'Koaliční vojsko ztrácí odvahu v zabijácké palbě.' },
+                    // KAMENNÉ VOZY (Dolejší) - append-only kvůli indexovému locale overlay.
+                    // Spustí se, až je nepřítel namačkaný v údolí pod kopcem.
+                    { trigger: 'turn_5', triggerBefore: 'turn_10', condition: { type: 'units_in_area', faction: 'crusaders', area: { minCol: 4, maxCol: 14, minRow: 5, maxRow: 9 }, minCount: 4 }, type: 'panic', faction: 'crusaders', level: 3, title: 'Kamenné vozy!', text: 'Žižka dal naplnit pícní vozy kamením a spustil je dolů ze svahu - šiky nepřítele se v údolí tříští!' }
                 ]
             },
             {
@@ -3577,37 +3710,18 @@ const ScenarioManager = {
                         if (event.trigger !== `turn_${turn}`) continue;
                     }
 
-                    // Pokud event má explicitní typ, použijeme ho, jinak 'message'
-                    if (event.type) {
-                        events.push({
-                            turn: turn,
-                            type: event.type,
-                            id: eventId,
-                            title: phase.name,
-                            text: event.text || event.message,
-                            // Předáme všechny další parametry eventu
-                            faction: event.faction,
-                            level: event.level,
-                            duration: event.duration,
-                            modifier: event.modifier,
-                            changes: event.changes,
-                            area: event.condition?.area,
-                            // ai_stance (WP0) parametry
-                            mode: event.mode,
-                            target: event.target,
-                            untilTurn: event.untilTurn,
-                            proximity: event.proximity
-                        });
-                    } else {
-                        // Zpětná kompatibilita - prosté zprávy
-                        events.push({
-                            turn: turn,
-                            type: 'message',
-                            id: eventId,
-                            title: phase.name,
-                            text: event.message
-                        });
-                    }
+                    // Zachovej celý datový kontrakt eventu. Ruční výčet polí dříve
+                    // zahazoval např. amount a vlastní title, takže se Malešov místo
+                    // -15 morálky/+15 % útoku tiše přepočítal na defaultní hodnoty.
+                    events.push({
+                        ...event,
+                        turn,
+                        type: event.type || 'message',
+                        id: eventId,
+                        title: event.title || phase.name,
+                        text: event.text || event.message,
+                        area: event.area || event.condition?.area
+                    });
                 }
             }
         }

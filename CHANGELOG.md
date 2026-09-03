@@ -1,5 +1,25 @@
 # 📜 Changelog
 
+## Připravovaná Alpha 0.2 (3. září 2026)
+
+### Nové
+- Názvy míst na všech 18 mapách, respektující fog of war a jazyk hry.
+- Scénářové doktríny AI: útok jízdy, pronásledování, hledání boků, klamný ústup a držení vozové hradby.
+- Kampaňová pověst, odemykání aktů a jednorázový zlom po Lipanech.
+- Shrnutí čtyř aktů a kronika vítězné protistrany; Sion zachovává kronikářskou i archeologickou verzi.
+- Lokalizační validátor a deterministický testovací balík herního jádra.
+
+### Změny
+- Historické přesily u Hořic, Tachova a Domažlic jsou vyjádřeny počtem žetonů a doktrínou AI, ne navýšením HP.
+- Ústí dostalo dvě jednotky husitské šlechtické jízdy; Plzeň mechanický tlak hladu a dezercí.
+- Dynamické panely, jednotky, tooltipy, události a kampaň se překládají bez reloadu.
+- Rozhraní při šířce 753 px dovoluje sbalit boční panely bez překrývání obsahu.
+
+### Opravy
+- Úplný datový kontrakt událostí, fronta notifikací, jednotná evidence úmrtí a routu.
+- Save v3 ukládá čas, pověst, AI stance a stav jednorázových mechanik.
+- Nová bitva čistí starý herní log; opravené překlady tlačítka zvuku a briefingu Hořic.
+
 ## Alpha 0.1 (3. února 2026)
 
 ### ✨ Features

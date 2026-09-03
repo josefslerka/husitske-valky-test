@@ -12,7 +12,7 @@ const Campaign = {
             id: 1,
             name: 'AKT I: ZROZENÍ',
             subtitle: '1419-1420',
-            description: 'První léta revoluce. Od defenestrace k obraně Prahy.',
+            description: 'Zrození. Slabší houfy se učí přežít a z vozů dělají zbraň.',
             battles: [
                 { id: 'zivohost_1419', available: true },
                 { id: 'nekmir_1419', available: true },
@@ -26,7 +26,7 @@ const Campaign = {
             id: 2,
             name: 'AKT II: ŽIŽKOVA ÉRA',
             subtitle: '1421-1424',
-            description: 'Pod Žižkovým velením husité porážejí jednu křížovou výpravu za druhou.',
+            description: 'Žižkova éra. Vojenský génius vítězí, ale země se už obrací sama proti sobě.',
             battles: [
                 { id: 'zatec_1421', available: true },
                 { id: 'kutna_hora_1421', available: true },
@@ -41,7 +41,7 @@ const Campaign = {
             id: 3,
             name: 'AKT III: PROKOPOVA ÉRA',
             subtitle: '1425-1431',
-            description: 'Husité přecházejí do ofenzivy. Spanilé jízdy a konec křížových výprav.',
+            description: 'Vrchol moci. Prokopova vojska vyrážejí za hranice a pověst vítězí dřív než zbraně.',
             battles: [
                 { id: 'usti_1426', available: true },
                 { id: 'tachov_1427', available: true },
@@ -54,7 +54,7 @@ const Campaign = {
             id: 4,
             name: 'AKT IV: KONEC',
             subtitle: '1433-1437',
-            description: 'Rozkol mezi husity vede k tragickému konci u Lipan.',
+            description: 'Ztráta. Přesila nestačí proti rozkolu; po Lipanech zbývá poslední vzdor.',
             battles: [
                 { id: 'oblehani_plzne_1433', available: true },
                 { id: 'lipany_1434', available: true },
@@ -73,8 +73,10 @@ const Campaign = {
     getAvailableBattles: function() {
         const available = [];
         for (const act of this.acts) {
+            const actUnlocked = typeof CampaignProgressSystem === 'undefined'
+                || CampaignProgressSystem.isActUnlocked(act.id);
             for (const battle of act.battles) {
-                if (battle.available && !battle.locked) {
+                if (battle.available && !battle.locked && actUnlocked) {
                     available.push({
                         ...battle,
                         actId: act.id,
@@ -91,9 +93,15 @@ const Campaign = {
         for (const act of this.acts) {
             const battle = act.battles.find(b => b.id === battleId);
             if (battle) {
-                return battle.available && !battle.locked;
+                const actUnlocked = typeof CampaignProgressSystem === 'undefined'
+                    || CampaignProgressSystem.isActUnlocked(act.id);
+                return battle.available && !battle.locked && actUnlocked;
             }
         }
         return false;
     }
 };
+
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = Campaign;
+}

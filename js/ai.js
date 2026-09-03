@@ -1,6 +1,30 @@
 // Jednoduchá AI pro křižáky
 
 const AI = {
+    defaultDoctrine: {
+        charge: 'reckless',
+        pursueRouted: true,
+        flankSeeking: true,
+        fearThreshold: 22,
+        feignedRetreat: false,
+        holdWagonFort: false,
+        avoidFireUnlessOrdered: true
+    },
+
+    // Frakční default doplňuje scénářový profil. Scénář tak popisuje
+    // historické chování, aniž duplikuje celou sadu voleb.
+    getDoctrine: function(game) {
+        return {
+            ...this.defaultDoctrine,
+            ...(game.currentScenario?.aiDoctrine || {})
+        };
+    },
+
+    // Testovací harness může dodat seedovaný generátor přes game.random.
+    random: function(game) {
+        return typeof game.random === 'function' ? game.random() : Math.random();
+    },
+
     // Mapování herních terénů na klíče v tactics.terrain
     terrainMapping: {
         forest: 'forest',
@@ -129,24 +153,36 @@ const AI = {
 
         // Pokračuj na další jednotku po krátké prodlevě
         // (rychlost AI z nastavení dosud neměla žádný efekt)
-        const speedFactor = { fast: 0.4, normal: 1, slow: 1.8 }[
-            (window.gameSettings && window.gameSettings.aiSpeed) || 'normal'
-        ] || 1;
-        let delay = (action && action.type === 'attack' ? 700 : 500) * speedFactor;
-        // Hráč klikl na "přeskočit tah AI": minimální prodlevy.
-        // Útok drží 320 ms (delší než animace zásahu ~300 ms, jinak by se
-        // překrývaly damage-timeouty a hrozily race-y), pohyb je skoro instantní.
-        if (game.fastForwardAI) {
-            delay = (action && action.type === 'attack') ? 320 : 40;
-        }
+        const delay = this.getActionDelay(game, action, units.length);
         setTimeout(() => {
             this.processUnits(game, units, index + 1);
         }, delay);
     },
 
+    getActionDelay: function(game, action, unitCount) {
+        const configuredSpeed = typeof window !== 'undefined' && window.gameSettings
+            ? window.gameSettings.aiSpeed
+            : 'normal';
+        const speedFactor = { fast: 0.4, normal: 1, slow: 1.8 }[configuredSpeed] || 1;
+        // Historické přesily (Hořice, Tachov, Domažlice) mají víc žetonů.
+        // Zachovej čitelnost animace, ale nenech délku tahu růst lineárně
+        // nad zhruba dvě desítky jednotek.
+        const largeArmyFactor = Math.min(1, 24 / Math.max(1, unitCount));
+        const isAttack = action && action.type === 'attack';
+        let delay = (isAttack ? 700 : 500) * speedFactor * largeArmyFactor;
+        delay = Math.max(isAttack ? 320 : 120, delay);
+
+        // Hráč klikl na "přeskočit tah AI": minimální prodlevy.
+        // Útok drží 320 ms (delší než animace zásahu ~300 ms, jinak by se
+        // překrývaly damage-timeouty a hrozily race-y), pohyb je skoro instantní.
+        if (game.fastForwardAI) return isAttack ? 320 : 40;
+        return delay;
+    },
+
     decideAction: function(game, unit) {
         const enemies = game.getEnemyUnits('crusaders');
         const isCommander = unit.isCommander && unit.isCommander();
+        const doctrine = this.getDoctrine(game);
 
         // WP0: skriptovaný postoj přebírá rozhodování (kromě default/aggressive,
         // které používají standardní chování níže). Vrací akci definitivně.
@@ -155,13 +191,23 @@ const AI = {
             return this.decideStanceAction(game, unit, enemies, stance);
         }
 
+        // Zlomená jednotka se nejdřív snaží dostat z dosahu. Vyšší práh
+        // ve scénáři modeluje armádu, kterou poráží už pověst protivníka.
+        if (!unit.isRouting && Number.isFinite(unit.morale) && unit.morale <= doctrine.fearThreshold) {
+            if (unit.canMove()) {
+                const safeMove = this.findSafeMove(game, unit, enemies);
+                if (safeMove) return { type: 'move', col: safeMove.col, row: safeMove.row };
+            }
+            return unit.canAct() ? { type: 'defend' } : null;
+        }
+
         // Pursuit mechanic - AI ustupuje směrem k cílovému bodu
         if (game.currentScenario && game.currentScenario.specialMechanics &&
             game.currentScenario.specialMechanics.pursuit && unit.canMove()) {
             const retreatTarget = this.findRetreatMove(game, unit);
             if (retreatTarget) {
                 // 60% šance na ústup místo boje
-                if (Math.random() < 0.6) {
+                if (this.random(game) < 0.6) {
                     return { type: 'move', col: retreatTarget.col, row: retreatTarget.row };
                 }
             }
@@ -217,8 +263,18 @@ const AI = {
             return null;
         }
 
+        // Posádka pověřená držením vozové pevnosti neroztrhne vlastní
+        // linii kvůli o trochu lepšímu hexu. Střílet a bojovat z místa smí.
+        if (doctrine.holdWagonFort && unit.isWagon && unit.isWagon() && unit.formationClosed) {
+            if (unit.canAttack()) {
+                const attackTarget = this.findBestAttackTarget(game, unit, enemies);
+                if (attackTarget) return { type: 'attack', target: attackTarget };
+            }
+            return unit.canAct() ? { type: 'defend' } : null;
+        }
+
         // Speciální taktika pro jednotky s charge - nejprve pohyb, pak útok
-        if (unit.special === 'charge' && unit.canMove() && unit.canAttack()) {
+        if (doctrine.charge !== 'none' && unit.special === 'charge' && unit.canMove() && unit.canAttack()) {
             const chargeTarget = this.findChargeOpportunity(game, unit, enemies);
             if (chargeTarget) {
                 return { type: 'move', col: chargeTarget.moveCol, row: chargeTarget.moveRow,
@@ -330,6 +386,7 @@ const AI = {
     // Hledání příležitosti pro charge útok (pohyb + útok)
     findChargeOpportunity: function(game, unit, enemies) {
         const validMoves = game.getValidMoves(unit);
+        const doctrine = this.getDoctrine(game);
         let bestOpportunity = null;
         let bestScore = -Infinity;
 
@@ -363,6 +420,16 @@ const AI = {
                         score += 30;
                     }
 
+                    if (doctrine.pursueRouted && enemy.isRouting) {
+                        score += 150;
+                    }
+
+                    // Opatrná jízda nenaběhne do soustředěné palby jen proto,
+                    // že technicky může provést charge. Reckless profil malus ignoruje.
+                    if (doctrine.charge === 'cautious' && doctrine.avoidFireUnlessOrdered) {
+                        score -= this.getRangedThreat(game, move, enemies) * 35;
+                    }
+
                     if (score > bestScore) {
                         bestScore = score;
                         bestOpportunity = {
@@ -375,10 +442,12 @@ const AI = {
             }
         }
 
+        if (doctrine.charge === 'cautious' && bestScore < 90) return null;
         return bestOpportunity;
     },
 
     findBestAttackTarget: function(game, unit, enemies) {
+        const doctrine = this.getDoctrine(game);
         let bestTarget = null;
         let bestScore = -Infinity;
 
@@ -442,6 +511,12 @@ const AI = {
                     score += 20;
                 }
 
+                // Dorazit rozprášené je explicitní součást historické doktríny,
+                // ne náhodný vedlejší efekt nízkého HP.
+                if (doctrine.pursueRouted && enemy.isRouting) {
+                    score += 150;
+                }
+
                 // Malus za útok na vozy ve vozové hradbě
                 if (enemy.isWagon()) {
                     const neighbors = game.hexGrid.getNeighbors(enemy.col, enemy.row);
@@ -455,6 +530,10 @@ const AI = {
                     if (adjacentWagons > 0) {
                         score -= adjacentWagons * 10; // Méně atraktivní cíl
                     }
+                    if (doctrine.flankSeeking) {
+                        // Střed souvislé hradby je horší cíl než její otevřený konec.
+                        score += adjacentWagons <= 1 ? 30 : -45;
+                    }
                 }
 
                 if (score > bestScore) {
@@ -467,8 +546,59 @@ const AI = {
         return bestTarget;
     },
 
+    countLinkedWagons: function(game, unit) {
+        if (!unit?.isWagon || !unit.isWagon()) return 0;
+        return game.hexGrid.getNeighbors(unit.col, unit.row).reduce((count, neighbor) => {
+            const other = game.getUnitAt(neighbor.col, neighbor.row);
+            return count + (other && other !== unit && other.health > 0 &&
+                other.faction === unit.faction && other.isWagon && other.isWagon() &&
+                other.formationClosed !== false ? 1 : 0);
+        }, 0);
+    },
+
+    chooseAdvanceTarget: function(game, unit, enemies, doctrine) {
+        const living = enemies.filter(enemy => enemy.health > 0);
+        if (living.length === 0) return null;
+
+        const byDistance = (a, b) =>
+            game.hexGrid.getDistance(unit.col, unit.row, a.col, a.row) -
+            game.hexGrid.getDistance(unit.col, unit.row, b.col, b.row);
+        living.sort(byDistance);
+        const closest = living[0];
+        const closestDistance = game.hexGrid.getDistance(unit.col, unit.row, closest.col, closest.row);
+
+        if (doctrine.pursueRouted) {
+            const routed = living.filter(enemy => enemy.isRouting).sort(byDistance);
+            if (routed.length > 0) {
+                const routedDistance = game.hexGrid.getDistance(unit.col, unit.row, routed[0].col, routed[0].row);
+                if (routedDistance <= closestDistance + 4) return routed[0];
+            }
+        }
+
+        // Pokud nejbližší cíl patří do souvislé vozové linie, postupuj
+        // raději k jejímu konci. Průchod k boku se pořád hledá přes validMoves.
+        if (doctrine.flankSeeking && closest.isWagon && closest.isWagon()) {
+            const wagonEnds = living.filter(enemy =>
+                enemy.isWagon && enemy.isWagon() && enemy.formationClosed !== false &&
+                this.countLinkedWagons(game, enemy) <= 1
+            ).sort(byDistance);
+            if (wagonEnds.length > 0) return wagonEnds[0];
+        }
+
+        return closest;
+    },
+
+    getRangedThreat: function(game, position, enemies) {
+        return enemies.reduce((threat, enemy) => {
+            if (enemy.health <= 0 || !enemy.isRanged || !enemy.isRanged()) return threat;
+            const distance = game.hexGrid.getDistance(position.col, position.row, enemy.col, enemy.row);
+            return threat + (distance <= enemy.range ? 1 : 0);
+        }, 0);
+    },
+
     findBestMove: function(game, unit, enemies) {
         const validMoves = game.getValidMoves(unit);
+        const doctrine = this.getDoctrine(game);
 
         if (validMoves.length === 0) {
             return null;
@@ -477,17 +607,7 @@ const AI = {
         let bestMove = null;
         let bestScore = -Infinity;
 
-        // Najdeme nejbližšího nepřítele
-        let closestEnemy = null;
-        let closestDistance = Infinity;
-
-        for (const enemy of enemies) {
-            const dist = game.hexGrid.getDistance(unit.col, unit.row, enemy.col, enemy.row);
-            if (dist < closestDistance) {
-                closestDistance = dist;
-                closestEnemy = enemy;
-            }
-        }
+        const closestEnemy = this.chooseAdvanceTarget(game, unit, enemies, doctrine);
 
         if (!closestEnemy) {
             return validMoves[0];
@@ -513,6 +633,14 @@ const AI = {
             // Bonus za terén - používáme unit-specific modifikátory
             const terrain = game.hexGrid.getTerrain(move.col, move.row);
             score += this.getUnitTerrainBonus(unit, terrain);
+
+            // Nevstupuj do nového palebného vějíře bez bezprostředního
+            // taktického zisku. Skriptované aggressive stance tento malus ruší.
+            if (doctrine.avoidFireUnlessOrdered && game.aiStance?.mode !== 'aggressive' && distToEnemy > unit.range) {
+                const currentThreat = this.getRangedThreat(game, unit, enemies);
+                const newThreat = this.getRangedThreat(game, move, enemies);
+                score -= Math.max(0, newThreat - currentThreat) * 35;
+            }
 
             if (score > bestScore) {
                 bestScore = score;
@@ -703,3 +831,7 @@ const AI = {
         }
     }
 };
+
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = AI;
+}

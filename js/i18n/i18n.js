@@ -19,7 +19,7 @@ class I18n {
         }
 
         try {
-            const response = await fetch(`js/i18n/locales/${lang}.json?v=7.5`);
+            const response = await fetch(`js/i18n/locales/${lang}.json?v=8.0`);
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
@@ -65,6 +65,8 @@ class I18n {
         if (typeof updateGameDataLocalization === 'function') {
             updateGameDataLocalization();
         }
+
+        this.notifyLanguageChanged();
     }
 
     /**
@@ -178,6 +180,17 @@ class I18n {
     }
 
     /**
+     * Oznámí dynamickým částem rozhraní, že statické data-i18n uzly už
+     * byly přeloženy. Událost drží main.js oddělený od interního loaderu.
+     */
+    notifyLanguageChanged() {
+        if (typeof document === 'undefined' || typeof CustomEvent === 'undefined') return;
+        document.dispatchEvent(new CustomEvent('languageChanged', {
+            detail: { language: this.currentLanguage }
+        }));
+    }
+
+    /**
      * Aktualizuje meta tagy podle jazyka
      */
     updateMetaTags() {
@@ -282,8 +295,10 @@ class I18n {
             }
         }
 
-        // Aktualizuj DOM
+        // Aktualizuj DOM. setLanguage už událost vyslal; pro výchozí češtinu
+        // ji vyšleme tady, aby oba iniciační směry měly stejný kontrakt.
         this.updateDOM();
+        this.notifyLanguageChanged();
     }
 }
 

@@ -28,6 +28,19 @@ const ChronicleSystem = {
         }
     },
 
+    // Shrnutí aktu se zapisuje jednou, až když hráč vyhraje všechny jeho bitvy.
+    recordActSummary(actId) {
+        if (!Number.isInteger(Number(actId))) return;
+        const entries = this.getEntries();
+        if (entries.some(entry => entry.type === 'actSummary' && Number(entry.actId) === Number(actId))) return;
+        entries.push({ type: 'actSummary', actId: Number(actId), ts: Date.now() });
+        try {
+            localStorage.setItem(this.STORAGE_KEY, JSON.stringify(entries));
+        } catch (e) {
+            console.warn('Chronicle: nelze uložit shrnutí aktu', e);
+        }
+    },
+
     clear() {
         localStorage.removeItem(this.STORAGE_KEY);
     },
@@ -50,10 +63,42 @@ const ChronicleSystem = {
         return '';
     },
 
+    _enemyChronicle(scenarioId) {
+        let lore = (typeof getBattleLore === 'function') ? getBattleLore(scenarioId) : null;
+        if (lore && typeof getLocalizedBattleLore === 'function') lore = getLocalizedBattleLore(scenarioId, lore);
+        return lore?.enemyChronicle || null;
+    },
+
+    _formatEnemyChronicle(chronicle, includeCounter = false) {
+        if (!chronicle?.text) return '';
+        let text = `${chronicle.text} — ${chronicle.source}`;
+        if (includeCounter && chronicle.counterText) {
+            text += `\n\n${chronicle.counterText} — ${chronicle.counterSource}`;
+        }
+        return text;
+    },
+
+    getEnemyChronicleText(scenarioId, includeCounter = false) {
+        return this._formatEnemyChronicle(this._enemyChronicle(scenarioId), includeCounter);
+    },
+
+    generateActSummary(entry) {
+        return {
+            title: i18n.t('chronicle.actSummaryTitle', { act: entry.actId }),
+            text: i18n.t(`chronicle.actSummaries.${entry.actId}`)
+        };
+    },
+
     // Vygeneruje STYLIZOVANÝ (lživý) dobový text v aktuálním jazyce.
     generateText(entry) {
         const year = (String(entry.scenarioId).match(/_(\d{4})$/) || [])[1] || '';
         const battle = this._battleName(entry.scenarioId);
+        const enemyChronicle = this._enemyChronicle(entry.scenarioId);
+
+        // Při porážce přebírá kanonický hlas vítězná protistrana.
+        if (entry.result !== 'victory' && enemyChronicle) {
+            return this._formatEnemyChronicle(enemyChronicle, Boolean(enemyChronicle.counterText));
+        }
 
         let body;
         if (entry.result === 'victory') {
@@ -76,6 +121,11 @@ const ChronicleSystem = {
         const sign = this._signature(entry.scenarioId);
         if (sign) text += ' — ' + sign + '.';
         if (entry.blind) text += ' ' + i18n.t('chronicle.blindLine');
+        // Sion vždy zachová oba navzájem soupeřící prameny, i když
+        // hráč vytvořil kontrafaktuální vítězství obránců.
+        if (enemyChronicle?.counterText) {
+            text += `\n\n${this._formatEnemyChronicle(enemyChronicle, true)}`;
+        }
         return text;
     },
 

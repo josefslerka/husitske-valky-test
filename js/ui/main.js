@@ -33,7 +33,10 @@ function showConfirmDialog(message, title = null) {
     });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    // Veškeré dynamické UI se staví až po načtení locale. Tím odpadá závod,
+    // kdy se menu a první seznam misí vykreslily dřív než překlady.
+    await i18n.init();
     // Reference na obrazovky
     const mainMenu = document.getElementById('main-menu');
     const gameContainer = document.getElementById('game-container');
@@ -151,10 +154,10 @@ document.addEventListener('DOMContentLoaded', () => {
     menuMusicBtn.addEventListener('click', () => {
         const isPlaying = Music.toggle();
         if (isPlaying) {
-            menuMusicBtn.textContent = i18n.t('menu.musicPlaying');
+            menuMusicBtn.innerHTML = `<span>${i18n.t('menu.musicPlaying')}</span>`;
             menuMusicBtn.classList.add('playing');
         } else {
-            menuMusicBtn.textContent = i18n.t('menu.music');
+            menuMusicBtn.innerHTML = `<span>${i18n.t('menu.music')}</span>`;
             menuMusicBtn.classList.remove('playing');
         }
     });
@@ -185,10 +188,60 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentAct = 1;
 
+    // Statické data-i18n uzly řeší i18n samo. Tady obnovujeme obsah, který
+    // vzniká až za běhu (karty misí, detail, cíle a hlavička rychlé bitvy).
+    document.addEventListener('languageChanged', () => {
+        updateLanguageFlag();
+        updateCampaignProgressUI();
+        updateSoundButton();
+
+        menuMusicBtn.innerHTML = `<span>${i18n.t(Music.isPlaying ? 'menu.musicPlaying' : 'menu.music')}</span>`;
+
+        const settingsLanguage = document.getElementById('language-select');
+        if (settingsLanguage) settingsLanguage.value = i18n.getCurrentLanguage();
+
+        if (selectedScenario?.id) {
+            const baseScenario = ScenarioManager.getScenario(selectedScenario.id);
+            if (baseScenario) selectedScenario = getLocalizedScenario(selectedScenario.id, baseScenario);
+        }
+
+        if (game?.currentScenario) {
+            updateObjectivesPanel(game.currentScenario);
+        } else if (game?.gameState === 'playing') {
+            document.getElementById('battle-name').textContent = i18n.t('quickBattle.name');
+            document.getElementById('battle-date').textContent = i18n.t('quickBattle.date');
+        }
+
+        if (!missionModal.classList.contains('hidden')) {
+            const missionDetails = document.getElementById('mission-details');
+            if (!missionDetails.classList.contains('hidden') && selectedScenario?.id) {
+                showMissionDetails(selectedScenario.id);
+            } else {
+                showActBattles(currentAct);
+            }
+        }
+    });
+
+    function updateCampaignProgressUI() {
+        if (typeof CampaignProgressSystem === 'undefined') return;
+        const progress = CampaignProgressSystem.load();
+        const value = document.getElementById('campaign-reputation-value');
+        const fill = document.getElementById('campaign-reputation-fill');
+        const tier = document.getElementById('campaign-reputation-tier');
+        if (value) value.textContent = progress.reputation;
+        if (fill) fill.style.width = `${progress.reputation}%`;
+        if (tier) tier.textContent = i18n.t(`campaign.reputation.${CampaignProgressSystem.getReputationTier(progress.reputation)}`);
+    }
+
     function showMissionSelection() {
         mainMenu.classList.add('hidden');
         gameContainer.classList.remove('hidden');
         missionModal.classList.remove('hidden');
+
+        // Než je vybrána konkrétní bitva, nenechávej za modalem český
+        // placeholder ze statického HTML.
+        document.getElementById('battle-name').textContent = i18n.t('campaign.title');
+        document.getElementById('battle-date').textContent = i18n.t('campaign.subtitle');
 
         const missionList = document.getElementById('mission-list');
         const missionDetails = document.getElementById('mission-details');
@@ -198,6 +251,15 @@ document.addEventListener('DOMContentLoaded', () => {
         missionList.classList.remove('hidden');
         missionDetails.classList.add('hidden');
         if (campaignActs) campaignActs.classList.remove('hidden');
+
+        // Při prvním otevření ukaž nejzazší odemčený akt;
+        // zamčený dříve zvolený akt se nikdy nezobrazí napůl.
+        if (typeof CampaignProgressSystem !== 'undefined'
+            && !CampaignProgressSystem.isActUnlocked(currentAct)) {
+            currentAct = CampaignProgressSystem.getHighestUnlockedAct();
+        }
+
+        updateCampaignProgressUI();
 
         // Inicializace záložek aktů
         initActTabs();
@@ -209,12 +271,21 @@ document.addEventListener('DOMContentLoaded', () => {
     function initActTabs() {
         const tabs = document.querySelectorAll('.act-tab');
         tabs.forEach(tab => {
+            const actId = parseInt(tab.dataset.act);
+            const unlocked = typeof CampaignProgressSystem === 'undefined'
+                || CampaignProgressSystem.isActUnlocked(actId);
+            tab.classList.toggle('locked', !unlocked);
+            tab.classList.toggle('active', unlocked && actId === currentAct);
+            tab.setAttribute('aria-disabled', String(!unlocked));
+
             // Volá se při každém otevření výběru misí - bez guardu se
             // listenery hromadí a klik se zpracuje vícekrát
             if (tab.dataset.listenerAdded) return;
             tab.dataset.listenerAdded = 'true';
             tab.addEventListener('click', () => {
                 const actId = parseInt(tab.dataset.act);
+                if (typeof CampaignProgressSystem !== 'undefined'
+                    && !CampaignProgressSystem.isActUnlocked(actId)) return;
 
                 // Aktivace záložky
                 tabs.forEach(t => t.classList.remove('active'));
@@ -229,6 +300,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function showActBattles(actId) {
         const act = Campaign.getAct(actId);
         if (!act) return;
+        if (typeof CampaignProgressSystem !== 'undefined'
+            && !CampaignProgressSystem.isActUnlocked(actId)) return;
 
         const missionList = document.getElementById('mission-list');
         const actDescription = document.getElementById('act-description');
@@ -245,11 +318,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let battleNumber = 1;
         act.battles.forEach((battleRef) => {
-            const scenario = ScenarioManager.getScenario(battleRef.id);
-            const isLocked = battleRef.locked || !battleRef.available;
+            const baseScenario = ScenarioManager.getScenario(battleRef.id);
+            const scenario = baseScenario && typeof getLocalizedScenario === 'function'
+                ? getLocalizedScenario(battleRef.id, baseScenario)
+                : baseScenario;
+            const isLocked = battleRef.locked || !battleRef.available
+                || (typeof CampaignProgressSystem !== 'undefined'
+                    && !CampaignProgressSystem.isBattleUnlocked(battleRef.id));
+            const battleRecord = typeof CampaignProgressSystem !== 'undefined'
+                ? CampaignProgressSystem.getBattleRecord(battleRef.id)
+                : null;
+            const completed = battleRecord?.result === 'victory';
 
             const card = document.createElement('div');
-            card.className = 'mission-card' + (isLocked ? ' locked' : '');
+            card.className = 'mission-card' + (isLocked ? ' locked' : '') + (completed ? ' completed' : '');
             card.dataset.scenarioId = battleRef.id;
 
             if (scenario) {
@@ -265,7 +347,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const tutorialMarker = scenario.tutorial ? `<span class="tutorial-marker">${i18n.t('mission.tutorial')}</span>` : '';
 
                 card.innerHTML = `
-                    <div class="mission-card-number">${isLocked ? '🔒' : battleNumber}</div>
+                    <div class="mission-card-number">${isLocked ? '🔒' : (completed ? '✓' : battleNumber)}</div>
                     <div class="mission-card-info">
                         <div class="mission-card-title">${scenario.name}${tutorialMarker}</div>
                         <div class="mission-card-date">${scenario.date}</div>
@@ -458,7 +540,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function startMission(scenario) {
         // Zastavení hudby z hlavního menu
         Music.stop();
-        menuMusicBtn.textContent = '🎵 Hudba';
+        menuMusicBtn.innerHTML = `<span>${i18n.t('menu.music')}</span>`;
         menuMusicBtn.classList.remove('playing');
 
         // Skrytí modalu
@@ -509,7 +591,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function startQuickBattle() {
         // Zastavení hudby z hlavního menu
         Music.stop();
-        menuMusicBtn.textContent = '🎵 Hudba';
+        menuMusicBtn.innerHTML = `<span>${i18n.t('menu.music')}</span>`;
         menuMusicBtn.classList.remove('playing');
 
         mainMenu.classList.add('hidden');
@@ -550,9 +632,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (!saveData) return;
 
-        const scenario = saveData.scenarioId
+        let scenario = saveData.scenarioId
             ? ScenarioManager.getScenario(saveData.scenarioId)
             : null;
+        if (scenario && typeof getLocalizedScenario === 'function') {
+            scenario = getLocalizedScenario(saveData.scenarioId, scenario);
+        }
 
         mainMenu.classList.add('hidden');
         gameContainer.classList.remove('hidden');
@@ -734,6 +819,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnSound = document.getElementById('btn-sound');
     const btnHelp = document.getElementById('btn-help');
 
+    function updateSoundButton() {
+        if (!btnSound) return;
+        const icon = btnSound.querySelector('.btn-icon');
+        const label = btnSound.querySelector('[data-i18n]');
+        if (icon) icon.textContent = gameSettings.soundEnabled ? '🔊' : '🔇';
+        if (label) label.textContent = i18n.t(gameSettings.soundEnabled ? 'game.sound' : 'game.soundOff');
+    }
+
     if (btnSave) {
         btnSave.addEventListener('click', () => {
             if (game) game.saveGame();
@@ -752,12 +845,11 @@ document.addEventListener('DOMContentLoaded', () => {
         btnSound.addEventListener('click', () => {
             gameSettings.soundEnabled = !gameSettings.soundEnabled;
             if (gameSettings.soundEnabled) {
-                btnSound.innerHTML = i18n.t('game.sound');
                 Sound.unmute();
             } else {
-                btnSound.innerHTML = i18n.t('game.soundOff');
                 Sound.mute();
             }
+            updateSoundButton();
             if (footerMenu) footerMenu.classList.remove('open');
         });
     }
@@ -1055,14 +1147,29 @@ document.addEventListener('DOMContentLoaded', () => {
         // Seřadit podle pořadí bitev v KAMPANI (campaign.js), ne podle pořadí
         // definice v scenarios.js - to se liší (Malešov 1424 je v kampani před Ústím 1426).
         const order = (typeof Campaign !== 'undefined' && Array.isArray(Campaign.acts))
-            ? Campaign.acts.reduce((acc, a) => acc.concat((a.battles || []).map(b => b.id)), [])
+            ? Campaign.acts.reduce((acc, act) => {
+                acc.push(...(act.battles || []).map(battle => battle.id));
+                acc.push(`act:${act.id}`);
+                return acc;
+            }, [])
             : ScenarioManager.getScenarioList().map(s => s.id);
         const sorted = entries.slice().sort((a, b) => {
-            const ia = order.indexOf(a.scenarioId), ib = order.indexOf(b.scenarioId);
+            const aKey = a.type === 'actSummary' ? `act:${a.actId}` : a.scenarioId;
+            const bKey = b.type === 'actSummary' ? `act:${b.actId}` : b.scenarioId;
+            const ia = order.indexOf(aKey), ib = order.indexOf(bKey);
             return (ia < 0 ? 999 : ia) - (ib < 0 ? 999 : ib);
         });
 
         list.innerHTML = sorted.map((entry, i) => {
+            if (entry.type === 'actSummary') {
+                const summary = ChronicleSystem.generateActSummary(entry);
+                return `
+                    <div class="chronicle-entry chronicle-act-summary">
+                        <h3>${summary.title}</h3>
+                        <p class="chronicle-text">${summary.text}</p>
+                    </div>
+                `;
+            }
             const text = ChronicleSystem.generateText(entry);
             const initial = text.charAt(0);
             const rest = text.slice(1);
@@ -1162,6 +1269,25 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         msgEl.textContent = dynamicMessage;
 
+        const actSummaryEl = document.getElementById('gameover-act-summary');
+        if (actSummaryEl && stats?.campaignProgress) {
+            const campaignResult = stats.campaignProgress;
+            const reputationLine = i18n.t('campaign.reputation.result', {
+                value: campaignResult.reputation,
+                delta: campaignResult.reputationDelta > 0
+                    ? `+${campaignResult.reputationDelta}`
+                    : campaignResult.reputationDelta
+            });
+            if (campaignResult.actCompleted) {
+                actSummaryEl.textContent = `${i18n.t(`chronicle.actSummaries.${campaignResult.actCompleted}`)} ${reputationLine}`;
+            } else {
+                actSummaryEl.textContent = reputationLine;
+            }
+            actSummaryEl.classList.remove('hidden');
+        } else if (actSummaryEl) {
+            actSummaryEl.classList.add('hidden');
+        }
+
         // Rychlé hodnocení
         const ratingEnemies = document.getElementById('rating-enemies');
         const ratingLosses = document.getElementById('rating-losses');
@@ -1250,9 +1376,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Tlačítko další mise (pouze při vítězství a pokud existuje další mise)
         if (isVictory && selectedScenario) {
-            const scenarios = ScenarioManager.getScenarioList();
-            const currentIndex = scenarios.findIndex(s => s.id === selectedScenario.id);
-            if (currentIndex < scenarios.length - 1) {
+            const nextScenarioId = typeof CampaignProgressSystem !== 'undefined'
+                ? CampaignProgressSystem.getNextBattle(selectedScenario.id)
+                : null;
+            if (nextScenarioId) {
                 nextBtn.classList.remove('hidden');
             } else {
                 nextBtn.classList.add('hidden');
@@ -1320,14 +1447,19 @@ document.addEventListener('DOMContentLoaded', () => {
     // Tlačítko Další mise
     document.getElementById('btn-next-mission').addEventListener('click', () => {
         gameoverModal.classList.add('hidden');
+        if (!selectedScenario) return;
 
-        const scenarios = ScenarioManager.getScenarioList();
-        const currentIndex = scenarios.findIndex(s => s.id === selectedScenario.id);
-        if (currentIndex < scenarios.length - 1) {
-            const nextScenario = ScenarioManager.getScenario(scenarios[currentIndex + 1].id);
-            selectedScenario = nextScenario;
-            startMission(nextScenario);
-        }
+        const nextScenarioId = typeof CampaignProgressSystem !== 'undefined'
+            ? CampaignProgressSystem.getNextBattle(selectedScenario.id)
+            : null;
+        if (!nextScenarioId) return;
+        const baseScenario = ScenarioManager.getScenario(nextScenarioId);
+        const nextScenario = baseScenario && typeof getLocalizedScenario === 'function'
+            ? getLocalizedScenario(nextScenarioId, baseScenario)
+            : baseScenario;
+        if (!nextScenario) return;
+        selectedScenario = nextScenario;
+        startMission(nextScenario);
     });
 
     // Tlačítko Hlavní menu z game over

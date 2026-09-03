@@ -18,7 +18,7 @@
     <meta property="twitter:title" content="Husitské Války - Tahová Strategie">
     <meta property="twitter:description" content="Historická tahová strategie o husitských válkách. Veďte husitská vojska Jana Žižky v bitvách 15. století.">
 
-    <link rel="stylesheet" href="style.css?v=6.4">
+    <link rel="stylesheet" href="style.css?v=8.0">
 </head>
 <body>
     <!-- Hlavní menu -->
@@ -66,13 +66,13 @@
 
                 <div class="menu-footer">
                     <button id="btn-menu-music" class="music-btn" data-i18n-title="menu.music">
-                        🎵 <span data-i18n="menu.music"></span>
+                        <span data-i18n="menu.music"></span>
                     </button>
                     <button id="btn-language-toggle" class="language-toggle-btn" title="Změnit jazyk / Change Language">
                         <span id="current-lang-flag">🇨🇿</span>
                     </button>
                     <div class="version-info">
-                        Alpha 0.1 | 03.02.2026
+                        <span data-i18n="menu.version">Alpha 0.2 | 03.09.2026</span>
                         <a href="https://buymeacoffee.com/josefslerka" target="_blank" class="support-link" title="Podpořit vývoj">☕</a>
                     </div>
                 </div>
@@ -183,7 +183,7 @@
             </div>
             <div class="footer-log">
                 <div id="game-log">
-                    <p>Hra zahájena. Husité začínají.</p>
+                    <p data-i18n="messages.gameStarted">Hra zahájena. Husité začínají.</p>
                 </div>
             </div>
             <div class="footer-menu">
@@ -220,6 +220,17 @@
             <button id="mission-close" class="close-btn">&times;</button>
             <h2 data-i18n="campaign.title">Kampaň: Husitské války</h2>
             <p class="mission-subtitle" data-i18n="campaign.subtitle">1419-1437</p>
+
+            <div id="campaign-reputation" class="campaign-reputation">
+                <div class="reputation-heading">
+                    <span data-i18n="campaign.reputation.label">Pověst husitských vojsk</span>
+                    <strong id="campaign-reputation-value">50</strong>
+                </div>
+                <div class="reputation-track" aria-hidden="true">
+                    <span id="campaign-reputation-fill"></span>
+                </div>
+                <small id="campaign-reputation-tier"></small>
+            </div>
 
             <!-- Záložky pro akty -->
             <div id="campaign-acts" class="campaign-tabs">
@@ -638,7 +649,7 @@
                     <h3>Husitské války - Tahová strategie</h3>
 
                     <div class="about-section">
-                        <p class="about-version">Verze: <strong>Alpha 0.1</strong> (3. února 2026)</p>
+                        <p class="about-version">Verze: <strong>Alpha 0.2</strong> (3. září 2026)</p>
                         <p>Historická tahová strategická hra zasazená do období husitských válek (1419-1437).</p>
                     </div>
 
@@ -794,6 +805,7 @@
             <h2 id="gameover-title">Konec bitvy</h2>
             <p id="gameover-reason" class="gameover-reason hidden"></p>
             <p id="gameover-message"></p>
+            <div id="gameover-act-summary" class="gameover-act-summary hidden"></div>
 
             <!-- Rychlé hodnocení -->
             <div id="gameover-rating">
@@ -915,7 +927,7 @@
             <h2 id="tutorial-title">Vítej, bojovníku!</h2>
             <p id="tutorial-text">Text tutoriálu...</p>
             <div class="tutorial-actions">
-                <button id="tutorial-continue" class="btn-primary">Pokračovat</button>
+                <button id="tutorial-continue" class="btn-primary" data-i18n="tutorial.continue">Pokračovat</button>
             </div>
         </div>
     </div>
@@ -946,7 +958,7 @@
 
             <div class="about-section">
                 <h3>Husitské války - Tahová strategie</h3>
-                <p class="about-version">Verze: <strong>Alpha 0.1</strong> (3. února 2026)</p>
+                <p class="about-version">Verze: <strong>Alpha 0.2</strong> (3. září 2026)</p>
                 <p>Historická tahová strategická hra zasazená do období husitských válek (1419-1437).</p>
             </div>
 
@@ -985,34 +997,28 @@
     </div>
 
     <!-- i18n - lokalizační systém (načíst jako první) -->
-    <script src="js/i18n/i18n.js?v=7.5"></script>
-    <script src="js/i18n/i18nHelpers.js?v=4.0"></script>
+    <script src="js/i18n/i18n.js?v=8.0"></script>
+    <script src="js/i18n/i18nHelpers.js?v=8.0"></script>
     <script src="js/i18n/encyclopediaRenderer.js?v=3.9"></script>
-    <script>
-        // Inicializace i18n při načtení stránky
-        document.addEventListener('DOMContentLoaded', async () => {
-            await i18n.init();
-        });
-    </script>
-
     <!-- ?v= cache-busting: bumpni číslo při každém vydání, ať hráči nedostanou starý JS -->
     <script src="js/ui/sound.js?v=3.9"></script>
     <script src="js/ui/music.js?v=3.9"></script>
-    <script src="js/core/hex.js?v=6.4"></script>
-    <script src="js/data/unitTypes.js?v=6.3"></script>
-    <script src="js/entities/Unit.js?v=6.1"></script>
+    <script src="js/core/hex.js?v=8.0"></script>
+    <script src="js/data/unitTypes.js?v=8.0"></script>
+    <script src="js/entities/Unit.js?v=8.0"></script>
     <script src="js/entities/UnitFactory.js?v=3.9"></script>
-    <script src="js/data/battleLore.js?v=4.5"></script>
-    <script src="js/data/campaign.js?v=3.9"></script>
-    <script src="js/data/scenarios.js?v=7.3"></script>
+    <script src="js/data/battleLore.js?v=8.0"></script>
+    <script src="js/data/campaign.js?v=8.0"></script>
+    <script src="js/systems/CampaignProgressSystem.js?v=8.0"></script>
+    <script src="js/data/scenarios.js?v=8.0"></script>
     <script src="js/systems/CombatSystem.js?v=5.9"></script>
     <script src="js/systems/FogOfWarSystem.js?v=3.9"></script>
-    <script src="js/systems/VictoryConditionsSystem.js?v=6.0"></script>
-    <script src="js/systems/TutorialSystem.js?v=3.9"></script>
-    <script src="js/systems/MoraleSystem.js?v=3.9"></script>
-    <script src="js/systems/ChronicleSystem.js?v=3.9"></script>
-    <script src="js/core/game.js?v=6.5"></script>
-    <script src="js/ai.js?v=3.9"></script>
-    <script src="js/ui/main.js?v=5.7"></script>
+    <script src="js/systems/VictoryConditionsSystem.js?v=8.0"></script>
+    <script src="js/systems/TutorialSystem.js?v=8.0"></script>
+    <script src="js/systems/MoraleSystem.js?v=8.0"></script>
+    <script src="js/systems/ChronicleSystem.js?v=8.0"></script>
+    <script src="js/core/game.js?v=8.0"></script>
+    <script src="js/ai.js?v=8.0"></script>
+    <script src="js/ui/main.js?v=8.0"></script>
 </body>
 </html>
