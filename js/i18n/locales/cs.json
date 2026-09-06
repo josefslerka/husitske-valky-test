@@ -1,6 +1,6 @@
 {
   "menu": {
-    "newGame": "Nová hra",
+    "newGame": "Vybrat bitvu",
     "continue": "Pokračovat",
     "encyclopedia": "Encyklopedie",
     "chronicle": "Kronika",
@@ -12,6 +12,35 @@
     "musicPlaying": "🎵 Hudba ▶",
     "support": "Podpořit vývoj",
     "version": "Alpha 0.2 | 03.09.2026"
+  },
+  "onboarding": {
+    "promise": "Veďte bitvu. Zachraňte své lidi. A pak si přečtěte, co z toho udělal kronikář.",
+    "firstBattle": "První bitva: Živohošť",
+    "firstBattleNote": "Začněte tady · rozkazy a stručné ovládání",
+    "winGoal": "Jak vyhrát",
+    "optionalGoal": "Volitelný bonus —",
+    "controlsTitle": "Před prvním tahem · ovládání v kostce",
+    "noRush": "Je to tahová hra. Při rozhodování vás nic nehoní; protivník jedná až po ukončení vašeho tahu.",
+    "selectStep": "Vaše oddíly jsou červené. Kliknutím jeden vyberte; jeho stav a schopnosti najdete v levém panelu. Sbalený panel otevřete šipkou na okraji mapy.",
+    "actionStep": "Zeleně zvýrazněné pole znamená dostupný pohyb, červeně zvýrazněný nepřítel možný útok. Kliknutím akci provedete.",
+    "endStep": "Rozdejte rozkazy dalším oddílům a stiskněte Ukončit tah. Nemusíte využít každou akci.",
+    "helpStep": "Hlavní cíl zůstává nad mapou. Podrobnosti najdete pod Cíle, pravidla pod Menu → Nápověda. Escape otevře pauzu.",
+    "resultReason": "Proč bitva skončila",
+    "readChronicle": "Vaše kronika",
+    "togglePanel": "Sbalit / rozbalit postranní panel",
+    "hints": {
+      "select": "Váš tah. Vyberte vlastní červený oddíl; zelená pole ukážou, kam může jít.",
+      "move": "{unit}: zelené pole = pohyb, červeně zvýrazněný nepřítel = útok. Kliknutím vydáte rozkaz.",
+      "attack": "{unit}: pohyb už není k dispozici. Můžete zkusit útok na červeně zvýrazněného nepřítele, obranu nebo vybrat další oddíl.",
+      "spent": "{unit} už nemůže jednat. Vyberte jiný oddíl, nebo ukončete tah.",
+      "wagon": "{unit}: sepnutý vůz stojí. Pro samostatný přesun ho nejprve rozpojte tlačítkem v panelu oddílu; jinak může držet pozici a střílet.",
+      "defend": "{unit}: pohyb ani útok už nejsou k dispozici. Můžete zvolit obranu nebo vybrat další oddíl.",
+      "routing": "{unit} prchá. Jeho ústup probíhá automaticky; rozkaz dejte jinému oddílu.",
+      "endTurn": "Vaše oddíly už nemohou jednat. Pokračujte tlačítkem Ukončit tah.",
+      "enemyTurn": "Teď jedná protivník. Kliknutím na ukazatel jeho tahu můžete zkrátit čekání.",
+      "busy": "Rozkaz se provádí… Další můžete vydat po dokončení akce.",
+      "paused": "Bitva je pozastavená. Rozkazy počkají na návrat do hry."
+    }
   },
   "quickBattle": {
     "name": "Rychlá bitva",
@@ -176,8 +205,8 @@
     "veryHard": "Velmi těžké"
   },
   "gameover": {
-    "reasonAllUnitsLost": "Všechny vaše jednotky byly zničeny.",
-    "reasonEnemyDestroyed": "Celé nepřátelské vojsko bylo zničeno.",
+    "reasonAllUnitsLost": "Na bojišti už nezůstává žádná vaše jednotka.",
+    "reasonEnemyDestroyed": "Na bojišti už nezůstává žádná nepřátelská jednotka.",
     "victory": "Vítězství!",
     "defeat": "Porážka",
     "totalVictory": "Úplné vítězství!",

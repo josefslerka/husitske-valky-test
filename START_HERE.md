@@ -1,108 +1,39 @@
-# 🎮 Jak spustit hru
+# Jak spustit hru
 
-## ⚠️ DŮLEŽITÉ - Problém s lokalizací
+Ve složce projektu spusťte:
 
-Pokud vidíš v menu texty jako "MENU.NEWGAME" místo "Nová hra" / "New Game", je to proto, že jsi otevřel `index.html` přímo v prohlížeči (file://).
-
-**Proč to nefunguje?**
-- Prohlížeč blokuje načítání JSON souborů (překlady) kvůli CORS bezpečnostní politice
-- Je potřeba spustit lokální web server
-
----
-
-## ✅ Správný způsob spuštění:
-
-### Metoda 1: Automatický start (doporučeno)
-
-```bash
-./start.sh
-```
-
-Skript automaticky:
-- Spustí lokální server na portu 8000
-- Otevře hru v prohlížeči
-- Lokalizace bude fungovat! ✨
-
-### Metoda 2: Manuální start serveru
-
-#### Python 3:
 ```bash
 python3 -m http.server 8000
 ```
 
-#### Python 2:
-```bash
-python -m SimpleHTTPServer 8000
-```
+Otevřete [localhost:8000](http://localhost:8000). Terminál nechte během hraní
+otevřený; server ukončíte pomocí `Ctrl+C`. Pokud je port obsazený, použijte
+`python3 -m http.server 8001` a otevřete [localhost:8001](http://localhost:8001).
+Není potřeba instalovat balíčky ani sestavovat aplikaci.
 
-#### Node.js (pokud máš nainstalovaný):
-```bash
-npx http-server -p 8000
-```
+Samotný `index.html` přes `file://` nestačí: prohlížeč může zablokovat překlady.
+Hra v takovém případě zobrazí česko-anglickou zprávu s návodem, místo nečitelných
+překladových klíčů. Pokud chyba trvá i přes HTTP, obnovte stránku a ověřte, že jste
+server spustili ve složce obsahující `index.html` i adresář `js`.
 
-Pak otevři v prohlížeči: http://localhost:8000
+## První hraní
 
----
+1. Zvolte **První bitva: Živohošť**. Otevřou se rozkazy, hlavní cíl a rozbalené
+   stručné ovládání; bitva začne až tlačítkem **Zahájit bitvu**.
+2. Na mapě vyberte vlastní oddíl. Zelená pole jsou pohyb, červeně zvýraznění
+   nepřátelé možné útoky. Řádek pod mapou napoví podle aktuální situace.
+3. Po rozkazech ukončete tah. Není časový limit na přemýšlení ani povinnost
+   využít každou akci. Hlavní cíl zůstává nad mapou, bonusové cíle jsou volitelné.
+4. Po bitvě uvidíte důvod konce. Pokud se zápis podařilo uložit, **Vaše kronika**
+   otevře její vyprávění; **Zkusit znovu** umožní další pokus.
 
-## 🔍 Jak zjistit, že to funguje?
+Jiné odemčené bitvy najdete přes **Vybrat bitvu**. Jazyk lze přepnout vlaječkou
+v menu nebo v **Nastavení**. Pro první test doporučujeme počítač s myší;
+dotykové ovládání ještě není optimalizované.
 
-1. Otevři konzoli prohlížeče (F12)
-2. Měl bys vidět:
-   ```
-   Loading language: cs...
-   ✓ Language loaded: cs (20 sections)
-   ✓ Updated 150 elements
-   ✓ i18n initialized
-   ```
+Save i kronika zůstávají v úložišti daného prohlížeče a webové adresy. Jiný port,
+prohlížeč nebo soukromé okno mohou proto ukázat prázdný postup. Stažená kronika
+je čtenářský archiv, nikoli záloha rozehrané hry.
 
-3. V menu by měly být texty česky (nebo anglicky po přepnutí)
-
----
-
-## 🌍 Jak přepnout jazyk?
-
-1. Klikni na **Nastavení** ⚙️
-2. V sekci **Jazyk** vyber **English**
-3. Klikni **Uložit**
-4. → Celé UI se přepne do angličtiny! 🇬🇧
-
----
-
-## 🐛 Řešení problémů
-
-### Problém: Vidím "MENU.NEWGAME" atd.
-**Řešení:** Spusť hru přes web server (viz výše)
-
-### Problém: Server se nespustí
-**Řešení:**
-- Zkontroluj, jestli je Python nainstalovaný: `python3 --version`
-- Zkus jiný port: `python3 -m http.server 8080`
-
-### Problém: Port 8000 je již použitý
-**Řešení:**
-```bash
-# Najdi proces
-lsof -i :8000
-
-# Ukonči ho
-kill -9 <PID>
-
-# Nebo použij jiný port
-python3 -m http.server 8001
-```
-
-### Problém: Texty jsou v češtině, chci angličtinu
-**Řešení:**
-1. Otevři konzoli (F12)
-2. Zadej: `await i18n.setLanguage('en')`
-3. Nebo jdi do Nastavení a změň jazyk tam
-
----
-
-## 📝 Poznámky
-
-- **Doporučený prohlížeč:** Chrome, Firefox, Safari
-- **Port:** 8000 (nebo jiný volný port)
-- **Jazyk:** Uloží se do localStorage a zůstane při dalším spuštění
-
-Užij si hru! ⚔️🏆
+Pozorovatelé najdou krátký scénář a zápis zpětné vazby v
+[podkladu pro playtest](docs/ACT_I_PLAYTEST.md). Technické kontroly jsou v [README](README.md).

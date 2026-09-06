@@ -468,6 +468,54 @@
     opacity: 0.9;
 }
 
+/* První spuštění nesmí skončit prázdnými tlačítky či překladovými klíči. */
+.booting #main-menu { visibility: hidden; }
+.startup-status {
+    position: fixed;
+    inset: 0;
+    z-index: 5000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow-y: auto;
+    padding: 28px;
+    background: #e8d8b4;
+    color: #30271b;
+    text-align: center;
+    font: 1rem/1.6 Georgia, serif;
+}
+.startup-status h1 { color: #6d1422; font-size: clamp(1.8rem, 5vw, 3rem); margin: 0 0 18px; }
+.startup-status h2 { font-size: 1.2rem; }
+.startup-status p { margin: 12px 0; }
+.startup-status code { overflow-wrap: anywhere; }
+.startup-status a { color: #6d1422; text-decoration: underline; }
+#startup-error { max-width: 660px; }
+.startup-status.hidden { display: none; }
+
+.mission-controls { margin: 16px 0; padding: 12px 16px; background: #e4ead8; border: 1px solid #98a181; border-radius: 4px; }
+.mission-controls summary { color: #304329; font-weight: bold; line-height: 1.5; cursor: pointer; }
+.mission-controls ol { padding-left: 16px; }
+.mission-controls li { margin: 8px 0; }
+.mission-controls .controls-note { font-size: 0.875rem; }
+
+/* Nadpisy přijímají fokus pro čtečku; indikátor interaktivních prvků zůstává. */
+#mission-title:focus,
+#gameover-title:focus { outline: none; }
+.mission-card[role="button"]:focus-visible,
+.mission-controls summary:focus-visible,
+#gameover-modal button:focus-visible { outline: 3px solid #70481f; outline-offset: 3px; }
+
+#turn-guidance {
+    flex-shrink: 0;
+    margin: 0;
+    padding: 7px 14px;
+    background: #eee2c6;
+    border-top: 1px solid #9e8050;
+    color: #42301d;
+    font: 0.875rem/1.45 Georgia, serif;
+}
+
 /* Osobní kronika: čitelný rukopis a oddělený účet skutečné bitvy. */
 #chronicle-modal .help-modal-content {
     width: min(920px, calc(100vw - 28px));

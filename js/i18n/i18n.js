@@ -11,29 +11,31 @@ class I18n {
 
     /**
      * Načte jazykový soubor
-     * @param {string} lang - Kód jazyka (cs, en, de, pl)
+     * @param {string} lang - Kód jazyka (cs, en)
      */
     async loadLanguage(lang) {
+        if (!['cs', 'en'].includes(lang)) return false;
         if (this.loadedLanguages.has(lang)) {
-            return; // Už načteno
+            return true; // Už načteno
         }
 
         try {
-            const response = await fetch(`js/i18n/locales/${lang}.json?v=8.6`);
+            const response = await fetch(`js/i18n/locales/${lang}.json?v=8.7`);
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
             const data = await response.json();
+            if (!data || typeof data.menu?.newGame !== 'string' || typeof data.game?.endTurn !== 'string') {
+                throw new Error('Invalid language file');
+            }
             this.translations[lang] = data;
             this.loadedLanguages.add(lang);
+            return true;
         } catch (error) {
             console.error(`✗ Error loading language ${lang}:`, error);
             console.error('Make sure you are running the game from a web server (not file://)');
             console.error('Try: python3 -m http.server 8000');
-            // Pokud je to výchozí jazyk, vytvoř prázdný objekt
-            if (lang === this.fallbackLanguage) {
-                this.translations[lang] = {};
-            }
+            return false;
         }
     }
 
@@ -42,21 +44,23 @@ class I18n {
      * @param {string} lang - Kód jazyka
      */
     async setLanguage(lang) {
+        if (!['cs', 'en'].includes(lang)) return false;
         // Načti jazyk pokud ještě není načten
         if (!this.loadedLanguages.has(lang)) {
             await this.loadLanguage(lang);
         }
 
         // Pokud jazyk neexistuje, zůstaň u aktuálního
-        if (!this.translations[lang]) {
+        if (!this.loadedLanguages.has(lang)) {
             console.warn(`Language ${lang} not available, staying on ${this.currentLanguage}`);
-            return;
+            return false;
         }
 
         this.currentLanguage = lang;
 
         // Ulož do localStorage
-        localStorage.setItem('gameLanguage', lang);
+        try { localStorage.setItem('gameLanguage', lang); }
+        catch (error) { console.warn('Language preference could not be saved', error); }
 
         // Aktualizuj UI
         this.updateDOM();
@@ -67,6 +71,7 @@ class I18n {
         }
 
         this.notifyLanguageChanged();
+        return true;
     }
 
     /**
@@ -272,10 +277,14 @@ class I18n {
      */
     async init() {
         // Načti uložený jazyk z localStorage
-        const savedLanguage = localStorage.getItem('gameLanguage');
+        let savedLanguage = null;
+        try { savedLanguage = localStorage.getItem('gameLanguage'); }
+        catch (error) { console.warn('Language preference unavailable', error); }
+        if (!['cs', 'en'].includes(savedLanguage)) savedLanguage = null;
 
         // Načti výchozí jazyk (čeština)
         await this.loadLanguage(this.fallbackLanguage);
+        if (!this.loadedLanguages.has(this.fallbackLanguage)) throw new Error('Translations unavailable');
 
         // Pokud máme uložený jazyk, použij ho
         if (savedLanguage) {

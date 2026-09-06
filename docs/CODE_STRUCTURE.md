@@ -12,6 +12,8 @@ Prezentace bitvy je rozdělena do tří tříd:
 - `BattleView` překládá vstupy prohlížeče na příkazy hry, vykresluje mapu a minimapu,
   ovládá kameru, notifikace a efekty. Vlastní listenery a animační smyčku.
 - `BattlePanels` sestavuje HTML jednotek, přehledu armád, tlačítek a fázového banneru.
+  Situační pokyn pod mapou pouze odvozuje ze stavu tahu a vybrané jednotky;
+  neprohledává pozice protivníka ani nemění herní pravidla.
 - `BattleTooltip` vlastní tooltip, jeho obsah a cache pro hover.
 
 Pohled čte stav a dotazuje se pravidel. Změny herního stavu provádí příkazy `Game`
@@ -143,6 +145,19 @@ kampaně. Blob URL se po zahájení stahování uvolní i při chybě.
 Kronika má nativní `<details>`, klávesnici v dialogu a návrat fokusu k otevíracímu
 tlačítku. Změna jazyka zachová rozbalené záznamy a nezmění uložená data.
 
+## První spuštění a výsledek
+
+`main.js` zpřístupní menu až po úspěšném `i18n.init()`. Český fallback musí být
+skutečně načtený; chyba se nesmí maskovat prázdným slovníkem. Statická dvojjazyčná
+obrazovka chyby funguje i bez locale. Neplatný uložený jazyk se ignoruje, vadné
+nastavení se čte přes whitelist bez automatického přepisování původního JSON.
+
+Zkratka první bitvy používá běžný briefing a `startMission()`, ne druhý herní režim.
+Výsledek má vlastní scrollovaný obsah a samostatnou spodní řadu akcí. Fokus začíná
+na titulku, klávesnice zůstává v dialogu a návrat z Kroniky obnoví otevírací tlačítko.
+`getBattleResultCounts()` sjednocuje rychlé hodnocení a srovnání s prameny: celkový
+počet zahrnuje i příchozí posily a ztráty zničené i uprchlé. Nemění výsledek bitvy.
+
 ## Bezpečný zápis savu
 
 `Game.saveGame()` sestaví snapshot uvnitř ošetření chyb a předá jej do
@@ -182,8 +197,9 @@ node scripts/check.js
 ```
 
 Příkaz kontroluje syntaxi JavaScriptu, testy jádra, průběhu bitvy, scénářových
-událostí, narativních variant, Kroniky a exportu, bezpečného ukládání a prezentačního rozhraní, HTML vstup a testy jeho
-validátoru, strukturu CSS, překlady a scénáře.
+událostí, narativních variant, Kroniky a exportu, bezpečného ukládání, prvního
+spuštění a prezentačního rozhraní, HTML vstup a testy jeho validátoru, strukturu
+CSS, překlady a scénáře.
 CSS kontrola není plnohodnotný parser: hlídá importy, závorky,
 prázdné bloky a existenci assetů.
 Testy UI používají zjednodušený DOM a nenahrazují kontrolu v prohlížeči.

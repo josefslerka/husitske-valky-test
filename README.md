@@ -32,6 +32,18 @@ Pak otevřete [http://localhost:8000](http://localhost:8000). Přímé otevřen�
 
 **Doporučené prohlížeče:** aktuální Chrome, Firefox nebo Safari.
 
+### První zážitek
+
+**První bitva: Živohošť** otevře rovnou rozkazy a stručné ovládání. Hlavní cíl
+je oddělený od volitelných bonusů. Situační řádek pod mapou vysvětlí výběr oddílu,
+pohyb, sepnutý vůz, útěk nebo čekání na protivníka; nevydává rozkazy za hráče.
+Výsledek zvýrazňuje důvod konce a ponechává další volby dostupné i při dlouhém
+vyprávění. Z uloženého výsledku lze rovnou otevřít osobní kroniku.
+
+Menu čeká na načtení překladů. Při chybě nabídne čitelný dvojjazyčný návod;
+poškozené nastavení nebo blokované úložiště preferencí nebrání samotnému startu.
+Stručný návod pro hráče je v [START_HERE.md](START_HERE.md).
+
 ### Kontroly před testováním
 
 ```bash
@@ -52,6 +64,8 @@ pokud se nevejde celá skupina, počká na uvolnění místa. Čekání přežij
 závěry Živohoště, Prokopův osud u Lipan, přepnutí jazyka i save/load.
 `node scripts/test-chronicle.js` hlídá uchování závěrů, staré a poškozené zápisy,
 oddělení zničených a uprchlých jednotek i bezpečný offline export.
+`node scripts/test-first-experience.js` ověřuje situační pokyny, jejich obnovu po
+save/load, chyby překladů a nastavení i jednotný účet výsledků včetně posil.
 `node scripts/validate-entrypoint.js` hlídá pořadí všech klasických skriptů a lokální
 cesty v HTML, hudbě i načítání překladů, včetně velikosti písmen a relativních URL.
 Samotnou kontrolu vstupu testuje `node scripts/test-entrypoint.js`.

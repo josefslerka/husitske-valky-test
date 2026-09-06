@@ -1,6 +1,6 @@
 {
   "menu": {
-    "newGame": "New Game",
+    "newGame": "Choose a Battle",
     "continue": "Continue",
     "encyclopedia": "Encyclopedia",
     "chronicle": "Chronicle",
@@ -12,6 +12,35 @@
     "musicPlaying": "🎵 Music ▶",
     "support": "Support Development",
     "version": "Alpha 0.2 | 03.09.2026"
+  },
+  "onboarding": {
+    "promise": "Lead the battle. Save your people. Then read what the chronicler made of it.",
+    "firstBattle": "First battle: Živohošť",
+    "firstBattleNote": "Start here · briefing and quick controls",
+    "winGoal": "How to win",
+    "optionalGoal": "Optional bonus —",
+    "controlsTitle": "Before your first turn · quick controls",
+    "noRush": "This is a turn-based game. Take your time deciding; the opponent acts after you end your turn.",
+    "selectStep": "Your units are red. Click one to select it; its status and abilities appear in the left panel. Use the arrow at the edge of the map to open a collapsed panel.",
+    "actionStep": "A green highlighted tile is a possible move; a red highlighted enemy is a possible attack. Click to carry out the action.",
+    "endStep": "Give orders to your other units, then press End Turn. You do not have to use every action.",
+    "helpStep": "Your main objective stays above the map. Open Objectives for details or Menu → Help for the rules. Escape opens the pause menu.",
+    "resultReason": "Why the battle ended",
+    "readChronicle": "Your chronicle",
+    "togglePanel": "Collapse / expand side panel",
+    "hints": {
+      "select": "Your turn. Select one of your red units; green tiles show where it can move.",
+      "move": "{unit}: green tile = move, red highlighted enemy = attack. Click to give the order.",
+      "attack": "{unit}: no movement left. You can try attacking a red highlighted enemy, defend, or select another unit.",
+      "spent": "{unit} can no longer act. Select another unit or end your turn.",
+      "wagon": "{unit}: a chained wagon stays in place. To move it independently, first open its formation in the unit panel; otherwise it can hold position and fire.",
+      "defend": "{unit}: movement and attack are unavailable. You can defend or select another unit.",
+      "routing": "{unit} is routing. Its retreat is automatic; give orders to another unit.",
+      "endTurn": "Your units can no longer act. Press End Turn to continue.",
+      "enemyTurn": "The opponent is acting. Click its turn indicator to shorten the wait.",
+      "busy": "Carrying out your order… You can give the next one when this action finishes.",
+      "paused": "The battle is paused. Orders can wait until you return."
+    }
   },
   "quickBattle": {
     "name": "Quick Battle",
@@ -176,8 +205,8 @@
     "veryHard": "Very Hard"
   },
   "gameover": {
-    "reasonAllUnitsLost": "All your units have been destroyed.",
-    "reasonEnemyDestroyed": "The entire enemy army has been destroyed.",
+    "reasonAllUnitsLost": "None of your units remain on the battlefield.",
+    "reasonEnemyDestroyed": "No enemy units remain on the battlefield.",
     "victory": "Victory!",
     "defeat": "Defeat",
     "totalVictory": "Total Victory!",

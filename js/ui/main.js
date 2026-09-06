@@ -1,5 +1,45 @@
 // Hlavní vstupní bod - inicializace hry
 
+function readLocalPreference(key) {
+    try { return localStorage.getItem(key); }
+    catch (error) { console.warn('Preference nelze načíst', error); return null; }
+}
+
+// Starší/poškozené nastavení nesmí vyřadit celé menu. Převzít jen známé,
+// platné hodnoty; výchozí volby zůstávají v inicializaci a původní JSON nemažeme.
+function readGamePreferences() {
+    try {
+        const saved = JSON.parse(readLocalPreference('husitskeValky_settings'));
+        if (!saved || typeof saved !== 'object' || Array.isArray(saved)) return {};
+        const clean = {};
+        for (const key of ['soundEnabled', 'showDamage', 'confirmEndTurn']) {
+            if (typeof saved[key] === 'boolean') clean[key] = saved[key];
+        }
+        if (Number.isFinite(saved.soundVolume) && saved.soundVolume >= 0 && saved.soundVolume <= 100) clean.soundVolume = saved.soundVolume;
+        if (['fast', 'normal', 'slow'].includes(saved.aiSpeed)) clean.aiSpeed = saved.aiSpeed;
+        if (['beginner', 'advanced'].includes(saved.difficultyLevel)) clean.difficultyLevel = saved.difficultyLevel;
+        return clean;
+    } catch (error) { console.warn('Poškozené nastavení, používám výchozí hodnoty', error); return {}; }
+}
+
+// Stejný účet pro rychlé hodnocení i srovnání s kronikou. Do celkového počtu
+// patří také příchozí posily; ztráty zahrnují zničené i uprchlé jednotky.
+function getBattleResultCounts(stats, activeGame) {
+    const tally = (faction, counter, initialCounter) => {
+        const lost = stats?.lossesByFaction
+            ? (stats.lossesByFaction[faction] || 0) + (stats.fledByFaction?.[faction] || 0)
+            : (stats?.[counter] ?? activeGame?.[counter] ?? 0);
+        const alive = stats?.aliveByFaction?.[faction]
+            ?? activeGame?.units?.filter(u => u.faction === faction && u.health > 0).length;
+        const total = alive != null ? alive + lost : Math.max(activeGame?.[initialCounter] || 0, lost);
+        return { lost, total };
+    };
+    return {
+        player: tally('hussites', 'unitsLost', 'initialPlayerUnits'),
+        enemy: tally('crusaders', 'enemiesKilled', 'initialEnemyUnits')
+    };
+}
+
 // Custom confirm dialog
 function showConfirmDialog(message, title = null) {
     return new Promise((resolve) => {
@@ -36,7 +76,18 @@ function showConfirmDialog(message, title = null) {
 document.addEventListener('DOMContentLoaded', async () => {
     // Veškeré dynamické UI se staví až po načtení locale. Tím odpadá závod,
     // kdy se menu a první seznam misí vykreslily dřív než překlady.
-    await i18n.init();
+    document.getElementById('btn-startup-retry').addEventListener('click', () => window.location.reload());
+    try {
+        await i18n.init();
+    } catch (error) {
+        console.error('Hru nelze spustit:', error);
+        document.getElementById('startup-loading').classList.add('hidden');
+        document.getElementById('startup-error').classList.remove('hidden');
+        document.getElementById('btn-startup-retry').focus();
+        return;
+    }
+    document.getElementById('startup-status').classList.add('hidden');
+    document.body.classList.remove('booting');
     // Reference na obrazovky
     const mainMenu = document.getElementById('main-menu');
     const gameContainer = document.getElementById('game-container');
@@ -103,10 +154,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('btn-new-campaign').addEventListener('click', () => {
         showMissionSelection();
     });
+    document.getElementById('btn-first-battle').addEventListener('click', () => {
+        showMissionSelection();
+        showMissionDetails('zivohost_1419');
+        document.getElementById('mission-controls').open = true;
+    });
 
     // Tlačítko Pokračovat
     document.getElementById('btn-continue').addEventListener('click', () => {
-        const savedGame = localStorage.getItem('husitskeValky_save');
+        const savedGame = readLocalPreference('husitskeValky_save');
         if (savedGame) {
             startGameFromSave();
         }
@@ -369,7 +425,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                 `;
 
                 if (!isLocked) {
+                    card.tabIndex = 0;
+                    card.setAttribute('role', 'button');
                     card.addEventListener('click', () => showMissionDetails(battleRef.id));
+                    card.addEventListener('keydown', event => {
+                        if (event.key === 'Enter' || event.key === ' ') {
+                            event.preventDefault(); showMissionDetails(battleRef.id);
+                        }
+                    });
                     battleNumber++;
                 }
             } else {
@@ -470,7 +533,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             for (const secondary of scenario.victoryConditions.secondary) {
                 const li = document.createElement('li');
                 li.className = 'secondary';
-                li.textContent = secondary.description;
+                li.textContent = `${i18n.t('onboarding.optionalGoal')} ${secondary.description}`;
                 objectivesList.appendChild(li);
             }
         }
@@ -527,6 +590,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 historySection.classList.add('hidden');
             }
         }
+        missionDetails.scrollTop = 0;
+        document.getElementById('mission-title').focus();
     }
 
     // Tlačítko zpět na seznam
@@ -750,8 +815,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (toggleLeft && unitPanel) {
         toggleLeft.addEventListener('click', () => {
             if (window.innerWidth <= 1200) {
-                unitPanel.classList.toggle('expanded');
-                toggleLeft.textContent = unitPanel.classList.contains('expanded') ? '◀' : '▶';
+                const expanded = unitPanel.classList.toggle('expanded');
+                unitPanel.classList.toggle('collapsed', !expanded);
+                toggleLeft.textContent = expanded ? '◀' : '▶';
             } else {
                 unitPanel.classList.toggle('collapsed');
                 toggleLeft.textContent = unitPanel.classList.contains('collapsed') ? '▶' : '◀';
@@ -763,8 +829,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (toggleRight && infoPanel) {
         toggleRight.addEventListener('click', () => {
             if (window.innerWidth <= 1200) {
-                infoPanel.classList.toggle('expanded');
-                toggleRight.textContent = infoPanel.classList.contains('expanded') ? '▶' : '◀';
+                const expanded = infoPanel.classList.toggle('expanded');
+                infoPanel.classList.toggle('collapsed', !expanded);
+                toggleRight.textContent = expanded ? '▶' : '◀';
             } else {
                 infoPanel.classList.toggle('collapsed');
                 toggleRight.textContent = infoPanel.classList.contains('collapsed') ? '◀' : '▶';
@@ -781,14 +848,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Malé a střední obrazovky - obsah panelů skrývá media query,
             // rozbaluje se kliknutím na šipku (třída .expanded). Šipky ukažme
             // směrem "rozbalit", dokud rozbaleno není.
-            if (!unitPanel.classList.contains('expanded')) {
-                unitPanel.classList.add('collapsed');
-                toggleLeft.textContent = '▶';
-            }
-            if (!infoPanel.classList.contains('expanded')) {
-                infoPanel.classList.add('collapsed');
-                toggleRight.textContent = '◀';
-            }
+            const leftExpanded = unitPanel.classList.contains('expanded');
+            const rightExpanded = infoPanel.classList.contains('expanded');
+            unitPanel.classList.toggle('collapsed', !leftExpanded);
+            infoPanel.classList.toggle('collapsed', !rightExpanded);
+            toggleLeft.textContent = leftExpanded ? '◀' : '▶';
+            toggleRight.textContent = rightExpanded ? '▶' : '◀';
         } else {
             // Na velkých obrazovkách - normální stav (expanded už není potřeba)
             unitPanel.classList.remove('collapsed', 'expanded');
@@ -799,6 +864,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     window.addEventListener('resize', handleResize);
+    handleResize();
 
     // =============================================
     // PAUSE MENU
@@ -1094,24 +1160,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function saveSettings() {
-        localStorage.setItem('husitskeValky_settings', JSON.stringify(gameSettings));
+        try { localStorage.setItem('husitskeValky_settings', JSON.stringify(gameSettings)); }
+        catch (error) { console.warn('Nastavení se nepodařilo uložit', error); }
     }
 
     function loadSettings() {
-        const saved = localStorage.getItem('husitskeValky_settings');
-        if (saved) {
-            const loaded = JSON.parse(saved);
-            Object.assign(gameSettings, loaded);
-
-            // Aplikace zvuku
-            if (!gameSettings.soundEnabled) {
-                Sound.disable();
-            }
-        }
+        Object.assign(gameSettings, readGamePreferences());
+        if (!gameSettings.soundEnabled) Sound.disable();
     }
 
     function checkSavedGame() {
-        const savedGame = localStorage.getItem('husitskeValky_save');
+        const savedGame = readLocalPreference('husitskeValky_save');
         const continueBtn = document.getElementById('btn-continue');
         if (savedGame) {
             continueBtn.disabled = false;
@@ -1158,14 +1217,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Spočítej statistiky
         const turns = stats?.turns || game?.turnNumber || 0;
-        const enemiesKilled = stats?.enemiesKilled || 0;
-        const unitsLost = stats?.unitsLost || 0;
-        const initialEnemies = game?.initialEnemyUnits || enemiesKilled;
-        const initialPlayerUnits = game?.initialPlayerUnits || (unitsLost + (game?.units?.filter(u => u.faction === 'hussites' && u.health > 0).length || 0));
+        const counts = getBattleResultCounts(stats, game);
+        const unitsLost = counts.player.lost;
 
         // Procenta
-        const enemyWipeout = initialEnemies > 0 ? enemiesKilled / initialEnemies : 0;
-        const lossRatio = initialPlayerUnits > 0 ? unitsLost / initialPlayerUnits : 0;
+        const enemyWipeout = counts.enemy.total > 0 ? counts.enemy.lost / counts.enemy.total : 0;
+        const lossRatio = counts.player.total > 0 ? unitsLost / counts.player.total : 0;
 
         banner.className = isVictory ? 'victory' : 'defeat';
         banner.textContent = isVictory ? '🏆' : '💀';
@@ -1180,6 +1237,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             } else {
                 reasonEl.classList.add('hidden');
             }
+            document.getElementById('gameover-reason-heading').classList.toggle('hidden', !stats?.reason);
         }
 
         // Dynamický titulek podle výsledku
@@ -1242,7 +1300,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const ratingTurns = document.getElementById('rating-turns');
 
         if (ratingEnemies) {
-            ratingEnemies.textContent = `${enemiesKilled}/${initialEnemies}`;
+            ratingEnemies.textContent = `${counts.enemy.lost}/${counts.enemy.total}`;
             ratingEnemies.className = 'rating-value ' + (enemyWipeout >= 1 ? 'good' : '');
         }
         if (ratingLosses) {
@@ -1357,15 +1415,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             const sid = stats?.scenarioId || selectedScenario?.id;
             let lore = (sid && typeof getBattleLore === 'function') ? getBattleLore(sid) : null;
             if (lore && typeof getLocalizedBattleLore === 'function') lore = getLocalizedBattleLore(sid, lore);
-            const lossesBy = stats?.lossesByFaction || {};
-            const fledBy = stats?.fledByFaction || {};
-            const aliveBy = stats?.aliveByFaction || {};
             if (lore && lore.casualties) {
-                const gone = (f) => (lossesBy[f] || 0) + (fledBy[f] || 0);
-                const pLost = gone('hussites'), pTotal = (aliveBy.hussites || 0) + pLost;
-                const eLost = gone('crusaders'), eTotal = (aliveBy.crusaders || 0) + eLost;
                 document.getElementById('chronicle-yours').textContent =
-                    i18n.t('gameover.yourLosses', { x: pLost, y: pTotal, a: eLost, b: eTotal, n: turns });
+                    i18n.t('gameover.yourLosses', { x: counts.player.lost, y: counts.player.total,
+                        a: counts.enemy.lost, b: counts.enemy.total, n: turns });
                 document.getElementById('chronicle-says').textContent =
                     i18n.t('gameover.chronicleSays', { h: lore.casualties.hussites, e: lore.casualties.enemy });
                 document.getElementById('chronicle-note').textContent = i18n.t('gameover.chronicleNote');
@@ -1380,7 +1433,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
         // Modal zobrazíme vždy, i pokud nastala chyba ve statistikách
         gameoverModal.classList.remove('hidden');
+        document.getElementById('gameover-scroll').scrollTop = 0;
+        document.getElementById('gameover-title').focus();
+        document.getElementById('btn-gameover-chronicle').classList.toggle('hidden', !stats?.scenarioId || !game?.chronicleRecorded);
     };
+
+    document.getElementById('btn-gameover-chronicle').addEventListener('click', () => ChronicleView.open());
 
     // Tlačítko Zkusit znovu
     document.getElementById('btn-retry').addEventListener('click', () => {
@@ -1461,6 +1519,19 @@ document.addEventListener('DOMContentLoaded', async () => {
             else if (e.key === 'Tab') ChronicleView.trapFocus(e);
             return;
         }
+        if (!gameoverModal.classList.contains('hidden')) {
+            // Výsledky nejsou bojový vstup: Tab/Enter mají ovládat tlačítka.
+            if (e.key === 'Tab') {
+                const controls = Array.from(gameoverModal.querySelectorAll('button:not(.hidden):not(:disabled)'));
+                const first = controls[0], last = controls.at(-1);
+                if (e.shiftKey && (document.activeElement === first || document.activeElement.id === 'gameover-title')) {
+                    e.preventDefault(); last?.focus();
+                } else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first?.focus(); }
+            }
+            return;
+        }
+        // Klávesnice formuláře/tlačítka patří ovládacímu prvku, ne zkratce tahu.
+        if (e.key !== 'Escape' && e.target.closest?.('button, input, select, textarea, summary, a, [role="button"]')) return;
         // Escape - zavření modalů nebo pause menu
         if (e.key === 'Escape') {
             if (helpModal && !helpModal.classList.contains('hidden')) {

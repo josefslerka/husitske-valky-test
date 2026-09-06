@@ -38,6 +38,7 @@ class BattlePanels {
     }
 
     updateEndTurnButton() {
+        this.updateGuidance();
         const endTurnBtn = document.getElementById('btn-end-turn');
         if (!endTurnBtn) return;
         endTurnBtn.disabled = this.game.currentFaction !== 'hussites' || !this.game.canStartAction();
@@ -52,6 +53,33 @@ class BattlePanels {
         } else {
             endTurnBtn.classList.remove('pulse');
         }
+    }
+
+    // Pouze čtení: pokyn vysvětluje dostupný vstup, neprozrazuje nepřátele
+    // za mlhou a nevolí za hráče taktiku. Akční systém obnoví text i po animaci.
+    getGuidance() {
+        const game = this.game;
+        if (game.gameState !== 'playing') return null;
+        if (game.isPaused) return { key: 'paused' };
+        if (game.currentFaction !== 'hussites') return { key: 'enemyTurn' };
+        if (game.actions.busy) return { key: 'busy' };
+        if (game.allPlayerUnitsActed()) return { key: 'endTurn' };
+        const unit = game.selectedUnit;
+        if (!unit || unit.faction !== 'hussites') return { key: 'select' };
+        if (unit.isRouting) return { key: 'routing', unit: unit.name };
+        if (!unit.canAct()) return { key: 'spent', unit: unit.name };
+        if (unit.isWagon() && unit.formationClosed && !unit.marching && !unit.hasMoved) return { key: 'wagon', unit: unit.name };
+        if (!unit.canMove() && !unit.canAttack()) return { key: 'defend', unit: unit.name };
+        return { key: unit.canMove() ? 'move' : 'attack', unit: unit.name };
+    }
+
+    updateGuidance() {
+        const element = document.getElementById('turn-guidance');
+        if (!element) return;
+        const guidance = this.getGuidance();
+        element.classList.toggle('hidden', !guidance);
+        const text = guidance ? i18n.t(`onboarding.hints.${guidance.key}`, { unit: guidance.unit }) : '';
+        if (element.textContent !== text) element.textContent = text;
     }
 
     updateArmyOverview() {
@@ -180,6 +208,7 @@ class BattlePanels {
     }
 
     updateUnitPanel(unit) {
+        this.updateGuidance();
         const infoDiv = document.getElementById('unit-info');
         const actionsDiv = document.getElementById('unit-actions');
         const attackBtn = document.getElementById('btn-attack');

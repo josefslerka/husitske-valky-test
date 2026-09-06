@@ -18,9 +18,20 @@
     <meta property="twitter:title" content="Husitské Války - Tahová Strategie">
     <meta property="twitter:description" content="Historická tahová strategie o husitských válkách. Veďte husitská vojska Jana Žižky v bitvách 15. století.">
 
-    <link rel="stylesheet" href="style.css?v=8.6">
+    <link rel="stylesheet" href="style.css?v=8.7">
 </head>
-<body>
+<body class="booting">
+    <section id="startup-status" class="startup-status">
+        <h1>Husitské války</h1>
+        <p id="startup-loading" role="status">Načítání hry… / Loading the game…</p>
+        <div id="startup-error" class="hidden" role="alert">
+            <h2>Hru se nepodařilo načíst / The game could not load</h2>
+            <p>Nepodařilo se načíst překlady. Obnovte stránku a zkontrolujte připojení. Pokud máte stažené soubory, spusťte v jejich složce <code>python3 -m http.server 8000</code> a otevřete <a href="http://localhost:8000">localhost:8000</a>, nikoli samotný index.html.</p>
+            <p lang="en">The translations could not load. Reload the page and check your connection. For downloaded files, run the command above in the game folder and open localhost:8000 instead of opening index.html directly.</p>
+            <button id="btn-startup-retry" class="btn-primary">Zkusit znovu / Try again</button>
+        </div>
+        <noscript><p>Hra vyžaduje zapnutý JavaScript. / This game requires JavaScript.</p></noscript>
+    </section>
     <!-- Hlavní menu -->
     <div id="main-menu" class="screen">
         <div class="menu-background">
@@ -33,8 +44,13 @@
                     </div>
                 </div>
 
+                <p class="menu-promise" data-i18n="onboarding.promise"></p>
                 <nav class="menu-buttons-grid">
-                    <button id="btn-new-campaign" class="menu-btn primary">
+                    <button id="btn-first-battle" class="menu-btn primary">
+                        <span class="btn-text" data-i18n="onboarding.firstBattle"></span>
+                        <span class="first-battle-note" data-i18n="onboarding.firstBattleNote"></span>
+                    </button>
+                    <button id="btn-new-campaign" class="menu-btn">
                         <span class="btn-icon">⚔️</span>
                         <span class="btn-text" data-i18n="menu.newGame"></span>
                     </button>
@@ -110,7 +126,7 @@
             <canvas id="minimap"></canvas>
 
             <aside id="unit-panel" class="empty-unit-panel">
-                <button class="panel-toggle" id="toggle-left" title="Sbalit/Rozbalit">◀</button>
+                <button class="panel-toggle" id="toggle-left" data-i18n-title="onboarding.togglePanel" title="Sbalit / rozbalit postranní panel" aria-controls="unit-info unit-actions">◀</button>
                 <h2 data-i18n="game.unit"></h2>
                 <div id="unit-info">
                     <p class="no-selection" data-i18n="game.selectUnit"></p>
@@ -145,7 +161,7 @@
             </div>
 
             <aside id="info-panel">
-                <button class="panel-toggle" id="toggle-right" title="Sbalit/Rozbalit">▶</button>
+                <button class="panel-toggle" id="toggle-right" data-i18n-title="onboarding.togglePanel" title="Sbalit / rozbalit postranní panel" aria-controls="army-overview">▶</button>
                 <h2 data-i18n="game.overview">Přehled</h2>
                 <div id="army-overview">
                     <div class="army-section hussites" id="hussite-section">
@@ -176,6 +192,7 @@
             </aside>
         </main>
 
+        <p id="turn-guidance" class="hidden" role="status" aria-live="polite" aria-atomic="true"></p>
         <footer id="game-footer">
             <div class="footer-main-actions">
                 <button id="btn-end-turn" data-i18n="game.endTurn"></button>
@@ -263,7 +280,7 @@
 
             <div id="mission-details" class="hidden">
                 <div class="mission-info">
-                    <h3 id="mission-title"></h3>
+                    <h3 id="mission-title" tabindex="-1"></h3>
                     <p id="mission-date" class="mission-date"></p>
                     <p id="mission-description"></p>
                     <div id="mission-tutorial-badge" class="tutorial-badge hidden" data-i18n="mission.tutorialBadge">📖 Tutoriál</div>
@@ -274,9 +291,20 @@
                     </div>
 
                     <div class="mission-objectives">
-                        <h4 data-i18n="mission.objectives">Cíle mise</h4>
+                        <h4 data-i18n="onboarding.winGoal">Jak vyhrát</h4>
                         <ul id="mission-objectives-list"></ul>
                     </div>
+
+                    <details id="mission-controls" class="mission-controls">
+                        <summary data-i18n="onboarding.controlsTitle">Před prvním tahem</summary>
+                        <p data-i18n="onboarding.noRush"></p>
+                        <ol>
+                            <li data-i18n="onboarding.selectStep"></li>
+                            <li data-i18n="onboarding.actionStep"></li>
+                            <li data-i18n="onboarding.endStep"></li>
+                        </ol>
+                        <p class="controls-note" data-i18n="onboarding.helpStep"></p>
+                    </details>
 
                     <!-- Historické poznámky -->
                     <div id="mission-history" class="mission-history hidden">
@@ -800,88 +828,91 @@
     </div>
 
     <!-- Game Over Modal -->
-    <div id="gameover-modal" class="modal hidden">
+    <div id="gameover-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="gameover-title">
         <div class="modal-content gameover-modal-content">
-            <div id="gameover-banner"></div>
-            <h2 id="gameover-title">Konec bitvy</h2>
-            <p id="gameover-reason" class="gameover-reason hidden"></p>
-            <p id="gameover-message"></p>
-            <div id="gameover-act-summary" class="gameover-act-summary hidden"></div>
+            <div id="gameover-scroll">
+                <div id="gameover-banner"></div>
+                <h2 id="gameover-title" tabindex="-1">Konec bitvy</h2>
+                <h3 id="gameover-reason-heading" class="hidden" data-i18n="onboarding.resultReason">Proč bitva skončila</h3>
+                <p id="gameover-reason" class="gameover-reason hidden"></p>
+                <p id="gameover-message"></p>
+                <div id="gameover-act-summary" class="gameover-act-summary hidden"></div>
 
-            <!-- Rychlé hodnocení -->
-            <div id="gameover-rating">
-                <div class="rating-item">
-                    <span class="rating-label" data-i18n="gameover.enemies">Nepřátelé</span>
-                    <span class="rating-value" id="rating-enemies">0/0</span>
+                <!-- Rychlé hodnocení -->
+                <div id="gameover-rating">
+                    <div class="rating-item">
+                        <span class="rating-label" data-i18n="gameover.enemies">Nepřátelé</span>
+                        <span class="rating-value" id="rating-enemies">0/0</span>
+                    </div>
+                    <div class="rating-item">
+                        <span class="rating-label" data-i18n="gameover.unitsLost">Ztráty</span>
+                        <span class="rating-value" id="rating-losses">0</span>
+                    </div>
+                    <div class="rating-item">
+                        <span class="rating-label" data-i18n="gameover.turns">Kol</span>
+                        <span class="rating-value" id="rating-turns">0</span>
+                    </div>
                 </div>
-                <div class="rating-item">
-                    <span class="rating-label" data-i18n="gameover.unitsLost">Ztráty</span>
-                    <span class="rating-value" id="rating-losses">0</span>
+
+                <!-- WP2a: Vy vs. kronika -->
+                <div id="gameover-chronicle" class="gameover-chronicle hidden">
+                    <div class="chronicle-line" id="chronicle-yours"></div>
+                    <div class="chronicle-line chronicle-says" id="chronicle-says"></div>
+                    <div class="chronicle-note" id="chronicle-note"></div>
                 </div>
-                <div class="rating-item">
-                    <span class="rating-label" data-i18n="gameover.turns">Kol</span>
-                    <span class="rating-value" id="rating-turns">0</span>
-                </div>
-            </div>
 
-            <!-- WP2a: Vy vs. kronika -->
-            <div id="gameover-chronicle" class="gameover-chronicle hidden">
-                <div class="chronicle-line" id="chronicle-yours"></div>
-                <div class="chronicle-line chronicle-says" id="chronicle-says"></div>
-                <div class="chronicle-note" id="chronicle-note"></div>
-            </div>
+                <!-- Dvousloupcové tělo: vlevo statistiky, vpravo cíle + trivia -->
+                <div class="gameover-columns">
+                    <div class="gameover-col">
+                        <div class="gameover-stats">
+                            <h3 data-i18n="gameover.details">Podrobnosti</h3>
 
-            <!-- Dvousloupcové tělo: vlevo statistiky, vpravo cíle + trivia -->
-            <div class="gameover-columns">
-                <div class="gameover-col">
-                    <div class="gameover-stats">
-                        <h3 data-i18n="gameover.details">Podrobnosti</h3>
+                            <!-- Bojové statistiky -->
+                            <div class="stats-section">
+                                <div class="stat-row">
+                                    <span data-i18n="gameover.totalDamage">🎯 Způsobené poškození:</span>
+                                    <span id="stat-total-damage">0</span>
+                                </div>
+                                <div class="stat-row">
+                                    <span data-i18n="gameover.damageTaken">🛡️ Obdržené poškození:</span>
+                                    <span id="stat-damage-taken">0</span>
+                                </div>
+                                <div class="stat-row">
+                                    <span data-i18n="gameover.avgHealth">❤️ Průměrné zdraví:</span>
+                                    <span id="stat-avg-health">0%</span>
+                                </div>
+                                <div class="stat-row">
+                                    <span data-i18n="gameover.durationLabel">⏱️ Doba hry:</span>
+                                    <span id="stat-duration">0:00</span>
+                                </div>
+                            </div>
 
-                        <!-- Bojové statistiky -->
-                        <div class="stats-section">
-                            <div class="stat-row">
-                                <span data-i18n="gameover.totalDamage">🎯 Způsobené poškození:</span>
-                                <span id="stat-total-damage">0</span>
-                            </div>
-                            <div class="stat-row">
-                                <span data-i18n="gameover.damageTaken">🛡️ Obdržené poškození:</span>
-                                <span id="stat-damage-taken">0</span>
-                            </div>
-                            <div class="stat-row">
-                                <span data-i18n="gameover.avgHealth">❤️ Průměrné zdraví:</span>
-                                <span id="stat-avg-health">0%</span>
-                            </div>
-                            <div class="stat-row">
-                                <span data-i18n="gameover.durationLabel">⏱️ Doba hry:</span>
-                                <span id="stat-duration">0:00</span>
-                            </div>
-                        </div>
-
-                        <!-- Nejlepší jednotka -->
-                        <div id="stats-mvp" class="stats-section stats-mvp hidden">
-                            <h4 data-i18n="gameover.mvp">Hrdina bitvy</h4>
-                            <div class="mvp-card">
-                                <span class="mvp-icon" id="stat-mvp-icon">⚔</span>
-                                <div class="mvp-info">
-                                    <span class="mvp-name" id="stat-mvp-name">-</span>
-                                    <span class="mvp-stats" id="stat-mvp-stats">0 zásahů</span>
+                            <!-- Nejlepší jednotka -->
+                            <div id="stats-mvp" class="stats-section stats-mvp hidden">
+                                <h4 data-i18n="gameover.mvp">Hrdina bitvy</h4>
+                                <div class="mvp-card">
+                                    <span class="mvp-icon" id="stat-mvp-icon">⚔</span>
+                                    <div class="mvp-info">
+                                        <span class="mvp-name" id="stat-mvp-name">-</span>
+                                        <span class="mvp-stats" id="stat-mvp-stats">0 zásahů</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="gameover-col">
-                    <div id="gameover-secondary-objectives" class="hidden"></div>
+                    <div class="gameover-col">
+                        <div id="gameover-secondary-objectives" class="hidden"></div>
 
-                    <!-- Věděli jste, že...? - zobrazí se po vítězství -->
-                    <div id="gameover-trivia" class="gameover-trivia hidden">
-                        <h4 data-i18n="gameover.trivia">Věděli jste, že...?</h4>
-                        <p id="gameover-trivia-text"></p>
+                        <!-- Věděli jste, že...? - zobrazí se po vítězství -->
+                        <div id="gameover-trivia" class="gameover-trivia hidden">
+                            <h4 data-i18n="gameover.trivia">Věděli jste, že...?</h4>
+                            <p id="gameover-trivia-text"></p>
+                        </div>
                     </div>
                 </div>
-            </div>
 
+            </div>
             <div class="gameover-buttons">
                 <button id="btn-retry" class="menu-btn">
                     <span class="btn-icon">🔄</span>
@@ -890,6 +921,9 @@
                 <button id="btn-next-mission" class="menu-btn primary hidden">
                     <span class="btn-icon">➡️</span>
                     <span class="btn-text" data-i18n="gameover.nextMission">Další mise</span>
+                </button>
+                <button id="btn-gameover-chronicle" class="menu-btn hidden">
+                    <span class="btn-text" data-i18n="onboarding.readChronicle">Vaše kronika</span>
                 </button>
                 <button id="btn-gameover-menu" class="menu-btn">
                     <span class="btn-icon">🏠</span>
@@ -1004,7 +1038,7 @@
     </div>
 
     <!-- i18n - lokalizační systém (načíst jako první) -->
-    <script src="js/i18n/i18n.js?v=8.6"></script>
+    <script src="js/i18n/i18n.js?v=8.7"></script>
     <script src="js/i18n/i18nHelpers.js?v=8.5"></script>
     <script src="js/i18n/encyclopediaRenderer.js?v=3.9"></script>
     <!-- ?v= cache-busting: bumpni číslo při každém vydání, ať hráči nedostanou starý JS -->
@@ -1028,11 +1062,11 @@
     <script src="js/systems/MoraleSystem.js?v=8.1"></script>
     <script src="js/systems/ChronicleSystem.js?v=8.6"></script>
     <script src="js/ui/ChronicleView.js?v=8.6"></script>
-    <script src="js/ui/BattlePanels.js?v=8.2"></script>
+    <script src="js/ui/BattlePanels.js?v=8.7"></script>
     <script src="js/ui/BattleTooltip.js?v=8.2"></script>
     <script src="js/ui/BattleView.js?v=8.2"></script>
     <script src="js/core/game.js?v=8.6"></script>
     <script src="js/ai.js?v=8.1"></script>
-    <script src="js/ui/main.js?v=8.6"></script>
+    <script src="js/ui/main.js?v=8.7"></script>
 </body>
 </html>
