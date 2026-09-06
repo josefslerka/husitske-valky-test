@@ -1,26 +1,11 @@
 #!/usr/bin/env node
 const assert = require('node:assert/strict');
-const fs = require('node:fs');
-const path = require('node:path');
-const vm = require('node:vm');
-const { createHarness } = require('./helpers/game-harness');
+const { createLocalizedHarness } = require('./helpers/localized-harness');
 const tests = [];
 const test = (name, run) => tests.push({ name, run });
 
-// Skutečné locale, překladač, overlay i kronika; pouze DOM/úložiště/čas jsou adaptéry.
 async function fixture(id, language = 'cs') {
-    const h = createHarness();
-    h.document.documentElement = { lang: 'cs' };
-    for (const file of ['i18n/i18n.js', 'i18n/i18nHelpers.js', 'data/battleLore.js', 'systems/ChronicleSystem.js']) {
-        const filename = path.join(__dirname, '../js', file);
-        vm.runInContext(fs.readFileSync(filename, 'utf8'), h.context, { filename });
-    }
-    Object.assign(h, vm.runInContext('({ i18n, getLocalizedScenario, ChronicleSystem })', h.context));
-    for (const lang of ['cs', 'en']) {
-        h.i18n.translations[lang] = JSON.parse(fs.readFileSync(path.join(__dirname, `../js/i18n/locales/${lang}.json`), 'utf8'));
-        h.i18n.loadedLanguages.add(lang);
-    }
-    await h.i18n.setLanguage(language);
+    const h = await createLocalizedHarness(language);
     const game = h.newGame(id);
     return { h, game };
 }

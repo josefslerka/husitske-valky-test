@@ -6,32 +6,51 @@ class ScenarioEventSystem {
 
     // Narativ je odvozené čtení stavu. Útěk (health = 0, escaped = true)
     // není smrt; chybějící jednotka ve starém savu není důkaz jejího osudu.
-    getUnitStatusText(status) {
-        if (!status) return '';
+    getUnitState(status) {
+        if (!status) return null;
         const matches = this.game.units.filter(unit => unit.type === status.type && unit.faction === status.faction);
-        if (matches.length !== 1) return '';
+        if (matches.length !== 1) return null;
         const unit = matches[0];
-        const state = unit.escaped ? 'escaped' : unit.health > 0 ? 'alive' : 'fallen';
-        return status.texts?.[state] || '';
+        return unit.escaped ? 'escaped' : unit.health > 0 ? 'alive' : 'fallen';
     }
 
-    getDebriefing(isVictory) {
+    getUnitStatusText(status) {
+        return status?.texts?.[this.getUnitState(status)] || '';
+    }
+
+    // Malý datový otisk závěru pro Kroniku. Žádný lokalizovaný text ani
+    // reference na živé jednotky: pozdější partie ani jazyk osud nepřepíšou.
+    captureNarrativeOutcome(isVictory) {
         const scenario = this.game.currentScenario;
         const debriefing = scenario?.debriefing;
-        if (!debriefing) return '';
-        let text = debriefing[isVictory ? 'victory' : 'defeat'] || '';
+        const outcome = { version: 1, victoryVariant: null, unitState: this.getUnitState(debriefing?.unitStatus) };
+        if (!debriefing) return outcome;
         if (isVictory && scenario.id === 'zivohost_1419' && debriefing.victoryVariants) {
             const initial = scenario.forces.hussites.units.filter(unit => unit.type === 'POUTNICI').length;
             const remaining = this.game.units.filter(unit => unit.type === 'POUTNICI' && unit.faction === 'hussites' &&
                 !unit.isReinforcement && unit.health > 0 && !unit.escaped).length;
             // Skupina s jediným zbývajícím HP není totéž co přežití každého člověka.
             if (initial > 0) {
-                const variant = remaining >= initial ? 'allPilgrims' : remaining > 0 ? 'somePilgrims' : 'noPilgrims';
-                text = debriefing.victoryVariants[variant] || text;
+                outcome.victoryVariant = remaining >= initial ? 'allPilgrims' : remaining > 0 ? 'somePilgrims' : 'noPilgrims';
             }
         }
-        const statusText = this.getUnitStatusText(debriefing.unitStatus);
+        return outcome;
+    }
+
+    static formatDebriefing(scenario, isVictory, outcome) {
+        const debriefing = scenario?.debriefing;
+        if (!debriefing) return '';
+        let text = debriefing[isVictory ? 'victory' : 'defeat'] || '';
+        if (isVictory && ['allPilgrims', 'somePilgrims', 'noPilgrims'].includes(outcome?.victoryVariant)) {
+            text = debriefing.victoryVariants?.[outcome.victoryVariant] || text;
+        }
+        const statusText = ['alive', 'fallen', 'escaped'].includes(outcome?.unitState)
+            ? debriefing.unitStatus?.texts?.[outcome.unitState] : '';
         return statusText ? `${text}\n\n${statusText}` : text;
+    }
+
+    getDebriefing(isVictory) {
+        return ScenarioEventSystem.formatDebriefing(this.game.currentScenario, isVictory, this.captureNarrativeOutcome(isVictory));
     }
 
     // Aktualizace aktuální fáze

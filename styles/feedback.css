@@ -468,73 +468,89 @@
     opacity: 0.9;
 }
 
-/* WP2b: Kronika (modal) */
-.chronicle-subtitle {
-    text-align: center;
-    color: #a89968;
-    font-style: italic;
-    margin: -6px 0 12px;
-    font-size: 0.9em;
+/* Osobní kronika: čitelný rukopis a oddělený účet skutečné bitvy. */
+#chronicle-modal .help-modal-content {
+    width: min(920px, calc(100vw - 28px));
+    height: min(820px, calc(100dvh - 28px));
+    padding: 28px clamp(16px, 4vw, 34px) 20px;
 }
-.chronicle-empty {
+#chronicle-close {
+    font: 0.875rem/1.4 var(--font-body, Georgia, serif);
+    padding: 10px 12px;
+    top: 8px;
+    right: 8px;
+}
+#chronicle-title { margin: 12px 70px 16px; }
+#chronicle-modal .chronicle-subtitle {
     text-align: center;
-    color: #a89968;
+    color: #58452f;
+    font-style: italic;
+    margin: 0 0 16px;
+    font-size: 1rem;
+}
+#chronicle-modal .chronicle-empty {
+    text-align: center;
+    color: #58452f;
     font-style: italic;
     padding: 30px 10px;
 }
-.chronicle-entry {
-    background: rgba(201, 162, 39, 0.06);
-    border: 1px solid var(--gold-dark, #5c4a1f);
-    border-left-width: 4px;
-    border-radius: 6px;
-    padding: 14px 18px;
-    margin-bottom: 14px;
+.chronicle-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px 16px;
 }
-.chronicle-entry.chronicle-victory { border-left-color: #6a9a4a; }
-.chronicle-entry.chronicle-defeat { border-left-color: #a0392e; }
-.chronicle-entry.chronicle-act-summary {
-    border-left-color: var(--gold-light, #e6c200);
-    background: rgba(201, 162, 39, 0.13);
+#chronicle-modal #chronicle-summary { font-size: 0.875rem; margin: 0; }
+#chronicle-modal .chronicle-export-hint { font-size: 0.8rem; color: #58452f; margin: 8px 0; }
+#chronicle-export-status:empty { display: none; }
+#chronicle-list { margin-top: 12px; overscroll-behavior: contain; }
+#chronicle-modal .chronicle-entry {
+    background: #f4ead4;
+    border: 1px solid #b19a70;
+    border-left: 4px solid #596c3d;
+    border-radius: 4px;
+    padding: clamp(14px, 3vw, 24px);
+    margin-bottom: 18px;
+    overflow-wrap: anywhere;
 }
-.chronicle-act-summary h3 {
-    margin: 0 0 8px;
-    color: var(--gold-light, #e6c200);
-    font-size: 1rem;
-}
-.chronicle-text {
+#chronicle-modal .chronicle-defeat { border-left-color: #933d32; }
+#chronicle-modal .chronicle-act-summary { background: #e3d3ae; border-left-color: #8a6124; }
+#chronicle-modal .chronicle-entry h3 { margin: 0; color: #573b21; font-size: 1.2rem; line-height: 1.4; }
+#chronicle-modal .chronicle-entry h4 { margin: 16px 0 6px; color: #573b21; font-size: 1rem; }
+#chronicle-modal .chronicle-meta { margin: 6px 0 18px; color: #635039; font-size: 0.82rem; }
+#chronicle-modal .chronicle-caption { color: #635039; font-size: 0.82rem; line-height: 1.5; margin: 6px 0 12px; }
+#chronicle-modal .chronicle-text {
     font-family: Georgia, 'Times New Roman', serif;
-    color: var(--parchment-light, #f0e6d2);
-    line-height: 1.6;
-    font-size: 1.02em;
+    color: #30271b;
+    line-height: 1.7;
+    font-size: 1rem;
     margin: 0;
     white-space: pre-line;
 }
-.chronicle-initial {
-    float: left;
-    font-size: 2.6em;
-    line-height: 0.8;
-    padding: 4px 8px 0 0;
-    color: var(--gold-light, #e6c200);
-    font-family: Georgia, serif;
-    font-weight: bold;
+#chronicle-modal .chronicle-act-summary .chronicle-text { margin-top: 10px; }
+.chronicle-critique {
+    border-top: 1px solid #c2ae87;
+    margin-top: 20px;
+    padding-top: 6px;
 }
-.chronicle-critic-btn {
-    margin-top: 10px;
-    padding: 5px 12px;
-    background: rgba(201, 162, 39, 0.15);
-    border: 1px solid var(--gold-dark, #5c4a1f);
-    color: var(--gold-light, #e6c200);
-    border-radius: 4px;
+.chronicle-critique summary {
+    color: #54371d;
+    padding: 12px 2px;
     cursor: pointer;
-    font-size: 0.85em;
+    font: bold 1rem/1.5 Georgia, serif;
 }
-.chronicle-critic-btn:hover { background: rgba(201, 162, 39, 0.28); }
-.chronicle-truth {
-    margin: 10px 0 0;
-    padding: 8px 12px;
-    background: rgba(0, 0, 0, 0.25);
-    border-radius: 4px;
-    color: #c8b88a;
-    font-size: 0.9em;
-    line-height: 1.5;
+.chronicle-critique summary span { display: inline-block; margin-left: 8px; font-size: 0.8rem; font-weight: normal; }
+#chronicle-modal :is(button, summary):focus-visible { outline: 3px solid #70481f; outline-offset: 3px; }
+#chronicle-modal .chronicle-facts {
+    background: #e2e8d5;
+    padding: 1px 16px 4px;
+    border-radius: 3px;
+}
+#chronicle-modal .chronicle-facts p { color: #304029; font-size: 0.95rem; line-height: 1.6; white-space: pre-line; }
+#chronicle-modal .chronicle-facts .chronicle-caption { font-size: 0.8rem; }
+@media (max-height: 540px) {
+    #chronicle-modal .chronicle-subtitle, #chronicle-modal .chronicle-export-hint { display: none; }
+    #chronicle-modal #chronicle-export-status:not(:empty) { display: block; }
+    #chronicle-title { margin: 4px 70px 8px; }
 }

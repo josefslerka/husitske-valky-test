@@ -1203,21 +1203,22 @@ class Game {
         // WP2b: zápis do Kroniky (jednou za bitvu, jen scénáře - ne rychlá bitva)
         if (typeof ChronicleSystem !== 'undefined' && !this.chronicleRecorded
             && this.currentScenario && this.currentScenario.id) {
-            this.chronicleRecorded = true;
             const alive = stats.aliveByFaction;
             const pLost = (this.lossesByFaction.hussites || 0) + (this.fledByFaction.hussites || 0);
             const eKilled = this.lossesByFaction.crusaders || 0;
             const eFled = this.fledByFaction.crusaders || 0;
-            ChronicleSystem.record({
+            this.chronicleRecorded = ChronicleSystem.record({
                 scenarioId: this.currentScenario.id,
                 result: isVictory ? 'victory' : 'defeat',
                 playerLosses: pLost,
+                playerFled: this.fledByFaction.hussites || 0,
                 playerTotal: (alive.hussites || 0) + pLost,
                 enemyLosses: eKilled,
                 enemyTotal: (alive.crusaders || 0) + eKilled + eFled,
                 fled: eFled,
                 turns: completedTurns,
                 blind: this.blindMode || false,
+                narrative: this.scenarioEventSystem.captureNarrativeOutcome(isVictory),
                 ts: Date.now()
             });
         }

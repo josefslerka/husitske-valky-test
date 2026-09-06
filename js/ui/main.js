@@ -133,13 +133,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     const chronicleClose = document.getElementById('chronicle-close');
     if (chronicleClose) {
-        chronicleClose.addEventListener('click', () => chronicleModal.classList.add('hidden'));
+        chronicleClose.addEventListener('click', () => ChronicleView.close());
     }
     if (chronicleModal) {
         chronicleModal.addEventListener('click', (e) => {
-            if (e.target === chronicleModal) chronicleModal.classList.add('hidden');
+            if (e.target === chronicleModal) ChronicleView.close();
         });
     }
+    document.getElementById('chronicle-export').addEventListener('click', () => {
+        const status = document.getElementById('chronicle-export-status');
+        try {
+            if (ChronicleView.download()) status.textContent = i18n.t('chronicle.exportStarted');
+        } catch (error) {
+            console.warn('Chronicle: export se nezdařil', error);
+            status.textContent = i18n.t('chronicle.exportFailed');
+        }
+    });
 
     // Tlačítko Nastavení
     document.getElementById('btn-settings').addEventListener('click', () => {
@@ -222,6 +231,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 showActBattles(currentAct);
             }
         }
+        if (!chronicleModal.classList.contains('hidden')) ChronicleView.render();
     });
 
     function updateCampaignProgressUI() {
@@ -1128,69 +1138,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         helpModal.classList.remove('hidden');
     }
 
-    // WP2b: Kronika - vygeneruje dobové (lživé) zápisy + pramennou kritiku
+    // Prezentace i offline export sdílejí jediný pohled a bezpečné escapování.
     function showChronicle() {
-        const modal = document.getElementById('chronicle-modal');
-        const list = document.getElementById('chronicle-list');
-        if (!modal || !list) return;
-
-        const entries = (typeof ChronicleSystem !== 'undefined') ? ChronicleSystem.getEntries() : [];
-
-        if (!entries.length) {
-            list.innerHTML = `<p class="chronicle-empty">${i18n.t('chronicle.empty')}</p>`;
-            modal.classList.remove('hidden');
-            return;
-        }
-
-        // Seřadit podle pořadí bitev v KAMPANI (campaign.js), ne podle pořadí
-        // definice v scenarios.js - to se liší (Malešov 1424 je v kampani před Ústím 1426).
-        const order = (typeof Campaign !== 'undefined' && Array.isArray(Campaign.acts))
-            ? Campaign.acts.reduce((acc, act) => {
-                acc.push(...(act.battles || []).map(battle => battle.id));
-                acc.push(`act:${act.id}`);
-                return acc;
-            }, [])
-            : ScenarioManager.getScenarioList().map(s => s.id);
-        const sorted = entries.slice().sort((a, b) => {
-            const aKey = a.type === 'actSummary' ? `act:${a.actId}` : a.scenarioId;
-            const bKey = b.type === 'actSummary' ? `act:${b.actId}` : b.scenarioId;
-            const ia = order.indexOf(aKey), ib = order.indexOf(bKey);
-            return (ia < 0 ? 999 : ia) - (ib < 0 ? 999 : ib);
-        });
-
-        list.innerHTML = sorted.map((entry, i) => {
-            if (entry.type === 'actSummary') {
-                const summary = ChronicleSystem.generateActSummary(entry);
-                return `
-                    <div class="chronicle-entry chronicle-act-summary">
-                        <h3>${summary.title}</h3>
-                        <p class="chronicle-text">${summary.text}</p>
-                    </div>
-                `;
-            }
-            const text = ChronicleSystem.generateText(entry);
-            const initial = text.charAt(0);
-            const rest = text.slice(1);
-            const truth = ChronicleSystem.truthText(entry);
-            const cls = entry.result === 'victory' ? 'chronicle-victory' : 'chronicle-defeat';
-            return `
-                <div class="chronicle-entry ${cls}">
-                    <p class="chronicle-text"><span class="chronicle-initial">${initial}</span>${rest}</p>
-                    <button class="chronicle-critic-btn" data-idx="${i}">🔍 ${i18n.t('chronicle.sourceCritic')}</button>
-                    <p class="chronicle-truth hidden" data-truth="${i}">${truth}</p>
-                </div>
-            `;
-        }).join('');
-
-        list.querySelectorAll('.chronicle-critic-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const idx = btn.getAttribute('data-idx');
-                const truthEl = list.querySelector(`[data-truth="${idx}"]`);
-                if (truthEl) truthEl.classList.toggle('hidden');
-            });
-        });
-
-        modal.classList.remove('hidden');
+        ChronicleView.open();
     }
 
     // =============================================
@@ -1506,6 +1456,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     // =============================================
 
     document.addEventListener('keydown', (e) => {
+        if (!chronicleModal.classList.contains('hidden')) {
+            if (e.key === 'Escape') { e.preventDefault(); ChronicleView.close(); }
+            else if (e.key === 'Tab') ChronicleView.trapFocus(e);
+            return;
+        }
         // Escape - zavření modalů nebo pause menu
         if (e.key === 'Escape') {
             if (helpModal && !helpModal.classList.contains('hidden')) {

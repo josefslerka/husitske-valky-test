@@ -13,7 +13,7 @@ const scriptOrder = [
     'js/systems/CombatSystem.js', 'js/systems/BattleActionSystem.js', 'js/systems/SaveGameSystem.js',
     'js/systems/ScenarioEventSystem.js', 'js/systems/FogOfWarSystem.js', 'js/systems/VictoryConditionsSystem.js',
     'js/systems/TutorialSystem.js', 'js/systems/MoraleSystem.js', 'js/systems/ChronicleSystem.js',
-    'js/ui/BattlePanels.js', 'js/ui/BattleTooltip.js', 'js/ui/BattleView.js',
+    'js/ui/ChronicleView.js', 'js/ui/BattlePanels.js', 'js/ui/BattleTooltip.js', 'js/ui/BattleView.js',
     'js/core/game.js', 'js/ai.js', 'js/ui/main.js'
 ];
 

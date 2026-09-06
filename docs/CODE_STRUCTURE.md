@@ -118,6 +118,31 @@ Při porážce Lipan je nejprve skutečný výsledek a Prokopův osud, teprve po
 označený nespolehlivý hlas vítězné protistrany. Samotná kronika si záměrné zkreslení
 ponechává; není to tvrzení neutrálního herního vypravěče. Nová povinná okna nevznikají.
 
+### Paměť Kroniky a offline export
+
+`captureNarrativeOutcome()` zachytí pouze `{ version: 1, victoryVariant, unitState }`.
+Statické `ScenarioEventSystem.formatDebriefing()` z otisku a lokalizovaného scénáře
+sestaví stejný epilog pro konec bitvy i pozdější otevření Kroniky. Neuchovává se
+lokalizovaný text ani reference na jednotky. Ukládá se volba větve; její formulace
+se může s budoucími redakčními úpravami hry změnit. Rozehraný save zůstává v4.
+
+`ChronicleSystem` ukládá otisk do volitelného pole `narrative` záznamu bitvy.
+Nové pole `playerFled` rozděluje dosavadní společné `playerLosses` na útěk a zničení.
+Starší řádky bez těchto polí zůstávají čitelné a nejistota je výslovná. Neplatný
+řádek se při čtení přeskočí, validní řádky zůstanou; samotné čtení původní úložiště
+nepřepisuje. Neznámý formát otisku nezahodí statistiky, ale nezobrazuje domnělý osud.
+Nový zápis se přidává k původním řádkům, aby nesmazal jejich neznámá pole; nečitelný
+celý archiv se odmítne přepsat i při dokončení další bitvy.
+Zápis vrací úspěch/neúspěch a chyba úložiště nesmí zabránit zobrazení výsledku bitvy.
+
+`ChronicleView` vlastní HTML, otevření/zavření dialogu, fokus a export. Každý text
+prochází jedním escapováním, včetně textů ze scénářů a překladů. Modal a offline
+kniha sdílejí renderer; export obsahuje vlastní malé tiskové CSS, žádné skripty,
+síťové assety ani uživatelův save. Je to čtenářský dokument, ne přenositelná záloha
+kampaně. Blob URL se po zahájení stahování uvolní i při chybě.
+Kronika má nativní `<details>`, klávesnici v dialogu a návrat fokusu k otevíracímu
+tlačítku. Změna jazyka zachová rozbalené záznamy a nezmění uložená data.
+
 ## Bezpečný zápis savu
 
 `Game.saveGame()` sestaví snapshot uvnitř ošetření chyb a předá jej do
@@ -157,7 +182,7 @@ node scripts/check.js
 ```
 
 Příkaz kontroluje syntaxi JavaScriptu, testy jádra, průběhu bitvy, scénářových
-událostí, narativních variant, bezpečného ukládání a prezentačního rozhraní, HTML vstup a testy jeho
+událostí, narativních variant, Kroniky a exportu, bezpečného ukládání a prezentačního rozhraní, HTML vstup a testy jeho
 validátoru, strukturu CSS, překlady a scénáře.
 CSS kontrola není plnohodnotný parser: hlídá importy, závorky,
 prázdné bloky a existenci assetů.

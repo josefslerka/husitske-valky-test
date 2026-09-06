@@ -18,7 +18,7 @@
     <meta property="twitter:title" content="Husitské Války - Tahová Strategie">
     <meta property="twitter:description" content="Historická tahová strategie o husitských válkách. Veďte husitská vojska Jana Žižky v bitvách 15. století.">
 
-    <link rel="stylesheet" href="style.css?v=8.2">
+    <link rel="stylesheet" href="style.css?v=8.6">
 </head>
 <body>
     <!-- Hlavní menu -->
@@ -900,11 +900,17 @@
     </div>
 
     <!-- WP2b: Kronika - nespolehlivý vypravěč -->
-    <div id="chronicle-modal" class="modal hidden">
+    <div id="chronicle-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="chronicle-title">
         <div class="modal-content help-modal-content">
-            <button id="chronicle-close" class="help-close-btn">&times;</button>
-            <h2 data-i18n="menu.chronicle">Kronika</h2>
+            <button id="chronicle-close" class="help-close-btn" data-i18n="chronicle.close">Zavřít</button>
+            <h2 id="chronicle-title" data-i18n="menu.chronicle">Kronika</h2>
             <p class="chronicle-subtitle" data-i18n="chronicle.subtitle"></p>
+            <div class="chronicle-toolbar">
+                <p id="chronicle-summary"></p>
+                <button id="chronicle-export" class="btn-secondary" data-i18n="chronicle.export" disabled>Stáhnout kroniku</button>
+            </div>
+            <p class="chronicle-export-hint" data-i18n="chronicle.exportHint"></p>
+            <p id="chronicle-export-status" class="chronicle-export-hint" role="status"></p>
             <div id="chronicle-list" class="help-content"></div>
         </div>
     </div>
@@ -998,7 +1004,7 @@
     </div>
 
     <!-- i18n - lokalizační systém (načíst jako první) -->
-    <script src="js/i18n/i18n.js?v=8.5"></script>
+    <script src="js/i18n/i18n.js?v=8.6"></script>
     <script src="js/i18n/i18nHelpers.js?v=8.5"></script>
     <script src="js/i18n/encyclopediaRenderer.js?v=3.9"></script>
     <!-- ?v= cache-busting: bumpni číslo při každém vydání, ať hráči nedostanou starý JS -->
@@ -1015,17 +1021,18 @@
     <script src="js/systems/CombatSystem.js?v=8.2"></script>
     <script src="js/systems/BattleActionSystem.js?v=8.1"></script>
     <script src="js/systems/SaveGameSystem.js?v=8.4"></script>
-    <script src="js/systems/ScenarioEventSystem.js?v=8.5"></script>
+    <script src="js/systems/ScenarioEventSystem.js?v=8.6"></script>
     <script src="js/systems/FogOfWarSystem.js?v=3.9"></script>
     <script src="js/systems/VictoryConditionsSystem.js?v=8.1"></script>
     <script src="js/systems/TutorialSystem.js?v=8.1"></script>
     <script src="js/systems/MoraleSystem.js?v=8.1"></script>
-    <script src="js/systems/ChronicleSystem.js?v=8.0"></script>
+    <script src="js/systems/ChronicleSystem.js?v=8.6"></script>
+    <script src="js/ui/ChronicleView.js?v=8.6"></script>
     <script src="js/ui/BattlePanels.js?v=8.2"></script>
     <script src="js/ui/BattleTooltip.js?v=8.2"></script>
     <script src="js/ui/BattleView.js?v=8.2"></script>
-    <script src="js/core/game.js?v=8.5"></script>
+    <script src="js/core/game.js?v=8.6"></script>
     <script src="js/ai.js?v=8.1"></script>
-    <script src="js/ui/main.js?v=8.1"></script>
+    <script src="js/ui/main.js?v=8.6"></script>
 </body>
 </html>

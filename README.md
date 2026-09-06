@@ -17,6 +17,7 @@ Taktická tahovka na hexagonálním poli, která přináší historicky autentic
 - **AI protivník** - Taktická AI pro křižácké armády
 - **Kampaňový režim** - Propojené scénáře s progresí příběhu
 - **Encyklopedie** - Historické informace o jednotkách, bitvách a osobnostech
+- **Osobní kronika** - Paměť vašich bitev, pramenná kritika a stažitelná offline kniha
 
 ## 🚀 Jak spustit
 
@@ -49,6 +50,8 @@ pokud se nevejde celá skupina, počká na uvolnění místa. Čekání přežij
 `node scripts/test-save.js` ověřuje ochranu posledního funkčního savu.
 `node scripts/test-narrative.js` používá skutečné CS/EN překlady a ověřuje reaktivní
 závěry Živohoště, Prokopův osud u Lipan, přepnutí jazyka i save/load.
+`node scripts/test-chronicle.js` hlídá uchování závěrů, staré a poškozené zápisy,
+oddělení zničených a uprchlých jednotek i bezpečný offline export.
 `node scripts/validate-entrypoint.js` hlídá pořadí všech klasických skriptů a lokální
 cesty v HTML, hudbě i načítání překladů, včetně velikosti písmen a relativních URL.
 Samotnou kontrolu vstupu testuje `node scripts/test-entrypoint.js`.
@@ -70,6 +73,14 @@ na bojišti. Krátký hlas svědka je označený jako autorská fikce, ne citace
 Lipanské zprávy a závěr rozlišují živého, padlého a uprchlého Prokopa; nepřisuzují
 hráči předem danou taktiku. Pravidla vítězství, AI a historické podklady se nemění.
 
+V hlavním menu otevřete **Kroniku** a pod zápisem rozbalte **Pramennou kritiku**.
+Uvidíte odděleně nespolehlivý hlas kronikáře, skutečný účet herních jednotek a epilog
+své partie. Nové zápisy pamatují i osudy poutníků a Prokopa; staré záznamy zůstávají
+čitelné a chybějící závěry se zpětně nevymýšlejí. Přepnutí CS/EN historii nemění.
+**Stáhnout kroniku** vytvoří samostatný HTML dokument bez připojení, skriptů nebo
+externích souborů. Lze jej sdílet a vytisknout (včetně tisku do PDF přes prohlížeč).
+Jde o čtenářský archiv, **nikoli zálohu savu**: nelze z něj obnovit rozehranou hru.
+
 První řízený playtest je popsaný v [docs/ACT_I_PLAYTEST.md](docs/ACT_I_PLAYTEST.md).
 
 ## 📁 Struktura projektu
@@ -90,6 +101,7 @@ strategie/
 │   │   ├── SaveGameSystem.js       # Validace a obnova uložené bitvy
 │   │   ├── ScenarioEventSystem.js  # Fáze, jednorázové události a posily
 │   │   ├── CampaignProgressSystem.js # Postup kampaně a pověst
+│   │   ├── ChronicleSystem.js     # Datový archiv bitev a jejich vyprávění
 │   │   ├── FogOfWarSystem.js       # Systém viditelnosti
 │   │   ├── MoraleSystem.js         # Systém morálky
 │   │   ├── VictoryConditionsSystem.js  # Vítězné podmínky
@@ -106,6 +118,7 @@ strategie/
 │   │   ├── BattleView.js  # Vstupy bitvy, kamera, vykreslování a UI lifecycle
 │   │   ├── BattlePanels.js # Panely jednotek, armád a fází
 │   │   ├── BattleTooltip.js # Obsah a stav tooltipu
+│   │   ├── ChronicleView.js # Kronika, pramenná kritika a offline export
 │   │   ├── main.js        # UI logika
 │   │   ├── sound.js       # Zvukové efekty
 │   │   └── music.js       # Hudba
