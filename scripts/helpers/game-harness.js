@@ -98,7 +98,7 @@ function createHarness({ browserView = false } = {}) {
         await flush();
     };
     const newGame = (id = null) => {
-        const scenario = id ? structuredClone(api.Scenarios[id]) : null;
+        const scenario = id ? structuredClone(api.ScenarioManager.getScenario(id)) : null;
         const size = scenario?.mapSize || { width: 16, height: 10 };
         const game = new api.Game(new api.HexGrid(document.getElementById('game-canvas'), size.width, size.height, 40), { viewFactory });
         game.fogOfWar = false;

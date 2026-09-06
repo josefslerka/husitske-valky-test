@@ -159,8 +159,14 @@ const Scenarios = {
         },
 
         debriefing: {
-            victory: 'Posily z Nového Knína dorazily včas! Petr ze Šternberka se stáhl ke Kutné Hoře, když viděl odhodlanou obranu na kopci Červenka. Poutníci — muži, ženy i děti — přežili. Z houfu chudiny se rodí vojsko; brzy u Nekmíře poprvé sevřou vozy do hradby.',
-            defeat: 'Poutníci byli u brodu rozprášeni a pobiti. Petr ze Šternberka slaví. Husitské hnutí utrpělo těžkou ránu hned v počátcích.'
+            victory: 'Vítězství u Živohoště otevírá cestu dál. O jeho ceně však rozhoduje i osud těch, které jste měli chránit.',
+            defeat: 'Poutníci byli u brodu rozprášeni a pobiti. Petr ze Šternberka slaví. Husitské hnutí utrpělo těžkou ránu hned v počátcích.',
+            // Skupiny na mapě, nikoli počet jednotlivých lidí; uprchlí nejsou padlí.
+            victoryVariants: {
+                allPilgrims: 'Bitva je vyhraná a všechny původní skupiny poutníků jsou stále na bojišti. Neznamená to boj beze ztrát, ale jejich cesta tady nekončí.\n\nHlas z bojiště — autorská fikce, nikoli citace pramene:\n„Než jsme začali mluvit o vítězství, volali jsme na sebe. Ze všech skupin přicházely odpovědi.“',
+                somePilgrims: 'Bitva je vyhraná, ale na bojišti zůstala jen část původních skupin poutníků. Další cesta začne s mezerami v houfu; vítězná zpráva je nezaplní.\n\nHlas z bojiště — autorská fikce, nikoli citace pramene:\n„Volali jsme přes pole. Některé hlasy odpověděly; na jiné jsme čekali marně.“',
+                noPilgrims: 'Vojsko zvítězilo, ale žádná z původních skupin poutníků už na bojišti nezůstala. Padlí a ti, kdo uprchli, nejsou totéž; původní houf však už nestojí pohromadě.\n\nHlas z bojiště — autorská fikce, nikoli citace pramene:\n„Měli jsme zprávu o vítězství. Z houfu, který jsme měli chránit, ji tu už nikdo neposlouchal.“'
+            }
         },
 
         maxTurns: 10,
@@ -2793,7 +2799,7 @@ const Scenarios = {
                 commander: 'Prokop Holý',
                 faction_name: 'Radikálové (Táboři a Sirotci)',
                 units: [
-                    // Prokop Holý - velitel radikálů (event v kole 12 i debriefing s ním počítají)
+                    // Prokop Holý - event i debriefing čtou jeho skutečný stav.
                     { type: 'PROKOP_HOLY', col: 16, row: 6 },
                     // Vozová hradba radikálů
                     { type: 'VOZOVA_HRADBA', col: 14, row: 3 },
@@ -2859,38 +2865,49 @@ const Scenarios = {
                 id: 1,
                 name: 'Patová situace',
                 turnRange: [1, 4],
-                description: 'Obě strany za vozovou hradbou, vyjednávání selhává.',
+                description: 'Vyjednávání selhalo. Někdejší spojenci stojí proti sobě.',
                 events: [
                     { trigger: 'turn_1', message: 'Bratrovražedná bitva začíná...' },
-                    { trigger: 'turn_2', message: 'Bedřich ze Strážnice odjíždí se 300 jezdci vyjednávat smír - radikálové přicházejí o polovinu své jízdy.' }
+                    { trigger: 'turn_2', message: 'Smír se nepodařilo dojednat. Proti vám stojí i muži, kteří dříve bojovali pod stejným znamením.' }
                 ]
             },
             {
                 id: 2,
-                name: 'Klamný útok',
+                name: 'Pokus o léčku',
                 turnRange: [5, 7],
-                description: 'Koalice vysílá pěchotu do zdánlivě zoufalého útoku.',
+                description: 'Koalice hledá příležitost vylákat polní vojska z obrany.',
                 events: [
-                    { trigger: 'turn_5', message: 'Umírnění zahajují útok na vozovou hradbu!' },
-                    { trigger: 'turn_6', type: 'ai_stance', mode: 'lure', target: { col: 2, row: 6 }, untilTurn: 7, proximity: 3, message: 'Útok umírněných selhává - pěchota i vozy couvají v nepořádku! Že by prchali?' }
+                    { trigger: 'turn_5', message: 'Koalice hledá slabé místo vaší obrany. Pozor na předstíraný útěk!' },
+                    { trigger: 'turn_6', type: 'ai_stance', mode: 'lure', target: { col: 2, row: 6 }, untilTurn: 7, proximity: 3, message: 'Koalice dostává rozkaz předstírat ústup. Pronásledování může otevřít cestu její jízdě.' }
                 ]
             },
             {
                 id: 3,
-                name: 'Léčka',
+                name: 'Rozhodující střet',
                 turnRange: [8, 10],
-                description: 'Radikálové opouštějí hradbu a pronásledují. Jízda udeří z boku!',
+                description: 'Sledujte pohyb jízdy; soudržnost obrany může rozhodnout.',
                 events: [
-                    { trigger: 'turn_8', message: 'Pozor! Šlechtická jízda vyráží z úkrytu!' }
+                    { trigger: 'turn_8', message: 'Rozhodující střet. Sledujte pohyb jízdy; o opuštění hradby rozhodujete vy.' }
                 ]
             },
             {
                 id: 4,
-                name: 'Zkáza radikálů',
+                name: 'Závěr bitvy',
                 turnRange: [11, 15],
-                description: 'Radikálové obklíčeni, krvavá řež.',
+                description: 'Bitva pokračuje. Rozhodnou oddíly, které ještě drží pohromadě.',
                 events: [
-                    { trigger: 'turn_12', message: 'Prokop Holý padl v boji!' }
+                    {
+                        trigger: 'turn_12',
+                        message: 'Závěr bitvy se blíží. Rozhodující je, které oddíly ještě drží pohromadě.',
+                        unitStatus: {
+                            type: 'PROKOP_HOLY', faction: 'hussites',
+                            texts: {
+                                alive: 'Prokop Holý žije a je stále na bojišti. O výsledku bitvy se ještě bojuje.',
+                                fallen: 'Prokop Holý v této bitvě padl. Zbývající oddíly bojují bez něj.',
+                                escaped: 'Prokop Holý opustil bojiště. Boj pokračuje bez něj.'
+                            }
+                        }
+                    }
                 ]
             }
         ],
@@ -2907,8 +2924,16 @@ const Scenarios = {
         },
 
         debriefing: {
-            victory: 'Prokop Holý odhalil léčku umírněných včas! Radikálové zůstali ve vozové hradbě a odrazili klamný útěk. Koalice umírněných je poražena a radikální husitství přežívá. Vyhráli jste bitvu, kterou historie prohrála — rozdělená země však nezmizela a žádný klamný ústup ji nesjednotí.',
-            defeat: 'Tragédie u Lipan. Radikálové uvěřili klamnému útěku a vyběhli z vozové hradby. Jízda umírněných udeřila z boku. Prokop Holý padl a s ním naděje radikálního husitství. Husitské války končí porážkou těch, kteří je začali.'
+            victory: 'Polní vojska u Lipan zvítězila a koalice utrpěla porážku. Vyhráli jste bitvu, kterou historie prohrála — rozdělená země však nezmizela. Vojenské vítězství ještě není smír.',
+            defeat: 'Polní vojska u Lipan utrpěla porážku. Koalice rozhodla střetnutí ve svůj prospěch; o další cestě země budou nyní vyjednávat z pozice síly její vítězové.',
+            unitStatus: {
+                type: 'PROKOP_HOLY', faction: 'hussites',
+                texts: {
+                    alive: 'Prokop Holý tuto bitvu přežil. Jeho další osud zůstává za hranicí této partie.',
+                    fallen: 'Prokop Holý v této bitvě padl. Výsledek střetnutí jeho smrt nezvrátí.',
+                    escaped: 'Prokop Holý z bojiště uprchl. Není mezi padlými, ale na konci střetnutí už nestojí se svým vojskem.'
+                }
+            }
         },
 
         maxTurns: 15,

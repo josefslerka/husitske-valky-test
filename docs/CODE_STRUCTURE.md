@@ -93,6 +93,31 @@ i po příchodu posil, oba datové formáty, správnou frakci a zachování ID j
 Změny zde nesmějí měnit balanc jako vedlejší efekt refaktoringu. Nová mechanika
 nebo oprava jejího chování potřebuje vlastní explicitní očekávání v testu.
 
+### Reaktivní vyprávění
+
+`ScenarioEventSystem.getDebriefing()` vybírá text pouze čtením aktuálního stavu.
+Živohošť používá `debriefing.victoryVariants` s klíči `allPilgrims`, `somePilgrims`
+a `noPilgrims`. Počítá původní hráčské skupiny `POUTNICI`, nikoli posily, cizí
+jednotky nebo jednotlivé osoby uvnitř skupiny. Uprchlé nejsou mezi přítomnými.
+Texty nepředpokládají příchod posil ani přežití každého člověka ve zraněné skupině.
+Literární hlas svědka je výslovně označený jako autorská fikce.
+
+Zprávy a debriefing mohou mít `unitStatus: { type, faction, texts }`; slovník `texts`
+obsahuje `alive`, `fallen`, `escaped`. `getUnitStatusText()` dává příznaku `escaped`
+přednost před nulovým zdravím, protože engine takto eviduje útěk. Pokud v savu
+jednotka chybí nebo není jednoznačná, zůstane neutrální základní zpráva. U Lipan
+se zachovaly rozsahy fází, kola a ID událostí i rozkaz AI; nové jsou pouze texty
+a výběr varianty. Narativ nikoho nezabíjí, nepřesouvá ani nemění vítězné podmínky.
+
+Varianty jsou v české bázi i v CS/EN overlay pod stabilními názvy. Lokalizace
+kopíruje pouze texty, nikoli typ jednotky nebo frakci. Validátor vyžaduje překlad
+každé větve v obou jazycích. Není přidán nový stav ani formát savu: výběr přežije
+načtení díky již ukládaným jednotkám a deduplikaci událostí.
+
+Při porážce Lipan je nejprve skutečný výsledek a Prokopův osud, teprve potom jasně
+označený nespolehlivý hlas vítězné protistrany. Samotná kronika si záměrné zkreslení
+ponechává; není to tvrzení neutrálního herního vypravěče. Nová povinná okna nevznikají.
+
 ## Bezpečný zápis savu
 
 `Game.saveGame()` sestaví snapshot uvnitř ošetření chyb a předá jej do
@@ -132,7 +157,7 @@ node scripts/check.js
 ```
 
 Příkaz kontroluje syntaxi JavaScriptu, testy jádra, průběhu bitvy, scénářových
-událostí, bezpečného ukládání a prezentačního rozhraní, HTML vstup a testy jeho
+událostí, narativních variant, bezpečného ukládání a prezentačního rozhraní, HTML vstup a testy jeho
 validátoru, strukturu CSS, překlady a scénáře.
 CSS kontrola není plnohodnotný parser: hlídá importy, závorky,
 prázdné bloky a existenci assetů.

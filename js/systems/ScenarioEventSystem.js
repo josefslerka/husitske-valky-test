@@ -4,6 +4,36 @@
 class ScenarioEventSystem {
     constructor(game) { this.game = game; }
 
+    // Narativ je odvozené čtení stavu. Útěk (health = 0, escaped = true)
+    // není smrt; chybějící jednotka ve starém savu není důkaz jejího osudu.
+    getUnitStatusText(status) {
+        if (!status) return '';
+        const matches = this.game.units.filter(unit => unit.type === status.type && unit.faction === status.faction);
+        if (matches.length !== 1) return '';
+        const unit = matches[0];
+        const state = unit.escaped ? 'escaped' : unit.health > 0 ? 'alive' : 'fallen';
+        return status.texts?.[state] || '';
+    }
+
+    getDebriefing(isVictory) {
+        const scenario = this.game.currentScenario;
+        const debriefing = scenario?.debriefing;
+        if (!debriefing) return '';
+        let text = debriefing[isVictory ? 'victory' : 'defeat'] || '';
+        if (isVictory && scenario.id === 'zivohost_1419' && debriefing.victoryVariants) {
+            const initial = scenario.forces.hussites.units.filter(unit => unit.type === 'POUTNICI').length;
+            const remaining = this.game.units.filter(unit => unit.type === 'POUTNICI' && unit.faction === 'hussites' &&
+                !unit.isReinforcement && unit.health > 0 && !unit.escaped).length;
+            // Skupina s jediným zbývajícím HP není totéž co přežití každého člověka.
+            if (initial > 0) {
+                const variant = remaining >= initial ? 'allPilgrims' : remaining > 0 ? 'somePilgrims' : 'noPilgrims';
+                text = debriefing.victoryVariants[variant] || text;
+            }
+        }
+        const statusText = this.getUnitStatusText(debriefing.unitStatus);
+        return statusText ? `${text}\n\n${statusText}` : text;
+    }
+
     // Aktualizace aktuální fáze
     updatePhase() {
         if (!this.game.currentScenario) {
@@ -46,7 +76,8 @@ class ScenarioEventSystem {
     processEvent(event) {
         switch (event.type) {
             case 'message':
-                this.game.showEventNotification(event.title || i18n.t('messages.messageTitle'), event.text);
+                this.game.showEventNotification(event.title || i18n.t('messages.messageTitle'),
+                    this.getUnitStatusText(event.unitStatus) || event.text);
                 break;
 
             case 'reinforcement':

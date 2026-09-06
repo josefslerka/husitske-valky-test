@@ -1114,21 +1114,19 @@ class Game {
         this.updateEndTurnButton();
 
         const isVictory = (winner === 'hussites');
-        let message;
-
-        // Zkusíme použít debriefing ze scénáře
-        if (this.currentScenario && this.currentScenario.debriefing) {
-            message = isVictory
-                ? this.currentScenario.debriefing.victory
-                : this.currentScenario.debriefing.defeat;
-        }
+        let message = this.scenarioEventSystem.getDebriefing(isVictory);
 
         if (this.currentScenario?.id && typeof ChronicleSystem !== 'undefined'
             && typeof ChronicleSystem.getEnemyChronicleText === 'function') {
             if (!isVictory) {
-                // Dějiny právě napsal vítěz: porážku rámuje jeho kronika,
-                // ne husitský debriefing.
-                message = ChronicleSystem.getEnemyChronicleText(this.currentScenario.id, true) || message;
+                const enemyChronicle = ChronicleSystem.getEnemyChronicleText(this.currentScenario.id, true);
+                // U reaktivního závěru odlišit skutečný stav od záměrně
+                // nespolehlivého hlasu vítěze (např. živý Prokop vs. jeho kronika).
+                if (this.currentScenario.debriefing?.unitStatus && message && enemyChronicle) {
+                    message += `\n\n${i18n.t('chronicle.enemyVoiceLabel')}\n${enemyChronicle}`;
+                } else {
+                    message = enemyChronicle || message;
+                }
             } else if (this.currentScenario.id === 'sion_1437') {
                 const competingAccounts = ChronicleSystem.getEnemyChronicleText(this.currentScenario.id, true);
                 if (competingAccounts) {

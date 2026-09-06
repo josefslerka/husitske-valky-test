@@ -53,6 +53,15 @@ function getLocalizedScenario(scenarioId, baseScenario) {
     const localizedScenario = { ...baseScenario };
     const scenarioKey = `scenarios.${scenarioId}`;
 
+    // Varianty mají stabilní jména; překlad nikdy nepřepisuje podmínky či typ jednotky.
+    const localizeVariants = (variants, key) => Object.fromEntries(Object.entries(variants).map(([name, text]) => [
+        name, i18n.hasTranslation(`${key}.${name}`) ? i18n.t(`${key}.${name}`) : text
+    ]));
+    const localizeUnitStatus = (status, key) => ({
+        ...status,
+        texts: localizeVariants(status.texts || {}, `${key}.texts`)
+    });
+
     // Základní texty
     if (i18n.hasTranslation(`${scenarioKey}.name`)) {
         localizedScenario.name = i18n.t(`${scenarioKey}.name`);
@@ -147,6 +156,10 @@ function getLocalizedScenario(scenarioId, baseScenario) {
 
                     if (event.title && i18n.hasTranslation(`${eventKey}.title`)) {
                         localizedEvent.title = i18n.t(`${eventKey}.title`);
+                    }
+
+                    if (event.unitStatus) {
+                        localizedEvent.unitStatus = localizeUnitStatus(event.unitStatus, `${eventKey}.unitStatus`);
                     }
 
                     return localizedEvent;
@@ -246,6 +259,14 @@ function getLocalizedScenario(scenarioId, baseScenario) {
 
         if (i18n.hasTranslation(`${scenarioKey}.debriefing.defeat`)) {
             localizedScenario.debriefing.defeat = i18n.t(`${scenarioKey}.debriefing.defeat`);
+        }
+        if (baseScenario.debriefing.victoryVariants) {
+            localizedScenario.debriefing.victoryVariants = localizeVariants(
+                baseScenario.debriefing.victoryVariants, `${scenarioKey}.debriefing.victoryVariants`);
+        }
+        if (baseScenario.debriefing.unitStatus) {
+            localizedScenario.debriefing.unitStatus = localizeUnitStatus(
+                baseScenario.debriefing.unitStatus, `${scenarioKey}.debriefing.unitStatus`);
         }
     }
 

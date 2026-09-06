@@ -223,6 +223,7 @@
     "empty": "The chronicle is empty. Win your first battle.",
     "actSummaryTitle": "Entry for Act {act}",
     "competingAccounts": "Two sources, two versions of Sion:",
+    "enemyVoiceLabel": "The victorious side speaks — deliberately unreliable fictional chronicle:",
     "actSummaries": {
       "1": "Bands of pilgrims have become an army. Wagons, causeways, and Prague's hills taught the weaker side how to survive overwhelming force.",
       "2": "Žižka's victories broke crusades and Czech opponents alike. The blind captain leaves undefeated, but the country remains divided.",
@@ -1159,8 +1160,13 @@
         ]
       },
       "debriefing": {
-        "victory": "Reinforcements from Nový Knín arrived in time! Petr ze Šternberka withdrew toward Kutná Hora when he saw the determined defence on Červenka hill. The pilgrims — men, women and children — survived. From a rabble of the poor an army is born; soon at Nekmíř they will first chain the wagons into a fort.",
-        "defeat": "The pilgrims were scattered and slaughtered at the ford. Petr ze Šternberka celebrates. The Hussite movement suffered a heavy blow at its very start."
+        "victory": "Victory at Živohošť opens the road ahead. Its cost also lies in the fate of those you were meant to protect.",
+        "defeat": "The pilgrims were scattered and slaughtered at the ford. Petr ze Šternberka celebrates. The Hussite movement suffered a heavy blow at its very start.",
+        "victoryVariants": {
+          "allPilgrims": "Your army has won, and every original group of pilgrims is still on the battlefield. That does not mean the fighting cost nothing, but their journey does not end here.\n\nA voice from the battlefield — fiction, not a historical quotation:\n“We called out to one another before we spoke of victory. Every group answered.”",
+          "somePilgrims": "The battle is won, but only some of the original pilgrim groups remain on the field. The next march will begin with gaps in the ranks; a victory report cannot fill them.\n\nA voice from the battlefield — fiction, not a historical quotation:\n“We called across the field. Some voices answered; for others, we waited in vain.”",
+          "noPilgrims": "Your army has won, but none of the original pilgrim groups remain on the battlefield. Those who fell and those who fled are not the same; the original band is no longer together.\n\nA voice from the battlefield — fiction, not a historical quotation:\n“We had news of victory. Of the band we were meant to protect, no one was left here to hear it.”"
+        }
       },
       "phases": [
         {
@@ -1838,38 +1844,54 @@
         ]
       },
       "debriefing": {
-        "victory": "Prokop the Great spots the moderates' trap in time! The radicals remain behind the wagon fort and defeat the feigned retreat. The moderate coalition is beaten and radical Hussitism survives. You won the battle that history lost — but the divided country remains, and no feigned retreat can reunite it.",
-        "defeat": "Tragedy at Lipany. Radicals believed feigned retreat and ran from wagon fort. Moderate cavalry struck from flank. Prokop the Great fell and with him hope of radical Hussitism. Hussite Wars end with defeat of those who began them."
+        "victory": "The field armies have won at Lipany and the coalition has been defeated. You won the battle that history lost — but the country remains divided. Military victory is not yet reconciliation.",
+        "defeat": "The field armies have been defeated at Lipany. The coalition has settled the battle in its favour; its victors will now negotiate the country's future from a position of strength.",
+        "unitStatus": {
+          "texts": {
+            "alive": "Prokop the Great survived this battle. His later fate lies beyond this playthrough.",
+            "fallen": "Prokop the Great fell in this battle. Its outcome cannot undo his death.",
+            "escaped": "Prokop the Great fled the battlefield. He is not among the fallen, but no longer stands with his army at the battle's end."
+          }
+        }
       },
       "phases": [
         {
           "name": "Stalemate",
-          "description": "Both sides behind wagon fort, negotiations fail.",
+          "description": "Negotiations have failed. Former allies now face each other.",
           "events": [
             {"message": "Fratricidal battle begins..."},
-            {"message": "Bedřich of Strážnice rides off with 300 horsemen to negotiate a truce - the radicals lose half their cavalry."}
+            {"message": "Negotiations have failed. Among those facing you are men who once fought under the same sign."}
           ]
         },
         {
-          "name": "Feigned attack",
-          "description": "Coalition sends infantry in seemingly desperate attack.",
+          "name": "Setting the trap",
+          "description": "The coalition seeks a chance to draw the field armies out of their defences.",
           "events": [
-            {"message": "Moderates begin attack on wagon fort!"},
-            {"message": "The moderates' attack fails - infantry and wagons pull back in disorder! Are they fleeing?"}
+            {"message": "The coalition is looking for a weak point in your defence. Beware of a feigned retreat!"},
+            {"message": "The coalition is ordered to feign a retreat. Pursuit could open a path for its cavalry."}
           ]
         },
         {
-          "name": "Trap",
-          "description": "Radicals leave fort and pursue. Cavalry strikes from flank!",
+          "name": "The decisive clash",
+          "description": "Watch the cavalry; keeping your defence together may decide the battle.",
           "events": [
-            {"message": "Warning! Noble cavalry charges from ambush!"}
+            {"message": "The decisive clash. Watch the cavalry; whether to leave the wagon fort is your decision."}
           ]
         },
         {
-          "name": "Destruction of radicals",
-          "description": "Radicals encircled, bloody slaughter.",
+          "name": "The final stage",
+          "description": "The battle continues. Those who can still hold together will decide it.",
           "events": [
-            {"message": "Prokop the Great fell in battle!"}
+            {
+              "message": "The battle is nearing its end. What matters now is which troops can still hold together.",
+              "unitStatus": {
+                "texts": {
+                  "alive": "Prokop the Great is alive and still on the battlefield. The outcome is still being fought over.",
+                  "fallen": "Prokop the Great has fallen in this battle. The remaining troops fight on without him.",
+                  "escaped": "Prokop the Great has left the battlefield. The fighting continues without him."
+                }
+              }
+            }
           ]
         }
       ],

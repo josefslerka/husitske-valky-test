@@ -22,6 +22,6 @@ for (const file of sources.filter(file => file.endsWith('.js'))) run(['--check',
 console.log('✓ Syntaxe JavaScriptu');
 for (const script of [
     'scripts/test-core.js', 'scripts/test-battle.js', 'scripts/test-scenario-events.js',
-    'scripts/test-save.js', 'scripts/test-presentation.js', 'scripts/test-entrypoint.js',
+    'scripts/test-save.js', 'scripts/test-presentation.js', 'scripts/test-narrative.js', 'scripts/test-entrypoint.js',
     'scripts/validate-entrypoint.js', 'scripts/validate-styles.js', 'scripts/validate-locales.js', 'validate_scenarios.js'
 ]) run([script]);

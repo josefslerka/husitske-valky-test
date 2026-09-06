@@ -124,6 +124,15 @@ function warning(message) {
     warnings.push(message);
 }
 
+// Nové narativní větve nesmí potichu spadnout z angličtiny do české báze.
+function validateTextVariants(base, overlay, location) {
+    for (const key of Object.keys(base || {})) {
+        if (typeof overlay?.[key] !== 'string' || !overlay[key].trim()) {
+            error(`${location}.${key}: chybí neprázdný překlad narativní varianty.`);
+        }
+    }
+}
+
 const scenarioEntries = Object.entries(Scenarios).filter(([, value]) => value && typeof value === 'object' && value.id);
 if (scenarioEntries.length !== 18) {
     error(`Báze má ${scenarioEntries.length} scénářů, očekáváno 18.`);
@@ -155,6 +164,12 @@ for (const [scenarioId, scenario] of scenarioEntries) {
             error(`${language.toUpperCase()}: scenarios.${scenarioId}.events je mrtvá flat vlastnost; eventy patří do phases.*.events.`);
         }
 
+        const location = `${language.toUpperCase()}: scenarios.${scenarioId}`;
+        validateTextVariants(scenario.debriefing?.victoryVariants, overlay.debriefing?.victoryVariants,
+            `${location}.debriefing.victoryVariants`);
+        validateTextVariants(scenario.debriefing?.unitStatus?.texts, overlay.debriefing?.unitStatus?.texts,
+            `${location}.debriefing.unitStatus.texts`);
+
         const basePhases = scenario.phases || [];
         const localizedPhases = overlay.phases || [];
         if (localizedPhases.length !== basePhases.length) {
@@ -169,6 +184,9 @@ for (const [scenarioId, scenario] of scenarioEntries) {
                 error(`${language.toUpperCase()}: ${scenarioId}, fáze ${phaseIndex + 1} má ${localizedEvents.length} eventů, báze ${baseEvents.length}.`);
                 return;
             }
+
+            baseEvents.forEach((event, index) => validateTextVariants(event.unitStatus?.texts, localizedEvents[index]?.unitStatus?.texts,
+                `${location}.phases.${phaseIndex}.events.${index}.unitStatus.texts`));
 
             if (language === 'en') {
                 for (const field of ['name', 'description']) {

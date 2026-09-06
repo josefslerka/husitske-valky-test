@@ -223,6 +223,7 @@
     "empty": "Kronika je prázdná. Vybojujte první bitvu.",
     "actSummaryTitle": "Zápis za akt {act}",
     "competingAccounts": "Dva prameny, dvě verze Sionu:",
+    "enemyVoiceLabel": "Hlas vítězné protistrany — záměrně nespolehlivá autorská stylizace:",
     "actSummaries": {
       "1": "Z poutnických houfů se stalo vojsko. Vozy, hráze a pražské kopce naučily slabší stranu přežít přesilu.",
       "2": "Žižkova vítězství zlomila výpravy i jeho české protivníky. Slepý hejtman odchází neporažen, země však zůstá rozdělená.",
@@ -1370,8 +1371,13 @@
         ]
       },
       "debriefing": {
-        "victory": "Posily z Nového Knína dorazily včas! Petr ze Šternberka se stáhl ke Kutné Hoře, když viděl odhodlanou obranu na kopci Červenka. Poutníci — muži, ženy i děti — přežili. Z houfu chudiny se rodí vojsko; brzy u Nekmíře poprvé sevřou vozy do hradby.",
-        "defeat": "Poutníci byli u brodu rozprášeni a pobiti. Petr ze Šternberka slaví. Husitské hnutí utrpělo těžkou ránu hned v počátcích."
+        "victory": "Vítězství u Živohoště otevírá cestu dál. O jeho ceně však rozhoduje i osud těch, které jste měli chránit.",
+        "defeat": "Poutníci byli u brodu rozprášeni a pobiti. Petr ze Šternberka slaví. Husitské hnutí utrpělo těžkou ránu hned v počátcích.",
+        "victoryVariants": {
+          "allPilgrims": "Bitva je vyhraná a všechny původní skupiny poutníků jsou stále na bojišti. Neznamená to boj beze ztrát, ale jejich cesta tady nekončí.\n\nHlas z bojiště — autorská fikce, nikoli citace pramene:\n„Než jsme začali mluvit o vítězství, volali jsme na sebe. Ze všech skupin přicházely odpovědi.“",
+          "somePilgrims": "Bitva je vyhraná, ale na bojišti zůstala jen část původních skupin poutníků. Další cesta začne s mezerami v houfu; vítězná zpráva je nezaplní.\n\nHlas z bojiště — autorská fikce, nikoli citace pramene:\n„Volali jsme přes pole. Některé hlasy odpověděly; na jiné jsme čekali marně.“",
+          "noPilgrims": "Vojsko zvítězilo, ale žádná z původních skupin poutníků už na bojišti nezůstala. Padlí a ti, kdo uprchli, nejsou totéž; původní houf však už nestojí pohromadě.\n\nHlas z bojiště — autorská fikce, nikoli citace pramene:\n„Měli jsme zprávu o vítězství. Z houfu, který jsme měli chránit, ji tu už nikdo neposlouchal.“"
+        }
       },
       "phases": [
         {
@@ -2049,38 +2055,54 @@
         ]
       },
       "debriefing": {
-        "victory": "Prokop Holý odhalil léčku umírněných včas! Radikálové zůstali ve vozové hradbě a odrazili klamný útěk. Koalice umírněných je poražena a radikální husitství přežívá. Vyhráli jste bitvu, kterou historie prohrála — rozdělená země však nezmizela a žádný klamný ústup ji nesjednotí.",
-        "defeat": "Tragédie u Lipan. Radikálové uvěřili klamnému útěku a vyběhli z vozové hradby. Jízda umírněných udeřila z boku. Prokop Holý padl a s ním naděje radikálního husitství. Husitské války končí porážkou těch, kteří je začali."
+        "victory": "Polní vojska u Lipan zvítězila a koalice utrpěla porážku. Vyhráli jste bitvu, kterou historie prohrála — rozdělená země však nezmizela. Vojenské vítězství ještě není smír.",
+        "defeat": "Polní vojska u Lipan utrpěla porážku. Koalice rozhodla střetnutí ve svůj prospěch; o další cestě země budou nyní vyjednávat z pozice síly její vítězové.",
+        "unitStatus": {
+          "texts": {
+            "alive": "Prokop Holý tuto bitvu přežil. Jeho další osud zůstává za hranicí této partie.",
+            "fallen": "Prokop Holý v této bitvě padl. Výsledek střetnutí jeho smrt nezvrátí.",
+            "escaped": "Prokop Holý z bojiště uprchl. Není mezi padlými, ale na konci střetnutí už nestojí se svým vojskem."
+          }
+        }
       },
       "phases": [
         {
           "name": "Patová situace",
-          "description": "Obě strany za vozovou hradbou, vyjednávání selhává.",
+          "description": "Vyjednávání selhalo. Někdejší spojenci stojí proti sobě.",
           "events": [
             {"message": "Bratrovražedná bitva začíná..."},
-            {"message": "Bedřich ze Strážnice odjíždí se 300 jezdci vyjednávat smír - radikálové přicházejí o polovinu své jízdy."}
+            {"message": "Smír se nepodařilo dojednat. Proti vám stojí i muži, kteří dříve bojovali pod stejným znamením."}
           ]
         },
         {
-          "name": "Klamný útok",
-          "description": "Koalice vysílá pěchotu do zdánlivě zoufalého útoku.",
+          "name": "Pokus o léčku",
+          "description": "Koalice hledá příležitost vylákat polní vojska z obrany.",
           "events": [
-            {"message": "Umírnění zahajují útok na vozovou hradbu!"},
-            {"message": "Útok umírněných selhává - pěchota i vozy couvají v nepořádku! Že by prchali?"}
+            {"message": "Koalice hledá slabé místo vaší obrany. Pozor na předstíraný útěk!"},
+            {"message": "Koalice dostává rozkaz předstírat ústup. Pronásledování může otevřít cestu její jízdě."}
           ]
         },
         {
-          "name": "Léčka",
-          "description": "Radikálové opouštějí hradbu a pronásledují. Jízda udeří z boku!",
+          "name": "Rozhodující střet",
+          "description": "Sledujte pohyb jízdy; soudržnost obrany může rozhodnout.",
           "events": [
-            {"message": "Pozor! Šlechtická jízda vyráží z úkrytu!"}
+            {"message": "Rozhodující střet. Sledujte pohyb jízdy; o opuštění hradby rozhodujete vy."}
           ]
         },
         {
-          "name": "Zkáza radikálů",
-          "description": "Radikálové obklíčeni, krvavá řež.",
+          "name": "Závěr bitvy",
+          "description": "Bitva pokračuje. Rozhodnou oddíly, které ještě drží pohromadě.",
           "events": [
-            {"message": "Prokop Holý padl v boji!"}
+            {
+              "message": "Závěr bitvy se blíží. Rozhodující je, které oddíly ještě drží pohromadě.",
+              "unitStatus": {
+                "texts": {
+                  "alive": "Prokop Holý žije a je stále na bojišti. O výsledku bitvy se ještě bojuje.",
+                  "fallen": "Prokop Holý v této bitvě padl. Zbývající oddíly bojují bez něj.",
+                  "escaped": "Prokop Holý opustil bojiště. Boj pokračuje bez něj."
+                }
+              }
+            }
           ]
         }
       ],
