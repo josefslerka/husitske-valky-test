@@ -3,8 +3,9 @@
 ## Bitva: pravidla a prezentace
 
 `Game` vlastní stav bitvy a koordinuje tahy, scénáře, výběr jednotek, pohyb a herní
-systémy. `CombatSystem` provádí souboje. Ani jedna třída přímo nepracuje s DOM nebo
-s animační smyčkou prohlížeče.
+systémy. `CombatSystem` provádí souboje; `ScenarioEventSystem` spravuje průběh
+scénářových událostí. Žádná z těchto tříd přímo nepracuje s DOM nebo s animační
+smyčkou prohlížeče.
 
 Prezentace bitvy je rozdělena do tří tříd:
 
@@ -51,7 +52,33 @@ UI. Testovací adaptér je v `scripts/helpers/test-battle-view.js`; jeho kontrak
 ověřuje proti metodám skutečně používaným pravidly. Nepřepisujeme `Game.prototype`.
 
 Soubory jsou nadále klasické skripty, nikoli ES moduly. V `index.html` se proto
-`BattlePanels`, `BattleTooltip` a `BattleView` načítají před `Game`.
+`BattlePanels`, `BattleTooltip`, `BattleView` i `ScenarioEventSystem` načítají před `Game`.
+
+## Scénářové události
+
+Každá instance `Game` má vlastní `scenarioEventSystem`. Systém vlastní implementaci
+přechodů fází, vyhodnocení jednorázových událostí, jejich účinků a příchodu posil.
+`ScenarioManager` nadále poskytuje scénářová data a vyhodnocuje podmínky událostí.
+Veřejné metody `Game.updatePhase()`, `checkPhaseEvents()`, `processEvent()`,
+`checkReinforcements()` a `spawnReinforcements()` zůstávají kompatibilními delegáty.
+
+Stav `currentScenario`, `currentPhase` a `processedEvents` zůstává v `Game`; systém
+si nedrží druhou kopii. Díky tomu lokalizace pracuje s aktuálními daty a save v4
+nemění strukturu ani kompatibilitu se staršími verzemi.
+
+Při začátku kola se nejprve aktualizuje fáze, pak provedou její způsobilé události
+a posily. Identifikátor události se uloží před provedením účinku. Posily používají
+dosavadní klíče `reinf-hussites-<kolo>`, `reinf-crusaders-<kolo>` a
+`reinf-scenario-<skupina>-<kolo>`. Neměňte je bez migrace uložených her.
+Podmíněné události používají stabilní ID nezávislé na kole skutečného spuštění.
+
+Načtení sestaví bitvu s `{ restoring: true }`, bez přehrání úvodních událostí,
+a obnoví jednotky i `processedEvents` ze savu. Již provedené účinky se neopakují;
+budoucí události a posily zůstanou připravené. Testy pokrývají save před příchodem
+i po příchodu posil, oba datové formáty, správnou frakci a zachování ID jednotek.
+
+Změny zde nesmějí měnit balanc jako vedlejší efekt refaktoringu. Nová mechanika
+nebo oprava jejího chování potřebuje vlastní explicitní očekávání v testu.
 
 ## CSS: zachované pořadí kaskády
 
@@ -83,13 +110,28 @@ node scripts/check.js
 ```
 
 Příkaz kontroluje syntaxi JavaScriptu, 13 testů jádra, 17 regresí průběhu bitvy,
-8 testů prezentačního rozhraní, strukturu CSS, překlady a scénáře. CSS kontrola není
-plnohodnotný parser: hlídá importy, závorky, prázdné bloky a existenci assetů.
+17 testů scénářových událostí, 8 testů prezentačního rozhraní, strukturu CSS,
+překlady a scénáře. CSS kontrola není plnohodnotný parser: hlídá importy, závorky,
+prázdné bloky a existenci assetů.
 Testy UI používají zjednodušený DOM a nenahrazují kontrolu v prohlížeči.
 
 Při změně prezentace zkontrolujte menu, výběr mise, briefing, vybranou jednotku,
 průběh tahu a pauzu. Pro rozložení používejte alespoň šířky 390, 753 a 1280 px.
 Při větším úklidu CSS porovnejte vypočtené styly i obrazovky s výchozí verzí.
+
+### Automatické kontroly
+
+`.github/workflows/ci.yml` spouští `node scripts/check.js` na Node.js 24 při pushi,
+pull requestu a ručním spuštění. Jeden běh má limit pět minut; novější změna ve stejné
+větvi nebo pull requestu zruší starší rozpracovaný běh. Není potřeba instalovat
+balíčky, přidávat přístupové údaje ani vytvářet build.
+
+Oficiální akce pro checkout a Node.js jsou připnuté na konkrétní commity. Při jejich
+aktualizaci ověřte tag v původním repozitáři a aktualizujte hash i komentář verze.
+Workflow má pouze `contents: read`, neukládá Git credentials a nic nepublikuje.
+Konfigurace vychází z [oficiálního návodu GitHub Actions](https://docs.github.com/en/actions/tutorials/build-and-test-code/nodejs).
+Úspěšná lokální kontrola nepotvrzuje vzdálený běh: ten ověřte v Actions po pushi.
+Povinné kontroly pro merge se nastavují zvlášť; tento workflow je sám nezapíná.
 
 ## Co ještě není oddělené
 
@@ -99,6 +141,6 @@ Toto je hranice prezentace bitvy, nikoli dokončená přestavba celé aplikace.
 `TutorialSystem` ještě obsahují vlastní dialogy a `main.js` řídí obrazovky globálně.
 V CSS zůstává samostatná vrstva pozdějšího tématu a v panelech inline styly.
 
-Další menší kroky mohou oddělit geometrii od kreslení a vyvést scénářové události
-z `Game`. Sloučení základních stylů s tématem už potřebuje samostatnou vizuální
-regresi; nemá se míchat s úpravami pravidel nebo balancu.
+Další menší krok může oddělit hexovou geometrii od kreslení. Sloučení základních
+stylů s tématem už potřebuje samostatnou vizuální regresi; nemá se míchat s úpravami
+pravidel nebo balancu.

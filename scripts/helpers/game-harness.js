@@ -67,13 +67,13 @@ function createHarness({ browserView = false } = {}) {
         'data/scenarios.js', 'data/campaign.js', 'systems/CampaignProgressSystem.js',
         'systems/CombatSystem.js', 'systems/FogOfWarSystem.js', 'systems/MoraleSystem.js',
         'systems/VictoryConditionsSystem.js', 'systems/TutorialSystem.js',
-        'systems/BattleActionSystem.js', 'systems/SaveGameSystem.js',
+        'systems/BattleActionSystem.js', 'systems/SaveGameSystem.js', 'systems/ScenarioEventSystem.js',
         'ui/BattlePanels.js', 'ui/BattleTooltip.js', 'ui/BattleView.js', 'core/game.js', 'ai.js'
     ]) {
         const filename = path.join(__dirname, '../../js', file);
         vm.runInContext(fs.readFileSync(filename, 'utf8'), context, { filename });
     }
-    const api = vm.runInContext('({ Game, HexGrid, Unit, UnitFactory, Scenarios, ScenarioManager, SaveGameSystem, AI, BattleView, BattlePanels, BattleTooltip })', context);
+    const api = vm.runInContext('({ Game, HexGrid, Unit, UnitFactory, Scenarios, ScenarioManager, SaveGameSystem, ScenarioEventSystem, AI, BattleView, BattlePanels, BattleTooltip })', context);
     const viewFactory = game => {
         if (!browserView) return new TestBattleView(game);
         // UI testy používají skutečný adaptér a DOM double; Canvas drawing není jejich předmět.

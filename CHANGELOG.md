@@ -1,5 +1,14 @@
 # 📜 Changelog
 
+## Automatické kontroly a scénářové události (6. září 2026)
+
+- Přidán GitHub Actions workflow pro push, pull request i ruční spuštění; běží stejná kontrola projektu na Node.js 24.
+- CI má jen oprávnění ke čtení, připnuté verze akcí a časový limit; neinstaluje závislosti ani nenasazuje web.
+- Fáze, události a posily přesunuty z `Game` do `ScenarioEventSystem`, bez změn mechanik a formátu savu.
+- Zachována veřejná rozhraní i jediný stav scénáře používaný ukládáním a lokalizací.
+- Sedmnáct nových regresí prošlo před extrakcí i po ní: časování, podmínky, deduplikace, posily, save/load a mechanické účinky.
+- Jednotná kontrola projektu nyní spouští 55 testů; hranice prezentace se hlídá i pro nový systém.
+
 ## Oddělení prezentace a úklid CSS (6. září 2026)
 
 - `Game` a `CombatSystem` již přímo nepoužívají DOM ani animační smyčku. Prohlížečovou prezentaci vlastní `BattleView`, `BattlePanels` a `BattleTooltip`.

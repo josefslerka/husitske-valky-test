@@ -20,4 +20,4 @@ function run(args) {
 const sources = [...files(path.join(root, 'js')), ...files(__dirname), path.join(root, 'validate_scenarios.js')];
 for (const file of sources.filter(file => file.endsWith('.js'))) run(['--check', file]);
 console.log('✓ Syntaxe JavaScriptu');
-for (const script of ['scripts/test-core.js', 'scripts/test-battle.js', 'scripts/test-presentation.js', 'scripts/validate-styles.js', 'scripts/validate-locales.js', 'validate_scenarios.js']) run([script]);
+for (const script of ['scripts/test-core.js', 'scripts/test-battle.js', 'scripts/test-scenario-events.js', 'scripts/test-presentation.js', 'scripts/validate-styles.js', 'scripts/validate-locales.js', 'validate_scenarios.js']) run([script]);

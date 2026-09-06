@@ -37,12 +37,20 @@ Pak otevřete [http://localhost:8000](http://localhost:8000). Přímé otevřen�
 node scripts/check.js
 ```
 
-Příkaz ověří syntaxi JS, strukturu a pořadí CSS, scénáře, překlady a tři testovací
-balíky (38 testů). Regrese průběhu bitvy lze samostatně spustit přes
+Příkaz ověří syntaxi JS, strukturu a pořadí CSS, scénáře, překlady a čtyři testovací
+balíky (55 testů). Regrese průběhu bitvy lze samostatně spustit přes
 `node scripts/test-battle.js`; používají skutečné herní třídy a hexovou mřížku
 s řízeným časem a vloženým testovacím pohledem, bez přepisování metod `Game`.
 `node scripts/test-presentation.js` ověřuje hranici mezi pravidly a zobrazením
 i úklid skutečného prohlížečového adaptéru nad zjednodušeným DOM.
+`node scripts/test-scenario-events.js` hlídá fáze, jednorázové události, oba formáty
+posil a jejich obnovu ze savu.
+
+Workflow [.github/workflows/ci.yml](.github/workflows/ci.yml) spouští stejný příkaz
+na Node.js 24 při každém pushi a pull requestu, případně ručně přes GitHub Actions.
+Nevyžaduje `npm install`, nic nenasazuje a má pouze právo číst repozitář.
+Začne fungovat po pushi souboru na GitHub; povinné kontroly pro merge jsou samostatné
+nastavení repozitáře.
 
 Hru lze uložit během hráčova tahu po dokončení rozpracované akce. Načítání z hlavního
 menu, herního menu i pauzy obnoví celý scénář. Save v4 zachovává i změněný terén;
@@ -54,6 +62,7 @@ První řízený playtest je popsaný v [docs/ACT_I_PLAYTEST.md](docs/ACT_I_PLAY
 
 ```
 strategie/
+├── .github/workflows/ci.yml # Automatické kontroly při pushi a pull requestu
 ├── index.html              # Hlavní HTML soubor
 ├── style.css               # Vstupní manifest: pevné pořadí CSS importů
 ├── styles/                 # Sedm částí stylů, od základů po výsledné téma
@@ -65,6 +74,7 @@ strategie/
 │   │   ├── BattleActionSystem.js   # Akce, pauza a rušení čekání
 │   │   ├── CombatSystem.js         # Bojový systém
 │   │   ├── SaveGameSystem.js       # Validace a obnova uložené bitvy
+│   │   ├── ScenarioEventSystem.js  # Fáze, jednorázové události a posily
 │   │   ├── CampaignProgressSystem.js # Postup kampaně a pověst
 │   │   ├── FogOfWarSystem.js       # Systém viditelnosti
 │   │   ├── MoraleSystem.js         # Systém morálky

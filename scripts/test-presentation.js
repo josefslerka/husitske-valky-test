@@ -7,16 +7,18 @@ const { TestBattleView } = require('./helpers/test-battle-view');
 const tests = [];
 const test = (name, run) => tests.push({ name, run });
 
-test('Game a CombatSystem neobsahují DOM ani animační smyčku', () => {
-    for (const file of ['js/core/game.js', 'js/systems/CombatSystem.js']) {
+const domainFiles = ['js/core/game.js', 'js/systems/CombatSystem.js', 'js/systems/ScenarioEventSystem.js'];
+
+test('Game, souboj a scénářové události neobsahují DOM ani animační smyčku', () => {
+    for (const file of domainFiles) {
         const source = fs.readFileSync(path.join(__dirname, '..', file), 'utf8');
         assert.doesNotMatch(source, /\b(document|window|requestAnimationFrame|cancelAnimationFrame)\b/, file);
     }
 });
 
-test('headless adaptér implementuje celý prezentační kontrakt Game a souboje', () => {
+test('headless adaptér implementuje celý prezentační kontrakt herních pravidel', () => {
     const { BattleView } = createHarness();
-    for (const file of ['js/core/game.js', 'js/systems/CombatSystem.js']) {
+    for (const file of domainFiles) {
         const source = fs.readFileSync(path.join(__dirname, '..', file), 'utf8');
         for (const [, name] of source.matchAll(/\bthis\.(?:game\.)?view\.(\w+)\(/g)) {
             assert.equal(typeof TestBattleView.prototype[name], 'function', `headless: ${name}`);
