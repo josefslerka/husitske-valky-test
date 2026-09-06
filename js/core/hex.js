@@ -1688,6 +1688,7 @@ class HexGrid {
 // Třída pro minimapu
 class Minimap {
     constructor(canvas, hexGrid) {
+        this.eventAbortController = new AbortController();
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
         this.hexGrid = hexGrid;
@@ -1777,9 +1778,15 @@ class Minimap {
             this.canvas.classList.remove('dragging');
         };
 
-        this.canvas.addEventListener('mousedown', onMouseDown);
-        document.addEventListener('mousemove', onMouseMove);
-        document.addEventListener('mouseup', onMouseUp);
+        const signal = this.eventAbortController.signal;
+        this.canvas.addEventListener('mousedown', onMouseDown, { signal });
+        document.addEventListener('mousemove', onMouseMove, { signal });
+        document.addEventListener('mouseup', onMouseUp, { signal });
+    }
+
+    destroy() {
+        this.eventAbortController.abort();
+        this.canvas.classList.remove('dragging');
     }
 
     // Vykreslení minimapy

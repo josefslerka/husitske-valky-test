@@ -34,10 +34,16 @@ Pak otevřete [http://localhost:8000](http://localhost:8000). Přímé otevřen�
 ### Kontroly před testováním
 
 ```bash
-node scripts/validate-locales.js
-node scripts/test-core.js
-node validate_scenarios.js
+node scripts/check.js
 ```
+
+Příkaz ověří syntaxi JS, scénáře, překlady a oba testovací balíky. Regrese průběhu
+bitvy lze samostatně spustit přes `node scripts/test-battle.js`; používají skutečné
+herní třídy a hexovou mřížku s řízeným časem a nahrazeným vykreslováním.
+
+Hru lze uložit během hráčova tahu po dokončení rozpracované akce. Načítání z hlavního
+menu, herního menu i pauzy obnoví celý scénář. Save v4 zachovává i změněný terén;
+starší verze v1–v3 lze nadále načíst. Neplatný save ponechá rozehranou bitvu beze změny.
 
 První řízený playtest je popsaný v [docs/ACT_I_PLAYTEST.md](docs/ACT_I_PLAYTEST.md).
 

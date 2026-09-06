@@ -75,7 +75,7 @@ const AI = {
     },
 
     // Hlavní funkce - provede celý tah
-    takeTurn: function(game) {
+    takeTurn: async function(game) {
         const units = game.getUnitsOfFaction('crusaders');
         const enemies = game.getEnemyUnits('crusaders');
 
@@ -89,7 +89,7 @@ const AI = {
         this.updateAiStance(game);
 
         // Zpracování jednotek postupně s prodlevou pro vizuální efekt
-        this.processUnits(game, units, 0);
+        await this.processUnits(game, units, 0);
     },
 
     // WP0: kontrola stavu skriptovaného postoje na začátku tahu AI.
@@ -125,38 +125,26 @@ const AI = {
         }
     },
 
-    processUnits: function(game, units, index) {
-        if (index >= units.length || game.gameState !== 'playing') {
-            // Všechny jednotky hotové, skryjeme AI indikátor
-            if (game.showAIThinking) game.showAIThinking(false);
-            // Ukončíme tah pouze pokud hra stále běží
-            if (game.gameState === 'playing') {
-                setTimeout(() => game.endTurn(), game.fastForwardAI ? 50 : 300);
-            }
-            return;
+    processUnits: async function(game, units, index = 0) {
+        for (let i = index; i < units.length; i++) {
+            if (!await game.actions.wait(0) || game.gameState !== 'playing' || game.currentFaction !== 'crusaders') return;
+            const unit = units[i];
+            if (!unit.canAct() || unit.health <= 0) continue;
+
+            const action = this.decideAction(game, unit);
+            const started = Date.now();
+            if (action) await this.executeAction(game, unit, action);
+            if (game.gameState !== 'playing') return;
+
+            // Nastavení rychlosti řídí jen prezentaci. Další akce vždy čeká
+            // na celý souboj, protiútok i reakční palbu při nájezdu.
+            const remaining = Math.max(0, this.getActionDelay(game, action, units.length) - (Date.now() - started));
+            if (!await game.actions.wait(remaining)) return;
         }
-
-        const unit = units[index];
-
-        if (!unit.canAct() || unit.health <= 0) {
-            // Jednotka nemůže jednat, přejdi na další
-            this.processUnits(game, units, index + 1);
-            return;
+        if (await game.actions.wait(game.fastForwardAI ? 50 : 300) &&
+            game.gameState === 'playing' && game.currentFaction === 'crusaders') {
+            game.endTurn();
         }
-
-        // Rozhodnutí AI pro jednotku
-        const action = this.decideAction(game, unit);
-
-        if (action) {
-            this.executeAction(game, unit, action);
-        }
-
-        // Pokračuj na další jednotku po krátké prodlevě
-        // (rychlost AI z nastavení dosud neměla žádný efekt)
-        const delay = this.getActionDelay(game, action, units.length);
-        setTimeout(() => {
-            this.processUnits(game, units, index + 1);
-        }, delay);
     },
 
     getActionDelay: function(game, action, unitCount) {
@@ -173,8 +161,7 @@ const AI = {
         delay = Math.max(isAttack ? 320 : 120, delay);
 
         // Hráč klikl na "přeskočit tah AI": minimální prodlevy.
-        // Útok drží 320 ms (delší než animace zásahu ~300 ms, jinak by se
-        // překrývaly damage-timeouty a hrozily race-y), pohyb je skoro instantní.
+        // Dokončení akce hlídá await; tyto hodnoty určují jen minimální tempo.
         if (game.fastForwardAI) return isAttack ? 320 : 40;
         return delay;
     },
@@ -797,32 +784,26 @@ const AI = {
         return bestMove;
     },
 
-    executeAction: function(game, unit, action) {
+    executeAction: async function(game, unit, action) {
         switch (action.type) {
             case 'attack':
                 game.addLog(i18n.t('gameLog.aiAttacking', { unitName: unit.name, targetName: action.target.name }), 'combat');
-                game.combatSystem.performAttack(unit, action.target);
+                await game.combatSystem.performAttack(unit, action.target);
                 break;
 
             case 'move':
                 if (action.followUpAttack) {
                     // Charge útok - pohyb a pak útok
                     game.addLog(i18n.t('gameLog.aiCharging', { unitName: unit.name }), 'combat');
-                    game.moveUnit(unit, action.col, action.row);
-                    // Útok po krátkém zpoždění (jednotku mohla mezitím
-                    // srazit overwatch palba - mrtvý neútočí)
-                    setTimeout(() => {
-                        if (unit.health > 0 && unit.canAttack() && action.followUpAttack.health > 0) {
-                            game.combatSystem.performAttack(unit, action.followUpAttack);
-                        }
-                    }, 400);
+                    await game.moveUnit(unit, action.col, action.row, action.followUpAttack);
                 } else {
                     game.addLog(i18n.t('gameLog.aiMoving', { unitName: unit.name }), 'move');
-                    game.moveUnit(unit, action.col, action.row);
+                    await game.moveUnit(unit, action.col, action.row);
                 }
                 break;
 
             case 'defend':
+                if (!game.canStartAction(unit)) return;
                 Sound.playDefend();
                 unit.defend();
                 game.addLog(i18n.t('gameLog.aiDefending', { unitName: unit.name }), 'move');

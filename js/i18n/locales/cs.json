@@ -498,6 +498,7 @@
     "wagonBreakthrough": "Průlom v hradbě u {unit}!",
     "gameSaved": "Hra uložena.",
     "saveError": "Chyba při ukládání hry!",
+    "saveUnavailable": "Uložit lze během vašeho tahu po dokončení probíhající akce.",
     "noSaveFound": "Žádná uložená hra nenalezena.",
     "saveIncompatible": "Nekompatibilní verze uložené hry.",
     "gameLoaded": "Hra načtena. Kolo {turn}, tah: {faction}.",

@@ -4,6 +4,8 @@ const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
+const { createHarness } = require('./helpers/game-harness');
+const { HexGrid } = createHarness();
 
 global.UnitTypes = { TEST: {} };
 global.i18n = { t: key => key };
@@ -70,15 +72,9 @@ function unit(overrides = {}) {
 }
 
 function grid(units = []) {
-    return {
-        getDistance: (aCol, aRow, bCol, bRow) => Math.abs(aCol - bCol) + Math.abs(aRow - bRow),
-        getNeighbors: (col, row) => [
-            { col: col - 1, row }, { col: col + 1, row },
-            { col, row: row - 1 }, { col, row: row + 1 }
-        ],
-        getTerrain: () => 'plains',
-        unitAt: (col, row) => units.find(candidate => candidate.col === col && candidate.row === row && candidate.health > 0)
-    };
+    const hexGrid = new HexGrid({ getContext: () => ({}) }, 20, 20, 40);
+    hexGrid.unitAt = (col, row) => units.find(candidate => candidate.col === col && candidate.row === row && candidate.health > 0);
+    return hexGrid;
 }
 
 test('phase event zachová amount, title a vlastní pole', () => {
@@ -165,7 +161,7 @@ test('holdWagonFort nerozpojuje ukotvený vůz', () => {
     assert.deepStrictEqual(AI.decideAction(game, wagon), { type: 'defend' });
 });
 
-test('velká armáda zkrátí prodlevy AI, přeskočení zachová bezpečný útok', () => {
+test('velká armáda a přeskočení zkrátí prezentační prodlevy AI', () => {
     assert.strictEqual(AI.getActionDelay({ fastForwardAI: false }, { type: 'move' }, 20), 500);
     assert.strictEqual(AI.getActionDelay({ fastForwardAI: false }, { type: 'move' }, 48), 250);
     assert.strictEqual(AI.getActionDelay({ fastForwardAI: false }, { type: 'attack' }, 48), 350);

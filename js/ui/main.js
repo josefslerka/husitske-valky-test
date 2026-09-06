@@ -65,6 +65,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             game.destroy();
         }
         game = null;
+        window.game = null;
+        window.hexGrid = null;
     }
 
     // Nastavení hry
@@ -584,8 +586,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Kamera až po dokončení UI startu mise, jinak se rámování počítá
         // proti přechodnému layoutu modalu/panelů.
-        requestAnimationFrame(() => game.centerOnPlayerForces());
-        setTimeout(() => game.centerOnPlayerForces(), 120);
+        const startedGame = game;
+        startedGame.actions.wait(120).then(active => {
+            if (active) startedGame.centerOnPlayerForces();
+        });
     }
 
     function startQuickBattle() {
@@ -614,6 +618,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Inicializace bez scénáře (výchozí armády)
         game.initGame();
+        updateObjectivesPanel(null);
 
         // Export pro debugging
         window.game = game;
@@ -621,55 +626,43 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function startGameFromSave() {
-        // Save je potřeba přečíst předem - určuje scénář, a tím velikost
-        // mapy, terén a podmínky vítězství
-        let saveData = null;
         try {
-            saveData = JSON.parse(localStorage.getItem('husitskeValky_save'));
+            const restored = SaveGameSystem.load(canvas, game);
+            game = restored;
+            hexGrid = restored.hexGrid;
         } catch (e) {
-            console.error('Poškozený save:', e);
-            return;
+            const key = ['gameLog.noSaveFound', 'gameLog.saveIncompatible'].includes(e.message)
+                ? e.message : 'gameLog.loadError';
+            if (game) game.showEventNotification(i18n.t('messages.messageTitle'), i18n.t(key));
+            else {
+                const error = document.getElementById('save-load-error');
+                error.textContent = i18n.t(key);
+                error.classList.remove('hidden');
+            }
+            return false;
         }
-        if (!saveData) return;
-
-        let scenario = saveData.scenarioId
-            ? ScenarioManager.getScenario(saveData.scenarioId)
-            : null;
-        if (scenario && typeof getLocalizedScenario === 'function') {
-            scenario = getLocalizedScenario(saveData.scenarioId, scenario);
-        }
-
+        Music.stop();
         mainMenu.classList.add('hidden');
         gameContainer.classList.remove('hidden');
-
-        destroyCurrentGame();
-
+        pauseModal.classList.add('hidden');
+        gameoverModal.classList.add('hidden');
+        missionModal.classList.add('hidden');
+        objectivesPanel.classList.add('hidden');
+        document.getElementById('save-load-error').classList.add('hidden');
+        const scenario = game.currentScenario;
+        selectedScenario = scenario;
         if (scenario) {
-            // Stejná příprava jako startMission: grid dle scénáře, terén,
-            // podmínky vítězství... loadGame pak přepíše dynamický stav
-            const mapSize = scenario.mapSize;
-            hexGrid = new HexGrid(canvas, mapSize.width, mapSize.height, 40);
-            game = new Game(hexGrid);
-            game.fogOfWar = (gameSettings.difficultyLevel === 'advanced');
-            game.initGameWithScenario(scenario);
-
             document.getElementById('battle-name').textContent = scenario.name;
             document.getElementById('battle-date').textContent = scenario.date;
-            updateObjectivesPanel(scenario);
-            selectedScenario = scenario;
         } else {
-            // Starý save nebo rychlá bitva - výchozí mapa
-            hexGrid = new HexGrid(canvas, 16, 10, 40);
-            game = new Game(hexGrid);
-            game.initGame();
+            document.getElementById('battle-name').textContent = i18n.t('quickBattle.name');
+            document.getElementById('battle-date').textContent = i18n.t('quickBattle.date');
         }
-
-        // Načtení hry (jednotky, kolo, průběh scénáře, mlha války)
-        game.loadGame();
-
-        // Export pro debugging
+        updateObjectivesPanel(scenario);
         window.game = game;
         window.hexGrid = hexGrid;
+        game.centerOnPlayerForces();
+        return true;
     }
 
     // =============================================
@@ -677,16 +670,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     // =============================================
 
     function updateObjectivesPanel(scenario) {
-        if (!scenario || !scenario.victoryConditions) return;
-
         const primaryObjective = document.getElementById('primary-objective');
         const secondaryObjectives = document.getElementById('secondary-objectives');
+        const objectiveHud = document.getElementById('objective-hud');
+        const objectiveHudText = document.getElementById('objective-hud-text');
+
+        if (!scenario || !scenario.victoryConditions) {
+            primaryObjective.textContent = '';
+            secondaryObjectives.innerHTML = '';
+            if (objectiveHudText) objectiveHudText.textContent = '';
+            if (objectiveHud) objectiveHud.classList.add('hidden');
+            if (objectivesPanel) objectivesPanel.classList.add('hidden');
+            return;
+        }
 
         primaryObjective.textContent = scenario.victoryConditions.primary.description;
 
         // Trvalý cíl v hlavičce - vždy viditelný během hry (ne jen v skrytém panelu)
-        const objectiveHud = document.getElementById('objective-hud');
-        const objectiveHudText = document.getElementById('objective-hud-text');
         if (objectiveHud && objectiveHudText) {
             objectiveHudText.textContent = scenario.victoryConditions.primary.description;
             objectiveHud.classList.remove('hidden');
@@ -836,7 +836,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (btnLoad) {
         btnLoad.addEventListener('click', () => {
-            if (game) game.loadGame();
+            startGameFromSave();
             if (footerMenu) footerMenu.classList.remove('open');
         });
     }
@@ -865,14 +865,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     function showPauseMenu() {
         pauseModal.classList.remove('hidden');
         if (game) {
-            game.isPaused = true;
+            game.setPaused(true);
         }
     }
 
     function hidePauseMenu() {
         pauseModal.classList.add('hidden');
         if (game) {
-            game.isPaused = false;
+            game.setPaused(false);
         }
     }
 
@@ -897,9 +897,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Tlačítko Načíst v pause menu
     document.getElementById('btn-pause-load').addEventListener('click', () => {
-        if (game) {
-            game.loadGame();
-        }
+        startGameFromSave();
         hidePauseMenu();
     });
 

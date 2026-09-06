@@ -3051,6 +3051,7 @@
     "wagonBreakthrough": "Breakthrough in the wagon wall near {unit}!",
     "gameSaved": "Game saved.",
     "saveError": "Error saving game!",
+    "saveUnavailable": "Save during your turn after the current action has finished.",
     "noSaveFound": "No saved game found.",
     "saveIncompatible": "Incompatible saved game version.",
     "gameLoaded": "Game loaded. Round {turn}, turn: {faction}.",

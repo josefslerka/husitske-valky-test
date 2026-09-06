@@ -15,6 +15,7 @@ class VictoryConditionsSystem {
 
     // Hlavní kontrola vítězství
     checkVictory() {
+        if (this.game.gameState !== 'playing') return;
         // Tutoriál má vlastní systém ukončení
         if (this.game.isTutorial) {
             const crusadersAlive = this.game.units.filter(u => u.faction === 'crusaders' && u.health > 0);
@@ -212,6 +213,7 @@ class VictoryConditionsSystem {
 
     // Kontrola vítězných podmínek scénáře (po uplynutí času)
     checkScenarioVictoryConditions() {
+        if (this.game.gameState !== 'playing') return;
         if (!this.game.currentScenario) {
             console.warn('[VICTORY] checkScenarioVictoryConditions: No current scenario!');
             return;
@@ -326,6 +328,8 @@ class VictoryConditionsSystem {
 
             case 'survive_turns':
                 const requiredTurns = primary.turns || this.game.currentScenario.maxTurns;
+                // Průběžná kontrola není porážka: nepřítel musí odehrát i poslední kolo.
+                if (this.game.turnNumber <= requiredTurns) return;
                 // > místo >=: kolo musí být dokončené (viz komentář u 'survive')
                 victoryAchieved = this.game.turnNumber > requiredTurns;
                 this.game.gameOverTurn = requiredTurns;
@@ -486,6 +490,7 @@ class VictoryConditionsSystem {
     // Používá se pro destroy_percent, destroy_or_rout a capture_position,
     // které jinak čekají na vypršení maxTurns
     checkMidGameVictory() {
+        if (this.game.gameState !== 'playing') return;
         if (!this.game.currentScenario?.victoryConditions?.primary) return;
 
         const primary = this.game.currentScenario.victoryConditions.primary;
@@ -540,6 +545,7 @@ class VictoryConditionsSystem {
 
     // Kontrola progressu dual objective
     checkDualObjectiveProgress() {
+        if (this.game.gameState !== 'playing') return;
         if (!this.game.currentScenario || !this.game.currentScenario.victoryConditions) return;
         const conditions = this.game.currentScenario.victoryConditions;
         if (!conditions.primary || conditions.primary.type !== 'dual_objective') return;
@@ -566,6 +572,7 @@ class VictoryConditionsSystem {
                         this.outcome(i18n.t('gameLog.victoryObjectiveHeld', { description: obj.description }));
                         this.evaluateSecondaryConditions(playerFaction);
                         this.game.showVictory(playerFaction);
+                        return;
                     }
                 } else {
                     this.game.objectiveHeldTurns[obj.id] = 0;

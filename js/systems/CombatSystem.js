@@ -9,23 +9,8 @@ class CombatSystem {
         const targets = [];
 
         for (const enemy of this.game.units) {
-            if (enemy.faction === unit.faction || enemy.health <= 0) continue;
-
-            // Mlha války: jednotku skrytou v mlze nelze zaměřit - červené
-            // zvýraznění hexu by jinak prozradilo její pozici
-            if (!this.game.fogOfWarSystem.isEnemyVisible(enemy)) continue;
-
-            const distance = this.game.hexGrid.getDistance(unit.col, unit.row, enemy.col, enemy.row);
-
-            // Normální dosah
-            if (distance <= unit.range) {
+            if (this.canAttack(unit, enemy)) {
                 targets.push({ col: enemy.col, row: enemy.row });
-            }
-            // Schopnost reach - útok přes sousední spojeneckou jednotku (dosah 2)
-            else if (unit.special === 'reach' && distance === 2 && unit.range === 1) {
-                if (this.canReachThrough(unit, enemy)) {
-                    targets.push({ col: enemy.col, row: enemy.row });
-                }
             }
         }
 
@@ -55,9 +40,19 @@ class CombatSystem {
     }
 
     // Kontrola, zda může útočník zaútočit na obránce
-    canAttack(attacker, defender) {
+    canAttack(attacker, defender, { reaction = false } = {}) {
+        if (this.game.gameState !== 'playing' || !attacker || !defender) return false;
+        if (attacker.health <= 0 || defender.health <= 0) return false;
+        if (!this.game.units.includes(attacker) || !this.game.units.includes(defender)) return false;
         if (!attacker.canAttack()) return false;
         if (defender.faction === attacker.faction) return false;
+        if (reaction) {
+            if (defender.faction !== this.game.currentFaction || attacker.range < 2 || attacker.hasMoved) return false;
+        } else if (attacker.faction !== this.game.currentFaction) {
+            return false;
+        }
+        const playerFaction = this.game.currentScenario?.playerFaction || 'hussites';
+        if (attacker.faction === playerFaction && !this.game.fogOfWarSystem.isEnemyVisible(defender)) return false;
 
         const distance = this.game.hexGrid.getDistance(attacker.col, attacker.row, defender.col, defender.row);
 
@@ -128,14 +123,19 @@ class CombatSystem {
     }
 
     performAttack(attacker, defender) {
+        return this.game.actions.run(() => this.resolveAttack(attacker, defender));
+    }
+
+    // Interní část téže akce: pohyb může vyvolat více po sobě jdoucích reakcí.
+    // Volající drží actions.busy až do dokončení všech animací.
+    async resolveAttack(attacker, defender, options = {}) {
+        if (!this.canAttack(attacker, defender, options)) return false;
         const defenderTerrain = this.game.hexGrid.getTerrain(defender.col, defender.row);
         const attackerTerrain = this.game.hexGrid.getTerrain(attacker.col, attacker.row);
         const hasMovedThisTurn = attacker.hasMoved;
 
         // Zrušit možnost undo - útok je nevratná akce
-        if (this.game.lastMove && this.game.lastMove.unit === attacker) {
-            this.game.lastMove = null;
-        }
+        this.game.lastMove = null;
 
         // Animace útoku
         this.game.hexGrid.addAttackAnimation(attacker.col, attacker.row, defender.col, defender.row);
@@ -150,110 +150,75 @@ class CombatSystem {
         // gameContext se staví ve sdílené metodě (stejné bonusy dostane i náhled šancí)
         const gameContext = this.buildGameContext(attacker, defender);
 
-        // Zpoždění pro zobrazení animace
-        setTimeout(() => {
-            const result = attacker.attackTarget(defender, defenderTerrain, attackerTerrain, hasMovedThisTurn, gameContext);
+        // Spotřeba útoku, damage i statistiky jsou jedna synchronní změna.
+        // Časovače už nikdy nerozhodují, zda jednotka zemřela.
+        const result = attacker.attackTarget(defender, defenderTerrain, attackerTerrain, hasMovedThisTurn, gameContext);
+        this.trackDamage(attacker, defender, result.damage);
+        for (const areaDmg of result.areaDamage || []) {
+            this.trackDamage(attacker, areaDmg.unit, areaDmg.damage);
+            this.game.addLog(i18n.t(areaDmg.killed ? 'gameLog.areaKill' : 'gameLog.areaHit', {
+                attacker: attacker.name, target: areaDmg.unit.name, nearby: defender.name,
+                damage: areaDmg.damage, health: areaDmg.unit.health
+            }), 'combat');
+            if (areaDmg.killed) {
+                this.trackUnitDeath(areaDmg.unit, attacker);
+                this.game.handleUnitDeath(areaDmg.unit, attacker);
+            }
+        }
+        if (result.killed) {
+            this.game.addLog(i18n.t('gameLog.destroyed', { attacker: attacker.name, defender: defender.name, damage: result.damage }), 'combat');
+            this.trackUnitDeath(defender, attacker);
+            this.game.handleUnitDeath(defender, attacker);
+        } else {
+            this.game.addLog(i18n.t('gameLog.attacked', { attacker: attacker.name, defender: defender.name, damage: result.damage, health: defender.health }), 'combat');
+            const damagePercent = result.damage / defender.maxHealth;
+            if (!this.game.isTutorial && damagePercent > 0.3) {
+                const moraleResult = defender.reduceMorale(Math.round(damagePercent * 20), 'Těžké zranění');
+                if (moraleResult.startedRouting) this.game.addLog(i18n.t('gameLog.moraleBreak', { unit: defender.name }), 'morale');
+            }
+        }
+        if (result.counterDamage > 0) {
+            this.trackDamage(defender, attacker, result.counterDamage);
+            if (result.attackerKilled) {
+                this.trackUnitDeath(attacker, defender);
+                this.game.handleUnitDeath(attacker, defender);
+            }
+            this.game.addLog(i18n.t(result.attackerKilled ? 'gameLog.counterKill' : 'gameLog.counterAttack', {
+                defender: defender.name, attacker: attacker.name, damage: result.counterDamage, health: attacker.health
+            }), 'combat');
+        }
+        this.game.updateArmyOverview();
+        this.game.updateWaveringState();
 
-            // Zvuk zásahu
+        if (!await this.game.actions.wait(300)) return false;
+        Sound.playHit();
+        this.game.hexGrid.addExplosionAnimation(defender.col, defender.row);
+        this.showDamageNumber(defender.col, defender.row, result.damage);
+        for (const areaDmg of result.areaDamage || []) {
+            this.game.hexGrid.addExplosionAnimation(areaDmg.unit.col, areaDmg.unit.row);
+        }
+        if (result.killed) Sound.playDeath();
+
+        if (result.counterDamage > 0) {
+            this.game.hexGrid.addAttackAnimation(defender.col, defender.row, attacker.col, attacker.row);
+            Sound.playMeleeAttack();
+            if (!await this.game.actions.wait(200)) return false;
+            this.game.hexGrid.addExplosionAnimation(attacker.col, attacker.row);
+            this.showDamageNumber(attacker.col, attacker.row, result.counterDamage);
             Sound.playHit();
-
-            // Animace exploze na cíli
-            this.game.hexGrid.addExplosionAnimation(defender.col, defender.row);
-
-            // Floating damage number
-            this.showDamageNumber(defender.col, defender.row, result.damage);
-
-            // Sledování poškození pro statistiky
-            this.trackDamage(attacker, defender, result.damage);
-
-            // Zpracování plošného útoku (areaAttack)
-            if (result.areaDamage && result.areaDamage.length > 0) {
-                for (const areaDmg of result.areaDamage) {
-                    this.game.hexGrid.addExplosionAnimation(areaDmg.unit.col, areaDmg.unit.row);
-                    this.trackDamage(attacker, areaDmg.unit, areaDmg.damage);
-
-                    if (areaDmg.killed) {
-                        this.game.addLog(i18n.t('gameLog.areaKill', { attacker: attacker.name, target: areaDmg.unit.name, nearby: defender.name, damage: areaDmg.damage }), 'combat');
-                        this.trackUnitDeath(areaDmg.unit, attacker);
-                        this.game.handleUnitDeath(areaDmg.unit, attacker);
-                    } else {
-                        this.game.addLog(i18n.t('gameLog.areaHit', { attacker: attacker.name, target: areaDmg.unit.name, nearby: defender.name, damage: areaDmg.damage, health: areaDmg.unit.health }), 'combat');
-                    }
-                }
-            }
-
-            if (result.killed) {
-                this.game.addLog(i18n.t('gameLog.destroyed', { attacker: attacker.name, defender: defender.name, damage: result.damage }), 'combat');
-                Sound.playDeath();
-
-                // Aktualizace statistik + jednotné efekty smrti (velitel, vůz, morálka)
-                this.trackUnitDeath(defender, attacker);
-                this.game.handleUnitDeath(defender, attacker);
-            } else {
-                this.game.addLog(i18n.t('gameLog.attacked', { attacker: attacker.name, defender: defender.name, damage: result.damage, health: defender.health }), 'combat');
-
-                // Snížení morálky obránce při těžkém zásahu (vypnuto v tutoriálu)
-                if (!this.game.isTutorial) {
-                    const damagePercent = result.damage / defender.maxHealth;
-                    if (damagePercent > 0.3) {
-                        const moraleLoss = Math.round(damagePercent * 20);
-                        const moraleResult = defender.reduceMorale(moraleLoss, 'Těžké zranění');
-                        if (moraleResult.startedRouting) {
-                            this.game.addLog(i18n.t('gameLog.moraleBreak', { unit: defender.name }), 'morale');
-                        }
-                    }
-                }
-
-                // Protiútok
-                if (result.counterDamage > 0) {
-                    setTimeout(() => {
-                        this.game.hexGrid.addAttackAnimation(defender.col, defender.row, attacker.col, attacker.row);
-                        Sound.playMeleeAttack();
-
-                        setTimeout(() => {
-                            this.game.hexGrid.addExplosionAnimation(attacker.col, attacker.row);
-                            Sound.playHit();
-
-                            this.showDamageNumber(attacker.col, attacker.row, result.counterDamage);
-                            this.trackDamage(defender, attacker, result.counterDamage);
-
-                            if (result.attackerKilled) {
-                                this.game.addLog(i18n.t('gameLog.counterKill', { defender: defender.name, attacker: attacker.name, damage: result.counterDamage }), 'combat');
-                                Sound.playDeath();
-                                this.trackUnitDeath(attacker, defender);
-                                this.game.handleUnitDeath(attacker, defender);
-                            } else {
-                                this.game.addLog(i18n.t('gameLog.counterAttack', { defender: defender.name, damage: result.counterDamage, attacker: attacker.name, health: attacker.health }), 'combat');
-                            }
-
-                            this.game.updateArmyOverview();
-                            this.game.updateWaveringState();
-                            this.game.render();
-                            this.game.victoryConditionsSystem.checkVictory();
-                        }, 200);
-                    }, 300);
-
-                    this.game.deselectUnit();
-                    return;
-                }
-            }
-
-            // Tutoriál trigger
-            if (this.game.isTutorial) {
-                this.game.triggerTutorialEvent('attack_performed', { attacker, defender, result });
-            }
-
-            this.game.deselectUnit();
-            this.game.updateArmyOverview();
-            this.game.updateWaveringState();
-            this.game.render();
-            this.game.victoryConditionsSystem.checkVictory();
-        }, 300);
+            if (result.attackerKilled) Sound.playDeath();
+        }
+        if (this.game.isTutorial) {
+            this.game.tutorialSystem.triggerTutorialEvent('attack_performed', { attacker, defender, result });
+        }
+        this.game.deselectUnit();
+        this.game.victoryConditionsSystem.checkVictory();
+        return true;
     }
 
     // Obrana vybrané jednotky
     defendSelectedUnit() {
-        if (!this.game.selectedUnit) return;
+        if (!this.game.selectedUnit || !this.game.canStartAction(this.game.selectedUnit)) return false;
 
         // Zrušit možnost undo - obrana je nevratná akce
         if (this.game.lastMove && this.game.lastMove.unit === this.game.selectedUnit) {
@@ -267,7 +232,7 @@ class CombatSystem {
 
         // Tutoriál trigger
         if (this.game.isTutorial) {
-            this.game.triggerTutorialEvent('defend_performed', { unit: this.game.selectedUnit });
+            this.game.tutorialSystem.triggerTutorialEvent('defend_performed', { unit: this.game.selectedUnit });
         }
 
         this.game.deselectUnit();
@@ -311,11 +276,12 @@ class CombatSystem {
 
         document.body.appendChild(damageEl);
 
-        setTimeout(() => {
+        // Odstranit i při zrušení časovače výměnou/ukončením bitvy.
+        this.game.actions.wait(1200).then(() => {
             if (damageEl.parentNode) {
                 damageEl.parentNode.removeChild(damageEl);
             }
-        }, 1200);
+        });
     }
 
     // Pomocné metody - získání bonusů a penalizací

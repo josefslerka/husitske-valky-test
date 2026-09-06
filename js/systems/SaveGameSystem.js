@@ -1,0 +1,90 @@
+// Jediný vstup načtení bitvy pro hlavní menu, herní menu i pauzu.
+// Nejprve ověří celý snapshot, teprve pak zruší původní instanci.
+const SaveGameSystem = {
+    STORAGE_KEY: 'husitskeValky_save',
+    VERSION: 4,
+
+    prepare(data) {
+        const invalid = () => { throw new Error('gameLog.saveIncompatible'); };
+        const object = value => value !== null && typeof value === 'object' && !Array.isArray(value);
+        const nonnegative = value => Number.isFinite(value) && value >= 0;
+        const counts = value => object(value) && Object.values(value).every(nonnegative);
+        if (!object(data) || ![1, 2, 3, this.VERSION].includes(data.version)) invalid();
+        if (!Number.isInteger(data.turnNumber) || data.turnNumber < 1) invalid();
+        if (!['hussites', 'crusaders'].includes(data.currentFaction) || !['playing', 'victory'].includes(data.gameState)) invalid();
+        if (!Array.isArray(data.units)) invalid();
+        const scenario = data.scenarioId ? ScenarioManager.getScenario(data.scenarioId) : null;
+        if (data.scenarioId && !scenario) invalid();
+        const { width, height } = scenario?.mapSize || { width: 16, height: 10 };
+        const position = (col, row) => Number.isInteger(col) && Number.isInteger(row) && col >= 0 && row >= 0 && col < width && row < height;
+        const ids = new Set(), occupied = new Set();
+        const units = data.units.map(item => {
+            if (!object(item) || !Object.prototype.hasOwnProperty.call(UnitTypes, item.type)) invalid();
+            if (!Number.isInteger(item.id) || item.id < 1 || ids.has(item.id)) invalid();
+            if (!position(item.col, item.row) || !Number.isFinite(item.health)) invalid();
+            if (item.faction !== undefined && !['hussites', 'crusaders'].includes(item.faction)) invalid();
+            for (const key of ['attack', 'defense', 'movement', 'morale', 'attackCount', 'rallyAttempts', 'breachedTurns']) {
+                if (item[key] !== undefined && !nonnegative(item[key])) invalid();
+            }
+            for (const key of ['hasMoved', 'hasAttacked', 'isDefending', 'isTerrified', 'isRouting', 'isReinforcement', 'formationClosed', 'marching', 'escaped', '_deathCounted', '_deathHandled']) {
+                if (item[key] !== undefined && typeof item[key] !== 'boolean') invalid();
+            }
+            const key = `${item.col},${item.row}`;
+            if (item.health > 0 && occupied.has(key)) invalid();
+            if (item.health > 0) occupied.add(key);
+            ids.add(item.id);
+            return Unit.deserialize(item);
+        });
+        for (const key of ['enemiesKilled', 'unitsLost', 'escapedUnits', 'initialPlayerUnits', 'initialEnemyUnits', 'elapsedGameTime', 'choralTurnsRemaining', 'campaignReputation']) {
+            if (data[key] !== undefined && !nonnegative(data[key])) invalid();
+        }
+        if (data.nextUnitId !== undefined && (!Number.isInteger(data.nextUnitId) || data.nextUnitId < 1)) invalid();
+        for (const key of ['bridgeUsedThisTurn', 'campaignRecorded', 'chronicleRecorded', 'fastForwardAI', 'choralUsed', 'choralActive', 'moraleBroken', 'fogOfWar']) {
+            if (data[key] !== undefined && typeof data[key] !== 'boolean') invalid();
+        }
+        if (data.wavering !== undefined && (!object(data.wavering) ||
+            !['hussites', 'crusaders'].every(faction => typeof data.wavering[faction] === 'boolean'))) invalid();
+        for (const key of ['objectiveHeldTurns', 'lossesByFaction', 'fledByFaction']) {
+            if (data[key] !== undefined && !counts(data[key])) invalid();
+        }
+        for (const key of ['processedEvents', 'exploredHexes']) {
+            if (data[key] !== undefined && (!Array.isArray(data[key]) || !data[key].every(item => typeof item === 'string'))) invalid();
+        }
+        if (data.stats !== undefined && (!object(data.stats) || !nonnegative(data.stats.totalDamage) ||
+            !nonnegative(data.stats.damageTaken) || !counts(data.stats.unitKills) || !counts(data.stats.unitDamage))) invalid();
+        if (data.aiStance !== undefined && (!object(data.aiStance) ||
+            !['default', 'aggressive', 'hold', 'defensive', 'lure', 'retreat'].includes(data.aiStance.mode) ||
+            (data.aiStance.untilTurn != null && !nonnegative(data.aiStance.untilTurn)) ||
+            (data.aiStance.proximity !== undefined && !nonnegative(data.aiStance.proximity)) ||
+            (data.aiStance.target != null && !position(data.aiStance.target.col, data.aiStance.target.row)))) invalid();
+        if (data.terrain !== undefined) {
+            const types = new Set(['plains', 'forest', 'hills', 'water', 'town', 'road', 'road2', 'dam', 'mud', 'swamp', 'slope', 'trenches', 'church']);
+            if (!Array.isArray(data.terrain) || !data.terrain.every(hex => Array.isArray(hex) &&
+                hex.length === 3 && position(hex[0], hex[1]) && types.has(hex[2]))) invalid();
+        }
+        return { data, scenario, units, width, height };
+    },
+
+    read() {
+        const raw = localStorage.getItem(this.STORAGE_KEY);
+        if (!raw) throw new Error('gameLog.noSaveFound');
+        let data;
+        try { data = JSON.parse(raw); }
+        catch (_) { throw new Error('gameLog.saveIncompatible'); }
+        return this.prepare(data);
+    },
+
+    load(canvas, currentGame = null) {
+        const prepared = this.read();
+        if (currentGame) currentGame.destroy();
+        const grid = new HexGrid(canvas, prepared.width, prepared.height, 40);
+        const game = new Game(grid);
+        if (prepared.scenario) {
+            game.initGameWithScenario(prepared.scenario, { restoring: true });
+        } else {
+            game.initGame();
+        }
+        game.restoreSavedState(prepared);
+        return game;
+    }
+};

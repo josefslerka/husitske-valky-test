@@ -13,9 +13,9 @@ class TutorialSystem {
         this.game.tutorialWaitingFor = null;
 
         // Zobrazení prvního kroku (trigger: game_start)
-        setTimeout(() => {
-            this.triggerTutorialEvent('game_start');
-        }, 500);
+        this.game.actions.wait(500).then(active => {
+            if (active) this.triggerTutorialEvent('game_start');
+        });
     }
 
     // Trigger tutoriálového eventu
@@ -200,7 +200,7 @@ class TutorialSystem {
             const nextStep = this.game.tutorialSteps[this.game.tutorialStep];
             // Pokud má další krok trigger 'immediate' nebo žádný trigger, zobrazíme ho hned
             if (!nextStep.trigger || nextStep.trigger === 'immediate') {
-                setTimeout(() => this.showTutorialStep(nextStep), 300);
+                this.game.actions.wait(300).then(active => { if (active) this.showTutorialStep(nextStep); });
             }
             // Jinak čekáme na příslušný trigger (např. turn_2_start)
         } else {
@@ -234,11 +234,11 @@ class TutorialSystem {
             i18n.t('tutorial.completedText')
         );
 
-        // Po 3 sekundách návrat do menu
-        setTimeout(() => {
-            if (typeof returnToMainMenu === 'function') {
-                returnToMainMenu();
+        // Po 4 sekundách návrat do menu
+        this.game.actions.wait(4000).then(active => {
+            if (active && typeof window.returnToMainMenu === 'function') {
+                window.returnToMainMenu();
             }
-        }, 4000);
+        });
     }
 }

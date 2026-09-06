@@ -16,6 +16,9 @@ class Game {
 
         this.selectedUnit = null;
         this.gameState = 'playing'; // playing, victory
+        this.actions = new BattleActionSystem(this);
+        this.aiRunning = false;
+        this.isPaused = false;
 
         this.log = [];
 
@@ -107,11 +110,28 @@ class Game {
     // Úklid instance - bez něj zůstávají listenery a animační smyčka
     // staré hry aktivní na sdíleném canvasu a tlačítkách
     destroy() {
+        this.gameState = 'destroyed';
+        this.actions.destroy();
         this.stopAnimationLoop();
         this.eventAbortController.abort();
+        this.minimap.destroy();
         this.hideTooltip();
         this.clearEventNotifications();
-        this.gameState = 'destroyed';
+        this.showAIThinking(false);
+    }
+
+    canStartAction(unit = null) {
+        return this.gameState === 'playing' && !this.isPaused && !this.actions.busy &&
+            (!unit || (unit.health > 0 && unit.faction === this.currentFaction && this.units.includes(unit)));
+    }
+
+    setPaused(paused) {
+        this.isPaused = paused;
+        this.actions.setPaused(paused);
+    }
+
+    async scheduleAI() {
+        if (await this.actions.wait(500)) await this.runAI();
     }
 
     // Inicializace nové hry (výchozí bez scénáře)
@@ -212,7 +232,7 @@ class Game {
     }
 
     // Inicializace hry se scénářem
-    initGameWithScenario(scenario) {
+    initGameWithScenario(scenario, { restoring = false } = {}) {
         this.units = [];
         this.currentFaction = 'hussites';
         this.turnNumber = 1;
@@ -331,15 +351,15 @@ class Game {
         this.render();
 
         // Zkontrolovat eventy první fáze
-        this.checkPhaseEvents();
+        if (!restoring) this.checkPhaseEvents();
 
         // Inicializace tutoriálu
-        if (scenario.type === 'tutorial' && scenario.tutorialSteps) {
+        if (!restoring && scenario.type === 'tutorial' && scenario.tutorialSteps) {
             this.tutorialSystem.initTutorial(scenario.tutorialSteps);
         }
 
         // Vycentruj pohled na taktické ohnisko bitvy
-        this.centerOnPlayerForces();
+        if (!restoring) this.centerOnPlayerForces();
     }
 
     // Vycentrování pohledu na počáteční situaci: rámuj střet armád jako
@@ -363,6 +383,7 @@ class Game {
         const padding = this.hexGrid.hexSize * 2.2;
 
         const applyScroll = () => {
+            if (this.gameState === 'destroyed') return;
             const containerWidth = mapContainer.clientWidth;
             const containerHeight = mapContainer.clientHeight;
             const maxLeft = Math.max(0, this.hexGrid.canvas.width - containerWidth);
@@ -394,7 +415,7 @@ class Game {
 
         applyScroll();
         requestAnimationFrame(applyScroll);
-        setTimeout(applyScroll, 80);
+        this.actions.wait(80).then(active => { if (active) applyScroll(); });
     }
 
     // Aktualizace aktuální fáze
@@ -1136,6 +1157,7 @@ class Game {
 
         // Tlačítko konce tahu (s volitelným potvrzením z nastavení)
         document.getElementById('btn-end-turn').addEventListener('click', async () => {
+            if (this.currentFaction !== 'hussites' || !this.canStartAction()) return;
             if (window.gameSettings && window.gameSettings.confirmEndTurn &&
                 this.currentFaction === 'hussites' && this.gameState === 'playing' &&
                 typeof showConfirmDialog === 'function') {
@@ -1145,7 +1167,7 @@ class Game {
                 );
                 if (!confirmed) return;
             }
-            this.endTurn();
+            if (this.currentFaction === 'hussites') this.endTurn();
         }, { signal });
 
         // Klik na indikátor "Křižáci přemýšlí" zrychlí (přeskočí) animaci tahu AI.
@@ -1469,7 +1491,7 @@ class Game {
     }
 
     handleClick(event) {
-        if (this.gameState !== 'playing') return;
+        if (!this.canStartAction()) return;
         if (this.currentFaction !== 'hussites') return; // Blokace během tahu AI
 
         const rect = this.hexGrid.canvas.getBoundingClientRect();
@@ -1526,6 +1548,7 @@ class Game {
     }
 
     selectUnit(unit) {
+        if (!this.canStartAction(unit)) return;
         this.selectedUnit = unit;
         this.hexGrid.setSelected(unit.col, unit.row);
 
@@ -1563,6 +1586,7 @@ class Game {
 
     // Výběr další jednotky která může jednat (klávesa Tab)
     selectNextUnit() {
+        if (!this.canStartAction() || this.currentFaction !== 'hussites') return;
         // Získej všechny jednotky hráče které můžou jednat
         const actableUnits = this.units.filter(u =>
             u.faction === this.currentFaction &&
@@ -1598,6 +1622,7 @@ class Game {
         if (!mapContainer || !unit) return;
 
         requestAnimationFrame(() => {
+            if (this.gameState === 'destroyed') return;
             const pos = this.hexGrid.hexToPixel(unit.col, unit.row);
             const containerWidth = mapContainer.clientWidth;
             const containerHeight = mapContainer.clientHeight;
@@ -1757,7 +1782,19 @@ class Game {
         return moves.some(m => m.col === col && m.row === row);
     }
 
-    moveUnit(unit, col, row) {
+    moveUnit(unit, col, row, followUpAttack = null) {
+        if (!unit || !this.canStartAction(unit) || !this.canMoveTo(unit, col, row)) return Promise.resolve(false);
+        return this.actions.run(async () => {
+            const moved = await this.resolveMove(unit, col, row);
+            if (moved && followUpAttack && this.gameState === 'playing') {
+                if (!await this.actions.wait(100)) return false;
+                await this.combatSystem.resolveAttack(unit, followUpAttack);
+            }
+            return moved;
+        });
+    }
+
+    async resolveMove(unit, col, row) {
         const oldCol = unit.col;
         const oldRow = unit.row;
 
@@ -1794,24 +1831,26 @@ class Game {
 
         // Kontrola zamrzlé řeky - těžké jednotky riskují propadnutí
         if (this.checkFrozenRiver(unit)) {
-            return; // Jednotka se propadla
+            return false; // Jednotka se propadla
         }
 
         // Kontrola escape zóny
         if (this.checkEscapeZone(unit)) {
-            return; // Jednotka unikla, nepokračujeme
+            return false; // Jednotka unikla, nepokračujeme
         }
 
         // Overwatch: nepřátelští střelci, kteří drželi pozici i palbu,
         // reagují na pohyb v dostřelu
-        this.triggerOverwatch(unit);
+        this.fogOfWarSystem.updateVisibility();
+        await this.triggerOverwatch(unit);
+        if (this.actions.destroyed) return false;
         if (unit.health <= 0) {
             // Jednotku srazila reakční palba - nepokračujeme
             this.deselectUnit();
             this.updateUnitPanel(null);
             this.render();
             this.victoryConditionsSystem.checkVictory();
-            return;
+            return false;
         }
 
         // Pokud může ještě útočit, zobrazíme cíle
@@ -1832,6 +1871,7 @@ class Game {
         this.updateUnitPanel(unit);
         this.render();
         this.victoryConditionsSystem.checkVictory();
+        return true;
     }
 
     // Overwatch (krycí palba): střelci s dosahem 2+, kteří ve svém tahu
@@ -1839,7 +1879,7 @@ class Game {
     // pohne v jejich dostřelu. Zadržený výstřel - canAttack() hlídá,
     // že jednotka střílí jen jednou za kolo (aktivně NEBO reakčně).
     // Síla vozové hradby: přiblížit se k ní něco stojí už cestou.
-    triggerOverwatch(movedUnit) {
+    async triggerOverwatch(movedUnit) {
         if (!movedUnit || movedUnit.health <= 0) return;
 
         const watcherFaction = movedUnit.faction === 'hussites' ? 'crusaders' : 'hussites';
@@ -1852,7 +1892,7 @@ class Game {
         );
 
         for (const watcher of watchers) {
-            if (movedUnit.health <= 0) break; // cíl už padl
+            if (movedUnit.health <= 0 || this.gameState !== 'playing' || this.actions.destroyed) break;
 
             const dist = this.hexGrid.getDistance(watcher.col, watcher.row, movedUnit.col, movedUnit.row);
             if (dist < 1 || dist > watcher.range) continue;
@@ -1862,7 +1902,7 @@ class Game {
                 !this.fogOfWarSystem.isEnemyVisible(movedUnit)) continue;
 
             this.addLog(i18n.t('gameLog.overwatchFire', { unit: watcher.name, target: movedUnit.name }), 'combat');
-            this.combatSystem.performAttack(watcher, movedUnit);
+            await this.combatSystem.resolveAttack(watcher, movedUnit, { reaction: true });
         }
     }
 
@@ -1936,12 +1976,13 @@ class Game {
 
     // Vrácení posledního pohybu (undo)
     undoLastMove() {
+        if (!this.canStartAction() || this.currentFaction !== 'hussites') return false;
         if (!this.lastMove) return false;
 
         const { unit, fromCol, fromRow } = this.lastMove;
 
         // Kontrola, že jednotka ještě neprovedla útok
-        if (unit.hasAttacked) {
+        if (unit.hasAttacked || unit.health <= 0 || !this.units.includes(unit)) {
             this.lastMove = null;
             return false;
         }
@@ -1977,7 +2018,7 @@ class Game {
 
     endTurn() {
         // Pokud hra již skončila, neděláme nic
-        if (this.gameState !== 'playing') return;
+        if (!this.canStartAction()) return false;
 
         this.deselectUnit();
 
@@ -2104,14 +2145,18 @@ class Game {
 
         // Pokud jsou na tahu křižáci, spustíme AI
         if (this.currentFaction === 'crusaders') {
-            setTimeout(() => this.runAI(), 500);
+            this.scheduleAI();
         }
     }
 
     // Kontrola postupu v dual_objective cílech
 
     showVictory(winner) {
+        if (this.gameState !== 'playing') return;
         this.gameState = 'victory';
+        this.actions.destroy();
+        this.showAIThinking(false);
+        this.updateEndTurnButton();
 
         const isVictory = (winner === 'hussites');
         let message;
@@ -2239,20 +2284,22 @@ class Game {
         }
     }
 
-    runAI() {
+    async runAI() {
         if (this.gameState !== 'playing') return;
         if (this.currentFaction !== 'crusaders') return;
+        if (this.aiRunning || this.actions.busy || this.isPaused) return;
+        this.aiRunning = true;
 
         // Zobrazení AI thinking indikátoru
         this.showAIThinking(true);
 
         // AI je implementována v ai.js
-        if (typeof AI !== 'undefined') {
-            AI.takeTurn(this);
-        } else {
-            // Fallback - jednoduše ukončí tah
-            this.showAIThinking(false);
-            this.endTurn();
+        try {
+            if (typeof AI !== 'undefined') await AI.takeTurn(this);
+            else this.endTurn();
+        } finally {
+            this.aiRunning = false;
+            if (this.gameState !== 'destroyed') this.showAIThinking(false);
         }
     }
 
@@ -2330,6 +2377,11 @@ class Game {
     updateEndTurnButton() {
         const endTurnBtn = document.getElementById('btn-end-turn');
         if (!endTurnBtn) return;
+        endTurnBtn.disabled = this.currentFaction !== 'hussites' || !this.canStartAction();
+        for (const id of ['btn-save', 'btn-pause-save']) {
+            const button = document.getElementById(id);
+            if (button) button.disabled = this.gameState !== 'playing' || this.actions.busy || this.currentFaction !== 'hussites';
+        }
 
         // Pouze pro hráčskou frakci (husité)
         if (this.currentFaction === 'hussites' && this.allPlayerUnitsActed()) {
@@ -2729,13 +2781,22 @@ class Game {
 
     // Uložení hry do localStorage
     saveGame() {
+        // Save nesmí zachytit půl nájezdu ani půl tahu AI.
+        if (this.gameState !== 'playing' || this.actions.busy || this.currentFaction !== 'hussites') {
+            this.addLog(i18n.t('gameLog.saveUnavailable'), 'turn');
+            return false;
+        }
         const saveData = {
-            version: 3,
+            version: SaveGameSystem.VERSION,
             scenarioId: this.currentScenario ? this.currentScenario.id : null,
             turnNumber: this.turnNumber,
             currentFaction: this.currentFaction,
             gameState: this.gameState,
             units: this.units.map(u => u.serialize()),
+            terrain: [...this.hexGrid.hexes.values()].map(hex => [hex.col, hex.row, hex.terrain]),
+            fastForwardAI: this.fastForwardAI,
+            campaignRecorded: this.campaignRecorded,
+            chronicleRecorded: Boolean(this.chronicleRecorded),
             nextUnitId: this.unitFactory.nextId,
             // Průběh scénáře - bez něj by se po načtení znovu spouštěly
             // eventy a podmínky vítězství by počítaly se špatnými čísly
@@ -2771,7 +2832,7 @@ class Game {
         };
 
         try {
-            localStorage.setItem('husitskeValky_save', JSON.stringify(saveData));
+            localStorage.setItem(SaveGameSystem.STORAGE_KEY, JSON.stringify(saveData));
             this.addLog(i18n.t('gameLog.gameSaved'), 'turn');
             Sound.playSelect();
             return true;
@@ -2782,120 +2843,102 @@ class Game {
         }
     }
 
-    // Načtení hry z localStorage
-    loadGame() {
-        try {
-            const saveString = localStorage.getItem('husitskeValky_save');
-            if (!saveString) {
-                this.addLog(i18n.t('gameLog.noSaveFound'), 'combat');
-                return false;
-            }
+    // Pouze interní obnovení již ověřených dat na NOVÉ instanci.
+    // Všechny uživatelské vstupy musí jít přes SaveGameSystem.load.
+    restoreSavedState({ data: saveData, units }) {
+        // Obnovení stavu
+        this.turnNumber = saveData.turnNumber;
+        this.currentFaction = saveData.currentFaction;
+        this.gameState = saveData.gameState;
+        this.unitFactory.nextId = Math.max(saveData.nextUnitId || 1, ...units.map(unit => unit.id + 1));
 
-            const saveData = JSON.parse(saveString);
+        // Obnovení jednotek
+        this.units = units;
 
-            // Kontrola verze (v1/v2 = staré savy bez úplného stavu scénáře)
-            if (saveData.version !== 1 && saveData.version !== 2 && saveData.version !== 3) {
-                this.addLog(i18n.t('gameLog.saveIncompatible'), 'combat');
-                return false;
-            }
-
-            // Obnovení stavu
-            this.turnNumber = saveData.turnNumber;
-            this.currentFaction = saveData.currentFaction;
-            this.gameState = saveData.gameState;
-            this.unitFactory.nextId = saveData.nextUnitId;
-
-            // Obnovení jednotek
-            this.units = saveData.units.map(data => Unit.deserialize(data));
-
-            // Terén: pokud běží scénář, aplikoval ho už initGameWithScenario
-            // (volá se před loadGame ze startGameFromSave). Default mapu
-            // stavíme jen pro hry bez scénáře - dřívější bezpodmínečné
-            // setupTerrain() přepisovalo mapu scénáře výchozí mapou.
-            if (!this.currentScenario) {
-                this.setupTerrain();
-            }
-
-            // Průběh scénáře
-            this.processedEvents = new Set(saveData.processedEvents || []);
-            this.objectiveHeldTurns = saveData.objectiveHeldTurns || {};
-            this.enemiesKilled = saveData.enemiesKilled || 0;
-            this.unitsLost = saveData.unitsLost || 0;
-            this.lossesByFaction = saveData.lossesByFaction || { hussites: 0, crusaders: 0 };  // WP2a
-            this.fledByFaction = saveData.fledByFaction || { hussites: 0, crusaders: 0 };
-            this.escapedUnits = saveData.escapedUnits || 0;
-            if (saveData.stats) {
-                this.stats = saveData.stats;
-            }
-            if (saveData.initialPlayerUnits !== undefined) {
-                this.initialPlayerUnits = saveData.initialPlayerUnits;
-                this.initialEnemyUnits = saveData.initialEnemyUnits;
-            }
-            if (typeof saveData.elapsedGameTime === 'number') {
-                this.gameDuration = Date.now() - Math.max(0, saveData.elapsedGameTime);
-            }
-            this.bridgeUsedThisTurn = Boolean(saveData.bridgeUsedThisTurn);
-            if (typeof saveData.campaignReputation === 'number') {
-                this.campaignReputation = Math.max(0, Math.min(100, saveData.campaignReputation));
-            }
-            this.campaignRecorded = false;
-            if (saveData.aiStance && typeof saveData.aiStance === 'object') {
-                this.aiStance = {
-                    mode: saveData.aiStance.mode || 'default',
-                    target: saveData.aiStance.target ? { ...saveData.aiStance.target } : null,
-                    untilTurn: saveData.aiStance.untilTurn ?? null,
-                    proximity: saveData.aiStance.proximity ?? 3
-                };
-            }
-
-            // Chorál a morální zlom
-            this.choralUsed = saveData.choralUsed || false;
-            this.choralActive = saveData.choralActive || false;
-            this.choralTurnsRemaining = saveData.choralTurnsRemaining || 0;
-            this.moraleBroken = saveData.moraleBroken || false;
-            this.wavering = saveData.wavering || { hussites: false, crusaders: false };
-
-            // Mlha války
-            if (saveData.fogOfWar !== undefined) {
-                this.fogOfWar = saveData.fogOfWar;
-            }
-            this.exploredHexes = new Set(saveData.exploredHexes || []);
-            this.visibleHexes = new Set();
-
-            // Routující jednotky - stav je per-unit (isRouting), Set jen sleduje
-            this.routingUnits = new Set(
-                this.units.filter(u => u.isRouting).map(u => u.id)
-            );
-
-            // Fáze scénáře podle načteného kola
-            if (this.currentScenario) {
-                this.updatePhase();
-            }
-
-            // Reset výběru
-            this.selectedUnit = null;
-            this.hexGrid.setSelected(null, null);
-            this.hexGrid.clearHighlights();
-
-            // Aktualizace UI
-            this.updateUI();
-            this.updateUnitPanel(null);
-            this.render();
-
-            this.addLog(i18n.t('gameLog.gameLoaded', {turn: this.turnNumber, faction: this.currentFaction === 'hussites' ? i18n.t('factions.hussites') : i18n.t('factions.crusaders')}), 'turn');
-            Sound.playSelect();
-
-            // Pokud je na tahu AI, spustíme ji
-            if (this.currentFaction === 'crusaders' && this.gameState === 'playing') {
-                setTimeout(() => this.runAI(), 500);
-            }
-
-            return true;
-        } catch (e) {
-            console.error('Chyba při načítání:', e);
-            this.addLog(i18n.t('gameLog.loadError'), 'combat');
-            return false;
+        // Scénářový terén připravil SaveGameSystem; v4 obnoví i změny za hry.
+        if (!this.currentScenario) {
+            this.setupTerrain();
         }
+        for (const [col, row, terrain] of saveData.terrain || []) this.hexGrid.setTerrain(col, row, terrain);
+
+        // Průběh scénáře
+        this.processedEvents = new Set(saveData.processedEvents || []);
+        this.objectiveHeldTurns = saveData.objectiveHeldTurns || {};
+        this.enemiesKilled = saveData.enemiesKilled || 0;
+        this.unitsLost = saveData.unitsLost || 0;
+        this.lossesByFaction = saveData.lossesByFaction || { hussites: 0, crusaders: 0 };  // WP2a
+        this.fledByFaction = saveData.fledByFaction || { hussites: 0, crusaders: 0 };
+        this.escapedUnits = saveData.escapedUnits || 0;
+        if (saveData.stats) {
+            this.stats = saveData.stats;
+        }
+        if (saveData.initialPlayerUnits !== undefined) {
+            this.initialPlayerUnits = saveData.initialPlayerUnits;
+        }
+        if (saveData.initialEnemyUnits !== undefined) {
+            this.initialEnemyUnits = saveData.initialEnemyUnits;
+        }
+        if (typeof saveData.elapsedGameTime === 'number') {
+            this.gameDuration = Date.now() - Math.max(0, saveData.elapsedGameTime);
+        }
+        this.bridgeUsedThisTurn = Boolean(saveData.bridgeUsedThisTurn);
+        if (typeof saveData.campaignReputation === 'number') {
+            this.campaignReputation = Math.max(0, Math.min(100, saveData.campaignReputation));
+        }
+        this.campaignRecorded = Boolean(saveData.campaignRecorded);
+        this.chronicleRecorded = Boolean(saveData.chronicleRecorded);
+        this.fastForwardAI = Boolean(saveData.fastForwardAI);
+        if (saveData.aiStance && typeof saveData.aiStance === 'object') {
+            this.aiStance = {
+                mode: saveData.aiStance.mode || 'default',
+                target: saveData.aiStance.target ? { ...saveData.aiStance.target } : null,
+                untilTurn: saveData.aiStance.untilTurn ?? null,
+                proximity: saveData.aiStance.proximity ?? 3
+            };
+        }
+
+        // Chorál a morální zlom
+        this.choralUsed = saveData.choralUsed || false;
+        this.choralActive = saveData.choralActive || false;
+        this.choralTurnsRemaining = saveData.choralTurnsRemaining || 0;
+        this.moraleBroken = saveData.moraleBroken || false;
+        this.wavering = saveData.wavering || { hussites: false, crusaders: false };
+
+        // Mlha války
+        if (saveData.fogOfWar !== undefined) {
+            this.fogOfWar = saveData.fogOfWar;
+        }
+        this.exploredHexes = new Set(saveData.exploredHexes || []);
+        this.visibleHexes = new Set();
+
+        // Routující jednotky - stav je per-unit (isRouting), Set jen sleduje
+        this.routingUnits = new Set(
+            this.units.filter(u => u.isRouting).map(u => u.id)
+        );
+
+        // Fáze scénáře podle načteného kola
+        if (this.currentScenario) {
+            this.updatePhase();
+        }
+
+        // Reset výběru
+        this.selectedUnit = null;
+        this.hexGrid.setSelected(null, null);
+        this.hexGrid.clearHighlights();
+
+        // Aktualizace UI
+        this.updateUI();
+        this.updateUnitPanel(null);
+        this.render();
+
+        this.addLog(i18n.t('gameLog.gameLoaded', {turn: this.turnNumber, faction: this.currentFaction === 'hussites' ? i18n.t('factions.hussites') : i18n.t('factions.crusaders')}), 'turn');
+        Sound.playSelect();
+
+        // Pokud je na tahu AI, spustíme ji
+        if (this.currentFaction === 'crusaders' && this.gameState === 'playing') {
+            this.scheduleAI();
+        }
+
     }
 
     // Kontrola, zda existuje uložená hra
@@ -3323,6 +3366,7 @@ class Game {
 
     // Aktivace chorálu - jednorázová schopnost
     activateChoral() {
+        if (!this.canStartAction()) return false;
         if (this.choralUsed) {
             this.addLog(i18n.t('gameLog.choralAlreadyUsed'), 'turn');
             return false;
@@ -3494,6 +3538,7 @@ class Game {
 
     // WP1: přepnutí stavu jednoho vozu (sepnout/rozevřít). Utratí pohyb, střílet smí dál.
     toggleWagonFormation(unit) {
+        if (!this.canStartAction(unit)) return false;
         if (!unit || !unit.isWagon() || unit.faction !== this.currentFaction) return false;
         if (unit.hasMoved) return false; // vůz už v tomto tahu jednal
         unit.formationClosed = !unit.formationClosed;
@@ -3507,6 +3552,7 @@ class Game {
     // WP1: přepne celou souvisle propojenou řadu vozů (BFS přes hex-sousednost).
     // Cílový stav udá výchozí vůz; už jednavší vozy se přeskočí, ale souvislost drží.
     toggleWagonFormationLine(startUnit) {
+        if (!this.canStartAction(startUnit)) return false;
         if (!startUnit || !startUnit.isWagon() || startUnit.faction !== this.currentFaction) return false;
         if (startUnit.hasMoved) return false; // vůz už v tomto tahu jednal (souměrné s toggleWagonFormation)
         const targetState = !startUnit.formationClosed;
@@ -3562,6 +3608,7 @@ class Game {
     // pochodovým šikem. Zdarma (neutratí tah) - je to změna postoje; cenu platí
     // až samotný pochod. Rozpojený vůz nelze rozpochodovat - nejdřív sepni hradbu.
     toggleWagonMarch(startUnit) {
+        if (!this.canStartAction(startUnit)) return false;
         if (!startUnit || !startUnit.isWagon() || startUnit.faction !== this.currentFaction) return false;
         if (!startUnit.formationClosed) {
             this.addLog(i18n.t('gameLog.wagonMustCloseFirst'), 'turn');
@@ -3624,6 +3671,7 @@ class Game {
     // směru dir (index 0-5) jako TUHÝ celek. Buď se pohnou všechny vozy, nebo
     // žádný (když je kterýkoli cíl mimo mapu / voda / obsazený cizí jednotkou).
     marchWagonLine(startUnit, dir) {
+        if (!this.canStartAction(startUnit)) return false;
         if (!startUnit || !startUnit.isWagon() || !startUnit.marching) return false;
         if (startUnit.faction !== this.currentFaction) return false;
 

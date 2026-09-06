@@ -851,7 +851,11 @@ class Unit {
             attack: this.attack,
             defense: this.defense,
             special: this.special,
-            isReinforcement: this.isReinforcement || false
+            isReinforcement: this.isReinforcement || false,
+            escaped: Boolean(this.escaped),
+            _deathCounted: Boolean(this._deathCounted),
+            _deathHandled: Boolean(this._deathHandled),
+            breachedTurns: this.breachedTurns || 0
         };
     }
 
@@ -888,6 +892,11 @@ class Unit {
         if (data.defense !== undefined) unit.defense = data.defense;
         if (data.special !== undefined) unit.special = data.special;
         unit.isReinforcement = data.isReinforcement || false;
+        unit.escaped = Boolean(data.escaped);
+        // Staré savy už mrtvé jednotky započítaly do statistik.
+        unit._deathCounted = data._deathCounted ?? (unit.health <= 0);
+        unit._deathHandled = data._deathHandled ?? (unit.health <= 0);
+        unit.breachedTurns = data.breachedTurns || 0;
         return unit;
     }
 }

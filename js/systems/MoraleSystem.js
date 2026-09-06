@@ -180,7 +180,8 @@ class MoraleSystem {
         if (this.game.currentScenario && this.game.currentScenario.specialMechanics &&
             this.game.currentScenario.specialMechanics.noWater) {
             // Každé druhé kolo klesá morálka obránců o 5
-            if (this.game.turnNumber % 2 === 0) {
+            if (this.game.currentFaction === (this.game.currentScenario.playerFaction || 'hussites') &&
+                this.game.turnNumber % 2 === 0) {
                 const playerFaction = this.game.currentScenario.playerFaction || 'hussites';
                 for (const unit of this.game.units) {
                     if (unit.faction === playerFaction && unit.health > 0) {

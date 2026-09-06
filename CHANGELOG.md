@@ -1,5 +1,17 @@
 # 📜 Changelog
 
+## Stabilizace bitev (6. září 2026)
+
+- Opravená předčasná porážka na Sionu a dvojí ztráta morálky kvůli žízni.
+- Útok spotřebuje akci okamžitě; dvojklik, konec tahu a ukládání nemohou přerušit rozpracovaný souboj.
+- AI čeká na celý nájezd, reakční palbu i protiútok, také při zrychlení.
+- Zvýraznění cílů i provedení útoku používá společnou kontrolu viditelnosti.
+- Jednotné načítání celé bitvy s validací savu před výměnou instance; save v4 a kompatibilita v1–v3.
+- Pauza zastavuje čekající akce. Výměna bitvy ruší staré časovače a listenery minimapy.
+- Rychlá bitva nepřebírá cíle předchozí mise; po načtení nezůstávají stará čísla poškození.
+- Integrační regrese nad skutečnými třídami; původní AI testy používají skutečnou hexovou mřížku.
+- Jediný příkaz pro všechny kontroly: `node scripts/check.js`.
+
 ## Připravovaná Alpha 0.2 (3. září 2026)
 
 ### Nové

@@ -1,0 +1,101 @@
+const fs = require('node:fs');
+const path = require('node:path');
+const vm = require('node:vm');
+
+// Skutečné herní třídy a data; nahrazujeme jen prohlížeč, zvuk a čas.
+function createHarness() {
+    let now = 0, nextTimer = 1;
+    const timers = new Map(), storage = new Map(), elements = new Map();
+    const noop = () => {};
+    class Element extends EventTarget {
+        constructor() {
+            super();
+            const classes = new Set();
+            this.classList = {
+                add: (...names) => names.forEach(name => classes.add(name)),
+                remove: (...names) => names.forEach(name => classes.delete(name)),
+                contains: name => classes.has(name),
+                toggle: name => classes.has(name) ? classes.delete(name) : classes.add(name)
+            };
+            this.style = {}; this.dataset = {}; this.children = [];
+            this.textContent = ''; this.innerHTML = ''; this.disabled = false;
+        }
+        getContext() { return {}; }
+        getBoundingClientRect() { return { left: 0, top: 0, width: 800, height: 600 }; }
+        querySelector() { return null; }
+        querySelectorAll() { return []; }
+        appendChild(child) { this.children.push(child); child.parentNode = this; }
+        removeChild(child) { this.children = this.children.filter(item => item !== child); child.parentNode = null; }
+    }
+    const document = new Element();
+    document.getElementById = id => {
+        if (!elements.has(id)) elements.set(id, new Element());
+        return elements.get(id);
+    };
+    document.createElement = () => new Element();
+    document.body = new Element();
+    const random = Object.create(Math);
+    random.random = () => 0.5;
+    const context = vm.createContext({
+        console, AbortController, Map, Set, Math: random,
+        Date: class extends Date {
+            constructor(...args) { super(...(args.length ? args : [now])); }
+            static now() { return now; }
+        },
+        document, window: {},
+        localStorage: {
+            getItem: key => storage.get(key) ?? null,
+            setItem: (key, value) => storage.set(key, String(value)),
+            removeItem: key => storage.delete(key)
+        },
+        i18n: { t: (key, params = {}) => `${key} ${JSON.stringify(params)}`, hasTranslation: () => false },
+        Sound: new Proxy({}, { get: () => noop }),
+        setTimeout: (fn, ms = 0) => { const id = nextTimer++; timers.set(id, { fn, at: now + ms }); return id; },
+        clearTimeout: id => timers.delete(id),
+        requestAnimationFrame: noop, cancelAnimationFrame: noop
+    });
+    for (const file of [
+        'data/unitTypes.js', 'entities/Unit.js', 'entities/UnitFactory.js', 'core/hex.js',
+        'data/scenarios.js', 'data/campaign.js', 'systems/CampaignProgressSystem.js',
+        'systems/CombatSystem.js', 'systems/FogOfWarSystem.js', 'systems/MoraleSystem.js',
+        'systems/VictoryConditionsSystem.js', 'systems/TutorialSystem.js',
+        'systems/BattleActionSystem.js', 'systems/SaveGameSystem.js', 'core/game.js', 'ai.js'
+    ]) {
+        const filename = path.join(__dirname, '../../js', file);
+        vm.runInContext(fs.readFileSync(filename, 'utf8'), context, { filename });
+    }
+    const api = vm.runInContext('({ Game, HexGrid, Unit, UnitFactory, Scenarios, ScenarioManager, SaveGameSystem, AI })', context);
+    for (const method of ['render', 'updateArmyOverview', 'updateUnitPanel', 'startAnimationLoop', 'centerOnPlayerForces']) api.Game.prototype[method] = noop;
+    api.Game.prototype.addLog = function(message) { this.log.push(message); };
+    api.Game.prototype.clearLog = function() { this.log = []; };
+    api.Game.prototype.showEventNotification = function(title, text) {
+        this.notifications = this.notifications || []; this.notifications.push({ title, text });
+    };
+    const flush = async () => { for (let i = 0; i < 20; i++) await Promise.resolve(); };
+    const advance = async ms => {
+        const until = now + ms;
+        await flush();
+        let count = 0;
+        while (true) {
+            const next = [...timers].sort((a, b) => a[1].at - b[1].at || a[0] - b[0])[0];
+            if (!next || next[1].at > until) break;
+            timers.delete(next[0]); now = next[1].at; next[1].fn();
+            await flush();
+            if (++count > 10000) throw new Error('Timer loop did not settle');
+        }
+        now = until;
+        await flush();
+    };
+    const newGame = (id = null) => {
+        const scenario = id ? structuredClone(api.Scenarios[id]) : null;
+        const size = scenario?.mapSize || { width: 16, height: 10 };
+        const game = new api.Game(new api.HexGrid(document.getElementById('game-canvas'), size.width, size.height, 40));
+        game.fogOfWar = false;
+        if (scenario) game.initGameWithScenario(scenario);
+        else game.initGame();
+        return game;
+    };
+    return { ...api, newGame, document, storage, advance, flush, timers, context, now: () => now };
+}
+
+module.exports = { createHarness };
