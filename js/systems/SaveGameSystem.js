@@ -1,5 +1,5 @@
-// Jediný vstup načtení bitvy pro hlavní menu, herní menu i pauzu.
-// Nejprve ověří celý snapshot, teprve pak zruší původní instanci.
+// Společná validace pro zápis i načtení bitvy z hlavního menu, herního menu i pauzy.
+// Nejprve ověří celý snapshot, teprve pak přepíše save nebo zruší původní instanci.
 const SaveGameSystem = {
     STORAGE_KEY: 'husitskeValky_save',
     VERSION: 4,
@@ -63,6 +63,14 @@ const SaveGameSystem = {
                 hex.length === 3 && position(hex[0], hex[1]) && types.has(hex[2]))) invalid();
         }
         return { data, scenario, units, width, height };
+    },
+
+    write(data) {
+        const raw = JSON.stringify(data);
+        // Ověřit přesně to, co se bude později načítat, včetně účinků serializace.
+        // Při chybě se k setItem vůbec nedostaneme a poslední dobrý save zůstane.
+        this.prepare(JSON.parse(raw));
+        localStorage.setItem(this.STORAGE_KEY, raw);
     },
 
     read() {

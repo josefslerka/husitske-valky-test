@@ -72,6 +72,19 @@ dosavadní klíče `reinf-hussites-<kolo>`, `reinf-crusaders-<kolo>` a
 `reinf-scenario-<skupina>-<kolo>`. Neměňte je bez migrace uložených her.
 Podmíněné události používají stabilní ID nezávislé na kole skutečného spuštění.
 
+Posily nejprve naplánují umístění **celé skupiny**, bez vytváření jednotek a spotřeby
+ID. BFS hledá nejbližší volný průchodný hex, zachovává pořadí sousedů a rezervuje
+každé jednotce jiné místo. Nejde o hledání cesty pohybu, takže hledání pokračuje
+i za obsazenými nebo vodními hexy; voda sama není povolené místo příchodu.
+Pokud skupina nemá dost míst, nevznikne žádná její část. Do `processedEvents` se
+uloží `<původní-klíč>:pending` a jednou se zaloguje čekání. Pozdější kontrola skupinu
+zkusí znovu; až při úspěchu odstraní čekání, zapíše původní klíč a ohlásí příchod.
+Klíč vždy obsahuje plánované kolo, nikoli kolo skutečného příchodu. Prosté `turn <=`
+by u starých savů bez evidence zopakovalo minulé posily, proto se mimo plánované
+kolo zkoušejí pouze explicitně čekající skupiny.
+Přímé `spawnReinforcements()` vrací počet vytvořených jednotek, nebo `0`, a samo
+nezakládá čekající skupinu. Automatické opakování patří scénářovým skupinám.
+
 Načtení sestaví bitvu s `{ restoring: true }`, bez přehrání úvodních událostí,
 a obnoví jednotky i `processedEvents` ze savu. Již provedené účinky se neopakují;
 budoucí události a posily zůstanou připravené. Testy pokrývají save před příchodem
@@ -79,6 +92,15 @@ i po příchodu posil, oba datové formáty, správnou frakci a zachování ID j
 
 Změny zde nesmějí měnit balanc jako vedlejší efekt refaktoringu. Nová mechanika
 nebo oprava jejího chování potřebuje vlastní explicitní očekávání v testu.
+
+## Bezpečný zápis savu
+
+`Game.saveGame()` sestaví snapshot uvnitř ošetření chyb a předá jej do
+`SaveGameSystem.write()`. Ten nejprve serializuje JSON, pak skutečně serializovaná
+data ověří přes `prepare()`, které používá i načítání. Teprve potom zavolá
+`localStorage.setItem()`. Neúspěšný pokus tak nepřepíše poslední funkční save a
+hráči se nehlásí úspěch. Validace nemění aktivní jednotky ani factory ID.
+Formát zůstává v4; kompatibilita načítání v1–v3 se nemění.
 
 ## CSS: zachované pořadí kaskády
 
@@ -109,11 +131,22 @@ Po změně stylů obnovte příslušné `?v=` v importu a verzi `style.css` v `i
 node scripts/check.js
 ```
 
-Příkaz kontroluje syntaxi JavaScriptu, 13 testů jádra, 17 regresí průběhu bitvy,
-17 testů scénářových událostí, 8 testů prezentačního rozhraní, strukturu CSS,
-překlady a scénáře. CSS kontrola není plnohodnotný parser: hlídá importy, závorky,
+Příkaz kontroluje syntaxi JavaScriptu, testy jádra, průběhu bitvy, scénářových
+událostí, bezpečného ukládání a prezentačního rozhraní, HTML vstup a testy jeho
+validátoru, strukturu CSS, překlady a scénáře.
+CSS kontrola není plnohodnotný parser: hlídá importy, závorky,
 prázdné bloky a existenci assetů.
 Testy UI používají zjednodušený DOM a nenahrazují kontrolu v prohlížeči.
+
+`validate-entrypoint.js` má explicitní kontrakt pořadí klasických synchronních
+skriptů a porovnává ho i se všemi `.js` soubory v `js/`. Nový runtime soubor je
+potřeba zapojit do HTML i kontraktu. Kontroluje lokální `src`, `href` a `poster`,
+vstupní stylesheet a dvě současná dynamická místa načítání (hudba a locale soubory
+pro jazyky z HTML nabídky). Cesty čte přímo ze zdrojů; při změně způsobu načítání
+upravte i validátor a jeho testy. Neprovádí síťové dotazy ani obecnou analýzu JS.
+Přesnou velikost písmen ověřuje i na macOS, zakazuje úniky mimo projekt a absolutní
+lokální URL, které by nefungovaly pod podadresářem statického hostingu. `<base>`
+a `srcset` zatím záměrně odmítá: jejich zavedení vyžaduje rozšíření kontroly cest.
 
 Při změně prezentace zkontrolujte menu, výběr mise, briefing, vybranou jednotku,
 průběh tahu a pauzu. Pro rozložení používejte alespoň šířky 390, 753 a 1280 px.

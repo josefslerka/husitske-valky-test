@@ -1326,53 +1326,52 @@ class Game {
             this.addLog(i18n.t('gameLog.saveUnavailable'), 'turn');
             return false;
         }
-        const saveData = {
-            version: SaveGameSystem.VERSION,
-            scenarioId: this.currentScenario ? this.currentScenario.id : null,
-            turnNumber: this.turnNumber,
-            currentFaction: this.currentFaction,
-            gameState: this.gameState,
-            units: this.units.map(u => u.serialize()),
-            terrain: [...this.hexGrid.hexes.values()].map(hex => [hex.col, hex.row, hex.terrain]),
-            fastForwardAI: this.fastForwardAI,
-            campaignRecorded: this.campaignRecorded,
-            chronicleRecorded: Boolean(this.chronicleRecorded),
-            nextUnitId: this.unitFactory.nextId,
-            // Průběh scénáře - bez něj by se po načtení znovu spouštěly
-            // eventy a podmínky vítězství by počítaly se špatnými čísly
-            processedEvents: [...this.processedEvents],
-            objectiveHeldTurns: this.objectiveHeldTurns || {},
-            enemiesKilled: this.enemiesKilled,
-            unitsLost: this.unitsLost,
-            lossesByFaction: this.lossesByFaction,  // WP2a
-            fledByFaction: this.fledByFaction,
-            escapedUnits: this.escapedUnits || 0,
-            stats: this.stats,
-            initialPlayerUnits: this.initialPlayerUnits,
-            initialEnemyUnits: this.initialEnemyUnits,
-            elapsedGameTime: Math.max(0, Date.now() - this.gameDuration),
-            bridgeUsedThisTurn: Boolean(this.bridgeUsedThisTurn),
-            campaignReputation: this.campaignReputation,
-            aiStance: {
-                mode: this.aiStance?.mode || 'default',
-                target: this.aiStance?.target ? { ...this.aiStance.target } : null,
-                untilTurn: this.aiStance?.untilTurn ?? null,
-                proximity: this.aiStance?.proximity ?? 3
-            },
-            // Chorál a morální zlom
-            choralUsed: this.choralUsed,
-            choralActive: this.choralActive,
-            choralTurnsRemaining: this.choralTurnsRemaining,
-            moraleBroken: this.moraleBroken,
-            wavering: this.wavering,
-            // Mlha války
-            fogOfWar: this.fogOfWar,
-            exploredHexes: [...this.exploredHexes],
-            savedAt: new Date().toISOString()
-        };
-
         try {
-            localStorage.setItem(SaveGameSystem.STORAGE_KEY, JSON.stringify(saveData));
+            const saveData = {
+                version: SaveGameSystem.VERSION,
+                scenarioId: this.currentScenario ? this.currentScenario.id : null,
+                turnNumber: this.turnNumber,
+                currentFaction: this.currentFaction,
+                gameState: this.gameState,
+                units: this.units.map(u => u.serialize()),
+                terrain: [...this.hexGrid.hexes.values()].map(hex => [hex.col, hex.row, hex.terrain]),
+                fastForwardAI: this.fastForwardAI,
+                campaignRecorded: this.campaignRecorded,
+                chronicleRecorded: Boolean(this.chronicleRecorded),
+                nextUnitId: this.unitFactory.nextId,
+                // Průběh scénáře - bez něj by se po načtení znovu spouštěly
+                // eventy a podmínky vítězství by počítaly se špatnými čísly
+                processedEvents: [...this.processedEvents],
+                objectiveHeldTurns: this.objectiveHeldTurns || {},
+                enemiesKilled: this.enemiesKilled,
+                unitsLost: this.unitsLost,
+                lossesByFaction: this.lossesByFaction,  // WP2a
+                fledByFaction: this.fledByFaction,
+                escapedUnits: this.escapedUnits || 0,
+                stats: this.stats,
+                initialPlayerUnits: this.initialPlayerUnits,
+                initialEnemyUnits: this.initialEnemyUnits,
+                elapsedGameTime: Math.max(0, Date.now() - this.gameDuration),
+                bridgeUsedThisTurn: Boolean(this.bridgeUsedThisTurn),
+                campaignReputation: this.campaignReputation,
+                aiStance: {
+                    mode: this.aiStance?.mode || 'default',
+                    target: this.aiStance?.target ? { ...this.aiStance.target } : null,
+                    untilTurn: this.aiStance?.untilTurn ?? null,
+                    proximity: this.aiStance?.proximity ?? 3
+                },
+                // Chorál a morální zlom
+                choralUsed: this.choralUsed,
+                choralActive: this.choralActive,
+                choralTurnsRemaining: this.choralTurnsRemaining,
+                moraleBroken: this.moraleBroken,
+                wavering: this.wavering,
+                // Mlha války
+                fogOfWar: this.fogOfWar,
+                exploredHexes: [...this.exploredHexes],
+                savedAt: new Date().toISOString()
+            };
+            SaveGameSystem.write(saveData);
             this.addLog(i18n.t('gameLog.gameSaved'), 'turn');
             Sound.playSelect();
             return true;

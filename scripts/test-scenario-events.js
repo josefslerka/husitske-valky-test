@@ -126,6 +126,139 @@ test('obsazený vstup posil použije sousední volný průchodný hex', () => {
     assert.equal(unit.isReinforcement, true);
 });
 
+test('početnější posily rezervují každé jednotce vlastní nejbližší hex', () => {
+    const { game } = fixture();
+    assert.equal(game.spawnReinforcements({ type: 'CEPNICI', position: [5, 5], count: 3 }, 'hussites'), 3);
+    const added = game.units.slice(2);
+    const neighbors = game.hexGrid.getNeighbors(5, 5);
+    assert.deepEqual(Array.from(added, unit => [unit.col, unit.row]), [
+        [5, 5], [neighbors[0].col, neighbors[0].row], [neighbors[1].col, neighbors[1].row]
+    ]);
+    assert.equal(new Set(game.units.map(unit => `${unit.col},${unit.row}`)).size, game.units.length);
+});
+
+test('plný vstup i jeho sousedé hledají místo za prvním prstencem', () => {
+    const { game } = fixture();
+    for (const pos of [{ col: 5, row: 5 }, ...game.hexGrid.getNeighbors(5, 5)]) {
+        game.units.push(game.unitFactory.createUnit('CEPNICI', pos.col, pos.row));
+    }
+    assert.equal(game.spawnReinforcements({ type: 'CEPNICI', position: [5, 5] }, 'crusaders'), 1);
+    const unit = game.units.at(-1);
+    assert.equal(game.hexGrid.getDistance(5, 5, unit.col, unit.row), 2);
+    assert.equal(unit.faction, 'crusaders');
+    assert.equal(new Set(game.units.map(unit => `${unit.col},${unit.row}`)).size, game.units.length);
+});
+
+test('posily neobsadí vodu ani u volného vstupu na okraji mapy', () => {
+    const { game } = fixture();
+    game.hexGrid.setTerrain(0, 0, 'water');
+    assert.equal(game.spawnReinforcements({ type: 'CEPNICI', position: [0, 0] }, 'hussites'), 1);
+    const unit = game.units.at(-1);
+    assert.equal(game.hexGrid.inBounds(unit.col, unit.row), true);
+    assert.equal(game.hexGrid.isImpassable(unit.col, unit.row), false);
+    assert.equal(game.hexGrid.getDistance(0, 0, unit.col, unit.row), 1);
+});
+
+test('mrtvá jednotka neblokuje vstup posil', () => {
+    const { game, player } = fixture();
+    player.health = 0;
+    assert.equal(game.spawnReinforcements({ type: 'CEPNICI', position: [1, 1] }, 'hussites'), 1);
+    assert.equal(game.units.at(-1).col, 1); assert.equal(game.units.at(-1).row, 1);
+});
+
+function blockMapExcept(game, positions) {
+    const free = new Set(positions.map(pos => pos.join(',')));
+    for (const hex of game.hexGrid.hexes.values()) {
+        game.hexGrid.setTerrain(hex.col, hex.row, free.has(`${hex.col},${hex.row}`) ? 'plains' : 'water');
+    }
+}
+
+for (const format of ['forces', 'scenario']) {
+    test(`celá skupina ${format} počká bez ztráty ID a po save/load přijde právě jednou`, () => {
+        const { h, game } = fixture();
+        const reinf = { turn: 3, faction: 'hussites', message: 'Čekající posily', units: [
+            { type: 'CEPNICI', col: 5, row: 5 }, { type: 'RUCNICARI', col: 5, row: 5 }
+        ] };
+        for (const scenario of [game.currentScenario, h.Scenarios.event_regression]) {
+            if (format === 'forces') scenario.forces.hussites.reinforcements = reinf;
+            else scenario.reinforcements = { waiting: reinf };
+        }
+        const key = format === 'forces' ? 'reinf-hussites-3' : 'reinf-scenario-waiting-3';
+        blockMapExcept(game, [[1, 1], [13, 8], [5, 5]]); // jen jedno volné místo pro dva
+        const nextId = game.unitFactory.nextId;
+        refresh(game, 3); game.checkReinforcements(); refresh(game, 4);
+        assert.equal(game.units.length, 2, 'žádné částečné umístění skupiny');
+        assert.equal(game.unitFactory.nextId, nextId);
+        assert.equal(game.processedEvents.has(key), false);
+        assert.equal(game.processedEvents.has(`${key}:pending`), true);
+        assert.equal(game.log.filter(line => line.message.includes('reinforcementsWaiting')).length, 1);
+        assert.equal(game.view.notifications.length, 0, 'příchod se ohlásí až po umístění');
+        assert.equal(game.saveGame(), true);
+        const restored = h.SaveGameSystem.load(h.document.getElementById('game-canvas'), game);
+        restored.checkReinforcements();
+        assert.equal(restored.units.length, 2);
+        restored.hexGrid.setTerrain(5, 6, 'plains');
+        refresh(restored, 5); restored.checkReinforcements(); refresh(restored, 6);
+        assert.deepEqual(Array.from(restored.units.slice(2), unit => [unit.id, unit.faction, unit.isReinforcement]), [
+            [nextId, 'hussites', true], [nextId + 1, 'hussites', true]
+        ]);
+        assert.equal(restored.processedEvents.has(`${key}:pending`), false);
+        assert.equal(restored.processedEvents.has(key), true);
+        assert.equal(restored.view.notifications.length, 1);
+        assert.equal(restored.saveGame(), true);
+        assert.doesNotThrow(() => h.SaveGameSystem.read());
+    });
+}
+
+test('přímý spawn na plné mapě nic nevytvoří ani nespotřebuje ID', () => {
+    const { game } = fixture();
+    blockMapExcept(game, [[1, 1], [13, 8]]);
+    const nextId = game.unitFactory.nextId;
+    assert.equal(game.spawnReinforcements({ type: 'CEPNICI', position: [5, 5], count: 2 }, 'hussites'), 0);
+    assert.equal(game.units.length, 2); assert.equal(game.unitFactory.nextId, nextId);
+});
+
+test('neplatný požadavek na posily nemění jednotky ani jejich ID', () => {
+    const { h, game } = fixture();
+    h.context.console = { ...console, error() {} };
+    const nextId = game.unitFactory.nextId;
+    for (const request of [
+        { type: 'missing', position: [5, 5] }, { type: 'toString', position: [5, 5] },
+        { type: 'CEPNICI', position: [-1, 5] }, { type: 'CEPNICI', position: [5.5, 5] },
+        { type: 'CEPNICI', position: [5, 5], count: 0 }, { type: 'CEPNICI', position: [5, 5], count: 1.5 },
+        { type: 'CEPNICI', position: [5, 5], count: Infinity }
+    ]) assert.equal(game.spawnReinforcements(request, 'hussites'), 0);
+    assert.equal(game.units.length, 2); assert.equal(game.unitFactory.nextId, nextId);
+});
+
+test('starý save bez evidence posil neopakuje jejich již minulé kolo', () => {
+    const { h, game } = fixture();
+    addReinforcements(game.currentScenario); addReinforcements(h.Scenarios.event_regression);
+    game.turnNumber = 5;
+    assert.equal(game.saveGame(), true);
+    const data = JSON.parse(h.storage.get(h.SaveGameSystem.STORAGE_KEY));
+    data.version = 1; delete data.processedEvents;
+    h.storage.set(h.SaveGameSystem.STORAGE_KEY, JSON.stringify(data));
+    const restored = h.SaveGameSystem.load(h.document.getElementById('game-canvas'), game);
+    restored.checkReinforcements(); refresh(restored, 6);
+    assert.equal(restored.units.length, 2);
+    assert.equal(restored.processedEvents.size, 0);
+});
+
+test('Živohošť po obsazení vstupu posil i sousedů zůstane uložitelná a načitatelná', () => {
+    const h = createHarness(), game = h.newGame('zivohost_1419');
+    const entry = game.currentScenario.forces.hussites.reinforcements.units[0];
+    for (const pos of [entry, ...game.hexGrid.getNeighbors(entry.col, entry.row)]) {
+        if (!game.getUnitAt(pos.col, pos.row)) game.units.push(game.unitFactory.createUnit('CEPNICI', pos.col, pos.row));
+    }
+    refresh(game, 5); game.checkReinforcements();
+    const alive = game.units.filter(unit => unit.health > 0);
+    assert.equal(new Set(alive.map(unit => `${unit.col},${unit.row}`)).size, alive.length);
+    assert.equal(game.units.filter(unit => unit.isReinforcement).length, 9);
+    assert.equal(game.saveGame(), true);
+    assert.doesNotThrow(() => h.SaveGameSystem.load(h.document.getElementById('game-canvas'), game));
+});
+
 test('přechod z nepřátelského tahu vyřídí fázi, event i posily právě jednou', () => {
     const { game } = fixture();
     addReinforcements(game.currentScenario);

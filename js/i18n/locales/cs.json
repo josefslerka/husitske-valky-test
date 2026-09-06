@@ -466,6 +466,7 @@
     "choralRemaining": "Chorál trvá ještě {turns} kolo.",
     "enemyDemoralized": "Nepřátelské jednotky jsou demoralizované!",
     "reinforcements": "Posily: {unit} přichází na bojiště!",
+    "reinforcementsWaiting": "Posily čekají na volné místo na bojišti.",
     "unitReturned": "{unit} se vrátil na [{col},{row}].",
     "unitHealing": "{unit} se léčí +{amount} HP ({source}).",
     "turnNumberHeader": "--- Kolo {turn} ---",

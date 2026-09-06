@@ -37,14 +37,19 @@ Pak otevřete [http://localhost:8000](http://localhost:8000). Přímé otevřen�
 node scripts/check.js
 ```
 
-Příkaz ověří syntaxi JS, strukturu a pořadí CSS, scénáře, překlady a čtyři testovací
-balíky (55 testů). Regrese průběhu bitvy lze samostatně spustit přes
+Příkaz ověří syntaxi JS, HTML vstup a jeho assety, strukturu a pořadí CSS, scénáře,
+překlady a regresní testy. Regrese průběhu bitvy lze samostatně spustit přes
 `node scripts/test-battle.js`; používají skutečné herní třídy a hexovou mřížku
 s řízeným časem a vloženým testovacím pohledem, bez přepisování metod `Game`.
 `node scripts/test-presentation.js` ověřuje hranici mezi pravidly a zobrazením
 i úklid skutečného prohlížečového adaptéru nad zjednodušeným DOM.
 `node scripts/test-scenario-events.js` hlídá fáze, jednorázové události, oba formáty
-posil a jejich obnovu ze savu.
+posil a jejich obnovu ze savu. Posily se umisťují na nejbližší volné průchodné hexy;
+pokud se nevejde celá skupina, počká na uvolnění místa. Čekání přežije uložení hry.
+`node scripts/test-save.js` ověřuje ochranu posledního funkčního savu.
+`node scripts/validate-entrypoint.js` hlídá pořadí všech klasických skriptů a lokální
+cesty v HTML, hudbě i načítání překladů, včetně velikosti písmen a relativních URL.
+Samotnou kontrolu vstupu testuje `node scripts/test-entrypoint.js`.
 
 Workflow [.github/workflows/ci.yml](.github/workflows/ci.yml) spouští stejný příkaz
 na Node.js 24 při každém pushi a pull requestu, případně ručně přes GitHub Actions.
@@ -55,6 +60,8 @@ nastavení repozitáře.
 Hru lze uložit během hráčova tahu po dokončení rozpracované akce. Načítání z hlavního
 menu, herního menu i pauzy obnoví celý scénář. Save v4 zachovává i změněný terén;
 starší verze v1–v3 lze nadále načíst. Neplatný save ponechá rozehranou bitvu beze změny.
+Před zápisem se ověří skutečný serializovaný snapshot stejnými pravidly jako při
+načítání; chyba sestavení, validace nebo zápisu nepřepíše předchozí uloženou hru.
 
 První řízený playtest je popsaný v [docs/ACT_I_PLAYTEST.md](docs/ACT_I_PLAYTEST.md).
 

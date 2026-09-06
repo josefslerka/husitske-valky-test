@@ -381,127 +381,101 @@ class ScenarioEventSystem {
     // Kontrola posil
     checkReinforcements() {
         if (!this.game.currentScenario) return;
-
-        // Posily pro husity
-        const hussiteForces = this.game.currentScenario.forces.hussites;
-        if (hussiteForces.reinforcements && hussiteForces.reinforcements.turn === this.game.turnNumber) {
-            const reinfKey = `reinf-hussites-${this.game.turnNumber}`;
-            if (!this.game.processedEvents.has(reinfKey)) {
-                this.game.processedEvents.add(reinfKey);
-
-                // Zobrazit zprávu o posilách
-                if (hussiteForces.reinforcements.message) {
-                    this.game.showEventNotification(i18n.t('messages.reinforcementsTitle'), hussiteForces.reinforcements.message);
-                }
-
-                // Vytvořit jednotky
-                for (const unitDef of hussiteForces.reinforcements.units) {
-                    // Převod souřadnic ze scénáře na skutečné souřadnice mapy
-                    const mapped = this.game.hexGrid.scenarioToMap(unitDef.col, unitDef.row);
-                    this.spawnReinforcements({
-                        turn: this.game.turnNumber,
-                        type: unitDef.type,
-                        position: [mapped.col, mapped.row],
-                        count: 1
-                    }, 'hussites');
-                }
-            }
+        const scenario = this.game.currentScenario;
+        // Oba formáty sdílejí umístění i deduplikaci; zachovat pořadí skupin a stará ID.
+        for (const faction of ['hussites', 'crusaders']) {
+            const reinf = scenario.forces[faction].reinforcements;
+            if (reinf) this.tryReinforcementGroup(reinf, faction, `reinf-${faction}-${reinf.turn}`);
         }
-
-        // Posily pro křižáky
-        const crusaderForces = this.game.currentScenario.forces.crusaders;
-        if (crusaderForces.reinforcements && crusaderForces.reinforcements.turn === this.game.turnNumber) {
-            const reinfKey = `reinf-crusaders-${this.game.turnNumber}`;
-            if (!this.game.processedEvents.has(reinfKey)) {
-                this.game.processedEvents.add(reinfKey);
-
-                // Zobrazit zprávu o posilách
-                if (crusaderForces.reinforcements.message) {
-                    this.game.showEventNotification(i18n.t('messages.enemyReinforcementsTitle'), crusaderForces.reinforcements.message);
-                }
-
-                // Vytvořit jednotky
-                for (const unitDef of crusaderForces.reinforcements.units) {
-                    // Převod souřadnic ze scénáře na skutečné souřadnice mapy
-                    const mapped = this.game.hexGrid.scenarioToMap(unitDef.col, unitDef.row);
-                    this.spawnReinforcements({
-                        turn: this.game.turnNumber,
-                        type: unitDef.type,
-                        position: [mapped.col, mapped.row],
-                        count: 1
-                    }, 'crusaders');
-                }
-            }
-        }
-
-        // Nový systém: posily na úrovni scénáře (více skupin)
-        if (this.game.currentScenario.reinforcements) {
-            for (const [key, reinf] of Object.entries(this.game.currentScenario.reinforcements)) {
-                if (reinf.turn === this.game.turnNumber) {
-                    const reinfKey = `reinf-scenario-${key}-${this.game.turnNumber}`;
-                    if (!this.game.processedEvents.has(reinfKey)) {
-                        this.game.processedEvents.add(reinfKey);
-
-                        // Zobrazit zprávu
-                        if (reinf.message) {
-                            const title = i18n.t(reinf.faction === 'hussites'
-                                ? 'messages.reinforcementsTitle'
-                                : 'messages.enemyReinforcementsTitle');
-                            this.game.showEventNotification(title, reinf.message);
-                        }
-
-                        // Vytvořit jednotky
-                        for (const unitDef of reinf.units) {
-                            // Převod souřadnic ze scénáře na skutečné souřadnice mapy
-                            const mapped = this.game.hexGrid.scenarioToMap(unitDef.col, unitDef.row);
-                            this.spawnReinforcements({
-                                turn: this.game.turnNumber,
-                                type: unitDef.type,
-                                position: [mapped.col, mapped.row],
-                                count: 1
-                            }, reinf.faction || 'crusaders');
-                        }
-                    }
-                }
-            }
+        for (const [key, reinf] of Object.entries(scenario.reinforcements || {})) {
+            this.tryReinforcementGroup(reinf, reinf.faction || 'crusaders', `reinf-scenario-${key}-${reinf.turn}`);
         }
     }
 
-    // Vytvoření posil
-    spawnReinforcements(reinf, faction) {
-        const unitType = UnitTypes[reinf.type];
-        if (!unitType) {
-            console.error(`spawnReinforcements: Unknown unit type ${reinf.type}`);
+    tryReinforcementGroup(reinf, faction, key) {
+        const processed = this.game.processedEvents;
+        const pendingKey = `${key}:pending`;
+        if (processed.has(key)) return;
+        // Nestačí turn <= current: staré savy bez evidence nesmí přehrát minulé posily.
+        if (reinf.turn !== this.game.turnNumber && !(reinf.turn < this.game.turnNumber && processed.has(pendingKey))) return;
+        const requests = reinf.units.map(unitDef => {
+            const mapped = this.game.hexGrid.scenarioToMap(unitDef.col, unitDef.row);
+            return { type: unitDef.type, position: [mapped.col, mapped.row], count: 1 };
+        });
+        const plan = this.planReinforcements(requests);
+        if (!plan) {
+            if (!processed.has(pendingKey)) this.game.addLog(i18n.t('gameLog.reinforcementsWaiting'), 'turn');
+            processed.add(pendingKey); // Je součástí savu v4; nevyžaduje nový formát.
             return;
         }
+        processed.delete(pendingKey);
+        processed.add(key);
+        if (reinf.message) {
+            const title = i18n.t(faction === 'hussites' ? 'messages.reinforcementsTitle' : 'messages.enemyReinforcementsTitle');
+            this.game.showEventNotification(title, reinf.message);
+        }
+        this.createReinforcements(plan, faction);
+    }
 
-        // Najít volnou pozici poblíž zadané
-        let spawnCol = reinf.position[0];
-        let spawnRow = reinf.position[1];
-
-        // Pokud je pozice obsazená, hledáme nejbližší volnou
-        if (this.game.getUnitAt(spawnCol, spawnRow)) {
-            const neighbors = this.game.hexGrid.getNeighbors(spawnCol, spawnRow);
-            for (const n of neighbors) {
-                if (!this.game.getUnitAt(n.col, n.row) && !this.game.hexGrid.isImpassable(n.col, n.row)) {
-                    spawnCol = n.col;
-                    spawnRow = n.row;
-                    break;
-                }
+    // Nejprve rezervovat místa celé skupině, bez změny jednotek či čítače ID.
+    planReinforcements(requests) {
+        const grid = this.game.hexGrid;
+        const occupied = new Set(this.game.units.filter(unit => unit.health > 0).map(unit => `${unit.col},${unit.row}`));
+        const plan = [];
+        for (const reinf of requests) {
+            const count = reinf.count ?? 1;
+            if (!Object.prototype.hasOwnProperty.call(UnitTypes, reinf.type) ||
+                !Array.isArray(reinf.position) || reinf.position.length !== 2 ||
+                !reinf.position.every(Number.isInteger) || !grid.inBounds(...reinf.position) ||
+                !Number.isSafeInteger(count) || count < 1) {
+                console.error('Neplatná definice posil:', reinf);
+                return null;
+            }
+            for (let i = 0; i < count; i++) {
+                const position = this.findReinforcementPosition(reinf.position, occupied);
+                if (!position) return null;
+                occupied.add(`${position.col},${position.row}`);
+                plan.push({ type: reinf.type, ...position });
             }
         }
+        return plan;
+    }
 
-        const count = reinf.count || 1;
-        for (let i = 0; i < count; i++) {
-            const unit = this.game.unitFactory.createUnit(reinf.type, spawnCol, spawnRow);
+    findReinforcementPosition([col, row], occupied) {
+        const grid = this.game.hexGrid;
+        const queue = [{ col, row }], visited = new Set([`${col},${row}`]);
+        // BFS zachová pořadí sousedů a skončí i při zcela zaplněné mapě.
+        // Hledáme nejbližší místo příchodu, nikoli cestu pohybu z výchozího hexu.
+        for (let index = 0; index < queue.length; index++) {
+            const position = queue[index];
+            if (!occupied.has(`${position.col},${position.row}`) && !grid.isImpassable(position.col, position.row)) return position;
+            for (const neighbor of grid.getNeighbors(position.col, position.row)) {
+                const key = `${neighbor.col},${neighbor.row}`;
+                if (visited.has(key)) continue;
+                visited.add(key);
+                queue.push(neighbor);
+            }
+        }
+        return null;
+    }
+
+    createReinforcements(plan, faction) {
+        for (const { type, col, row } of plan) {
+            const unit = this.game.unitFactory.createUnit(type, col, row);
             unit.faction = faction;
             unit.isReinforcement = true; // posily se nepočítají do přežití původní obrany
             this.game.units.push(unit);
-
             this.game.addLog(i18n.t('gameLog.reinforcements', {unit: unit.name}), 'turn');
         }
-
         this.game.updateArmyOverview();
         this.game.render();
+        return plan.length;
+    }
+
+    // Přímé volání vrací počet vytvořených jednotek, nebo 0; samo nezakládá čekající skupinu.
+    spawnReinforcements(reinf, faction) {
+        if (!['hussites', 'crusaders'].includes(faction)) return 0;
+        const plan = this.planReinforcements([reinf]);
+        return plan ? this.createReinforcements(plan, faction) : 0;
     }
 }

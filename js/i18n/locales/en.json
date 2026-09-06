@@ -3019,6 +3019,7 @@
     "choralRemaining": "The choral lasts for {turns} more round.",
     "enemyDemoralized": "Enemy units are demoralized!",
     "reinforcements": "Reinforcements: {unit} arrived on the battlefield!",
+    "reinforcementsWaiting": "Reinforcements are waiting for space on the battlefield.",
     "unitReturned": "{unit} returned to [{col},{row}].",
     "unitHealing": "{unit} heals +{amount} HP ({source}).",
     "turnNumberHeader": "--- Round {turn} ---",
