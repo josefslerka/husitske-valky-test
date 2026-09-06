@@ -1,0 +1,1128 @@
+/* Header */
+#game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    background:
+        linear-gradient(180deg, var(--ink-dark) 0%, var(--ink-medium) 100%);
+    border-bottom: 3px solid var(--gold);
+
+}
+
+.header-left {
+    flex: 0 0 auto;
+}
+
+.header-logo {
+
+    width: auto;
+
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.header-logo:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px var(--gold-glow);
+}
+
+.header-center {
+    flex: 1;
+    text-align: center;
+}
+
+#game-header h1, #battle-name {
+    font-size: 1.5rem;
+    color: var(--gold);
+    text-shadow: 2px 2px 4px var(--shadow-color);
+    margin: 0;
+
+}
+
+#battle-date {
+    font-size: var(--font-size-sm);
+
+    font-style: italic;
+}
+
+#turn-info {
+    display: flex;
+
+    font-size: 1.1rem;
+    flex: 0 0 auto;
+}
+
+#current-player {
+    padding: 5px 15px;
+    background: var(--crimson);
+    border-radius: 4px;
+    font-weight: bold;
+    border: 1px solid var(--crimson-light);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+}
+
+#current-player.crusaders {
+    background: var(--lapis);
+    border-color: var(--lapis-light);
+}
+
+/* Main layout */
+#game-main {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    position: relative; /* Pro fixní pozicování minimapy */
+}
+
+/* Side panels - parchment style */
+#unit-panel, #info-panel {
+
+    background:
+        /* Subtle parchment grain */
+        repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 1px,
+            rgba(139, 105, 32, 0.05) 1px,
+            rgba(139, 105, 32, 0.05) 2px
+        ),
+        linear-gradient(180deg,
+            rgba(232, 212, 168, 0.12) 0%,
+            rgba(212, 192, 144, 0.08) 50%,
+            rgba(196, 160, 96, 0.06) 100%
+        ),
+        var(--overlay-dark);
+    border: 2px solid var(--gold-dark);
+    border-image: linear-gradient(180deg, var(--gold) 0%, var(--gold-dark) 100%) 1;
+    transition: width var(--transition-normal), box-shadow var(--transition-normal);
+    position: relative;
+    box-shadow:
+        inset 0 0 20px rgba(232, 212, 168, 0.05),
+        var(--shadow-md);
+}
+
+/* Unit panel - left side */
+#unit-panel {
+
+    display: flex;
+    flex-direction: column;
+
+    overflow: hidden;
+}
+
+/* Info panel - right side */
+
+/* Panel toggle buttons */
+.panel-toggle {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 50px;
+    background: linear-gradient(180deg, var(--gold-dark) 0%, var(--ink-light) 100%);
+    border: 1px solid var(--gold);
+
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-size-sm);
+    z-index: 10;
+    transition: all 0.2s;
+}
+
+.panel-toggle:hover {
+    background: linear-gradient(180deg, var(--gold) 0%, var(--gold-dark) 100%);
+    color: var(--ink-dark);
+}
+
+#unit-panel .panel-toggle {
+    right: -24px;
+    border-left: none;
+    border-radius: 0 4px 4px 0;
+}
+
+#info-panel .panel-toggle {
+    left: -24px;
+    border-right: none;
+    border-radius: 4px 0 0 4px;
+}
+
+/* Collapsed panel state - using checkbox hack */
+#panel-left-toggle:checked ~ #game-container #unit-panel,
+#unit-panel.collapsed {
+    width: 30px;
+    padding: 15px 5px;
+}
+
+#panel-right-toggle:checked ~ #game-container #info-panel,
+#info-panel.collapsed {
+    width: 30px;
+    padding: 15px 5px;
+}
+
+#unit-panel.collapsed .panel-content,
+#info-panel.collapsed .panel-content,
+#unit-panel.collapsed h2,
+#info-panel.collapsed h2,
+#unit-panel.collapsed #unit-info,
+#unit-panel.collapsed #unit-actions,
+#info-panel.collapsed #army-overview {
+    display: none;
+}
+
+#unit-panel h2 {
+    flex-shrink: 0;
+    order: -2;
+}
+
+#unit-actions {
+    flex-shrink: 0;
+    order: -1;
+    margin-bottom: 10px;
+    margin-top: 0;
+}
+
+#unit-info {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+#unit-info::-webkit-scrollbar {
+    width: 8px;
+}
+
+#unit-info::-webkit-scrollbar-track {
+    background: rgba(26, 18, 8, 0.5);
+    border-radius: 4px;
+}
+
+#unit-info::-webkit-scrollbar-thumb {
+    background: var(--gold-dark);
+    border-radius: 4px;
+}
+
+#unit-info::-webkit-scrollbar-thumb:hover {
+    background: var(--gold);
+}
+
+/* Info panel scrollable */
+#info-panel {
+    display: flex;
+    flex-direction: column;
+
+    overflow: hidden;
+    font-size: 13px;
+}
+
+#info-panel h2 {
+    flex-shrink: 0;
+    font-size: 1.1rem;
+}
+
+#army-overview {
+    flex: 1;
+
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+/* Stylování scrollbaru pro info-panel */
+#army-overview::-webkit-scrollbar {
+    width: 8px;
+}
+
+#army-overview::-webkit-scrollbar-track {
+    background: rgba(26, 18, 8, 0.5);
+    border-radius: 4px;
+}
+
+#army-overview::-webkit-scrollbar-thumb {
+    background: var(--gold-dark);
+    border-radius: 4px;
+}
+
+#army-overview::-webkit-scrollbar-thumb:hover {
+    background: var(--gold);
+}
+
+#unit-panel h2, #info-panel h2 {
+    color: var(--gold);
+    font-size: 1.2rem;
+
+    padding-bottom: 5px;
+    border-bottom: 2px solid var(--gold-dark);
+    text-transform: uppercase;
+
+}
+
+/* min-height removed - handled by flexbox in #unit-panel */
+
+#unit-info .no-selection {
+    color: var(--parchment-shadow);
+    font-style: italic;
+}
+
+/* Statistiky jednotky - zobrazení, NE tlačítka */
+.unit-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+
+    margin: 12px 0;
+}
+
+.unit-stat {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 10px;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.25) 0%, rgba(0, 0, 0, 0.15) 100%);
+
+    font-size: var(--font-size-sm);
+    border: 1px solid rgba(201, 162, 39, 0.15);
+    /* Explicitně NE interaktivní */
+    cursor: default;
+    user-select: none;
+    transition: background var(--transition-fast);
+}
+
+.unit-stat:hover {
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.2) 100%);
+
+}
+
+.unit-stat .stat-icon {
+    font-size: var(--font-size-sm);
+    margin-right: 4px;
+    opacity: 0.9;
+}
+
+.unit-stat .label {
+
+    font-size: var(--font-size-xs);
+    text-transform: uppercase;
+
+}
+
+.unit-stat .value {
+    font-weight: bold;
+    color: var(--gold-light);
+    font-size: var(--font-size-base);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+.health-bar {
+    width: 100%;
+
+    background: linear-gradient(180deg, var(--ink-dark) 0%, rgba(0,0,0,0.6) 100%);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 10px;
+    border: 1px solid var(--gold-dark);
+    position: relative;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.health-bar-fill {
+    height: 100%;
+    background: linear-gradient(180deg, var(--forest-light) 0%, var(--forest) 50%, var(--forest-dark) 100%);
+    transition: width var(--transition-normal);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.2);
+}
+
+.health-bar-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: var(--font-size-xs);
+    font-weight: bold;
+    color: var(--parchment-light);
+    text-shadow: 0 1px 3px rgba(0,0,0,0.9), 0 0 5px rgba(0,0,0,0.5);
+    pointer-events: none;
+    letter-spacing: 0.5px;
+}
+
+/* ===============================================
+   AURA EFEKTY - Velitelské bonusy/postihy
+   =============================================== */
+.aura-effect {
+    margin: 8px 0;
+    padding: 8px 10px;
+
+    border-left: 4px solid;
+}
+
+.aura-effect.aura-bonus {
+    background: linear-gradient(90deg, rgba(74, 154, 80, 0.2) 0%, rgba(74, 154, 80, 0.05) 100%);
+    border-left-color: var(--forest-light);
+}
+
+.aura-effect.aura-fear {
+    background: linear-gradient(90deg, rgba(192, 48, 64, 0.25) 0%, rgba(192, 48, 64, 0.05) 100%);
+    border-left-color: var(--crimson-light);
+}
+
+.aura-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 4px;
+}
+
+.aura-icon {
+    font-size: 1rem;
+}
+
+.aura-title {
+    font-weight: bold;
+    font-size: var(--font-size-sm);
+    color: var(--parchment-light);
+}
+
+.aura-bonus .aura-title {
+    color: var(--forest-light);
+}
+
+.aura-fear .aura-title {
+    color: var(--crimson-light);
+}
+
+.aura-values {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: var(--font-size-xs);
+}
+
+.aura-value {
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-weight: bold;
+}
+
+.aura-value.positive {
+    background: rgba(74, 154, 80, 0.3);
+    color: var(--forest-light);
+}
+
+.aura-value.negative {
+    background: rgba(192, 48, 64, 0.3);
+    color: var(--crimson-light);
+}
+
+#unit-actions button {
+    flex: 1;
+
+    font-size: var(--font-size-xs);
+    cursor: pointer;
+    background: linear-gradient(180deg, var(--forest) 0%, var(--forest-dark) 100%);
+    border: 1px solid var(--forest-light);
+
+    transition: all var(--transition-fast);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+
+}
+
+#unit-actions button:hover:not(:disabled) {
+    background: linear-gradient(180deg, var(--forest-light) 0%, var(--forest) 100%);
+    box-shadow: var(--shadow-glow-green);
+
+}
+
+#unit-actions button:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: var(--shadow-sm);
+}
+
+#unit-actions button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    background: linear-gradient(180deg, #3a3a30 0%, #2a2a20 100%);
+
+}
+
+#btn-undo {
+    background: linear-gradient(180deg, var(--lapis) 0%, var(--lapis-dark) 100%);
+    border-color: var(--lapis-light);
+}
+
+#btn-undo:not(.hidden) {
+    display: block;
+}
+
+#btn-undo:hover:not(:disabled) {
+    background: linear-gradient(180deg, var(--lapis-light) 0%, var(--lapis) 100%);
+    box-shadow: 0 0 8px rgba(74, 90, 154, 0.4);
+}
+
+/* Army overview */
+.army-section {
+    margin-bottom: 12px;
+    background: rgba(0, 0, 0, 0.2);
+
+    border: 1px solid rgba(201, 162, 39, 0.2);
+}
+
+.army-section h3 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(201, 162, 39, 0.3);
+    font-size: var(--font-size-sm);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.army-section h3 .faction-icon {
+    font-size: 1.1rem;
+}
+
+.army-section h3 .faction-name {
+    flex: 1;
+    color: var(--gold);
+}
+
+.army-section h3 .faction-count {
+    font-size: var(--font-size-xs);
+
+    background: rgba(0, 0, 0, 0.3);
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+
+/* Lišta morálky armády (okno protiútoku) */
+.morale-bar {
+    position: relative;
+    height: 14px;
+    margin: 4px 0 6px;
+    background: rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.morale-bar-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background: #5ca03a;
+    transition: width 0.4s ease, background-color 0.4s ease;
+}
+
+.morale-bar-fill.morale-medium {
+    background: #c9a227;
+}
+
+.morale-bar-fill.morale-low {
+    background: #b03028;
+}
+
+.morale-bar-text {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: bold;
+    color: var(--parchment-light);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+    letter-spacing: 0.5px;
+}
+
+/* Kolísající armáda - okno protiútoku je otevřené */
+.morale-bar.wavering {
+    border-color: var(--gold-light);
+    box-shadow: 0 0 8px var(--gold-glow);
+    animation: morale-waver-pulse 1s ease-in-out infinite;
+}
+
+.morale-bar.wavering .morale-bar-text::after {
+    content: " ⚡";
+}
+
+@keyframes morale-waver-pulse {
+    0%, 100% { box-shadow: 0 0 4px var(--gold-glow); }
+    50% { box-shadow: 0 0 12px var(--gold-light); }
+}
+
+/* Husitská sekce */
+.army-section.hussites {
+    border-color: rgba(139, 26, 40, 0.4);
+}
+
+.army-section.hussites h3 {
+    border-bottom-color: var(--crimson);
+}
+
+.army-section.hussites h3 .faction-name {
+    color: var(--crimson-light);
+}
+
+/* Křižácká sekce */
+.army-section.crusaders {
+    border-color: rgba(42, 58, 122, 0.4);
+}
+
+.army-section.crusaders h3 {
+    border-bottom-color: var(--lapis);
+}
+
+.army-section.crusaders h3 .faction-name {
+    color: var(--lapis-light);
+}
+
+.army-section ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.army-section li {
+
+    font-size: var(--font-size-sm);
+    background: rgba(232, 212, 168, 0.04);
+
+    border-left: 3px solid transparent;
+    transition: all var(--transition-fast);
+
+}
+
+.army-section li:hover:not(.destroyed) {
+    background: rgba(232, 212, 168, 0.12);
+    transform: translateX(2px);
+    box-shadow: var(--shadow-sm);
+}
+
+.army-section.hussites li {
+    border-left-color: var(--crimson-dark);
+}
+
+.army-section.crusaders li {
+    border-left-color: var(--lapis-dark);
+}
+
+/* Nový vzhled jednotek v přehledu */
+.unit-list-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.unit-icon {
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-size-sm);
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 3px;
+    flex-shrink: 0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.army-section.hussites .unit-icon {
+    background: rgba(139, 26, 40, 0.3);
+    border-color: rgba(139, 26, 40, 0.5);
+}
+
+.army-section.crusaders .unit-icon {
+    background: rgba(42, 58, 122, 0.3);
+    border-color: rgba(42, 58, 122, 0.5);
+}
+
+.unit-icon.destroyed {
+    color: #666;
+    background: rgba(0, 0, 0, 0.3);
+    border-color: transparent;
+}
+
+.unit-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.78rem;
+}
+
+.unit-health {
+    font-size: 0.7rem;
+    padding: 1px 4px;
+    border-radius: 3px;
+    background: rgba(0, 0, 0, 0.4);
+    flex-shrink: 0;
+    font-family: 'Courier New', monospace;
+
+    text-align: center;
+}
+
+.unit-health.health-high {
+
+    border: 1px solid rgba(126, 207, 126, 0.3);
+}
+
+.unit-health.health-medium {
+
+    border: 1px solid rgba(232, 197, 71, 0.3);
+}
+
+.unit-health.health-critical {
+    color: #ff6b6b;
+    border: 1px solid rgba(255, 107, 107, 0.3);
+    animation: pulse-critical 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-critical {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
+.army-section li.destroyed {
+    opacity: 0.35;
+    border-left-color: #3a3a3a !important;
+}
+
+.army-section li.destroyed .unit-name {
+    text-decoration: line-through;
+    color: #888;
+}
+
+/* Map container */
+#map-container {
+    flex: 1;
+    display: flex;
+
+    background: #1a1a1a;
+
+    min-width: 0; /* Umožní flexboxu zmenšit kontejner */
+}
+
+#game-canvas {
+    border: 3px solid var(--gold-dark);
+    box-shadow: 0 0 20px var(--shadow-color), inset 0 0 5px rgba(0,0,0,0.3);
+    flex-shrink: 0; /* Canvas se nezmenšuje */
+}
+
+/* Minimapa - přetahovatelná, fixně v rámci game-main */
+#minimap {
+    position: absolute;
+
+     /* Odsazení od pravého panelu */
+    /* Velikost nastavena v JS, zde jen základní styl */
+    min-width: 150px;
+    min-height: 100px;
+    border: 3px solid var(--gold);
+
+    background:
+        linear-gradient(135deg, rgba(26, 18, 8, 0.95) 0%, rgba(44, 31, 16, 0.9) 100%);
+    box-shadow:
+        0 0 0 1px var(--gold-dark),
+        0 4px 15px rgba(0, 0, 0, 0.5),
+        inset 0 0 10px rgba(0, 0, 0, 0.3);
+    cursor: grab;
+    transition: box-shadow 0.2s ease;
+    z-index: 100; /* Nad mapou */
+    user-select: none;
+}
+
+#minimap:hover {
+    box-shadow:
+        0 0 0 1px var(--gold),
+        0 6px 20px rgba(0, 0, 0, 0.6),
+        0 0 15px var(--gold-glow);
+}
+
+#minimap.dragging {
+    cursor: grabbing;
+    box-shadow:
+        0 0 0 2px var(--gold-light),
+        0 8px 25px rgba(0, 0, 0, 0.7),
+        0 0 25px var(--gold-glow);
+    opacity: 0.9;
+}
+
+/* Minimap drag handle */
+#minimap::before {
+    content: '⋮⋮';
+    position: absolute;
+    top: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 10px;
+    color: var(--gold-dark);
+    letter-spacing: 1px;
+    pointer-events: none;
+}
+
+/* Minimap label */
+#minimap::after {
+    content: 'MAPA';
+    position: absolute;
+    top: -18px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.65rem;
+
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    background: var(--ink-dark);
+    padding: 2px 8px;
+
+    border: 1px solid var(--gold-dark);
+    pointer-events: none;
+}
+
+/* Footer */
+#game-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    background: linear-gradient(0deg, var(--ink-dark) 0%, var(--ink-medium) 100%);
+    border-top: 3px solid var(--gold);
+    flex-wrap: wrap;
+
+}
+
+/* Footer groups */
+.footer-main-actions {
+    display: flex;
+    align-items: center;
+
+}
+
+.footer-log {
+    flex: 1;
+
+}
+
+.footer-menu {
+    position: relative;
+}
+
+/* Footer button base style */
+/* Sekundární tlačítka ve footeru - tmavší, méně výrazná */
+.footer-btn {
+    padding: 10px 20px;
+    font-size: var(--font-size-sm);
+    font-weight: bold;
+    cursor: pointer;
+    background: linear-gradient(180deg, #4a4035 0%, #2a2520 100%);
+    border: 2px solid #5a5045;
+    color: var(--parchment-dark);
+    border-radius: 5px;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.footer-btn:hover:not(:disabled) {
+    background: linear-gradient(180deg, #5a5045 0%, #3a3530 100%);
+    border-color: var(--gold-dark);
+    color: var(--parchment);
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+}
+
+.footer-btn:active:not(:disabled) {
+    background: linear-gradient(180deg, #3a3025 0%, #1a1510 100%);
+    transform: scale(0.98);
+}
+
+.footer-btn:disabled {
+    background: #2a2520;
+    border-color: #3a3530;
+    color: #5a5550;
+    cursor: not-allowed;
+}
+
+/* Hlavní akční tlačítko - Ukončit tah */
+#btn-end-turn {
+    padding: 8px 20px;
+    font-size: var(--font-size-sm);
+    font-weight: bold;
+    cursor: pointer;
+    background: linear-gradient(180deg, var(--crimson-light) 0%, var(--crimson-dark) 100%);
+    border: 2px solid #e04050;
+
+    border-radius: 5px;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+
+}
+
+#btn-end-turn:hover {
+    background: linear-gradient(180deg, #d04050 0%, var(--crimson) 100%);
+
+    transform: translateY(-2px);
+
+}
+
+#btn-end-turn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* Pulsující efekt pro tlačítko Ukončit tah když všechny jednotky jednaly */
+#btn-end-turn.pulse {
+    animation: end-turn-pulse 1.2s ease-in-out infinite;
+    border-color: #ff7080;
+}
+
+@keyframes end-turn-pulse {
+    0%, 100% {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 0 0 10px var(--crimson-glow);
+        transform: scale(1);
+    }
+    50% {
+        box-shadow: 0 6px 25px var(--crimson-glow), 0 0 40px rgba(192, 48, 64, 0.6);
+        transform: scale(1.03);
+    }
+}
+
+/* Tlačítko Chorál - speciální akce */
+#btn-choral {
+
+    font-size: var(--font-size-sm);
+    background: linear-gradient(180deg, var(--forest-light) 0%, var(--forest-dark) 100%);
+    border: 2px solid #5aa060;
+    color: #fff;
+}
+
+#btn-choral:hover:not(:disabled) {
+    background: linear-gradient(180deg, #5aaa60 0%, var(--forest) 100%);
+    border-color: #70c080;
+    box-shadow: 0 0 12px var(--forest-glow);
+}
+
+#btn-choral:disabled {
+    background: #2a3530;
+
+    color: #5a6560;
+}
+
+/* Dropdown menu */
+.dropdown-menu {
+    position: absolute;
+    bottom: 100%;
+    right: 0;
+    background:
+        linear-gradient(135deg,
+            rgba(232, 212, 168, 0.1) 0%,
+            rgba(196, 160, 96, 0.05) 100%
+        ),
+        var(--overlay-dark);
+    border: 2px solid var(--gold);
+    border-radius: 8px 8px 0 0;
+    min-width: 180px;
+    padding: 8px 0;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.2s ease;
+    z-index: 100;
+    margin-bottom: 5px;
+    box-shadow: 0 -5px 20px var(--shadow-color);
+}
+
+.footer-menu:hover .dropdown-menu,
+.footer-menu.open .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.dropdown-menu button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 15px;
+    background: transparent;
+    border: none;
+    color: var(--parchment);
+    font-size: var(--font-size-base);
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.2s;
+    font-family: inherit;
+}
+
+.dropdown-menu button:hover {
+    background: linear-gradient(90deg, var(--gold-glow) 0%, transparent 100%);
+    color: var(--parchment-light);
+}
+
+.dropdown-menu button .btn-icon {
+    width: 24px;
+    text-align: center;
+}
+
+.dropdown-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, var(--gold-dark) 50%, transparent 100%);
+    margin: 8px 0;
+}
+
+/* Dropdown items are visible inside dropdown */
+.dropdown-menu #btn-save,
+.dropdown-menu #btn-load,
+.dropdown-menu #btn-sound,
+.dropdown-menu #btn-help {
+    display: flex;
+}
+
+#btn-sound.muted {
+    opacity: 0.6;
+}
+
+/* Tlačítko chorálu */
+#btn-choral {
+    padding: 10px 15px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    background: linear-gradient(180deg, var(--crimson) 0%, var(--crimson-dark) 100%);
+    border: 2px solid var(--crimson-light);
+    color: var(--parchment-light);
+    border-radius: 5px;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+#btn-choral:hover:not(:disabled) {
+    background: linear-gradient(180deg, var(--crimson-light) 0%, var(--crimson) 100%);
+    transform: scale(1.02);
+    box-shadow: 0 0 12px var(--crimson-glow);
+}
+
+#btn-choral:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    background: linear-gradient(180deg, #4a4a4a 0%, #2a2a2a 100%);
+    border-color: #555;
+}
+
+#btn-choral.active {
+    background: linear-gradient(180deg, var(--crimson-light) 0%, var(--crimson) 100%);
+    animation: choral-pulse 1s infinite;
+}
+
+@keyframes choral-pulse {
+    0%, 100% {
+        box-shadow: 0 0 5px var(--crimson-glow);
+    }
+    50% {
+        box-shadow: 0 0 20px var(--crimson-glow), 0 0 30px rgba(139, 26, 40, 0.3);
+    }
+}
+
+/* Herní log - vylepšený */
+#game-log {
+    flex: 1;
+    height: 50px;  /* Zvětšeno */
+
+    overflow-y: auto;
+
+    background:
+        linear-gradient(180deg,
+            rgba(26, 18, 8, 0.95) 0%,
+            rgba(44, 31, 16, 0.9) 100%
+        );
+
+    font-size: var(--font-size-sm);
+    border: 2px solid var(--gold-dark);
+    border-left: 4px solid var(--gold);
+
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+#game-log::-webkit-scrollbar {
+    width: 6px;
+}
+
+#game-log::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+}
+
+#game-log::-webkit-scrollbar-thumb {
+    background: var(--gold-dark);
+    border-radius: 3px;
+}
+
+#game-log p {
+    margin: 3px 0;
+    padding: 2px 0;
+
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    border-bottom: 1px solid rgba(201, 162, 39, 0.1);
+    line-height: 1.3;
+}
+
+#game-log p:last-child {
+    border-bottom: none;
+}
+
+#game-log .combat {
+    color: #ff7070;
+    font-weight: 600;
+}
+
+#game-log .combat::before {
+    content: '⚔ ';
+}
+
+#game-log .move {
+    color: #80cf80;
+}
+
+#game-log .move::before {
+    content: '→ ';
+}
+
+#game-log .turn {
+    color: var(--gold-light);
+    font-weight: bold;
+    font-style: normal;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+    background: rgba(201, 162, 39, 0.1);
+    padding: 3px 6px;
+    margin: 4px -6px;
+    border-radius: 3px;
+}
+
+#game-log .morale {
+    color: #e8c547;
+    font-style: italic;
+}
+
+#game-log .morale::before {
+    content: '💀 ';
+}
+
+#game-log .reinforcement {
+    color: #60a0ff;
+    font-weight: 500;
+}
+
+#game-log .reinforcement::before {
+    content: '📯 ';
+}

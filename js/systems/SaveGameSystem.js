@@ -74,11 +74,11 @@ const SaveGameSystem = {
         return this.prepare(data);
     },
 
-    load(canvas, currentGame = null) {
+    load(canvas, currentGame = null, { viewFactory = currentGame?.viewFactory } = {}) {
         const prepared = this.read();
         if (currentGame) currentGame.destroy();
         const grid = new HexGrid(canvas, prepared.width, prepared.height, 40);
-        const game = new Game(grid);
+        const game = new Game(grid, { viewFactory });
         if (prepared.scenario) {
             game.initGameWithScenario(prepared.scenario, { restoring: true });
         } else {

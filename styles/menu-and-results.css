@@ -1,0 +1,1039 @@
+/* ===============================================
+   MAIN MENU SCREEN
+   =============================================== */
+
+.screen {
+    width: 100%;
+    height: 100vh;
+}
+
+.screen.hidden {
+    display: none;
+}
+
+#main-menu {
+    position: relative;
+    overflow: hidden;
+}
+
+.menu-background {
+    width: 100%;
+    height: 100%;
+    background:
+        radial-gradient(ellipse at center, var(--gold-glow) 0%, transparent 50%),
+        linear-gradient(135deg, var(--ink-dark) 0%, var(--ink-medium) 50%, var(--ink-dark) 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.menu-background::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+        repeating-linear-gradient(
+            45deg,
+            rgba(201, 162, 39, 0.03) 0px,
+            rgba(201, 162, 39, 0.03) 2px,
+            transparent 2px,
+            transparent 10px
+        );
+    pointer-events: none;
+}
+
+.menu-content {
+    text-align: center;
+    z-index: 1;
+
+    max-height: 100vh;
+    overflow-y: auto;
+}
+
+.logo-image {
+
+    width: 100%;
+    height: auto;
+    border-radius: 0;
+    box-shadow: none;
+    filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.7));
+}
+
+.game-logo h1 {
+    font-size: 4rem;
+    color: var(--gold);
+    text-shadow:
+        3px 3px 0 var(--ink-medium),
+        -1px -1px 0 var(--gold-dark),
+        4px 4px 10px var(--shadow-color);
+    letter-spacing: 3px;
+    margin-bottom: 10px;
+}
+
+.game-logo .subtitle {
+    font-size: 1.2rem;
+    color: var(--parchment-dark);
+    font-style: italic;
+    letter-spacing: 2px;
+}
+
+/* Menu Buttons - Grid Layout */
+.menu-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.menu-buttons-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+
+    margin-bottom: 20px;
+
+}
+
+.menu-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 20px;
+    font-size: var(--font-size-base);
+    font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif;
+    font-weight: normal;
+    cursor: pointer;
+    background: linear-gradient(180deg,
+        rgba(60, 50, 40, 0.95) 0%,
+        rgba(40, 35, 30, 0.95) 100%
+    );
+    border: 2px solid rgba(139, 119, 80, 0.6);
+    color: var(--parchment);
+
+    transition: all var(--transition-normal);
+    text-align: center;
+    text-transform: uppercase;
+
+    position: relative;
+    overflow: hidden;
+
+}
+
+.menu-btn .btn-icon {
+    font-size: 1.1rem;
+}
+
+.menu-btn .btn-text {
+    font-size: var(--font-size-sm);
+    font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif;
+}
+
+.menu-btn:hover:not(:disabled) {
+    background: linear-gradient(180deg,
+        rgba(80, 70, 55, 0.95) 0%,
+        rgba(55, 48, 40, 0.95) 100%
+    );
+
+    transform: translateY(-2px);
+
+}
+
+/* Primary button - zlatá (Nová hra) */
+.menu-btn.primary {
+    background: linear-gradient(180deg,
+        rgba(180, 150, 80, 0.9) 0%,
+        rgba(140, 110, 50, 0.9) 100%
+    );
+
+    font-weight: 600;
+}
+
+.menu-btn.primary:hover:not(:disabled) {
+    background: linear-gradient(180deg,
+        rgba(200, 170, 90, 0.95) 0%,
+        rgba(160, 130, 60, 0.95) 100%
+    );
+
+}
+
+/* Tutorial button - modrá */
+.menu-btn.tutorial-btn {
+    background: linear-gradient(180deg,
+        rgba(60, 100, 160, 0.9) 0%,
+        rgba(40, 70, 120, 0.9) 100%
+    );
+
+    color: var(--parchment-light);
+}
+
+.menu-btn.tutorial-btn:hover:not(:disabled) {
+    background: linear-gradient(180deg,
+        rgba(80, 120, 180, 0.95) 0%,
+        rgba(50, 85, 140, 0.95) 100%
+    );
+    border-color: var(--lapis-light);
+    box-shadow: 0 4px 20px var(--lapis-glow), 0 0 15px var(--lapis-glow);
+}
+
+.menu-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: linear-gradient(180deg, #3a3530 0%, #2a2520 100%);
+    border-color: #4a4540;
+    color: #7a7570;
+}
+
+.menu-btn.danger {
+    border-color: var(--crimson-dark);
+}
+
+.menu-btn.danger:hover {
+    background: linear-gradient(180deg, var(--crimson) 0%, var(--crimson-dark) 100%);
+    border-color: var(--crimson-light);
+    box-shadow: 0 4px 15px var(--crimson-glow);
+}
+
+.menu-footer {
+    margin-top: 10px;
+    text-align: center;
+}
+
+.version-info {
+    display: inline-block;
+    margin-left: 15px;
+    color: rgba(139, 119, 80, 0.7);
+    font-size: var(--font-size-xs);
+    font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif;
+    vertical-align: middle;
+}
+
+.support-link {
+    display: inline-block;
+    margin-left: 10px;
+    color: var(--gold-dark);
+    text-decoration: none;
+    font-size: 16px;
+    transition: all var(--transition-fast);
+    opacity: 0.8;
+}
+
+.support-link:hover {
+    color: var(--gold);
+    opacity: 1;
+    transform: scale(1.2);
+}
+
+/* Tlačítko hudby v hlavním menu - kompaktní styl */
+.music-btn {
+    display: inline-block;
+    padding: 10px 25px;
+    background: linear-gradient(180deg,
+        rgba(50, 45, 40, 0.9) 0%,
+        rgba(35, 30, 25, 0.9) 100%
+    );
+    border: 1px solid rgba(139, 119, 80, 0.4);
+    border-radius: 20px;
+    color: var(--parchment-dark);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.music-btn:hover {
+    background: linear-gradient(180deg,
+        rgba(65, 58, 50, 0.95) 0%,
+        rgba(45, 40, 35, 0.95) 100%
+    );
+    border-color: var(--gold-dark);
+    color: var(--gold);
+}
+
+.music-btn.playing {
+    background: linear-gradient(180deg, var(--crimson) 0%, var(--crimson-dark) 100%);
+    border-color: var(--gold);
+    color: var(--parchment-light);
+    animation: pulse-music 2s infinite;
+}
+
+@keyframes pulse-music {
+    0%, 100% {
+        box-shadow: 0 0 5px var(--gold-glow);
+    }
+    50% {
+        box-shadow: 0 0 15px var(--gold-glow), 0 0 25px rgba(201, 162, 39, 0.2);
+    }
+}
+
+/* Tlačítko přepínání jazyka v hlavním menu */
+.language-toggle-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    margin-left: 15px;
+    background: linear-gradient(180deg,
+        rgba(50, 45, 40, 0.9) 0%,
+        rgba(35, 30, 25, 0.9) 100%
+    );
+    border: 1px solid rgba(139, 119, 80, 0.4);
+    border-radius: 20px;
+    color: var(--parchment-dark);
+    font-size: 24px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    vertical-align: middle;
+}
+
+.language-toggle-btn:hover {
+    background: linear-gradient(180deg,
+        rgba(65, 58, 50, 0.95) 0%,
+        rgba(45, 40, 35, 0.95) 100%
+    );
+    border-color: var(--gold-dark);
+    transform: scale(1.1);
+}
+
+.language-toggle-btn:active {
+    transform: scale(0.95);
+}
+
+/* ===============================================
+   OBJECTIVES PANEL (in-game)
+   =============================================== */
+
+#objectives-panel {
+
+    width: 280px;
+    background:
+        linear-gradient(135deg,
+            rgba(232, 212, 168, 0.1) 0%,
+            rgba(196, 160, 96, 0.05) 100%
+        ),
+        var(--overlay-dark);
+    border: 2px solid var(--gold);
+
+    z-index: 500;
+    box-shadow: 0 4px 15px var(--shadow-color);
+
+}
+
+.objectives-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    border-bottom: 2px solid var(--gold-dark);
+}
+
+.objectives-header h3 {
+    color: var(--gold);
+    font-size: 1rem;
+    margin: 0;
+    text-transform: uppercase;
+
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: var(--parchment-shadow);
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0 5px;
+    line-height: 1;
+    transition: color 0.2s;
+}
+
+.close-btn:hover {
+    color: var(--gold);
+}
+
+#objectives-content {
+    padding: 15px;
+}
+
+.objective {
+    display: flex;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(201, 162, 39, 0.2);
+}
+
+.objective:last-child {
+    border-bottom: none;
+}
+
+.objective-status {
+    font-size: 1rem;
+    width: 20px;
+    text-align: center;
+}
+
+.objective.primary .objective-status {
+    color: var(--gold);
+}
+
+.objective.secondary .objective-status {
+    color: var(--parchment-shadow);
+}
+
+.objective.completed .objective-status {
+    color: var(--forest-light);
+}
+
+.objective.completed .objective-status::before {
+    content: '✓';
+}
+
+.objective-text {
+    flex: 1;
+    font-size: var(--font-size-sm);
+    color: var(--parchment-dark);
+}
+
+.objective.primary .objective-text {
+    color: var(--parchment-light);
+    font-weight: bold;
+}
+
+/* ===============================================
+   PAUSE MENU
+   =============================================== */
+
+.pause-modal-content {
+    min-width: 350px;
+    text-align: center;
+}
+
+.pause-modal-content h2 {
+    margin-bottom: 30px;
+}
+
+.pause-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+}
+
+.pause-buttons .menu-btn {
+    width: 260px;
+}
+
+/* ===============================================
+   SETTINGS MODAL
+   =============================================== */
+
+.settings-modal-content {
+    max-width: 420px;
+    width: 90%;
+    text-align: left;
+    position: relative;
+    padding: 30px 25px;
+}
+
+.about-modal-content {
+    max-width: 600px;
+    width: 90%;
+
+    text-align: left;
+    position: relative;
+
+}
+
+.about-modal-content h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: var(--font-size-xl);
+}
+
+.about-modal-content h3 {
+    color: var(--gold);
+    font-size: var(--font-size-lg);
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.settings-modal-content h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: var(--font-size-xl);
+}
+
+.settings-section {
+    margin-bottom: 18px;
+    background:
+        linear-gradient(135deg,
+            rgba(232, 212, 168, 0.06) 0%,
+            transparent 100%
+        ),
+        rgba(26, 18, 8, 0.5);
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid var(--gold-dark);
+}
+
+.settings-section h3 {
+    color: var(--gold);
+    font-size: var(--font-size-base);
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid var(--gold-dark);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+}
+
+.setting-item label {
+    color: var(--parchment-dark);
+    font-size: var(--font-size-base);
+}
+
+.setting-item input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--gold);
+    cursor: pointer;
+}
+
+.setting-item input[type="range"] {
+    width: 150px;
+    accent-color: var(--gold);
+    cursor: pointer;
+}
+
+.setting-item select {
+    padding: 8px 15px;
+    background: var(--ink-medium);
+    border: 1px solid var(--gold-dark);
+    color: var(--parchment);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: var(--font-size-sm);
+    font-family: inherit;
+}
+
+.setting-item select:focus {
+    border-color: var(--gold);
+    outline: none;
+}
+
+.setting-description {
+    font-size: var(--font-size-sm);
+    color: var(--parchment-shadow);
+    margin-top: 8px;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    line-height: 1.5;
+}
+
+.setting-description strong {
+    color: var(--gold);
+}
+
+.settings-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+/* ===============================================
+   GAME OVER MODAL - Kompaktní verze
+   =============================================== */
+
+.gameover-modal-content {
+    min-width: 320px;
+    max-width: 760px;
+    width: auto;
+    text-align: center;
+    padding: 15px 22px;
+}
+
+/* Dvousloupcové tělo obrazovky konce bitvy (na šířku) */
+.gameover-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    align-items: start;
+    margin-bottom: 10px;
+}
+
+.gameover-col {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 0;
+}
+
+/* Bloky uvnitř sloupců už nemají vlastní spodní mezeru - řeší gap */
+.gameover-col .gameover-stats,
+.gameover-col .gameover-trivia,
+.gameover-col #gameover-secondary-objectives {
+    margin-bottom: 0;
+}
+
+/* Na úzké obrazovce zpět na jeden sloupec */
+@media (max-width: 640px) {
+    .gameover-columns {
+        grid-template-columns: 1fr;
+    }
+}
+
+#gameover-banner {
+    width: 100%;
+    height: 45px;
+    margin-bottom: 8px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+}
+
+#gameover-banner.victory {
+    background: linear-gradient(135deg, var(--forest) 0%, var(--forest-dark) 100%);
+    border: 2px solid var(--forest-light);
+    box-shadow: 0 0 15px var(--forest-glow);
+}
+
+#gameover-banner.defeat {
+    background: linear-gradient(135deg, var(--crimson) 0%, var(--crimson-dark) 100%);
+    border: 2px solid var(--crimson-light);
+    box-shadow: 0 0 15px var(--crimson-glow);
+}
+
+.gameover-modal-content h2 {
+    margin-bottom: 5px;
+    font-size: var(--font-size-lg);
+}
+
+.gameover-modal-content h2.victory {
+    color: var(--forest-light);
+}
+
+.gameover-modal-content h2.defeat {
+    color: var(--crimson-light);
+}
+
+#gameover-message {
+    color: var(--parchment);
+    font-size: var(--font-size-xs);
+    margin-bottom: 10px;
+    font-style: italic;
+    line-height: 1.3;
+    white-space: pre-line;
+}
+
+.gameover-act-summary {
+    margin: 0 0 10px;
+    padding: 9px 12px;
+    color: var(--parchment-light);
+    border-left: 3px solid var(--gold);
+    background: rgba(201, 162, 39, 0.1);
+    font-size: var(--font-size-xs);
+    line-height: 1.4;
+}
+
+/* Hodnocení bitvy - krátké shrnutí */
+#gameover-rating {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 10px;
+    padding: 8px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 6px;
+}
+
+.rating-item {
+    text-align: center;
+}
+
+.rating-label {
+    display: block;
+    font-size: var(--font-size-xs);
+    color: var(--parchment-shadow);
+    text-transform: uppercase;
+}
+
+.rating-value {
+    font-size: var(--font-size-base);
+    font-weight: bold;
+    color: var(--gold);
+}
+
+.rating-value.good { color: var(--forest-light); }
+.rating-value.bad { color: var(--crimson-light); }
+
+.gameover-stats {
+    background:
+        linear-gradient(135deg,
+            rgba(232, 212, 168, 0.06) 0%,
+            rgba(196, 160, 96, 0.03) 100%
+        ),
+        rgba(26, 18, 8, 0.5);
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    text-align: left;
+    border: 1px solid var(--gold-dark);
+}
+
+.gameover-stats h3 {
+    color: var(--gold);
+    font-size: var(--font-size-xs);
+    margin-bottom: 6px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.gameover-stats h4 {
+    font-size: var(--font-size-xs);
+    color: var(--gold-dark);
+    margin: 8px 0 4px 0;
+    text-transform: uppercase;
+}
+
+.stats-section {
+    margin-bottom: 8px;
+}
+
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 2px 0;
+    border-bottom: 1px solid rgba(201, 162, 39, 0.15);
+    color: var(--parchment-dark);
+    font-size: var(--font-size-xs);
+}
+
+.stat-row:last-child {
+    border-bottom: none;
+}
+
+/* Trivia po vítězství */
+.gameover-trivia {
+    background: linear-gradient(135deg, rgba(42, 58, 42, 0.3) 0%, rgba(26, 38, 26, 0.2) 100%);
+    border: 1px solid var(--forest);
+    border-left: 3px solid var(--gold);
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin-bottom: 10px;
+    text-align: left;
+}
+
+.gameover-trivia h4 {
+    color: var(--gold);
+    font-size: var(--font-size-xs);
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.gameover-trivia p {
+    color: var(--parchment);
+    font-size: var(--font-size-xs);
+    line-height: 1.4;
+    font-style: italic;
+}
+
+.stat-row span:last-child {
+    color: var(--parchment-light);
+    font-weight: bold;
+}
+
+/* Stats sections */
+.stats-section {
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(201, 162, 39, 0.2);
+}
+
+.stats-section:last-child {
+    border-bottom: none;
+}
+
+.stats-section h4 {
+    color: var(--gold);
+    font-size: var(--font-size-sm);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    font-weight: normal;
+}
+
+/* MVP card */
+.stats-mvp {
+    background: linear-gradient(135deg, rgba(201, 162, 39, 0.15) 0%, rgba(201, 162, 39, 0.05) 100%);
+    border-radius: 6px;
+    padding: 8px !important;
+    border: 1px solid var(--gold-dark) !important;
+}
+
+.mvp-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.mvp-icon {
+    width: 35px;
+    height: 35px;
+    background: linear-gradient(135deg, var(--crimson) 0%, var(--crimson-dark) 100%);
+    border: 2px solid var(--gold);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    box-shadow: 0 0 8px var(--gold-glow);
+}
+
+.mvp-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.mvp-name {
+    color: var(--gold-light);
+    font-size: var(--font-size-sm);
+    font-weight: bold;
+}
+
+.mvp-stats {
+    color: var(--parchment-dark);
+    font-size: var(--font-size-xs);
+}
+
+.gameover-buttons {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+}
+
+.gameover-buttons .menu-btn {
+    width: 180px;
+    padding: 8px 12px;
+    font-size: var(--font-size-sm);
+}
+
+/* Secondary objectives in gameover */
+.gameover-modal-content #gameover-secondary-objectives {
+    background:
+        linear-gradient(135deg,
+            rgba(232, 212, 168, 0.08) 0%,
+            rgba(196, 160, 96, 0.04) 100%
+        ),
+        rgba(26, 18, 8, 0.6);
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid var(--gold-dark);
+}
+
+.secondary-objectives-header {
+    color: var(--gold);
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: var(--font-size-sm);
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--gold-dark);
+}
+
+.secondary-objective {
+    padding: 5px 0;
+    font-size: var(--font-size-base);
+}
+
+.secondary-objective.achieved {
+    color: var(--forest-light);
+}
+
+.secondary-objective.failed {
+    color: var(--crimson-light);
+}
+
+/* ===============================================
+   FOOTER BUTTONS ADDITIONS
+   =============================================== */
+
+#btn-objectives, #btn-menu {
+    padding: 8px 12px;
+    font-size: var(--font-size-sm);
+    font-weight: bold;
+    cursor: pointer;
+    background: linear-gradient(180deg, var(--gold) 0%, var(--gold-dark) 100%);
+    border: 2px solid var(--gold-light);
+    color: var(--ink-dark);
+    border-radius: 5px;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+#btn-objectives:hover, #btn-menu:hover {
+    background: linear-gradient(180deg, var(--gold-light) 0%, var(--gold) 100%);
+    transform: scale(1.02);
+    box-shadow: 0 0 12px var(--gold-glow);
+}
+
+/* ===============================================
+   TUTORIAL MODAL
+   =============================================== */
+
+#tutorial-modal {
+    z-index: 2000;
+    pointer-events: none;
+    align-items: flex-start;
+    justify-content: flex-end;
+    padding: 100px 20px 20px 20px;
+    background: transparent;
+}
+
+#tutorial-modal .modal-content {
+    pointer-events: auto;
+}
+
+#tutorial-modal .tutorial-actions {
+    pointer-events: auto;
+}
+
+#tutorial-modal button {
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+.tutorial-modal-content {
+    background: linear-gradient(180deg, var(--parchment) 0%, var(--parchment-dark) 100%);
+    border: 4px solid var(--gold);
+    border-radius: 12px;
+    padding: 0;
+    max-width: 400px;
+    overflow: hidden;
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(201, 162, 39, 0.2);
+}
+
+.tutorial-speaker {
+    background: linear-gradient(180deg, var(--crimson) 0%, var(--crimson-dark) 100%);
+    padding: 15px 25px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border-bottom: 3px solid var(--gold);
+}
+
+.tutorial-portrait {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(180deg, var(--gold-light) 0%, var(--gold-dark) 100%);
+    border: 3px solid var(--gold);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: var(--ink-dark);
+    box-shadow: 0 0 10px var(--gold-glow);
+}
+
+.tutorial-speaker-name {
+    color: var(--gold-light);
+    font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+    font-size: 1.3rem;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.tutorial-modal-content #tutorial-title {
+    color: var(--crimson-dark);
+    font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+    font-size: 1.5rem;
+    padding: 20px 25px 10px 25px;
+    margin: 0;
+    text-shadow: 1px 1px 0 var(--parchment-light);
+}
+
+.tutorial-modal-content #tutorial-text {
+    color: var(--ink-dark);
+    font-size: 1.1rem;
+    line-height: 1.6;
+    padding: 0 25px 25px 25px;
+    margin: 0;
+}
+
+.tutorial-actions {
+    background: linear-gradient(180deg, var(--parchment-dark) 0%, var(--parchment-shadow) 100%);
+    padding: 15px 25px;
+    display: flex;
+    justify-content: flex-end;
+    border-top: 2px solid var(--gold-dark);
+}
+
+.tutorial-actions .btn-primary {
+    background: linear-gradient(180deg, var(--gold) 0%, var(--gold-dark) 100%);
+    border: 2px solid var(--gold-light);
+    color: var(--ink-dark);
+    padding: 12px 30px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.tutorial-actions .btn-primary:hover {
+    background: linear-gradient(180deg, var(--gold-light) 0%, var(--gold) 100%);
+    transform: scale(1.05);
+    box-shadow: 0 0 15px var(--gold-glow);
+}
+
+/* Tutorial highlight pulse animation */
+@keyframes tutorial-pulse {
+    0%, 100% { box-shadow: 0 0 10px var(--gold-glow); }
+    50% { box-shadow: 0 0 25px var(--gold), 0 0 40px var(--gold-glow); }
+}
+
+.tutorial-highlight {
+    animation: tutorial-pulse 1.5s ease-in-out infinite;
+}
+
+/* Tutorial badge in mission list */
+.tutorial-badge {
+    display: inline-block;
+    background: linear-gradient(180deg, var(--lapis) 0%, var(--lapis-dark) 100%);
+    color: var(--parchment-light);
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: var(--font-size-sm);
+    margin-top: 10px;
+    border: 1px solid var(--lapis-light);
+}
+
+/* Tutorial button in main menu */
+.menu-btn.tutorial-btn {
+    background: linear-gradient(180deg, var(--lapis) 0%, var(--lapis-dark) 100%);
+    border-color: var(--lapis-light);
+}
+
+.menu-btn.tutorial-btn:hover {
+    background: linear-gradient(180deg, var(--lapis-light) 0%, var(--lapis) 100%);
+    box-shadow: 0 0 15px rgba(42, 58, 122, 0.5);
+}

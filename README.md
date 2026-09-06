@@ -37,9 +37,12 @@ Pak otevřete [http://localhost:8000](http://localhost:8000). Přímé otevřen�
 node scripts/check.js
 ```
 
-Příkaz ověří syntaxi JS, scénáře, překlady a oba testovací balíky. Regrese průběhu
-bitvy lze samostatně spustit přes `node scripts/test-battle.js`; používají skutečné
-herní třídy a hexovou mřížku s řízeným časem a nahrazeným vykreslováním.
+Příkaz ověří syntaxi JS, strukturu a pořadí CSS, scénáře, překlady a tři testovací
+balíky (38 testů). Regrese průběhu bitvy lze samostatně spustit přes
+`node scripts/test-battle.js`; používají skutečné herní třídy a hexovou mřížku
+s řízeným časem a vloženým testovacím pohledem, bez přepisování metod `Game`.
+`node scripts/test-presentation.js` ověřuje hranici mezi pravidly a zobrazením
+i úklid skutečného prohlížečového adaptéru nad zjednodušeným DOM.
 
 Hru lze uložit během hráčova tahu po dokončení rozpracované akce. Načítání z hlavního
 menu, herního menu i pauzy obnoví celý scénář. Save v4 zachovává i změněný terén;
@@ -52,13 +55,16 @@ První řízený playtest je popsaný v [docs/ACT_I_PLAYTEST.md](docs/ACT_I_PLAY
 ```
 strategie/
 ├── index.html              # Hlavní HTML soubor
-├── style.css               # Globální styly
+├── style.css               # Vstupní manifest: pevné pořadí CSS importů
+├── styles/                 # Sedm částí stylů, od základů po výsledné téma
 ├── js/
 │   ├── core/              # Základní herní logika
 │   │   ├── game.js        # Hlavní herní třída
 │   │   └── hex.js         # Hexagonální mřížka
 │   ├── systems/           # Herní systémy
+│   │   ├── BattleActionSystem.js   # Akce, pauza a rušení čekání
 │   │   ├── CombatSystem.js         # Bojový systém
+│   │   ├── SaveGameSystem.js       # Validace a obnova uložené bitvy
 │   │   ├── CampaignProgressSystem.js # Postup kampaně a pověst
 │   │   ├── FogOfWarSystem.js       # Systém viditelnosti
 │   │   ├── MoraleSystem.js         # Systém morálky
@@ -73,11 +79,15 @@ strategie/
 │   │   ├── campaign.js    # Struktura kampaně
 │   │   └── battleLore.js  # Historické texty
 │   ├── ui/                # UI komponenty
+│   │   ├── BattleView.js  # Vstupy bitvy, kamera, vykreslování a UI lifecycle
+│   │   ├── BattlePanels.js # Panely jednotek, armád a fází
+│   │   ├── BattleTooltip.js # Obsah a stav tooltipu
 │   │   ├── main.js        # UI logika
 │   │   ├── sound.js       # Zvukové efekty
 │   │   └── music.js       # Hudba
 │   └── ai.js              # AI protivníka
 ├── docs/                  # Dokumentace
+│   ├── CODE_STRUCTURE.md       # Hranice odpovědností, CSS a testování
 │   ├── VICTORY_CONDITIONS.md    # Dokumentace vítězných podmínek
 │   ├── CONSISTENCY_REPORT.md    # Report konzistence herní logiky
 │   └── design/            # Design dokumenty
@@ -109,6 +119,7 @@ Viz: [docs/VICTORY_CONDITIONS.md](docs/VICTORY_CONDITIONS.md)
 
 ## 📚 Dokumentace
 
+- **[CODE_STRUCTURE.md](docs/CODE_STRUCTURE.md)** - Rozdělení herní logiky a prezentace, pravidla údržby CSS a testů
 - **[VICTORY_CONDITIONS.md](docs/VICTORY_CONDITIONS.md)** - Kompletní přehled vítězných a porážkových podmínek
 - **[CONSISTENCY_REPORT.md](docs/CONSISTENCY_REPORT.md)** - Analýza konzistence herní logiky
 - **[docs/design/](docs/design/)** - Design dokumenty a poznámky

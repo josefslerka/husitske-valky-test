@@ -1,0 +1,1035 @@
+/* Modal */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(26, 18, 8, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal.hidden {
+    display: none;
+}
+
+.modal-content {
+    background:
+        /* Parchment texture */
+        repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 3px,
+            rgba(139, 105, 32, 0.04) 3px,
+            rgba(139, 105, 32, 0.04) 6px
+        ),
+        linear-gradient(135deg,
+            rgba(232, 212, 168, 0.15) 0%,
+            rgba(212, 192, 144, 0.1) 50%,
+            rgba(196, 160, 96, 0.08) 100%
+        ),
+        linear-gradient(135deg, var(--ink-medium) 0%, var(--ink-light) 100%);
+
+    border-radius: 12px;
+    border: 3px solid var(--gold);
+
+    box-shadow:
+        0 0 0 1px var(--gold-dark),
+        0 20px 60px rgba(0, 0, 0, 0.7),
+        0 0 40px rgba(201, 162, 39, 0.15),
+        inset 0 0 30px rgba(232, 212, 168, 0.05);
+    position: relative;
+    animation: modalFadeIn 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* Zavírací tlačítko v pravém horním rohu */
+.modal-content > .close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 1.8rem;
+    z-index: 10;
+}
+
+.modal-content h2 {
+    font-size: var(--font-size-3xl);
+    font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif;
+    font-weight: normal;
+    color: var(--gold);
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+}
+
+.modal-content p {
+    font-size: 1.2rem;
+
+    color: var(--parchment);
+}
+
+#btn-new-game {
+    padding: 12px 30px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    background: linear-gradient(180deg, #8b6914 0%, #5c4a1f 100%);
+    border: 2px solid #d4af37;
+    color: #f4e4c1;
+    border-radius: 5px;
+}
+
+/* Quick Escape Dialog - Zvěd */
+.quick-escape-content {
+    padding: 25px 35px;
+    max-width: 350px;
+}
+
+.quick-escape-content h3 {
+    font-size: 1.4rem;
+    color: var(--gold);
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.quick-escape-content p {
+    font-size: 1rem;
+    margin-bottom: 20px;
+    color: var(--parchment);
+}
+
+.quick-escape-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.quick-escape-buttons button {
+    padding: 10px 25px;
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: all 0.2s;
+    font-family: inherit;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.quick-escape-buttons .btn-primary {
+    background: linear-gradient(180deg, var(--forest) 0%, var(--forest-dark) 100%);
+    border: 2px solid var(--forest-light);
+    color: var(--parchment-light);
+}
+
+.quick-escape-buttons .btn-primary:hover {
+    background: linear-gradient(180deg, var(--forest-light) 0%, var(--forest) 100%);
+    transform: scale(1.02);
+    box-shadow: 0 0 12px var(--forest-glow);
+}
+
+.quick-escape-buttons .btn-secondary {
+    background: linear-gradient(180deg, var(--ink-light) 0%, var(--ink-medium) 100%);
+    border: 2px solid var(--gold-dark);
+    color: var(--parchment);
+}
+
+.quick-escape-buttons .btn-secondary:hover {
+    background: linear-gradient(180deg, var(--gold-dark) 0%, var(--ink-light) 100%);
+    transform: scale(1.02);
+}
+
+/* Confirm Dialog */
+.confirm-dialog {
+    max-width: 450px;
+    padding: 35px;
+    font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif;
+}
+
+.confirm-icon {
+    font-size: 3rem;
+    margin-bottom: 15px;
+}
+
+.confirm-dialog h2 {
+    font-size: var(--font-size-2xl);
+    font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif;
+    font-weight: normal;
+    color: var(--gold);
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.confirm-dialog p {
+    font-size: var(--font-size-lg);
+    font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif;
+    color: var(--parchment);
+    margin-bottom: 25px;
+    line-height: var(--line-height-normal);
+}
+
+.confirm-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.confirm-buttons .menu-btn {
+    min-width: 120px;
+    padding: 12px 24px;
+    font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif;
+    font-size: var(--font-size-base);
+}
+
+.modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: -1;
+}
+
+/* Scout hidden indicator */
+.unit-hidden {
+    opacity: 0.6;
+    filter: brightness(0.7);
+}
+
+/* Jednotky které už jednaly - v army overview */
+.army-section li.exhausted {
+    opacity: 0.5;
+    color: var(--parchment-shadow);
+}
+
+.army-section li.exhausted::after {
+    content: ' ✓';
+    color: var(--forest-light);
+}
+
+/* Tooltip */
+#tooltip {
+    position: absolute;
+    background:
+        linear-gradient(135deg,
+            rgba(232, 212, 168, 0.12) 0%,
+            rgba(212, 192, 144, 0.08) 100%
+        ),
+        linear-gradient(135deg, var(--ink-medium) 0%, var(--ink-light) 100%);
+    border: 2px solid var(--gold);
+
+    padding: 10px 15px;
+    color: var(--parchment);
+    font-size: var(--font-size-sm);
+    pointer-events: none;
+    z-index: 100;
+    max-width: 220px;
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.5),
+        inset 0 0 15px rgba(232, 212, 168, 0.03);
+}
+
+#tooltip .tooltip-title {
+    font-weight: bold;
+    font-size: 1rem;
+    color: var(--gold);
+    margin-bottom: 5px;
+}
+
+#tooltip .tooltip-faction {
+    font-size: var(--font-size-xs);
+    color: var(--parchment-shadow);
+    margin-bottom: 8px;
+}
+
+#tooltip .tooltip-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 10px;
+}
+
+#tooltip .tooltip-stat {
+    display: flex;
+    justify-content: space-between;
+}
+
+#tooltip .tooltip-stat .label {
+    color: var(--parchment-dark);
+}
+
+#tooltip .tooltip-terrain {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid var(--gold-dark);
+    color: var(--parchment-dark);
+}
+
+#tooltip .tooltip-bonus {
+
+    font-size: var(--font-size-sm);
+}
+
+#tooltip .tooltip-special {
+    color: var(--gold-light);
+    font-size: var(--font-size-sm);
+    margin-top: 5px;
+    padding: 3px 6px;
+    background: rgba(201, 162, 39, 0.15);
+    border-radius: 3px;
+}
+
+#tooltip .tooltip-debuff {
+    color: var(--crimson-light);
+    font-size: var(--font-size-sm);
+    margin-top: 3px;
+}
+
+#tooltip .tooltip-info {
+    color: var(--lapis-light);
+    font-size: var(--font-size-xs);
+    margin-top: 3px;
+    font-style: italic;
+}
+
+/* Preview poškození v tooltipu při útoku */
+#tooltip .tooltip-damage-preview {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid var(--crimson-dark);
+    background: rgba(139, 26, 40, 0.15);
+    padding: 8px;
+    border-radius: 4px;
+}
+
+#tooltip .tooltip-damage-preview .damage-title {
+    color: var(--crimson-light);
+    font-weight: bold;
+    font-size: var(--font-size-sm);
+    margin-bottom: 5px;
+}
+
+#tooltip .tooltip-damage-preview .damage-value {
+    color: var(--parchment-light);
+    font-size: var(--font-size-sm);
+}
+
+#tooltip .tooltip-damage-preview .damage-range {
+    color: var(--parchment-shadow);
+    font-size: var(--font-size-sm);
+}
+
+/* Utility classes */
+.hidden {
+    display: none !important;
+}
+
+/* Help Modal */
+#btn-help {
+    padding: 10px 15px;
+}
+
+.help-modal-content {
+    max-width: 800px;
+    width: 90%;
+    max-height: 85vh;
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    text-align: left;
+}
+
+.help-close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 2rem;
+    background: none;
+    border: none;
+    color: var(--gold);
+    cursor: pointer;
+    line-height: 1;
+    padding: 5px 10px;
+    transition: color 0.2s;
+}
+
+.help-close-btn:hover {
+    color: var(--gold-light);
+    text-shadow: 0 0 10px var(--gold-glow);
+}
+
+.help-modal-content h2 {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+/* Tabs */
+.help-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    border-bottom: 2px solid var(--gold-dark);
+    margin-bottom: 15px;
+}
+
+.help-tab {
+    padding: 8px 12px;
+    background: linear-gradient(180deg, var(--ink-light) 0%, var(--ink-medium) 100%);
+    border: 2px solid var(--gold-dark);
+    border-bottom: none;
+    color: var(--parchment-dark);
+    cursor: pointer;
+    border-radius: 6px 6px 0 0;
+    font-size: var(--font-size-xs);
+    font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif;
+    font-weight: normal;
+    transition: all var(--transition-normal);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    position: relative;
+    white-space: nowrap;
+}
+
+.help-tab:hover {
+    background: linear-gradient(180deg, var(--gold-dark) 0%, var(--ink-light) 100%);
+    color: var(--parchment-light);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(201, 162, 39, 0.3);
+}
+
+.help-tab.active {
+    background: linear-gradient(180deg, var(--gold) 0%, var(--gold-dark) 100%);
+    color: var(--ink-dark);
+    border-color: var(--gold);
+    border-width: 2px;
+    font-weight: bold;
+    box-shadow:
+        0 -2px 8px rgba(201, 162, 39, 0.4),
+        inset 0 1px 2px rgba(255, 255, 255, 0.2);
+}
+
+/* Tab content */
+.help-content {
+
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+.help-tab-content {
+    display: none;
+}
+
+.help-tab-content.active {
+    display: block;
+}
+
+.help-tab-content h3 {
+    color: var(--gold);
+    font-size: 1.3rem;
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--gold-dark);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: normal;
+}
+
+/* Units list in help */
+#help-units-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 15px;
+}
+
+.help-unit-card {
+    background:
+        linear-gradient(135deg,
+            rgba(232, 212, 168, 0.06) 0%,
+            transparent 100%
+        ),
+        rgba(26, 18, 8, 0.8);
+    border: 1px solid var(--gold-dark);
+    border-radius: 8px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Header s ikonou a názvem */
+.help-unit-header {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.help-unit-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    flex-shrink: 0;
+}
+
+.help-unit-icon.hussites {
+    background: linear-gradient(135deg, var(--crimson) 0%, var(--crimson-dark) 100%);
+    border: 2px solid var(--crimson-light);
+}
+
+.help-unit-icon.crusaders {
+    background: linear-gradient(135deg, var(--lapis) 0%, var(--lapis-dark) 100%);
+    border: 2px solid var(--lapis-light);
+}
+
+.help-unit-header-info {
+    flex: 1;
+}
+
+.help-unit-name {
+    color: var(--gold);
+    font-size: 1.1rem;
+    margin: 0 0 2px 0;
+}
+
+.help-unit-class {
+    color: var(--parchment-dark);
+    font-size: var(--font-size-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Statistiky v gridu */
+.help-unit-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+
+.stat-icon {
+    font-size: 1rem;
+}
+
+.stat-value {
+    color: var(--parchment-light);
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.stat-label {
+    color: var(--parchment-dark);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+}
+
+/* Speciální schopnost */
+.help-unit-special {
+    background: linear-gradient(90deg, rgba(201, 162, 39, 0.15) 0%, transparent 100%);
+    border-left: 3px solid var(--gold);
+
+}
+
+/* Popis jednotky - zvětšený font */
+.help-unit-description {
+    color: var(--parchment);
+    font-size: 1rem;
+    line-height: 1.7;
+    margin: 0;
+}
+
+/* Lore sekce - lepší čitelnost */
+.help-unit-lore {
+    border-top: 1px solid var(--gold-dark);
+    padding-top: 15px;
+    margin-top: 8px;
+}
+
+.lore-description {
+    color: var(--parchment);
+    font-size: 1rem;
+    line-height: 1.75;
+    margin: 0 0 14px 0;
+}
+
+.lore-item {
+    color: var(--parchment);
+    font-size: var(--font-size-base);
+    margin-bottom: 10px;
+    line-height: 1.6;
+}
+
+.lore-label {
+    color: var(--gold);
+    font-weight: bold;
+    margin-right: 4px;
+}
+
+.lore-quote {
+    background: rgba(0, 0, 0, 0.3);
+    border-left: 3px solid var(--gold);
+    padding: 14px 16px;
+    margin: 14px 0 0 0;
+    border-radius: 0 4px 4px 0;
+    font-style: italic;
+    color: var(--parchment);
+    font-size: 1rem;
+    line-height: 1.7;
+}
+
+/* Starý styl pro kompatibilitu */
+.help-unit-details {
+    flex: 1;
+}
+
+.help-unit-details h4 {
+    color: var(--gold);
+    font-size: 1.05rem;
+    margin-bottom: 5px;
+}
+
+.help-unit-stats {
+    display: flex;
+    gap: 15px;
+    font-size: var(--font-size-sm);
+    color: var(--parchment-dark);
+    margin-bottom: 5px;
+}
+
+.help-unit-stats span {
+    display: flex;
+    gap: 3px;
+}
+
+.help-unit-special {
+    font-size: var(--font-size-sm);
+    color: var(--gold-light);
+    background: rgba(201, 162, 39, 0.15);
+    padding: 3px 8px;
+    border-radius: 3px;
+    display: inline-block;
+    margin-top: 5px;
+}
+
+.help-unit-description {
+    font-size: var(--font-size-sm);
+    color: var(--parchment-shadow);
+    margin-top: 5px;
+    font-style: italic;
+}
+
+/* Terrain list */
+.terrain-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+}
+
+.terrain-item {
+    display: flex;
+    gap: 12px;
+    background:
+        linear-gradient(135deg,
+            rgba(232, 212, 168, 0.05) 0%,
+            transparent 100%
+        ),
+        rgba(26, 18, 8, 0.6);
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid var(--gold-dark);
+}
+
+.terrain-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 5px;
+    flex-shrink: 0;
+}
+
+.terrain-icon.plains {
+    background: linear-gradient(135deg, #7cb342 0%, #558b2f 100%);
+}
+
+.terrain-icon.forest {
+    background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
+}
+
+.terrain-icon.hills {
+    background: linear-gradient(135deg, #8d6e63 0%, #5d4037 100%);
+}
+
+.terrain-icon.water {
+    background: linear-gradient(135deg, #1976d2 0%, #0d47a1 100%);
+}
+
+.terrain-icon.town {
+    background: linear-gradient(135deg, #795548 0%, #4e342e 100%);
+}
+
+.terrain-icon.road {
+    background: linear-gradient(135deg, #9e9e9e 0%, #616161 100%);
+}
+
+.terrain-icon.dam {
+    background: linear-gradient(135deg, #8a7a5a 0%, #5a4a3a 100%);
+}
+
+.terrain-icon.mud {
+    background: linear-gradient(135deg, #5a4a3a 0%, #3a2a1a 100%);
+}
+
+.terrain-icon.slope {
+    background: linear-gradient(180deg, #6a5a4a 0%, #9a8a7a 100%);
+}
+
+.terrain-info strong {
+    color: var(--gold);
+    font-size: 1rem;
+}
+
+.terrain-info p {
+    color: var(--parchment-dark);
+    font-size: var(--font-size-sm);
+    margin-top: 3px;
+}
+
+/* Rules section */
+.rules-section {
+
+    background:
+        linear-gradient(90deg,
+            rgba(139, 26, 40, 0.08) 0%,
+            transparent 100%
+        ),
+        rgba(26, 18, 8, 0.5);
+
+    border-radius: 6px;
+    border-left: 3px solid var(--crimson);
+}
+
+.rules-section h4 {
+    color: var(--gold);
+    font-size: 1.05rem;
+    margin-bottom: 8px;
+}
+
+.rules-section p {
+    color: var(--parchment-dark);
+    font-size: var(--font-size-sm);
+    line-height: 1.5;
+}
+
+.rules-section ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.rules-section li {
+    color: var(--parchment-dark);
+    font-size: var(--font-size-sm);
+
+    border-bottom: 1px solid rgba(201, 162, 39, 0.2);
+}
+
+.rules-section li:last-child {
+    border-bottom: none;
+}
+
+.rules-section li strong {
+    color: var(--gold-light);
+}
+
+/* History section */
+.history-section {
+    background:
+        linear-gradient(135deg,
+            rgba(232, 212, 168, 0.06) 0%,
+            transparent 100%
+        ),
+        rgba(26, 18, 8, 0.5);
+
+    border-radius: 8px;
+    border: 1px solid var(--gold-dark);
+}
+
+.history-section h4 {
+    color: var(--gold);
+    font-size: 1.1rem;
+    margin-top: 20px;
+    margin-bottom: 10px;
+
+    border-bottom: 1px solid var(--gold-dark);
+}
+
+.history-section p {
+    color: var(--parchment-dark);
+    font-size: var(--font-size-base);
+    line-height: 1.6;
+
+}
+
+/* Faction headers in encyclopedia */
+.faction-header {
+    color: var(--gold);
+    font-size: 1.3rem;
+    margin-top: 20px;
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--gold-dark);
+}
+
+.faction-header.hussite-header {
+    border-bottom-color: var(--crimson);
+}
+
+.faction-header.crusader-header {
+    border-bottom-color: var(--lapis);
+    margin-top: 30px;
+}
+
+/* Commanders list */
+.commanders-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.commander-card {
+    background:
+        linear-gradient(135deg,
+            rgba(232, 212, 168, 0.06) 0%,
+            transparent 100%
+        ),
+        rgba(26, 18, 8, 0.8);
+    border: 2px solid var(--gold-dark);
+    border-radius: 8px;
+    padding: 15px;
+    transition: all 0.2s;
+}
+
+.commander-card:hover {
+    border-color: var(--gold);
+    box-shadow: 0 4px 15px var(--gold-glow);
+}
+
+.commander-card.hussite {
+    border-left: 4px solid var(--crimson);
+}
+
+.commander-card.crusader {
+    border-left: 4px solid var(--lapis);
+}
+
+.commander-card h4 {
+    color: var(--gold);
+    font-size: 1.15rem;
+    margin-bottom: 5px;
+}
+
+.commander-card .commander-years {
+    color: var(--parchment-shadow);
+    font-size: var(--font-size-sm);
+    font-style: italic;
+    margin-bottom: 10px;
+}
+
+.commander-card p {
+    color: var(--parchment-dark);
+    font-size: var(--font-size-sm);
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* Tactics section */
+.tactics-section {
+    background:
+        linear-gradient(135deg,
+            rgba(232, 212, 168, 0.06) 0%,
+            transparent 100%
+        ),
+        rgba(26, 18, 8, 0.5);
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid var(--gold-dark);
+}
+
+.tactics-section h4 {
+    color: var(--gold);
+    font-size: 1.1rem;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid var(--gold-dark);
+}
+
+.tactics-section h4:first-child {
+    margin-top: 0;
+}
+
+.tactics-section p {
+    color: var(--parchment-dark);
+    font-size: var(--font-size-base);
+    line-height: 1.6;
+    margin-bottom: 10px;
+}
+
+/* Controls list */
+.controls-list {
+    display: flex;
+    flex-direction: column;
+
+}
+
+.control-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    background:
+        linear-gradient(90deg,
+            rgba(232, 212, 168, 0.05) 0%,
+            transparent 100%
+        ),
+        rgba(26, 18, 8, 0.6);
+    border-radius: 5px;
+    border: 1px solid var(--gold-dark);
+}
+
+.control-key {
+    background: linear-gradient(180deg, var(--gold) 0%, var(--gold-dark) 100%);
+    padding: 5px 12px;
+
+    font-family: 'Courier New', monospace;
+    font-size: var(--font-size-sm);
+
+    border: 1px solid var(--gold-light);
+    font-weight: bold;
+}
+
+.control-desc {
+    color: var(--parchment-dark);
+    font-size: var(--font-size-sm);
+}
+
+/* About Section */
+.about-section {
+    background:
+        linear-gradient(135deg,
+            rgba(232, 212, 168, 0.06) 0%,
+            transparent 100%
+        ),
+        rgba(26, 18, 8, 0.5);
+    padding: 15px 20px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    border: 1px solid var(--gold-dark);
+}
+
+.about-section h4 {
+    color: var(--gold);
+    font-size: var(--font-size-lg);
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid var(--gold-dark);
+}
+
+.about-section p {
+    color: var(--parchment-dark);
+    font-size: var(--font-size-base);
+    line-height: 1.6;
+    margin-bottom: 8px;
+}
+
+.about-section ul {
+    color: var(--parchment-dark);
+    font-size: var(--font-size-base);
+    line-height: 1.6;
+    margin-left: 20px;
+    margin-bottom: 8px;
+}
+
+.about-section li {
+    margin-bottom: 5px;
+}
+
+.about-version {
+    font-size: var(--font-size-lg);
+    color: var(--gold-dark);
+    margin-bottom: 15px;
+}
+
+.about-section a {
+    color: var(--gold);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
+
+.about-section a:hover {
+    color: var(--gold-light);
+    text-decoration: underline;
+}
+
+.support-section {
+    text-align: center;
+    background:
+        linear-gradient(135deg,
+            rgba(201, 162, 39, 0.1) 0%,
+            transparent 100%
+        ),
+        rgba(26, 18, 8, 0.6);
+    border-color: var(--gold);
+}
+
+.coffee-button {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 12px 30px;
+    background: linear-gradient(180deg, var(--gold) 0%, var(--gold-dark) 100%);
+    color: var(--ink-dark);
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: var(--font-size-base);
+    font-weight: bold;
+    border: 2px solid var(--gold-light);
+    box-shadow: 0 4px 10px rgba(201, 162, 39, 0.3);
+    transition: all var(--transition-normal);
+}
+
+.coffee-button:hover {
+    background: linear-gradient(180deg, var(--gold-light) 0%, var(--gold) 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(201, 162, 39, 0.5);
+    text-decoration: none;
+}
+
+.about-copyright {
+    font-size: var(--font-size-sm);
+    color: var(--parchment-shadow);
+    margin-top: 10px;
+}

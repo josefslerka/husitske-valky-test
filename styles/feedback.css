@@ -1,0 +1,540 @@
+/* ===============================================
+   UX VYLEPŠENÍ - Vizuální zpětná vazba
+   =============================================== */
+
+/* Animace výběru jednotky */
+@keyframes unit-select-pulse {
+    0%, 100% {
+        box-shadow: 0 0 0 3px var(--gold), 0 0 15px var(--gold-glow);
+    }
+    50% {
+        box-shadow: 0 0 0 5px var(--gold-light), 0 0 25px var(--gold-glow), 0 0 40px rgba(201, 162, 39, 0.3);
+    }
+}
+
+/* Animace útoku */
+@keyframes attack-flash {
+    0% {
+        filter: brightness(1);
+    }
+    25% {
+        filter: brightness(1.8) saturate(1.5);
+    }
+    50% {
+        filter: brightness(0.7);
+    }
+    100% {
+        filter: brightness(1);
+    }
+}
+
+/* Animace poškození */
+@keyframes damage-shake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    20% {
+        transform: translateX(-4px);
+    }
+    40% {
+        transform: translateX(4px);
+    }
+    60% {
+        transform: translateX(-3px);
+    }
+    80% {
+        transform: translateX(3px);
+    }
+}
+
+/* Animace pohybu */
+@keyframes move-highlight {
+    0% {
+        background-color: rgba(42, 90, 48, 0);
+    }
+    50% {
+        background-color: rgba(42, 90, 48, 0.3);
+    }
+    100% {
+        background-color: rgba(42, 90, 48, 0);
+    }
+}
+
+/* Floating damage number */
+@keyframes damage-float {
+    0% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-40px) scale(1.2);
+    }
+}
+
+.damage-number {
+    position: absolute;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--crimson-light);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8), 0 0 10px rgba(139, 26, 40, 0.5);
+    pointer-events: none;
+    z-index: 1000;
+    animation: damage-float 1.2s ease-out forwards;
+}
+
+.damage-number.heal {
+    color: var(--forest-light);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8), 0 0 10px rgba(42, 90, 48, 0.5);
+}
+
+/* Indikátor tahu AI */
+.ai-thinking {
+    position: fixed;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(180deg, var(--lapis) 0%, var(--lapis-dark) 100%);
+    border: 2px solid var(--gold);
+    border-radius: 8px;
+    padding: 12px 25px;
+    z-index: 1500;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 4px 20px var(--shadow-color);
+}
+
+.ai-thinking-text {
+    color: var(--parchment-light);
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.ai-thinking-spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid var(--gold-dark);
+    border-top-color: var(--gold-light);
+    border-radius: 50%;
+    animation: spinner-rotate 0.8s linear infinite;
+}
+
+@keyframes spinner-rotate {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Klikatelný indikátor AI - klik zrychlí (přeskočí) tah křižáků */
+.ai-thinking {
+    cursor: pointer;
+    user-select: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ai-thinking:hover,
+.ai-thinking:focus-visible {
+    border-color: var(--gold-light);
+    box-shadow: 0 4px 24px var(--shadow-color), 0 0 0 3px rgba(201, 162, 39, 0.25);
+    outline: none;
+}
+
+.ai-thinking-skip {
+    color: var(--gold-light);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding-left: 6px;
+    border-left: 1px solid var(--gold-dark);
+    opacity: 0.85;
+    white-space: nowrap;
+}
+
+.ai-thinking:hover .ai-thinking-skip {
+    opacity: 1;
+}
+
+/* Zapnutý rychlý režim: hráč už klikl, prodlevy jsou zrušené pro celou bitvu */
+.ai-thinking.skipping {
+    border-color: var(--gold-light);
+}
+
+.ai-thinking.skipping .ai-thinking-skip {
+    color: var(--parchment-light);
+    opacity: 0.6;
+}
+
+.ai-thinking.skipping .ai-thinking-spinner {
+    animation-duration: 0.35s;
+}
+
+/* Hover efekt pro jednotky v přehledu */
+.army-section li {
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.army-section li:hover:not(.destroyed) {
+    background: linear-gradient(90deg,
+        rgba(201, 162, 39, 0.15) 0%,
+        transparent 100%
+    );
+    padding-left: 12px;
+    border-left-color: var(--gold);
+}
+
+/* Aktivní jednotka v přehledu */
+.army-section li.active {
+    background: linear-gradient(90deg,
+        rgba(201, 162, 39, 0.25) 0%,
+        rgba(201, 162, 39, 0.1) 100%
+    );
+    border-left: 3px solid var(--gold);
+    padding-left: 10px;
+}
+
+/* Vylepšené tlačítko ukončení tahu */
+#btn-end-turn {
+    position: relative;
+    overflow: hidden;
+}
+
+#btn-end-turn::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+#btn-end-turn.pulse::after {
+    animation: btn-shine 2s ease-in-out infinite;
+}
+
+@keyframes btn-shine {
+    0%, 100% {
+        left: -100%;
+    }
+    50% {
+        left: 100%;
+    }
+}
+
+/* Indikátor aktuálního kola */
+#turn-number {
+    background: linear-gradient(180deg, var(--ink-light) 0%, var(--ink-dark) 100%);
+    padding: 5px 12px;
+    border-radius: 4px;
+    border: 1px solid var(--gold-dark);
+}
+
+/* ===============================================
+   UX VYLEPŠENÍ - Kontrast a čitelnost
+   =============================================== */
+
+/* Lepší kontrast pro parchment shadow text */
+.history-strength,
+.history-reliability,
+.mission-card-date,
+.act-years,
+.commander-card .commander-years {
+    color: var(--parchment-dark);
+}
+
+/* Lepší kontrast pro sekundární text */
+.mission-card-desc,
+.terrain-info p,
+.rules-section p,
+.help-unit-description {
+    color: var(--parchment);
+}
+
+/* Tooltip čitelnost */
+#tooltip .tooltip-terrain,
+#tooltip .tooltip-stat .label {
+    color: var(--parchment);
+}
+
+/* Unit stats ve hře - lepší čitelnost */
+
+/* Game log - lepší kontrast */
+#game-log {
+    color: var(--parchment);
+}
+
+#game-log p {
+    color: var(--parchment);
+}
+
+/* Settings description */
+.setting-description {
+    color: var(--parchment);
+}
+
+/* Control description */
+.control-desc {
+    color: var(--parchment);
+}
+
+/* Objectives text */
+.objective-text {
+    color: var(--parchment);
+}
+
+/* ===============================================
+   UX VYLEPŠENÍ - Hotkeys tooltip
+   =============================================== */
+
+/* Tooltip pro klávesové zkratky na tlačítkách */
+[data-hotkey]::after {
+    content: attr(data-hotkey);
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--ink-dark);
+    border: 1px solid var(--gold-dark);
+    border-radius: 3px;
+    padding: 2px 6px;
+    font-size: 0.7rem;
+    color: var(--gold);
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+[data-hotkey]:hover::after {
+    opacity: 1;
+}
+
+/* ===============================================
+   UX VYLEPŠENÍ - Responsivita
+   =============================================== */
+
+@media (max-width: 700px) {
+    /* Menu grid na malých obrazovkách */
+    .menu-buttons-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .menu-btn {
+        min-width: auto;
+        padding: 12px 15px;
+        font-size: 0.85rem;
+    }
+
+    .logo-image {
+        max-width: 300px;
+    }
+}
+
+@media (max-width: 500px) {
+    /* Menu grid na velmi malých obrazovkách */
+    .menu-buttons-grid {
+        grid-template-columns: 1fr;
+        max-width: 280px;
+    }
+
+    .logo-image {
+        max-width: 250px;
+    }
+}
+
+@media (max-width: 600px) {
+    /* Help modal na malých obrazovkách */
+    .help-modal-content {
+        width: 95%;
+        padding: 20px;
+        max-height: 90vh;
+    }
+
+    .help-tabs {
+        flex-wrap: wrap;
+        gap: 3px;
+    }
+
+    .help-tab {
+        padding: 8px 10px;
+        font-size: var(--font-size-xs);
+        letter-spacing: 0.5px;
+    }
+
+    #help-units-list {
+        grid-template-columns: 1fr;
+    }
+
+    /* Mission modal na malých obrazovkách */
+    .mission-modal-content {
+        width: 95%;
+        padding: 20px;
+    }
+
+    .campaign-tabs {
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+
+    .act-tab {
+        flex: 1 1 45%;
+        padding: 6px 8px;
+    }
+
+    .act-name {
+        font-size: var(--font-size-sm);
+    }
+
+    .act-years {
+        font-size: 0.65rem;
+    }
+
+    /* Game over modal */
+    .gameover-modal-content {
+        min-width: 300px;
+        width: 90%;
+    }
+
+    /* Pause modal */
+    .pause-modal-content {
+        min-width: 280px;
+    }
+
+    .pause-buttons .menu-btn {
+        width: 220px;
+    }
+
+    /* Header na malých obrazovkách */
+    #game-header {
+        flex-wrap: wrap;
+        padding: 5px 10px;
+    }
+
+    #game-header h1, #battle-name {
+        font-size: 1.1rem;
+    }
+
+    #turn-info {
+        gap: 10px;
+        font-size: var(--font-size-sm);
+    }
+
+    .header-logo {
+        height: 35px;
+    }
+}
+
+/* Důvod výsledku v game-over modalu */
+.gameover-reason {
+    color: #ffd700;
+    font-style: italic;
+    font-size: 1.05em;
+    margin: 4px 0 10px;
+    padding: 8px 14px;
+    background: rgba(255, 215, 0, 0.08);
+    border-left: 3px solid #ffd700;
+    border-radius: 4px;
+}
+
+/* WP2a: Vy vs. kronika */
+.gameover-chronicle {
+    margin: 10px 0 14px;
+    padding: 10px 16px;
+    background: rgba(201, 162, 39, 0.08);
+    border: 1px solid var(--gold-dark, #5c4a1f);
+    border-radius: 6px;
+    text-align: center;
+}
+.gameover-chronicle .chronicle-line {
+    color: var(--parchment-light, #f0e6d2);
+    font-size: 0.95em;
+    margin: 3px 0;
+}
+.gameover-chronicle .chronicle-says {
+    color: var(--gold-light, #e6c200);
+    font-family: Georgia, 'Times New Roman', serif;
+    font-style: italic;
+}
+.gameover-chronicle .chronicle-note {
+    color: #a89968;
+    font-size: 0.82em;
+    font-style: italic;
+    margin-top: 6px;
+    opacity: 0.9;
+}
+
+/* WP2b: Kronika (modal) */
+.chronicle-subtitle {
+    text-align: center;
+    color: #a89968;
+    font-style: italic;
+    margin: -6px 0 12px;
+    font-size: 0.9em;
+}
+.chronicle-empty {
+    text-align: center;
+    color: #a89968;
+    font-style: italic;
+    padding: 30px 10px;
+}
+.chronicle-entry {
+    background: rgba(201, 162, 39, 0.06);
+    border: 1px solid var(--gold-dark, #5c4a1f);
+    border-left-width: 4px;
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin-bottom: 14px;
+}
+.chronicle-entry.chronicle-victory { border-left-color: #6a9a4a; }
+.chronicle-entry.chronicle-defeat { border-left-color: #a0392e; }
+.chronicle-entry.chronicle-act-summary {
+    border-left-color: var(--gold-light, #e6c200);
+    background: rgba(201, 162, 39, 0.13);
+}
+.chronicle-act-summary h3 {
+    margin: 0 0 8px;
+    color: var(--gold-light, #e6c200);
+    font-size: 1rem;
+}
+.chronicle-text {
+    font-family: Georgia, 'Times New Roman', serif;
+    color: var(--parchment-light, #f0e6d2);
+    line-height: 1.6;
+    font-size: 1.02em;
+    margin: 0;
+    white-space: pre-line;
+}
+.chronicle-initial {
+    float: left;
+    font-size: 2.6em;
+    line-height: 0.8;
+    padding: 4px 8px 0 0;
+    color: var(--gold-light, #e6c200);
+    font-family: Georgia, serif;
+    font-weight: bold;
+}
+.chronicle-critic-btn {
+    margin-top: 10px;
+    padding: 5px 12px;
+    background: rgba(201, 162, 39, 0.15);
+    border: 1px solid var(--gold-dark, #5c4a1f);
+    color: var(--gold-light, #e6c200);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85em;
+}
+.chronicle-critic-btn:hover { background: rgba(201, 162, 39, 0.28); }
+.chronicle-truth {
+    margin: 10px 0 0;
+    padding: 8px 12px;
+    background: rgba(0, 0, 0, 0.25);
+    border-radius: 4px;
+    color: #c8b88a;
+    font-size: 0.9em;
+    line-height: 1.5;
+}

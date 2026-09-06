@@ -1,5 +1,15 @@
 # 📜 Changelog
 
+## Oddělení prezentace a úklid CSS (6. září 2026)
+
+- `Game` a `CombatSystem` již přímo nepoužívají DOM ani animační smyčku. Prohlížečovou prezentaci vlastní `BattleView`, `BattlePanels` a `BattleTooltip`.
+- `Game` je přibližně o tisíc řádků menší; veřejné UI metody zatím zůstávají tenkými delegáty pro kompatibilitu.
+- Pravidla lze testovat s vloženým pohledem bez globálního `document` a `window`; vykreslení nepřepočítává viditelnost ani morálku.
+- Osm nových regresních testů hlídá prezentační kontrakt, vstupy, log a úklid UI. Celkem 38 testů v jednotné kontrole projektu.
+- Původní CSS rozděleno do sedmi částí při zachování pořadí kaskády. Odstraněno 189 deklarací přepsaných pozdějšími pravidly a devět prázdných bloků.
+- Přidána kontrola struktury, pořadí importů a cest v CSS a dokumentace hranic odpovědností.
+- Bez záměrných změn balancu nebo vzhledu; vybrané stavy menu a bitvy porovnány s původním CSS při šířkách 390, 753 a 1280 px.
+
 ## Stabilizace bitev (6. září 2026)
 
 - Opravená předčasná porážka na Sionu a dvojí ztráta morálky kvůli žízni.

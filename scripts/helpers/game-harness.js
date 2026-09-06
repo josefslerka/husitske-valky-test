@@ -1,9 +1,10 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
+const { TestBattleView } = require('./test-battle-view');
 
 // Skutečné herní třídy a data; nahrazujeme jen prohlížeč, zvuk a čas.
-function createHarness() {
+function createHarness({ browserView = false } = {}) {
     let now = 0, nextTimer = 1;
     const timers = new Map(), storage = new Map(), elements = new Map();
     const noop = () => {};
@@ -15,17 +16,24 @@ function createHarness() {
                 add: (...names) => names.forEach(name => classes.add(name)),
                 remove: (...names) => names.forEach(name => classes.delete(name)),
                 contains: name => classes.has(name),
-                toggle: name => classes.has(name) ? classes.delete(name) : classes.add(name)
+                toggle: (name, force = !classes.has(name)) => {
+                    if (force) classes.add(name); else classes.delete(name);
+                    return force;
+                }
             };
             this.style = {}; this.dataset = {}; this.children = [];
             this.textContent = ''; this.innerHTML = ''; this.disabled = false;
+            this.clientWidth = 800; this.clientHeight = 600;
         }
         getContext() { return {}; }
         getBoundingClientRect() { return { left: 0, top: 0, width: 800, height: 600 }; }
         querySelector() { return null; }
         querySelectorAll() { return []; }
         appendChild(child) { this.children.push(child); child.parentNode = this; }
+        append(...children) { children.forEach(child => this.appendChild(child)); }
         removeChild(child) { this.children = this.children.filter(item => item !== child); child.parentNode = null; }
+        remove() { if (this.parentNode) this.parentNode.removeChild(this); }
+        replaceChildren(...children) { this.children.forEach(child => { child.parentNode = null; }); this.children = []; this.append(...children); }
     }
     const document = new Element();
     document.getElementById = id => {
@@ -59,17 +67,20 @@ function createHarness() {
         'data/scenarios.js', 'data/campaign.js', 'systems/CampaignProgressSystem.js',
         'systems/CombatSystem.js', 'systems/FogOfWarSystem.js', 'systems/MoraleSystem.js',
         'systems/VictoryConditionsSystem.js', 'systems/TutorialSystem.js',
-        'systems/BattleActionSystem.js', 'systems/SaveGameSystem.js', 'core/game.js', 'ai.js'
+        'systems/BattleActionSystem.js', 'systems/SaveGameSystem.js',
+        'ui/BattlePanels.js', 'ui/BattleTooltip.js', 'ui/BattleView.js', 'core/game.js', 'ai.js'
     ]) {
         const filename = path.join(__dirname, '../../js', file);
         vm.runInContext(fs.readFileSync(filename, 'utf8'), context, { filename });
     }
-    const api = vm.runInContext('({ Game, HexGrid, Unit, UnitFactory, Scenarios, ScenarioManager, SaveGameSystem, AI })', context);
-    for (const method of ['render', 'updateArmyOverview', 'updateUnitPanel', 'startAnimationLoop', 'centerOnPlayerForces']) api.Game.prototype[method] = noop;
-    api.Game.prototype.addLog = function(message) { this.log.push(message); };
-    api.Game.prototype.clearLog = function() { this.log = []; };
-    api.Game.prototype.showEventNotification = function(title, text) {
-        this.notifications = this.notifications || []; this.notifications.push({ title, text });
+    const api = vm.runInContext('({ Game, HexGrid, Unit, UnitFactory, Scenarios, ScenarioManager, SaveGameSystem, AI, BattleView, BattlePanels, BattleTooltip })', context);
+    const viewFactory = game => {
+        if (!browserView) return new TestBattleView(game);
+        // UI testy používají skutečný adaptér a DOM double; Canvas drawing není jejich předmět.
+        game.hexGrid.render = noop;
+        const view = new api.BattleView(game);
+        view.minimap.render = noop;
+        return view;
     };
     const flush = async () => { for (let i = 0; i < 20; i++) await Promise.resolve(); };
     const advance = async ms => {
@@ -89,13 +100,13 @@ function createHarness() {
     const newGame = (id = null) => {
         const scenario = id ? structuredClone(api.Scenarios[id]) : null;
         const size = scenario?.mapSize || { width: 16, height: 10 };
-        const game = new api.Game(new api.HexGrid(document.getElementById('game-canvas'), size.width, size.height, 40));
+        const game = new api.Game(new api.HexGrid(document.getElementById('game-canvas'), size.width, size.height, 40), { viewFactory });
         game.fogOfWar = false;
         if (scenario) game.initGameWithScenario(scenario);
         else game.initGame();
         return game;
     };
-    return { ...api, newGame, document, storage, advance, flush, timers, context, now: () => now };
+    return { ...api, newGame, document, storage, advance, flush, timers, context, viewFactory, now: () => now };
 }
 
 module.exports = { createHarness };

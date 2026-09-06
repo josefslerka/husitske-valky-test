@@ -30,7 +30,7 @@ test('Sion vyhraje až po dokončení 12. nepřátelského tahu', () => {
     assert.equal(game.gameState, 'playing');
     game.endTurn();
     assert.equal(game.gameState, 'victory');
-    assert.ok(game.log.some(line => line.includes('victorySurviveTurns')));
+    assert.ok(game.log.some(line => line.message.includes('victorySurviveTurns')));
 });
 
 test('Sion může před limitem prohrát smrtí velitele', () => {
@@ -38,17 +38,16 @@ test('Sion může před limitem prohrát smrtí velitele', () => {
     game.units.filter(unit => unit.faction === 'hussites' && unit.isCommander()).forEach(unit => { unit.health = 0; });
     game.victoryConditionsSystem.checkVictory();
     assert.equal(game.gameState, 'victory');
-    assert.ok(game.log.some(line => line.includes('commanderFallen')));
+    assert.ok(game.log.some(line => line.message.includes('commanderFallen')));
 });
 
 test('dvojklik spotřebuje jediný útok a během animace nelze ukončit tah', async () => {
     const h = createHarness(), { game, attacker, defender } = duel(h);
     game.selectedUnit = attacker;
-    const pixel = game.hexGrid.hexToPixel(defender.col, defender.row);
-    const click = { clientX: pixel.x, clientY: pixel.y };
-    game.handleClick(click);
+    const hex = { col: defender.col, row: defender.row };
+    game.handleHexClick(hex);
     const health = defender.health;
-    game.handleClick(click);
+    game.handleHexClick(hex);
     assert.equal(attacker.attackCount, 1);
     assert.equal(defender.health, health);
     assert.equal(game.endTurn(), false);
@@ -157,7 +156,7 @@ test('načtení během jiné bitvy obnoví správný scénář, grid a jednotky'
     assert.equal(restored.hexGrid.cols, h.Scenarios.zivohost_1419.mapSize.width);
     assert.equal(restored.turnNumber, 3);
     assert.equal(restored.units[0].type, saved.units[0].type);
-    assert.equal(restored.notifications?.length || 0, 0, 'nespouštět znovu úvodní eventy');
+    assert.equal(restored.view.notifications.length, 0, 'nespouštět znovu úvodní eventy');
 });
 
 test('save v4 zachová celý stabilní snapshot včetně terénu a statistik', () => {
@@ -224,7 +223,7 @@ test('nahrazení hry během útoku zruší staré callbacky a nepoškodí novou 
     const attack = game.combatSystem.performAttack(attacker, defender);
     await h.advance(300);
     assert.equal(game.actions.busy, true, 'protiútok ještě není dokončen');
-    assert.ok(h.document.body.children.length > 0, 'číslo poškození už je zobrazeno');
+    assert.ok(game.view.effects.length > 0, 'číslo poškození už je zobrazeno');
     const restored = h.SaveGameSystem.load(h.document.getElementById('game-canvas'), game);
     const hp = restored.units.map(unit => unit.health);
     await h.advance(5000); await attack;
@@ -232,8 +231,8 @@ test('nahrazení hry během útoku zruší staré callbacky a nepoškodí novou 
     assert.deepEqual(restored.units.map(unit => unit.health), hp);
     assert.equal(restored.gameState, 'playing');
     assert.equal(game.actions.waits.size, 0);
-    assert.equal(h.document.body.children.length, 0, 'odstranit vizuální efekty staré bitvy');
-    assert.equal(game.minimap.eventAbortController.signal.aborted, true);
+    assert.equal(game.view.effects.length, 0, 'odstranit vizuální efekty staré bitvy');
+    assert.equal(game.view.destroyed, true);
 });
 
 (async () => {

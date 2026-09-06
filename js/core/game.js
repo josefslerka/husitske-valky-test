@@ -1,7 +1,7 @@
 // Herní logika - řízení tahů, soubojů a stavu hry
 
 class Game {
-    constructor(hexGrid) {
+    constructor(hexGrid, { viewFactory = game => new BattleView(game) } = {}) {
         this.hexGrid = hexGrid;
         this.unitFactory = new UnitFactory();
         this.combatSystem = new CombatSystem(this);
@@ -47,10 +47,6 @@ class Game {
             unitDamage: {}       // Poškození podle jednotky { unitId: celkem }
         };
 
-        // Animační smyčka
-        this.isAnimating = false;
-        this.animationLoop = null;
-
         // Undo systém - uložení posledního pohybu
         this.lastMove = null;  // { unit, fromCol, fromRow }
 
@@ -61,12 +57,6 @@ class Game {
 
         // Skriptovaný postoj AI (WP0) - řízení chování nepřítele přes eventy
         this.aiStance = { mode: 'default', target: null, untilTurn: null, proximity: 3 };
-
-        // Příběhové notifikace se zobrazují postupně. Některá kola spouštějí
-        // 2-3 eventy zároveň; bez fronty se karty kreslily přes sebe.
-        this.eventNotificationQueue = [];
-        this.activeEventNotification = null;
-        this.eventNotificationTimer = null;
 
         // Regenerace - sledování jednotek které již regenerovaly
         this.regeneratedUnits = new Set();
@@ -97,14 +87,9 @@ class Game {
         this.tutorialBlockedActions = new Set();
         this.tutorialWaitingFor = null;
 
-        // Inicializace minimapy
-        const minimapCanvas = document.getElementById('minimap');
-        this.minimap = new Minimap(minimapCanvas, hexGrid);
-
-        // Controller pro hromadné odebrání všech listenerů při destroy()
-        this.eventAbortController = new AbortController();
-
-        this.setupEventListeners();
+        // Prezentace je vyměnitelný adaptér; pravidla lze spustit bez DOM.
+        this.viewFactory = viewFactory;
+        this.view = viewFactory(this);
     }
 
     // Úklid instance - bez něj zůstávají listenery a animační smyčka
@@ -112,12 +97,7 @@ class Game {
     destroy() {
         this.gameState = 'destroyed';
         this.actions.destroy();
-        this.stopAnimationLoop();
-        this.eventAbortController.abort();
-        this.minimap.destroy();
-        this.hideTooltip();
-        this.clearEventNotifications();
-        this.showAIThinking(false);
+        this.view.destroy();
     }
 
     canStartAction(unit = null) {
@@ -128,6 +108,12 @@ class Game {
     setPaused(paused) {
         this.isPaused = paused;
         this.actions.setPaused(paused);
+    }
+
+    skipAIAnimations() {
+        if (this.gameState !== 'playing' || this.currentFaction !== 'crusaders' || this.fastForwardAI) return false;
+        this.fastForwardAI = true;
+        return true;
     }
 
     async scheduleAI() {
@@ -174,7 +160,7 @@ class Game {
         this.setupTerrain();
 
         // Skrytí phase panelu
-        document.getElementById('phase-panel').classList.add('hidden');
+        this.view.showPhase(null);
 
         // Aktualizace UI
         this.updateUI();
@@ -287,27 +273,7 @@ class Game {
         // Převod souřadnic ve victoryConditions na mapové souřadnice
         this.convertVictoryConditionPositions(scenario);
 
-        // Nastavení zvýrazněné cílové zóny (escape zóna nebo breakthrough pozice)
-        // Souřadnice jsou už převedené v convertVictoryConditionPositions výše.
-        const _primary = scenario.victoryConditions && scenario.victoryConditions.primary;
-        if (_primary) {
-            const zoneHexes = _primary.type === 'escape' ? (_primary.escapeZone || [])
-                            : _primary.type === 'breakthrough' ? (_primary.positions || [])
-                            : [];
-            if (zoneHexes.length > 0) {
-                this.hexGrid.setEscapeZone(zoneHexes.map(([col, row]) => ({ col, row })), _primary.zoneLabel || '');
-            }
-        }
-
-        // Nastavení map labels (názvy měst, řek, etc.) - s převodem souřadnic
-        this.hexGrid.mapLabels = (scenario.mapLabels || []).map(label => ({
-            text: label.text,
-            offset: Array.isArray(label.offset) ? [...label.offset] : [0, 0],
-            hexes: label.hexes.map(([col, row]) => {
-                const mapped = this.hexGrid.scenarioToMap(col, row);
-                return [mapped.col, mapped.row];
-            })
-        }));
+        this.view.configureScenario(scenario);
 
         // Vytvoření jednotek ze scénáře
         this.units = ScenarioManager.createScenarioUnits(scenario, this.unitFactory, this.hexGrid);
@@ -365,63 +331,13 @@ class Game {
     // Vycentrování pohledu na počáteční situaci: rámuj střet armád jako
     // taktickou scénu, ne surový roh mapy ani čistě vlastní okraj.
     centerOnPlayerForces() {
-        const mapContainer = document.getElementById('map-container');
-        if (!mapContainer) return;
-
-        const framedUnits = this.units.filter(u => u.health > 0);
-        if (framedUnits.length === 0) return;
-
-        let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-        for (const unit of framedUnits) {
-            const pos = this.hexGrid.hexToPixel(unit.col, unit.row);
-            minX = Math.min(minX, pos.x);
-            minY = Math.min(minY, pos.y);
-            maxX = Math.max(maxX, pos.x);
-            maxY = Math.max(maxY, pos.y);
-        }
-
-        const padding = this.hexGrid.hexSize * 2.2;
-
-        const applyScroll = () => {
-            if (this.gameState === 'destroyed') return;
-            const containerWidth = mapContainer.clientWidth;
-            const containerHeight = mapContainer.clientHeight;
-            const maxLeft = Math.max(0, this.hexGrid.canvas.width - containerWidth);
-            const maxTop = Math.max(0, this.hexGrid.canvas.height - containerHeight);
-
-            const focusX = (minX + maxX) / 2;
-            const focusY = (minY + maxY) / 2;
-            const encounterWidth = maxX - minX + padding * 2;
-            const encounterHeight = maxY - minY + padding * 2;
-
-            let left = focusX - containerWidth / 2;
-            let top = focusY - containerHeight / 2;
-
-            if (encounterWidth <= containerWidth) {
-                left = minX - (containerWidth - encounterWidth) / 2 - padding;
-            }
-
-            if (encounterHeight <= containerHeight) {
-                top = minY - (containerHeight - encounterHeight) / 2 - padding;
-            }
-
-            if (minY < this.hexGrid.canvas.height * 0.58) {
-                top = minY - containerHeight * 0.43;
-            }
-
-            mapContainer.scrollLeft = Math.max(0, Math.min(maxLeft, left));
-            mapContainer.scrollTop = Math.max(0, Math.min(maxTop, top));
-        };
-
-        applyScroll();
-        requestAnimationFrame(applyScroll);
-        this.actions.wait(80).then(active => { if (active) applyScroll(); });
+        return this.view.centerOnPlayerForces();
     }
 
     // Aktualizace aktuální fáze
     updatePhase() {
         if (!this.currentScenario) {
-            document.getElementById('phase-panel').classList.add('hidden');
+            this.view.showPhase(null);
             return;
         }
 
@@ -430,35 +346,7 @@ class Game {
         if (newPhase && (!this.currentPhase || newPhase.id !== this.currentPhase.id)) {
             this.currentPhase = newPhase;
 
-            // Zobrazení phase panelu
-            const phasePanel = document.getElementById('phase-panel');
-            const phaseIcon = document.getElementById('phase-icon');
-            document.getElementById('phase-name').textContent = newPhase.name;
-            document.getElementById('phase-description').textContent = newPhase.description || '';
-
-            // Nastavení ikony podle typu fáze
-            const phaseIcons = {
-                'surprise': '⚡',
-                'attack': '⚔',
-                'defense': '🛡',
-                'retreat': '🏃',
-                'reinforcement': '📯',
-                'ambush': '🎯',
-                'siege': '🏰',
-                'default': '⚔'
-            };
-            const phaseName = newPhase.name.toLowerCase();
-            let icon = phaseIcons.default;
-            if (phaseName.includes('překvap') || phaseName.includes('surprise')) icon = phaseIcons.surprise;
-            else if (phaseName.includes('útok') || phaseName.includes('attack')) icon = phaseIcons.attack;
-            else if (phaseName.includes('obran') || phaseName.includes('defense')) icon = phaseIcons.defense;
-            else if (phaseName.includes('ústup') || phaseName.includes('retreat')) icon = phaseIcons.retreat;
-            else if (phaseName.includes('posil') || phaseName.includes('reinforcement')) icon = phaseIcons.reinforcement;
-            else if (phaseName.includes('léčk') || phaseName.includes('ambush')) icon = phaseIcons.ambush;
-            else if (phaseName.includes('oblé') || phaseName.includes('siege')) icon = phaseIcons.siege;
-
-            if (phaseIcon) phaseIcon.textContent = icon;
-            phasePanel.classList.remove('hidden');
+            this.view.showPhase(newPhase);
 
             // Log změny fáze
             this.addLog(`--- ${newPhase.name} ---`, 'turn');
@@ -532,13 +420,7 @@ class Game {
 
                     this.addLog(i18n.t('gameLog.choralActivated'), 'turn');
 
-                    // Vizuální efekt
-                    const phasePanel = document.getElementById('phase-panel');
-                    const phaseName = document.getElementById('phase-name');
-                    const phaseDesc = document.getElementById('phase-description');
-                    phasePanel.classList.remove('hidden');
-                    phaseName.textContent = i18n.t('gameLog.choralName');
-                    phaseDesc.textContent = event.text || i18n.t('gameLog.choralEffect');
+                    this.view.showPhaseBanner(i18n.t('gameLog.choralName'), event.text || i18n.t('gameLog.choralEffect'));
 
                     this.updateChoralButton();
 
@@ -954,57 +836,13 @@ class Game {
     }
 
     clearEventNotifications() {
-        this.eventNotificationQueue = [];
-        if (this.eventNotificationTimer) {
-            clearTimeout(this.eventNotificationTimer);
-            this.eventNotificationTimer = null;
-        }
-        if (this.activeEventNotification) {
-            this.activeEventNotification.remove();
-            this.activeEventNotification = null;
-        }
+        return this.view.clearEventNotifications();
     }
 
     // Zařazení notifikace eventu. Jednotlivé zprávy se zobrazují sekvenčně,
     // aby se při více událostech v jednom kole nepřekrývaly.
     showEventNotification(title, text) {
-        if (!text || this.gameState === 'destroyed') return;
-        this.eventNotificationQueue.push({ title, text });
-        this.showNextEventNotification();
-    }
-
-    showNextEventNotification() {
-        if (this.activeEventNotification || this.eventNotificationQueue.length === 0 ||
-            this.gameState === 'destroyed') return;
-
-        const { title, text } = this.eventNotificationQueue.shift();
-        const notification = document.createElement('div');
-        notification.className = 'event-notification';
-        const heading = document.createElement('h3');
-        const body = document.createElement('p');
-        const button = document.createElement('button');
-        heading.textContent = title || '';
-        body.textContent = text;
-        button.textContent = i18n.t('menu.continue');
-        notification.append(heading, body, button);
-
-        document.body.appendChild(notification);
-        this.activeEventNotification = notification;
-
-        const closeNotification = () => {
-            if (this.eventNotificationTimer) {
-                clearTimeout(this.eventNotificationTimer);
-                this.eventNotificationTimer = null;
-            }
-            notification.remove();
-            if (this.activeEventNotification === notification) {
-                this.activeEventNotification = null;
-            }
-            this.showNextEventNotification();
-        };
-
-        button.addEventListener('click', closeNotification, { once: true });
-        this.eventNotificationTimer = setTimeout(closeNotification, 10000);
+        return this.view.showEventNotification(title, text);
     }
 
     // ==========================================
@@ -1079,21 +917,11 @@ class Game {
     }
 
     startAnimationLoop() {
-        if (this.animationLoop) return;
-
-        const animate = () => {
-            this.render();
-            this.animationLoop = requestAnimationFrame(animate);
-        };
-
-        this.animationLoop = requestAnimationFrame(animate);
+        return this.view.startAnimationLoop();
     }
 
     stopAnimationLoop() {
-        if (this.animationLoop) {
-            cancelAnimationFrame(this.animationLoop);
-            this.animationLoop = null;
-        }
+        return this.view.stopAnimationLoop();
     }
 
     setupTerrain() {
@@ -1144,362 +972,11 @@ class Game {
         this.hexGrid.setTerrain(10, 9, 'water');
     }
 
-    setupEventListeners() {
-        // Všechny listenery sdílí abort signál - destroy() je odebere najednou
-        const signal = this.eventAbortController.signal;
-
-        // Klik na canvas
-        this.hexGrid.canvas.addEventListener('click', (e) => this.handleClick(e), { signal });
-
-        // Hover pro tooltip
-        this.hexGrid.canvas.addEventListener('mousemove', (e) => this.handleMouseMove(e), { signal });
-        this.hexGrid.canvas.addEventListener('mouseleave', () => this.hideTooltip(), { signal });
-
-        // Tlačítko konce tahu (s volitelným potvrzením z nastavení)
-        document.getElementById('btn-end-turn').addEventListener('click', async () => {
-            if (this.currentFaction !== 'hussites' || !this.canStartAction()) return;
-            if (window.gameSettings && window.gameSettings.confirmEndTurn &&
-                this.currentFaction === 'hussites' && this.gameState === 'playing' &&
-                typeof showConfirmDialog === 'function') {
-                const confirmed = await showConfirmDialog(
-                    i18n.t('game.confirmEndTurnPrompt'),
-                    i18n.t('game.endTurn')
-                );
-                if (!confirmed) return;
-            }
-            if (this.currentFaction === 'hussites') this.endTurn();
-        }, { signal });
-
-        // Klik na indikátor "Křižáci přemýšlí" zrychlí (přeskočí) animaci tahu AI.
-        // Sticky: jakmile hráč klikne, AI tahy běží zrychleně až do konce bitvy.
-        const aiThinking = document.getElementById('ai-thinking');
-        if (aiThinking) {
-            aiThinking.addEventListener('click', () => {
-                if (this.currentFaction !== 'hussites' && !this.fastForwardAI) {
-                    this.fastForwardAI = true;
-                    aiThinking.classList.add('skipping');
-                }
-            }, { signal });
-        }
-
-        // Tlačítko útoku - zvýrazní platné cíle vybrané jednotky
-        const attackBtn = document.getElementById('btn-attack');
-        if (attackBtn) {
-            attackBtn.addEventListener('click', () => {
-                if (!this.selectedUnit || !this.selectedUnit.canAttack()) return;
-                const targets = this.combatSystem.getValidAttackTargets(this.selectedUnit);
-                this.hexGrid.setAttackable(targets);
-                this.render();
-                this.addLog(i18n.t('gameLog.selectAttackTarget'), 'combat');
-            }, { signal });
-        }
-
-        // Tlačítko obrany
-        document.getElementById('btn-defend').addEventListener('click', () => this.combatSystem.defendSelectedUnit(), { signal });
-
-        // WP1: tlačítka vozové hradby - sepnout/rozevřít jeden vůz nebo celou linii
-        const formationBtn = document.getElementById('btn-formation');
-        if (formationBtn) {
-            formationBtn.addEventListener('click', () => {
-                if (this.selectedUnit) this.toggleWagonFormation(this.selectedUnit);
-            }, { signal });
-        }
-        const formationLineBtn = document.getElementById('btn-formation-line');
-        if (formationLineBtn) {
-            formationLineBtn.addEventListener('click', () => {
-                if (this.selectedUnit) this.toggleWagonFormationLine(this.selectedUnit);
-            }, { signal });
-        }
-        // P4: pochod hradby (přepnout linii mezi pevnou zdí a pochodovým šikem)
-        const formationMarchBtn = document.getElementById('btn-formation-march');
-        if (formationMarchBtn) {
-            formationMarchBtn.addEventListener('click', () => {
-                if (this.selectedUnit) this.toggleWagonMarch(this.selectedUnit);
-            }, { signal });
-        }
-
-        // Tlačítko undo (vrátit pohyb)
-        document.getElementById('btn-undo').addEventListener('click', () => this.undoLastMove(), { signal });
-
-        // Tlačítko chorálu
-        const choralBtn = document.getElementById('btn-choral');
-        if (choralBtn) {
-            choralBtn.addEventListener('click', () => this.activateChoral(), { signal });
-        }
-
-        // Tlačítko nové hry ze starého victory modalu (pro zpětnou kompatibilitu)
-        const oldNewGameBtn = document.getElementById('btn-new-game');
-        if (oldNewGameBtn) {
-            oldNewGameBtn.addEventListener('click', () => {
-                document.getElementById('victory-modal').classList.add('hidden');
-                // Pokusit se vrátit do hlavního menu
-                if (typeof window.returnToMainMenu === 'function') {
-                    window.returnToMainMenu();
-                } else {
-                    this.initGame();
-                }
-            }, { signal });
-        }
-
-        // Reference na tooltip element
-        this.tooltip = document.getElementById('tooltip');
-        this.lastHoveredHex = null;
-        this.lastTooltipContent = null; // Cache pro obsah tooltipu
-    }
-
-    handleMouseMove(event) {
-        const rect = this.hexGrid.canvas.getBoundingClientRect();
-        const x = event.clientX - rect.left;
-        const y = event.clientY - rect.top;
-
-        const hex = this.hexGrid.pixelToHex(x, y);
-
-        if (!hex) {
-            this.hideTooltip();
-            return;
-        }
-
-        // Kontrola, zda jsme na stejném hexu
-        if (this.lastHoveredHex &&
-            this.lastHoveredHex.col === hex.col &&
-            this.lastHoveredHex.row === hex.row) {
-            // Tooltip již je zobrazen, není potřeba jej aktualizovat
-            return;
-        }
-
-        this.lastHoveredHex = hex;
-        this.showTooltip(hex, event.clientX, event.clientY);
-    }
-
-    showTooltip(hex, mouseX, mouseY) {
-        // Mlha války: neprozkoumaný hex neprozrazuje vůbec nic
-        if (this.fogOfWar && !this.fogOfWarSystem.isHexExplored(hex.col, hex.row)) {
-            this.hideTooltip();
-            return;
-        }
-
-        let unit = this.getUnitAt(hex.col, hex.row);
-        // Nepřítel skrytý v mlze se v tooltipu chová, jako by tam nebyl
-        if (unit && !this.fogOfWarSystem.isEnemyVisible(unit)) {
-            unit = null;
-        }
-        const terrain = this.hexGrid.getTerrain(hex.col, hex.row);
-
-        let html = '';
-
-        if (unit) {
-            const factionName = i18n.t(`factions.${unit.faction}`);
-            const healthPercent = Math.round((unit.health / unit.maxHealth) * 100);
-
-            // Získej viditelnost jednotky
-            const visionRange = this.fogOfWarSystem.getUnitSightRange(unit);
-
-            html = `
-                <div class="tooltip-title">${unit.name}</div>
-                <div class="tooltip-faction">${factionName}</div>
-                <div class="tooltip-stats">
-                    <div class="tooltip-stat"><span class="label">HP:</span> ${unit.health}/${unit.maxHealth}</div>
-                    <div class="tooltip-stat"><span class="label">${i18n.t('help.unitStats.attack')}:</span> ${unit.attack}</div>
-                    <div class="tooltip-stat"><span class="label">${i18n.t('help.unitStats.defense')}:</span> ${unit.defense}</div>
-                    <div class="tooltip-stat"><span class="label">${i18n.t('help.unitStats.range')}:</span> ${unit.special === 'reach' && unit.range === 1 ? '1-2' : unit.range}</div>
-                    <div class="tooltip-stat"><span class="label">${i18n.t('help.unitStats.movement')}:</span> ${unit.movement}</div>
-                    <div class="tooltip-stat"><span class="label">👁 ${i18n.t('tooltip.visibility')}:</span> ${visionRange}</div>
-                </div>
-            `;
-
-            // Speciální schopnost (přeskočíme commander - ten má vlastní sekci)
-            if (unit.special && unit.special !== 'commander') {
-                const specialKey = `special.${unit.special}`;
-                const specialName = i18n.hasTranslation(specialKey) ? i18n.t(specialKey) : unit.special;
-                html += `<div class="tooltip-special">${specialName}</div>`;
-            }
-
-            // Velitel - speciální zobrazení
-            if (unit.special === 'commander' || unit.unitClass === 'commander') {
-                html += `<div class="tooltip-special" style="color: #ffd700;">👑 ${i18n.t('tooltip.commander')}</div>`;
-            } else {
-                // Aura velitele - jednotka v dosahu spřáteleného velitele dostává bonus
-                const aura = this.getCommanderBonuses(unit);
-                if (aura && (aura.attack || aura.defense || aura.morale)) {
-                    const parts = [];
-                    if (aura.attack) parts.push(i18n.t('tooltip.attackBonus', { value: aura.attack }));
-                    if (aura.defense) parts.push(i18n.t('tooltip.defenseBonus', { value: aura.defense }));
-                    if (aura.morale) parts.push(i18n.t('tooltip.moraleBonus', { value: aura.morale }));
-                    html += `<div class="tooltip-bonus">👑 ${i18n.t('tooltip.inAura')}: ${aura.commander} (${parts.join(', ')})</div>`;
-                }
-            }
-
-            if (unit.isDefending) {
-                html += `<div class="tooltip-bonus">${i18n.t('tooltip.defensiveStance')}</div>`;
-            }
-
-            if (unit.isTerrified) {
-                html += `<div class="tooltip-debuff">${i18n.t('tooltip.terrified')}</div>`;
-            }
-
-            // Morálka
-            html += `<div class="tooltip-morale" style="margin-top: 5px; padding-top: 5px; border-top: 1px solid #444;">
-                <span class="label">${i18n.t('game.moraleLabel')}:</span>
-                <span style="color: ${unit.getMoraleColor()}">${unit.getMoraleStatus()} (${Math.round(unit.morale)}%)</span>
-            </div>`;
-
-            if (unit.isRouting) {
-                html += `<div class="tooltip-debuff" style="color: #ff4444; font-weight: bold;">🏃 ${i18n.t('tooltip.routing')}</div>`;
-            }
-
-            // Informace o zbývajících útocích pro rapidFire
-            if (unit.special === 'rapidFire' && unit.attackCount > 0 && unit.attackCount < 2) {
-                html += `<div class="tooltip-info">${i18n.t('tooltip.attacksRemaining', { count: 2 - unit.attackCount })}</div>`;
-            }
-
-            // Náhled šancí při útoku - pokud je vybraná jednotka a toto je nepřítel
-            if (this.selectedUnit && this.selectedUnit.faction !== unit.faction) {
-                const p = this.combatSystem.calculateDamagePreview(this.selectedUnit, unit);
-                if (p) {
-                    const dmg = p.min === p.max ? `${p.min}` : `${p.min} - ${p.max}`;
-                    let killLine = '';
-                    if (p.killsCertain) {
-                        killLine = `<div class="damage-range" style="color: #ff6b6b; font-weight: bold;">💀 ${i18n.t('tooltip.killsTarget')}</div>`;
-                    } else if (p.killsPossible) {
-                        killLine = `<div class="damage-range" style="color: #ffb86b;">${i18n.t('tooltip.mayKill')}</div>`;
-                    }
-                    let counterLine = '';
-                    if (p.counter) {
-                        const c = p.counter.min === p.counter.max ? `${p.counter.min}` : `${p.counter.min} - ${p.counter.max}`;
-                        const counterKill = p.counter.killsAttackerCertain
-                            ? ` <span style="color: #ff6b6b; font-weight: bold;">${i18n.t('tooltip.attackerFalls')}</span>`
-                            : (p.counter.killsAttackerPossible ? ` <span style="color: #ffb86b;">${i18n.t('tooltip.deathRisk')}</span>` : '');
-                        counterLine = `<div class="damage-range" style="color: #ff9999;">↩️ ${i18n.t('tooltip.counterattack', { damage: c })}${counterKill}</div>`;
-                    }
-                    html += `
-                        <div class="tooltip-damage-preview">
-                            <div class="damage-title">⚔️ ${i18n.t('tooltip.damageEstimate')}</div>
-                            <div class="damage-value">${dmg} HP</div>
-                            ${killLine}
-                            ${counterLine}
-                        </div>
-                    `;
-                }
-            }
-        }
-
-        // Přidat info o terénu
-        const hasFrozenRiver = this.currentScenario?.specialMechanics?.frozenRiver;
-
-        const terrainNames = {
-            plains: i18n.t('terrain.plains'),
-            forest: i18n.t('terrain.forest'),
-            hills: i18n.t('terrain.hills'),
-            water: hasFrozenRiver ? i18n.t('tooltip.frozenRiver') : i18n.t('terrain.water'),
-            town: i18n.t('terrain.town'),
-            road: i18n.t('terrain.road'),
-            road2: i18n.t('terrain.road'),
-            dam: i18n.t('terrain.dam'),
-            mud: i18n.t('terrain.mud'),
-            swamp: i18n.hasTranslation('terrain.swamp') ? i18n.t('terrain.swamp') : i18n.t('terrain.mud'),
-            slope: i18n.t('terrain.slope'),
-            trenches: i18n.t('terrain.trenches'),
-            church: i18n.t('terrain.church')
-        };
-
-        const terrainBonuses = {
-            plains: '',
-            forest: i18n.t('tooltip.defenseModifier', { value: '+20' }),
-            hills: i18n.t('tooltip.defenseModifier', { value: '+30' }),
-            water: hasFrozenRiver ? i18n.t('tooltip.thinIce') : i18n.t('tooltip.impassable'),
-            town: i18n.t('tooltip.defenseModifier', { value: '+40' }),
-            road: i18n.t('tooltip.fastMovement'),
-            road2: i18n.t('tooltip.fastMovement'),
-            dam: i18n.t('tooltip.defenseModifier', { value: '+20' }),
-            mud: i18n.t('tooltip.slows'),
-            swamp: `${i18n.t('tooltip.slows')}, ${i18n.t('tooltip.defenseModifier', { value: '+10' })}`,
-            slope: i18n.t('tooltip.defenseModifier', { value: '+10' }),
-            trenches: i18n.t('tooltip.defenseModifier', { value: '+30' }),
-            church: i18n.t('tooltip.defenseModifier', { value: '+20' })
-        };
-
-        // Najdi map label pro tento hex
-        const mapLabel = (this.hexGrid.mapLabels || []).find(l =>
-            l.hexes && l.hexes.some(([c, r]) => c === hex.col && r === hex.row)
-        );
-        const locationName = mapLabel ? mapLabel.text : null;
-
-        // Terénní modifikátory KONKRÉTNÍ jednotky (skutečná čísla, co počítá souboj),
-        // ne generická. U střelců z kopce se tím ukáže i útočný bonus z výšiny.
-        let terrainLines;
-        if (unit) {
-            const tDef = Math.round(unit.getTerrainDefenseBonus(terrain) * 100);
-            const tAtk = Math.round(unit.getTerrainAttackBonus(terrain) * 100);
-            const line = (val, key, extra = '') => !val ? '' :
-                `<div class="tooltip-bonus"${val < 0 ? ' style="color: #b02323"' : ''}>${i18n.t(key, { value: val > 0 ? `+${val}` : val })}${extra}</div>`;
-            const highGround = (terrain === 'hills' || terrain === 'slope') && tAtk > 0 && unit.isRanged();
-            const moveNote = { road: i18n.t('tooltip.fastMovement'), road2: i18n.t('tooltip.fastMovement'),
-                mud: i18n.t('tooltip.slows'), swamp: i18n.t('tooltip.slows'), slope: i18n.t('tooltip.slows'),
-                water: hasFrozenRiver ? i18n.t('tooltip.thinIce') : i18n.t('tooltip.impassable') }[terrain];
-            terrainLines = line(tDef, 'tooltip.defenseModifier')
-                + line(tAtk, 'tooltip.attackModifier', highGround ? i18n.t('tooltip.highGroundSuffix') : '')
-                + (moveNote ? `<div class="tooltip-bonus" style="color: #6b5c38">${moveNote}</div>` : '');
-        } else {
-            terrainLines = terrainBonuses[terrain] ? `<div class="tooltip-bonus">${terrainBonuses[terrain]}</div>` : '';
-        }
-
-        html += `
-            <div class="tooltip-terrain">
-                <strong>${locationName || terrainNames[terrain] || terrain}</strong>
-                ${terrainLines}
-            </div>
-        `;
-
-        // Aktualizovat tooltip jen pokud se obsah změnil (optimalizace pro animationLoop)
-        if (html !== this.lastTooltipContent) {
-            this.tooltip.innerHTML = html;
-            this.lastTooltipContent = html;
-        }
-
-        this.tooltip.classList.remove('hidden');
-        this.positionTooltip(mouseX, mouseY);
-    }
-
-    positionTooltip(mouseX, mouseY) {
-        const mapContainer = document.getElementById('map-container');
-        const containerRect = mapContainer.getBoundingClientRect();
-
-        // Větší offset od kurzoru pro lepší stabilitu
-        const offset = 20;
-
-        // Pozice relativní k map-container + scroll offset
-        let left = mouseX - containerRect.left + mapContainer.scrollLeft + offset;
-        let top = mouseY - containerRect.top + mapContainer.scrollTop + offset;
-
-        // Kontrola přetečení (relativně k viditelné oblasti)
-        const tooltipRect = this.tooltip.getBoundingClientRect();
-        if (mouseX + tooltipRect.width + offset > containerRect.right) {
-            left = mouseX - containerRect.left + mapContainer.scrollLeft - tooltipRect.width - offset;
-        }
-        if (mouseY + tooltipRect.height + offset > containerRect.bottom) {
-            top = mouseY - containerRect.top + mapContainer.scrollTop - tooltipRect.height - offset;
-        }
-
-        this.tooltip.style.left = `${left}px`;
-        this.tooltip.style.top = `${top}px`;
-    }
-
-    hideTooltip() {
-        this.tooltip.classList.add('hidden');
-        this.lastHoveredHex = null;
-        this.lastTooltipContent = null; // Vyčistit cache
-    }
-
-    handleClick(event) {
+    handleHexClick(hex) {
         if (!this.canStartAction()) return;
         if (this.currentFaction !== 'hussites') return; // Blokace během tahu AI
 
-        const rect = this.hexGrid.canvas.getBoundingClientRect();
-        const x = event.clientX - rect.left;
-        const y = event.clientY - rect.top;
-
-        const hex = this.hexGrid.pixelToHex(x, y);
-        if (!hex) return;
+        if (!hex || !this.hexGrid.inBounds(hex.col, hex.row)) return;
 
         const clickedUnit = this.getUnitAt(hex.col, hex.row);
 
@@ -1550,7 +1027,7 @@ class Game {
     selectUnit(unit) {
         if (!this.canStartAction(unit)) return;
         this.selectedUnit = unit;
-        this.hexGrid.setSelected(unit.col, unit.row);
+        this.view.showSelection(unit);
 
         // Tutoriál - trigger výběru jednotky
         if (this.isTutorial) {
@@ -1560,26 +1037,13 @@ class Game {
         // Zvuk výběru
         Sound.playSelect();
 
-        // Zobrazení možných pohybů
-        if (unit.canMove()) {
-            const moveRange = this.getValidMoves(unit);
-            this.hexGrid.setHighlighted(moveRange);
-        }
-
-        // Zobrazení možných cílů útoku
-        if (unit.canAttack()) {
-            const attackTargets = this.combatSystem.getValidAttackTargets(unit);
-            this.hexGrid.setAttackable(attackTargets);
-        }
-
         this.updateUnitPanel(unit);
         this.render();
     }
 
     deselectUnit() {
         this.selectedUnit = null;
-        this.hexGrid.setSelected(null, null);
-        this.hexGrid.clearHighlights();
+        this.view.clearSelection();
         this.updateUnitPanel(null);
         this.render();
     }
@@ -1618,20 +1082,7 @@ class Game {
 
     // Vycentrování pohledu na jednotku
     centerOnUnit(unit) {
-        const mapContainer = document.getElementById('map-container');
-        if (!mapContainer || !unit) return;
-
-        requestAnimationFrame(() => {
-            if (this.gameState === 'destroyed') return;
-            const pos = this.hexGrid.hexToPixel(unit.col, unit.row);
-            const containerWidth = mapContainer.clientWidth;
-            const containerHeight = mapContainer.clientHeight;
-            const maxLeft = Math.max(0, this.hexGrid.canvas.width - containerWidth);
-            const maxTop = Math.max(0, this.hexGrid.canvas.height - containerHeight);
-
-            mapContainer.scrollLeft = Math.max(0, Math.min(maxLeft, pos.x - containerWidth / 2));
-            mapContainer.scrollTop = Math.max(0, Math.min(maxTop, pos.y - containerHeight / 2));
-        });
+        return this.view.centerOnUnit(unit);
     }
 
     getUnitAt(col, row) {
@@ -1855,10 +1306,7 @@ class Game {
 
         // Pokud může ještě útočit, zobrazíme cíle
         if (unit.canAttack()) {
-            this.hexGrid.setSelected(unit.col, unit.row);
-            this.hexGrid.setHighlighted([]);
-            const attackTargets = this.combatSystem.getValidAttackTargets(unit);
-            this.hexGrid.setAttackable(attackTargets);
+            this.view.showSelection(unit, { moves: false });
         } else {
             this.deselectUnit();
         }
@@ -2269,19 +1717,7 @@ class Game {
             });
         }
 
-        // Použít nový gameover modal pokud existuje
-        if (typeof window.showGameOver === 'function') {
-            window.showGameOver(isVictory, message, stats);
-        } else {
-            // Fallback na starý modal
-            const modal = document.getElementById('victory-modal');
-            const title = document.getElementById('victory-title');
-            const msgEl = document.getElementById('victory-message');
-
-            title.textContent = i18n.t(isVictory ? 'gameLog.victoryHussites' : 'gameLog.victoryCrusaders');
-            msgEl.textContent = message;
-            modal.classList.remove('hidden');
-        }
+        this.view.showGameOver(isVictory, message, stats);
     }
 
     async runAI() {
@@ -2305,59 +1741,19 @@ class Game {
 
     // Zobrazení/skrytí AI thinking indikátoru
     showAIThinking(show) {
-        const indicator = document.getElementById('ai-thinking');
-        if (indicator) {
-            if (show) {
-                // WP5: text nese jméno strany, která je právě na tahu (AI = currentFaction)
-                const textEl = indicator.querySelector('.ai-thinking-text');
-                if (textEl) {
-                    textEl.textContent = i18n.t('game.aiThinkingNamed', { faction: this.factionLabel(this.currentFaction) });
-                }
-                indicator.classList.remove('hidden');
-            } else {
-                indicator.classList.add('hidden');
-            }
-        }
+        return this.view.showAIThinking(show);
     }
-
 
     // WP5: zobrazované jméno strany pro aktuální scénář.
     // Živý lookup přes i18n (scenarios.<id>.factionNames.<faction>) - přežije přepnutí
     // jazyka; fallback na generické factions.<faction> (Husité/Křižáci).
     factionLabel(faction) {
-        const id = this.currentScenario && this.currentScenario.id;
-        if (id && typeof i18n !== 'undefined') {
-            const key = `scenarios.${id}.factionNames.${faction}`;
-            if (i18n.hasTranslation(key)) return i18n.t(key);
-            // fallback na kanonickou hodnotu ze scénáře (pro jazyk bez locale záznamu)
-            const fn = this.currentScenario.factionNames;
-            if (fn && fn[faction]) return fn[faction];
-        }
-        return i18n.t(`factions.${faction}`);
+        return this.view.factionLabel(faction);
     }
 
     // Aktualizace UI
     updateUI() {
-        // Aktuální hráč
-        const playerSpan = document.getElementById('current-player');
-        const factionName = this.factionLabel(this.currentFaction);
-        playerSpan.textContent = `${i18n.t('game.turnLabel')} ${factionName}`;
-        playerSpan.className = this.currentFaction === 'crusaders' ? 'crusaders' : '';
-
-        // Číslo kola - u misí s limitem ukaž i deadline (Kolo X/Y)
-        const maxT = this.currentScenario && this.currentScenario.maxTurns;
-        document.getElementById('turn-number').textContent = maxT
-            ? `${i18n.t('game.roundLabel')} ${this.turnNumber}/${maxT}`
-            : `${i18n.t('game.roundLabel')} ${this.turnNumber}`;
-
-        // Přehled armád
-        this.updateArmyOverview();
-
-        // Aktualizace tlačítka chorálu
-        this.updateChoralButton();
-
-        // Aktualizace pulsujícího efektu tlačítka Ukončit tah
-        this.updateEndTurnButton();
+        return this.view.updateUI();
     }
 
     // Kontrola zda všechny jednotky hráče již jednaly
@@ -2375,399 +1771,36 @@ class Game {
 
     // Aktualizace tlačítka Ukončit tah - pulsuje když všechny jednotky jednaly
     updateEndTurnButton() {
-        const endTurnBtn = document.getElementById('btn-end-turn');
-        if (!endTurnBtn) return;
-        endTurnBtn.disabled = this.currentFaction !== 'hussites' || !this.canStartAction();
-        for (const id of ['btn-save', 'btn-pause-save']) {
-            const button = document.getElementById(id);
-            if (button) button.disabled = this.gameState !== 'playing' || this.actions.busy || this.currentFaction !== 'hussites';
-        }
-
-        // Pouze pro hráčskou frakci (husité)
-        if (this.currentFaction === 'hussites' && this.allPlayerUnitsActed()) {
-            endTurnBtn.classList.add('pulse');
-        } else {
-            endTurnBtn.classList.remove('pulse');
-        }
+        return this.view.updateEndTurnButton();
     }
 
     updateArmyOverview() {
-        const hussiteSection = document.getElementById('hussite-section');
-        const crusaderSection = document.getElementById('crusader-section');
-        const hussiteList = document.getElementById('hussite-units');
-        const crusaderList = document.getElementById('crusader-units');
-
-        hussiteList.innerHTML = '';
-        crusaderList.innerHTML = '';
-
-        // Počítadla jednotek
-        let hussiteAlive = 0, hussiteTotal = 0;
-        let crusaderAlive = 0, crusaderTotal = 0;
-
-        for (const unit of this.units) {
-            const li = document.createElement('li');
-            li.className = 'unit-list-item';
-
-            // Získání symbolu jednotky
-            const unitType = UnitTypes[unit.type];
-            const symbol = unitType?.symbol || '?';
-
-            // Výpočet procenta zdraví pro barvu
-            const healthPercent = (unit.health / unit.maxHealth) * 100;
-            let healthClass = 'health-high';
-            if (healthPercent <= 30) {
-                healthClass = 'health-critical';
-            } else if (healthPercent <= 60) {
-                healthClass = 'health-medium';
-            }
-
-            if (unit.health <= 0) {
-                li.classList.add('destroyed');
-                li.innerHTML = `
-                    <span class="unit-icon destroyed">✝</span>
-                    <span class="unit-name">${unit.name}</span>
-                `;
-            } else {
-                li.innerHTML = `
-                    <span class="unit-icon">${symbol}</span>
-                    <span class="unit-name">${unit.name}</span>
-                    <span class="unit-health ${healthClass}">${unit.health}</span>
-                `;
-
-                if (unit.faction === this.currentFaction && !unit.canAct()) {
-                    li.classList.add('exhausted');
-                }
-            }
-
-            // Označení aktivní (vybrané) jednotky
-            if (this.selectedUnit === unit) {
-                li.classList.add('active');
-            }
-
-            // Kliknutí na jednotku v přehledu - vybere jednotku
-            if (unit.health > 0) {
-                li.addEventListener('click', () => {
-                    // Pouze husitské jednotky jsou vybíratelné hráčem
-                    if (unit.faction === 'hussites' && this.currentFaction === 'hussites') {
-                        this.selectUnit(unit);
-                        this.render();
-                    }
-                });
-            }
-
-            if (unit.faction === 'hussites') {
-                hussiteList.appendChild(li);
-                hussiteTotal++;
-                if (unit.health > 0) hussiteAlive++;
-            } else {
-                crusaderList.appendChild(li);
-                crusaderTotal++;
-                if (unit.health > 0) crusaderAlive++;
-            }
-        }
-
-        // Aktualizace počítadel v hlavičkách
-        const hussiteCount = hussiteSection?.querySelector('.faction-count');
-        const crusaderCount = crusaderSection?.querySelector('.faction-count');
-        if (hussiteCount) hussiteCount.textContent = `${hussiteAlive}/${hussiteTotal}`;
-        if (crusaderCount) crusaderCount.textContent = `${crusaderAlive}/${crusaderTotal}`;
-
-        // WP5: per-scénář jména stran v hlavičkách (data-i18n odstraněn v HTML, řídíme ručně)
-        const hussiteName = hussiteSection?.querySelector('.faction-name');
-        const crusaderName = crusaderSection?.querySelector('.faction-name');
-        if (hussiteName) hussiteName.textContent = this.factionLabel('hussites');
-        if (crusaderName) crusaderName.textContent = this.factionLabel('crusaders');
-
-        // Lišty morálky armád (okno protiútoku)
-        this.renderMoraleBar('hussite', 'hussites', hussiteAlive);
-        this.renderMoraleBar('crusader', 'crusaders', crusaderAlive);
+        return this.view.updateArmyOverview();
     }
 
     // Vykreslení lišty morálky jedné armády
     renderMoraleBar(prefix, faction, aliveCount) {
-        const bar = document.getElementById(`${prefix}-morale`);
-        const fill = document.getElementById(`${prefix}-morale-fill`);
-        const text = document.getElementById(`${prefix}-morale-text`);
-        if (!bar || !fill || !text) return;
-
-        // Bez živých jednotek lišta zmizí
-        if (aliveCount === 0) {
-            bar.style.display = 'none';
-            return;
-        }
-        bar.style.display = '';
-
-        const morale = this.getArmyMorale(faction);
-        this.armyMorale[faction] = morale;
-
-        fill.style.width = `${morale}%`;
-        fill.classList.remove('morale-medium', 'morale-low');
-        if (morale < 40) {
-            fill.classList.add('morale-low');
-        } else if (morale < 60) {
-            fill.classList.add('morale-medium');
-        }
-
-        const isWavering = this.wavering && this.wavering[faction];
-        bar.classList.toggle('wavering', !!isWavering);
-
-        const label = i18n.t('game.moraleLabel');
-        text.textContent = isWavering
-            ? `${i18n.t('game.wavering')} ${morale}%`
-            : `${label} ${morale}%`;
-        bar.title = `${label}: ${morale}%`;
+        return this.view.renderMoraleBar(prefix, faction, aliveCount);
     }
 
     updateUnitPanel(unit) {
-        const infoDiv = document.getElementById('unit-info');
-        const actionsDiv = document.getElementById('unit-actions');
-        const attackBtn = document.getElementById('btn-attack');
-        const unitPanel = document.getElementById('unit-panel');
-
-        if (!unit) {
-            if (unitPanel) {
-                unitPanel.classList.add('empty-unit-panel');
-            }
-            infoDiv.innerHTML = `<p class="no-selection">${i18n.t('tooltip.selectUnit')}</p>`;
-            actionsDiv.classList.add('hidden');
-            return;
-        }
-        if (unitPanel) {
-            unitPanel.classList.remove('empty-unit-panel');
-        }
-
-        // Speciální schopnost HTML
-        let specialHtml = '';
-        if (unit.special && unit.special !== 'commander') {
-            const specialKey = `special.${unit.special}`;
-            const specialName = i18n.hasTranslation(specialKey) ? i18n.t(specialKey) : unit.special;
-            specialHtml = `
-                <div class="unit-special" style="margin: 10px 0; padding: 8px; background: rgba(212, 175, 55, 0.15); border: 1px solid #5c4a1f; border-radius: 4px;">
-                    <span style="color: #d4af37; font-weight: bold;">⚡ ${specialName}</span>
-                </div>
-            `;
-        }
-
-        // Velitelské schopnosti HTML
-        let commanderHtml = '';
-        if (unit.isCommander && unit.isCommander()) {
-            const abilities = unit.getCommanderAbilities();
-            let abilitiesText = [];
-            if (abilities.moraleBonus) abilitiesText.push(i18n.t('tooltip.moraleBonus', { value: abilities.moraleBonus }));
-            if (abilities.attackBonus) abilitiesText.push(i18n.t('tooltip.attackBonus', { value: abilities.attackBonus }));
-            if (abilities.defenseBonus) abilitiesText.push(i18n.t('tooltip.defenseBonus', { value: abilities.defenseBonus }));
-            if (abilities.wagonBonus) abilitiesText.push(i18n.t('tooltip.wagonsBonus', { value: abilities.wagonBonus }));
-            if (abilities.cavalryBonus) abilitiesText.push(i18n.t('tooltip.cavalryBonus', { value: abilities.cavalryBonus }));
-
-            commanderHtml = `
-                <div class="commander-info" style="margin: 10px 0; padding: 10px; background: rgba(139, 69, 19, 0.3); border: 2px solid #8b4513; border-radius: 6px;">
-                    <div style="color: #ffd700; font-weight: bold; font-size: 1.1rem; margin-bottom: 8px;">
-                        👑 ${i18n.t('tooltip.commander').toUpperCase()}
-                    </div>
-                    <div style="color: #d4af37; font-size: 0.85rem; margin-bottom: 5px;">
-                        ${i18n.t('tooltip.auraRange', { value: abilities.auraRange })}
-                    </div>
-                    <div style="color: #aaa; font-size: 0.8rem;">
-                        ${i18n.t('tooltip.bonuses', { values: abilitiesText.join(', ') })}
-                    </div>
-                    ${abilities.fearRange ? `<div style="color: #ff6b6b; font-size: 0.8rem; margin-top: 3px;">${i18n.t('tooltip.fear', { penalty: abilities.fearPenalty, range: abilities.fearRange })}</div>` : ''}
-                    ${abilities.rallyBonus ? `<div style="color: #2f7d31; font-size: 0.8rem; margin-top: 3px;">${i18n.t('tooltip.rallyBonus', { value: abilities.rallyBonus })}</div>` : ''}
-                </div>
-            `;
-        }
-
-        // Velitelský bonus pokud je jednotka v auře
-        let auraEffectHtml = '';
-        if (!unit.isCommander || !unit.isCommander()) {
-            const bonuses = this.getCommanderBonuses(unit);
-            const fearPenalty = this.getEnemyCommanderFearPenalty(unit);
-
-            if (bonuses && (bonuses.morale > 0 || bonuses.attack > 0 || bonuses.defense > 0)) {
-                const nearestInfo = this.getNearestCommander(unit);
-                auraEffectHtml = `
-                    <div class="aura-effect aura-bonus">
-                        <div class="aura-header">
-                            <span class="aura-icon">👑</span>
-                            <span class="aura-title">${i18n.t('tooltip.inAura')}${nearestInfo ? ` (${nearestInfo.commander.name})` : ''}</span>
-                        </div>
-                        <div class="aura-values">
-                            ${bonuses.attack > 0 ? `<span class="aura-value positive">${i18n.t('tooltip.attackBonus', { value: bonuses.attack })}</span>` : ''}
-                            ${bonuses.defense > 0 ? `<span class="aura-value positive">${i18n.t('tooltip.defenseBonus', { value: bonuses.defense })}</span>` : ''}
-                            ${bonuses.morale > 0 ? `<span class="aura-value positive">${i18n.t('tooltip.moraleBonus', { value: bonuses.morale })}</span>` : ''}
-                        </div>
-                    </div>
-                `;
-            }
-
-            if (fearPenalty > 0) {
-                auraEffectHtml += `
-                    <div class="aura-effect aura-fear">
-                        <div class="aura-header">
-                            <span class="aura-icon">⚠️</span>
-                            <span class="aura-title">${i18n.t('tooltip.enemyCommander')}</span>
-                        </div>
-                        <div class="aura-values">
-                            <span class="aura-value negative">-${i18n.t('tooltip.moraleBonus', { value: fearPenalty }).replace(/^\+/, '')}</span>
-                        </div>
-                    </div>
-                `;
-            }
-        }
-
-        // Status efekty
-        let statusHtml = '';
-        if (unit.isTerrified) {
-            statusHtml += `<span style="color: #ff8844; font-size: 0.85rem;">😨 ${i18n.t('tooltip.terrified')}</span><br>`;
-        }
-        if (unit.isDefending) {
-            statusHtml += `<span style="color: #4488ff; font-size: 0.85rem;">🛡️ ${i18n.t('tooltip.defensiveStance')}</span><br>`;
-        }
-        // WP1/P4: stav vozové hradby - pevná zeď (nehýbe se) vs pochod (poloviční kryt)
-        if (unit.isWagon() && unit.formationClosed) {
-            if (unit.marching) {
-                statusHtml += `<span style="color: #d0b060; font-size: 0.85rem;">➡ ${i18n.t('game.wagonMarchHint')}</span><br>`;
-            } else {
-                statusHtml += `<span style="color: #c9a227; font-size: 0.85rem;">⛓ ${i18n.t('game.wagonChainedHint')}</span><br>`;
-            }
-        }
-        if (unit.isRouting) {
-            statusHtml += `<span style="color: #ff4444; font-size: 0.85rem;">🏃 ${i18n.t('tooltip.routing')}</span><br>`;
-        }
-
-        // Obklíčení - dynamická kontrola
-        const surroundInfo = this.checkSurrounded(unit);
-        if (surroundInfo.surrounded) {
-            const levelText = i18n.t(`tooltip.surrounded${surroundInfo.level}`);
-            const penalty = surroundInfo.level * 10;
-            statusHtml += `<span style="color: #ff6666; font-size: 0.85rem;">⚔️ ${i18n.t('tooltip.surroundedEffect', {
-                state: levelText,
-                defense: penalty,
-                morale: surroundInfo.level * 5
-            })}</span><br>`;
-        }
-
-        infoDiv.innerHTML = `
-            <h3>${unit.name}</h3>
-            <p style="font-size: 0.8rem; color: #999; margin-bottom: 8px; font-style: italic;">${unit.description}</p>
-            ${commanderHtml}
-            ${specialHtml}
-
-            ${auraEffectHtml}
-
-            <div class="unit-stats-grid">
-                <div class="unit-stat">
-                    <span><span class="stat-icon">⚔</span><span class="label">${i18n.t('help.unitStats.attack')}</span></span>
-                    <span class="value">${unit.attack}</span>
-                </div>
-                <div class="unit-stat">
-                    <span><span class="stat-icon">🛡</span><span class="label">${i18n.t('help.unitStats.defense')}</span></span>
-                    <span class="value">${unit.defense}</span>
-                </div>
-                <div class="unit-stat">
-                    <span><span class="stat-icon">📏</span><span class="label">${i18n.t('help.unitStats.range')}</span></span>
-                    <span class="value">${unit.range}</span>
-                </div>
-                <div class="unit-stat">
-                    <span><span class="stat-icon">👣</span><span class="label">${i18n.t('help.unitStats.movement')}</span></span>
-                    <span class="value">${unit.movement}</span>
-                </div>
-            </div>
-
-            <div class="health-bar" style="margin-top: 8px; position: relative;">
-                <div class="health-bar-fill" style="width: ${(unit.health / unit.maxHealth) * 100}%"></div>
-                <span class="health-bar-text">${unit.health}/${unit.maxHealth}</span>
-            </div>
-
-            <div class="morale-section" style="padding-top: 8px; border-top: 1px solid rgba(201, 162, 39, 0.3);">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                    <span style="font-size: 0.75rem; color: #888; text-transform: uppercase;">${i18n.t('game.moraleLabel')}</span>
-                    <span style="color: ${unit.getMoraleColor()}; font-weight: bold;">${unit.getMoraleStatus()}</span>
-                </div>
-                <div class="morale-bar" style="width: 100%; height: 6px; background: rgba(0,0,0,0.4); border-radius: 3px; overflow: hidden;">
-                    <div style="width: ${(unit.morale / unit.maxMorale) * 100}%; height: 100%; background: ${unit.getMoraleColor()}; transition: width 0.3s;"></div>
-                </div>
-            </div>
-            ${statusHtml ? `<div class="status-effects" style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(201, 162, 39, 0.3);">${statusHtml}</div>` : ''}
-        `;
-
-        if (unit.faction === this.currentFaction) {
-            actionsDiv.classList.remove('hidden');
-            attackBtn.disabled = !unit.canAttack();
-
-            // WP1: tlačítka hradby - jen pro hráčův vůz, který ještě nejednal
-            const formationBtn = document.getElementById('btn-formation');
-            const formationLineBtn = document.getElementById('btn-formation-line');
-            const formationMarchBtn = document.getElementById('btn-formation-march');
-            if (formationBtn && formationLineBtn) {
-                if (unit.isWagon() && !unit.hasMoved) {
-                    formationBtn.textContent = i18n.t(unit.formationClosed ? 'game.openFort' : 'game.closeFort');
-                    formationLineBtn.textContent = i18n.t('game.toggleFortLine');
-                    formationBtn.classList.remove('hidden');
-                    formationLineBtn.classList.remove('hidden');
-                } else {
-                    formationBtn.classList.add('hidden');
-                    formationLineBtn.classList.add('hidden');
-                }
-            }
-            // P4: pochod hradby - dostupný pro sepnutý vůz (přepnutí zdarma; ukážeme
-            // i po pohybu, aby šlo zastavit a získat příště plný kryt)
-            if (formationMarchBtn) {
-                if (unit.isWagon() && unit.formationClosed) {
-                    formationMarchBtn.textContent = i18n.t(unit.marching ? 'game.stopMarch' : 'game.startMarch');
-                    formationMarchBtn.classList.remove('hidden');
-                } else {
-                    formationMarchBtn.classList.add('hidden');
-                }
-            }
-
-            // Tlačítko undo - zobrazit pouze pokud je možné vrátit pohyb
-            const undoBtn = document.getElementById('btn-undo');
-            if (this.canUndo() && this.lastMove && this.lastMove.unit === unit) {
-                undoBtn.classList.remove('hidden');
-            } else {
-                undoBtn.classList.add('hidden');
-            }
-        } else {
-            actionsDiv.classList.add('hidden');
-        }
+        return this.view.updateUnitPanel(unit);
     }
 
     clearLog() {
         this.log = [];
-        const logDiv = document.getElementById('game-log');
-        if (logDiv) logDiv.replaceChildren();
+        this.view.clearLog();
     }
 
     addLog(message, type = '') {
-        const logDiv = document.getElementById('game-log');
-        const p = document.createElement('p');
-        p.textContent = message;
-        if (type) p.classList.add(type);
-
-        logDiv.appendChild(p);
-        logDiv.scrollTop = logDiv.scrollHeight;
-
         this.log.push({ message, type });
+        this.view.addLog(message, type);
     }
 
+    // Odvozená viditelnost patří pravidlům, samotné vykreslení je pouze čtení.
     render() {
-        // Aktualizace viditelnosti před renderem
         this.fogOfWarSystem.updateVisibility();
-
-        const aliveUnits = this.units.filter(u => u.health > 0);
-
-        // Filtrování viditelných jednotek pro render
-        const visibleUnits = this.fogOfWar
-            ? aliveUnits.filter(u => u.faction === 'hussites' || this.fogOfWarSystem.isEnemyVisible(u))
-            : aliveUnits;
-
-        // Předání informací o mlze do rendereru
-        this.hexGrid.render(visibleUnits, {
-            fogOfWar: this.fogOfWar,
-            visibleHexes: this.visibleHexes,
-            exploredHexes: this.exploredHexes
-        });
-        this.minimap.render(visibleUnits);
+        this.view.render();
     }
 
     // Pomocné metody pro AI
@@ -2923,8 +1956,7 @@ class Game {
 
         // Reset výběru
         this.selectedUnit = null;
-        this.hexGrid.setSelected(null, null);
-        this.hexGrid.clearHighlights();
+        this.view.clearSelection();
 
         // Aktualizace UI
         this.updateUI();
@@ -3383,14 +2415,7 @@ class Game {
 
         this.addLog(i18n.t('gameLog.choralActivated'), 'turn');
 
-        // Vizuální efekt - změna phase panelu
-        const phasePanel = document.getElementById('phase-panel');
-        const phaseName = document.getElementById('phase-name');
-        const phaseDesc = document.getElementById('phase-description');
-
-        phasePanel.classList.remove('hidden');
-        phaseName.textContent = `⚔️ ${i18n.t('game.choralActive')}`;
-        phaseDesc.textContent = i18n.t('game.choralEffect', { turns: 2 });
+        this.view.showPhaseBanner(`⚔️ ${i18n.t('game.choralActive')}`, i18n.t('game.choralEffect', { turns: 2 }));
 
         // WP4: psychologický šok chorálu na nepřítele + přehrání hymnu
         this.applyChoralShock();
@@ -3440,24 +2465,7 @@ class Game {
 
     // Aktualizace stavu tlačítka chorálu
     updateChoralButton() {
-        const choralBtn = document.getElementById('btn-choral');
-        if (!choralBtn) return;
-
-        if (this.choralActive) {
-            // Chorál je aktivní - zobrazit zbývající kola
-            choralBtn.disabled = true;
-            choralBtn.classList.add('active');
-            choralBtn.textContent = `⚔️ ${i18n.t('game.choral')} (${this.choralTurnsRemaining})`;
-        } else if (this.choralUsed) {
-            // Chorál byl použit a už vypršel
-            choralBtn.disabled = true;
-            choralBtn.classList.remove('active');
-            choralBtn.textContent = `⚔️ ${i18n.t('game.choralUsed')}`;
-        } else {
-            choralBtn.disabled = this.currentFaction !== 'hussites';
-            choralBtn.classList.remove('active');
-            choralBtn.textContent = `⚔️ ${i18n.t('game.choral')}`;
-        }
+        return this.view.updateChoralButton();
     }
 
     // Aktualizace stavu chorálu na konci tahu
@@ -3473,22 +2481,10 @@ class Game {
             this.choralActive = false;
             this.addLog(i18n.t('gameLog.choralExpired'), 'turn');
 
-            // Obnovit phase panel na aktuální fázi nebo schovat
-            const phasePanel = document.getElementById('phase-panel');
-            if (this.currentPhase) {
-                // Obnovit zobrazení aktuální fáze
-                document.getElementById('phase-name').textContent = this.currentPhase.name;
-                document.getElementById('phase-description').textContent = this.currentPhase.description || '';
-            } else {
-                phasePanel.classList.add('hidden');
-            }
+            this.view.showPhaseBanner(this.currentPhase?.name || null, this.currentPhase?.description || '');
         } else {
             this.addLog(i18n.t('gameLog.choralRemaining', {turns: this.choralTurnsRemaining}), 'turn');
-            // Aktualizovat phase panel
-            const phaseDesc = document.getElementById('phase-description');
-            if (phaseDesc) {
-                phaseDesc.textContent = i18n.t('game.choralEffect', { turns: this.choralTurnsRemaining });
-            }
+            this.view.updatePhaseDescription(i18n.t('game.choralEffect', { turns: this.choralTurnsRemaining }));
         }
 
         // Aktualizovat tlačítko
@@ -3630,7 +2626,7 @@ class Game {
         this.updateUnitPanel(startUnit);
         // pochodová hradba smí jet - přepočítej zvýraznění pohybu
         if (this.selectedUnit === startUnit) {
-            this.hexGrid.setHighlighted(startUnit.canMove() ? this.getValidMoves(startUnit) : []);
+            this.view.showMoveRange(startUnit);
         }
         this.render();
         return changed > 0;
@@ -3713,8 +2709,7 @@ class Game {
 
         // ponech výběr, přepočítej zvýraznění (linie už tento tah jela -> prázdné)
         if (this.selectedUnit && lineIds.has(this.selectedUnit.id)) {
-            this.hexGrid.setSelected(this.selectedUnit.col, this.selectedUnit.row);
-            this.hexGrid.setHighlighted([]);
+            this.view.showSelection(this.selectedUnit, { moves: false, attacks: false });
             this.updateUnitPanel(this.selectedUnit);
         }
         this.render();

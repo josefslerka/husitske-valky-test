@@ -1,0 +1,146 @@
+/* ===============================================
+   MEDIEVAL CHRONICLE COLOR PALETTE
+   Inspired by illuminated manuscripts
+   =============================================== */
+:root {
+    /* Parchment tones */
+    --parchment-light: #f5e6c8;
+    --parchment: #e8d4a8;
+    --parchment-dark: #d4c090;
+    --parchment-shadow: #c4a060;
+
+    /* Ink & text */
+    --ink-dark: #0d0a04;
+    --ink-medium: #1a1408;
+    --ink-light: #2a2010;
+
+    /* Crimson (blood red from manuscripts) */
+    --crimson-dark: #6b1520;
+    --crimson: #8b1a28;
+    --crimson-light: #c03040;
+    --crimson-glow: rgba(192, 48, 64, 0.5);
+
+    /* Forest green (illumination green) */
+    --forest-dark: #1a3a20;
+    --forest: #2a5a30;
+    --forest-light: #4a9a50;
+    --forest-glow: rgba(74, 154, 80, 0.4);
+
+    /* Gold & ochre (gilding) */
+    --gold-dark: #8b6914;
+    --gold: #c9a227;
+    --gold-light: #f0d060;
+    --gold-glow: rgba(240, 208, 96, 0.5);
+    --ochre: #bf8f30;
+
+    /* Accent blues (rare manuscript blue) */
+    --lapis-dark: #1a2a5a;
+    --lapis: #2a4a9a;
+    --lapis-light: #5a7acc;
+    --lapis-glow: rgba(90, 122, 204, 0.4);
+
+    /* Nové kontrastní barvy pro UI stavy */
+    --btn-primary: #3a6a30;
+    --btn-primary-hover: #4a8a40;
+    --btn-primary-active: #2a5020;
+
+    --btn-secondary: #4a4035;
+    --btn-secondary-hover: #5a5045;
+    --btn-secondary-active: #3a3025;
+
+    --btn-danger: #8a2020;
+    --btn-danger-hover: #a03030;
+
+    --btn-disabled: #3a3530;
+    --btn-disabled-text: #6a6560;
+
+    /* Stav - aktivní/neaktivní */
+    --state-active: #50a050;
+    --state-inactive: #505050;
+    --state-warning: #c08030;
+    --state-error: #c04040;
+
+    /* UI shadows and overlays */
+    --shadow-color: rgba(0, 0, 0, 0.7);
+    --overlay-dark: rgba(10, 8, 4, 0.97);
+    --overlay-medium: rgba(26, 20, 10, 0.95);
+
+    /* Spacing system */
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 12px;
+    --spacing-lg: 16px;
+    --spacing-xl: 24px;
+
+    /* Transitions */
+    --transition-fast: 0.15s ease;
+    --transition-normal: 0.25s ease;
+    --transition-slow: 0.4s ease;
+
+    /* Enhanced shadows */
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+    --shadow-glow-gold: 0 0 15px var(--gold-glow);
+    --shadow-glow-green: 0 0 15px var(--forest-glow);
+    --shadow-glow-red: 0 0 15px var(--crimson-glow);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* ===============================================
+   TYPOGRAFICKÝ SYSTÉM
+   Jasná hierarchie velikostí a stylů
+   =============================================== */
+
+/* Základní velikosti */
+:root {
+    --font-size-xs: 0.75rem;    /* 12px - metadata, labels */
+    --font-size-sm: 0.875rem;   /* 14px - sekundární text */
+    --font-size-base: 1rem;     /* 16px - základní text */
+    --font-size-lg: 1.125rem;   /* 18px - důležitý text */
+    --font-size-xl: 1.25rem;    /* 20px - malé nadpisy */
+    --font-size-2xl: 1.5rem;    /* 24px - sekce nadpisy */
+    --font-size-3xl: 2rem;      /* 32px - hlavní nadpisy */
+
+    --line-height-tight: 1.2;
+    --line-height-normal: 1.5;
+    --line-height-relaxed: 1.7;
+}
+
+body {
+    font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif;
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-normal);
+    background:
+        /* Subtle parchment texture overlay */
+        repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 2px,
+            rgba(139, 105, 32, 0.03) 2px,
+            rgba(139, 105, 32, 0.03) 4px
+        ),
+        repeating-linear-gradient(
+            90deg,
+            transparent,
+            transparent 2px,
+            rgba(139, 105, 32, 0.02) 2px,
+            rgba(139, 105, 32, 0.02) 4px
+        ),
+        linear-gradient(135deg, var(--ink-dark) 0%, var(--ink-medium) 50%, var(--ink-dark) 100%);
+    min-height: 100vh;
+    color: var(--parchment);
+}
+
+#game-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+
+    margin: 0 auto;
+}

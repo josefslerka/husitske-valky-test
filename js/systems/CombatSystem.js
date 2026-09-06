@@ -138,7 +138,7 @@ class CombatSystem {
         this.game.lastMove = null;
 
         // Animace útoku
-        this.game.hexGrid.addAttackAnimation(attacker.col, attacker.row, defender.col, defender.row);
+        this.game.view.showAttackAnimation(attacker.col, attacker.row, defender.col, defender.row);
 
         // Zvuk útoku podle dosahu
         if (attacker.range > 1) {
@@ -192,18 +192,18 @@ class CombatSystem {
 
         if (!await this.game.actions.wait(300)) return false;
         Sound.playHit();
-        this.game.hexGrid.addExplosionAnimation(defender.col, defender.row);
+        this.game.view.showExplosionAnimation(defender.col, defender.row);
         this.showDamageNumber(defender.col, defender.row, result.damage);
         for (const areaDmg of result.areaDamage || []) {
-            this.game.hexGrid.addExplosionAnimation(areaDmg.unit.col, areaDmg.unit.row);
+            this.game.view.showExplosionAnimation(areaDmg.unit.col, areaDmg.unit.row);
         }
         if (result.killed) Sound.playDeath();
 
         if (result.counterDamage > 0) {
-            this.game.hexGrid.addAttackAnimation(defender.col, defender.row, attacker.col, attacker.row);
+            this.game.view.showAttackAnimation(defender.col, defender.row, attacker.col, attacker.row);
             Sound.playMeleeAttack();
             if (!await this.game.actions.wait(200)) return false;
-            this.game.hexGrid.addExplosionAnimation(attacker.col, attacker.row);
+            this.game.view.showExplosionAnimation(attacker.col, attacker.row);
             this.showDamageNumber(attacker.col, attacker.row, result.counterDamage);
             Sound.playHit();
             if (result.attackerKilled) Sound.playDeath();
@@ -257,31 +257,7 @@ class CombatSystem {
 
     // Zobrazení floating damage čísla
     showDamageNumber(col, row, damage, isHeal = false) {
-        // Nastavení "Zobrazovat poškození" dosud nemělo žádný efekt
-        if (window.gameSettings && window.gameSettings.showDamage === false) return;
-        const canvas = document.getElementById('game-canvas');
-        if (!canvas) return;
-
-        const canvasRect = canvas.getBoundingClientRect();
-        const hexCenter = this.game.hexGrid.hexToPixel(col, row);
-
-        const x = canvasRect.left + hexCenter.x;
-        const y = canvasRect.top + hexCenter.y - 20;
-
-        const damageEl = document.createElement('div');
-        damageEl.className = 'damage-number' + (isHeal ? ' heal' : '');
-        damageEl.textContent = (isHeal ? '+' : '-') + damage;
-        damageEl.style.left = x + 'px';
-        damageEl.style.top = y + 'px';
-
-        document.body.appendChild(damageEl);
-
-        // Odstranit i při zrušení časovače výměnou/ukončením bitvy.
-        this.game.actions.wait(1200).then(() => {
-            if (damageEl.parentNode) {
-                damageEl.parentNode.removeChild(damageEl);
-            }
-        });
+        this.game.view.showDamageNumber(col, row, damage, isHeal);
     }
 
     // Pomocné metody - získání bonusů a penalizací

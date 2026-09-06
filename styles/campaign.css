@@ -1,0 +1,903 @@
+/* Mission Modal */
+.mission-modal-content {
+    max-width: 900px;
+    width: 90%;
+    max-height: 80vh;
+    overflow: hidden;
+
+    flex-direction: column;
+    text-align: left;
+    font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif;
+}
+
+/* Sjednocené fonty pro mission detail */
+.mission-modal-content p,
+.mission-modal-content span,
+.mission-modal-content li {
+    font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif;
+    line-height: 1.5;
+}
+
+.mission-modal-content > * {
+    flex-shrink: 0;
+}
+
+.mission-modal-content #mission-list {
+    flex-shrink: 1;
+    min-height: 0;
+}
+
+.mission-modal-content h2 {
+    text-align: center;
+    font-size: 2rem;
+    color: #d4af37;
+    margin-bottom: 5px;
+}
+
+.mission-subtitle {
+    text-align: center;
+    color: #888;
+    font-size: 1rem;
+    margin-bottom: 20px;
+}
+
+/* Campaign Tabs */
+.campaign-reputation {
+    margin: 0 5px 12px;
+    padding: 9px 12px;
+    border: 1px solid rgba(201, 162, 39, 0.45);
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.reputation-heading {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    color: var(--parchment);
+    font-size: var(--font-size-xs);
+}
+
+.reputation-track {
+    height: 7px;
+    margin: 6px 0 4px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.55);
+}
+
+#campaign-reputation-fill {
+    display: block;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(90deg, var(--crimson-light), var(--gold), var(--forest-light));
+    transition: width 0.35s ease;
+}
+
+#campaign-reputation-tier {
+    color: var(--gold-light);
+    font-size: 0.72rem;
+}
+
+.campaign-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+    padding: 0 5px;
+}
+
+.act-tab {
+    flex: 1;
+    padding: 8px 10px;
+    background: linear-gradient(180deg, var(--ink-light) 0%, var(--ink-medium) 100%);
+    border: 2px solid var(--gold-dark);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.act-tab:hover {
+    border-color: var(--gold);
+    background: linear-gradient(180deg, var(--gold-dark) 0%, var(--ink-light) 100%);
+}
+
+.act-tab.active {
+    border-color: var(--gold);
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+    box-shadow: 0 0 10px var(--gold-glow);
+}
+
+.act-tab.locked {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.act-tab.locked:hover {
+    border-color: var(--gold-dark);
+    background: linear-gradient(180deg, var(--ink-light) 0%, var(--ink-medium) 100%);
+}
+
+.act-name {
+    font-size: var(--font-size-sm);
+    color: var(--gold);
+    font-weight: 600;
+    display: block;
+}
+
+.act-years {
+    font-size: var(--font-size-xs);
+    color: var(--parchment-shadow);
+    font-style: italic;
+    margin-top: 3px;
+    display: block;
+}
+
+.act-tab.active .act-name {
+    color: var(--ink-dark);
+}
+
+.act-tab.active .act-years {
+    color: var(--ink-medium);
+}
+
+/* Act Description */
+.act-description {
+    text-align: center;
+
+    margin-bottom: 15px;
+    background:
+        linear-gradient(90deg,
+            rgba(201, 162, 39, 0.1) 0%,
+            transparent 100%
+        );
+    border-left: 3px solid var(--gold);
+
+}
+
+.act-description p {
+    color: var(--parchment-dark);
+    font-style: italic;
+    margin: 0;
+}
+
+/* Mission Card Locked State */
+.mission-card.locked {
+
+    cursor: not-allowed;
+    border-color: var(--ink-light);
+}
+
+.mission-card.locked:hover {
+    border-color: var(--ink-light);
+    background: rgba(26, 18, 8, 0.8);
+    transform: none;
+    box-shadow: none;
+}
+
+.mission-card.locked .mission-card-number {
+    background: linear-gradient(135deg, var(--ink-light) 0%, var(--ink-dark) 100%);
+    border-color: var(--ink-light);
+    color: var(--parchment-shadow);
+}
+
+.mission-card.locked .mission-card-title {
+    color: var(--parchment-shadow);
+}
+
+.mission-card.locked .mission-card-desc {
+    color: var(--ink-light);
+}
+
+.mission-card.completed {
+    border-color: var(--forest-light);
+}
+
+.mission-card.completed .mission-card-number {
+    color: var(--forest-light);
+    border-color: var(--forest-light);
+}
+
+.mission-locked-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2rem;
+}
+
+/* Tutorial Badge */
+.tutorial-badge {
+
+    background: linear-gradient(135deg, var(--forest) 0%, var(--forest-dark) 100%);
+    border: 1px solid var(--forest-light);
+
+    margin: 10px 0;
+}
+
+.mission-card .tutorial-marker {
+    background: var(--forest);
+    color: var(--parchment-light);
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    margin-left: 10px;
+}
+
+/* Mission List */
+#mission-list {
+    display: block;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 12px;
+
+    scrollbar-width: thin;
+    scrollbar-color: var(--gold-dark) var(--ink-dark);
+}
+
+#mission-list::-webkit-scrollbar {
+    width: 10px;
+}
+
+#mission-list::-webkit-scrollbar-track {
+    background: var(--ink-dark);
+    border-radius: 5px;
+}
+
+#mission-list::-webkit-scrollbar-thumb {
+    background: var(--gold-dark);
+    border-radius: 5px;
+    border: 2px solid var(--ink-dark);
+}
+
+#mission-list::-webkit-scrollbar-thumb:hover {
+    background: var(--gold);
+}
+
+.mission-card {
+    display: flex;
+    align-items: center;
+
+    margin-bottom: 10px;
+    background:
+        linear-gradient(90deg,
+            rgba(232, 212, 168, 0.06) 0%,
+            transparent 100%
+        ),
+        rgba(26, 18, 8, 0.9);
+    border: 2px solid var(--gold-dark);
+
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.mission-card:hover {
+
+    background:
+        linear-gradient(90deg,
+            rgba(201, 162, 39, 0.15) 0%,
+            transparent 100%
+        ),
+        rgba(44, 31, 16, 0.9);
+    transform: translateX(5px);
+
+}
+
+.mission-card-number {
+
+    background: linear-gradient(135deg, var(--crimson) 0%, var(--crimson-dark) 100%);
+    border: 2px solid var(--gold);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+
+    flex-shrink: 0;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+.mission-card-info {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.mission-card-title {
+    font-size: 1.1rem;
+    color: var(--gold);
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.mission-card-date {
+    font-size: var(--font-size-sm);
+    color: var(--parchment-shadow);
+    margin-bottom: 4px;
+    font-style: italic;
+}
+
+.mission-card-desc {
+    font-size: var(--font-size-sm);
+    color: var(--parchment-dark);
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+}
+
+.mission-card-difficulty {
+    display: flex;
+    gap: 2px;
+    flex-shrink: 0;
+    margin-left: auto;
+    cursor: help;
+    position: relative;
+}
+
+.mission-card-difficulty .star {
+    font-size: 1rem;
+    color: var(--ink-light);
+}
+
+.mission-card-difficulty .star.filled {
+    color: var(--gold);
+    text-shadow: 0 0 5px var(--gold-glow);
+}
+
+/* Popisek obtížnosti při hoveru */
+.mission-card-difficulty::before {
+    content: attr(title);
+    position: absolute;
+    bottom: 100%;
+    right: 0;
+    background: var(--ink-dark);
+    color: var(--parchment);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: var(--font-size-xs);
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+    border: 1px solid var(--gold-dark);
+}
+
+.mission-card-difficulty:hover::before {
+    opacity: 1;
+}
+
+/* Mission Details */
+#mission-details {
+
+    overflow-y: auto;
+}
+
+#mission-details::-webkit-scrollbar {
+    width: 8px;
+}
+
+#mission-details::-webkit-scrollbar-track {
+    background: rgba(26, 18, 8, 0.5);
+    border-radius: 4px;
+}
+
+#mission-details::-webkit-scrollbar-thumb {
+    background: var(--gold-dark);
+    border-radius: 4px;
+}
+
+#mission-details::-webkit-scrollbar-thumb:hover {
+    background: var(--gold);
+}
+
+.mission-info {
+    background:
+        linear-gradient(135deg,
+            rgba(232, 212, 168, 0.08) 0%,
+            rgba(196, 160, 96, 0.04) 100%
+        ),
+        rgba(26, 18, 8, 0.6);
+    border: 2px solid var(--gold-dark);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.mission-info h3 {
+    color: var(--gold);
+    font-size: 1.5rem;
+    margin-bottom: 5px;
+}
+
+.mission-date {
+    color: var(--parchment-shadow);
+    font-size: var(--font-size-sm);
+    margin-bottom: 15px;
+    font-style: italic;
+}
+
+#mission-description {
+    color: var(--parchment);
+    line-height: 1.6;
+    margin-bottom: 20px;
+    font-size: var(--font-size-base);
+}
+
+.mission-briefing {
+    background:
+        linear-gradient(90deg,
+            rgba(139, 26, 40, 0.15) 0%,
+            rgba(139, 26, 40, 0.05) 100%
+        );
+    border-left: 3px solid var(--crimson);
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 0 5px 5px 0;
+}
+
+.mission-briefing h4 {
+    color: var(--gold);
+    font-size: var(--font-size-sm);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: normal;
+}
+
+#mission-briefing {
+    color: var(--parchment);
+    font-style: italic;
+    line-height: 1.6;
+    font-size: var(--font-size-base);
+}
+
+.mission-objectives {
+    background:
+        linear-gradient(135deg,
+            rgba(42, 90, 48, 0.1) 0%,
+            rgba(26, 58, 32, 0.05) 100%
+        );
+    padding: 15px;
+    border-radius: 5px;
+    border-left: 3px solid var(--forest);
+}
+
+.mission-objectives h4 {
+    color: var(--gold);
+    font-size: var(--font-size-sm);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: normal;
+}
+
+#mission-objectives-list {
+    list-style: none;
+    padding: 0;
+}
+
+#mission-objectives-list li {
+    padding: 8px 0;
+    padding-left: 25px;
+    position: relative;
+    color: var(--parchment-dark);
+    border-bottom: 1px solid rgba(201, 162, 39, 0.2);
+}
+
+#mission-objectives-list li:last-child {
+    border-bottom: none;
+}
+
+#mission-objectives-list li::before {
+    content: '★';
+    position: absolute;
+    left: 0;
+    color: var(--gold);
+}
+
+#mission-objectives-list li.primary::before {
+    content: '⚔';
+    color: var(--crimson-light);
+}
+
+#mission-objectives-list li.secondary::before {
+    content: '◆';
+    color: var(--parchment-shadow);
+}
+
+/* Mission History - historické poznámky */
+.mission-history {
+    margin-top: 15px;
+    background: linear-gradient(135deg, rgba(26, 18, 8, 0.6) 0%, rgba(15, 10, 5, 0.7) 100%);
+    border: 1px solid var(--gold-dark);
+    border-radius: 5px;
+    padding: 15px;
+}
+
+.mission-history > h4 {
+    color: var(--gold);
+    font-size: var(--font-size-sm);
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: normal;
+}
+
+.history-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 12px;
+}
+
+.history-column h5 {
+    color: var(--gold);
+    font-size: var(--font-size-xs);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: normal;
+}
+
+.history-column:first-child {
+    border-right: 1px solid var(--gold-dark);
+    padding-right: 15px;
+}
+
+.history-commanders {
+    color: var(--parchment);
+    font-size: var(--font-size-sm);
+    margin-bottom: 6px;
+    line-height: 1.5;
+}
+
+.history-strength {
+    color: var(--parchment-dark);
+    font-size: var(--font-size-sm);
+    font-style: italic;
+    line-height: 1.4;
+}
+
+.history-quote {
+    background: rgba(0, 0, 0, 0.3);
+    border-left: 3px solid var(--gold);
+    padding: 10px 12px;
+    margin-bottom: 10px;
+    border-radius: 0 4px 4px 0;
+}
+
+.history-quote p {
+    color: var(--parchment);
+    font-style: italic;
+    font-size: var(--font-size-sm);
+    line-height: 1.5;
+    margin-bottom: 6px;
+}
+
+.history-quote cite {
+    color: var(--parchment-dark);
+    font-size: var(--font-size-sm);
+    display: block;
+    text-align: right;
+}
+
+.history-reliability {
+    color: var(--parchment-dark);
+    font-size: var(--font-size-xs);
+    font-style: italic;
+    text-align: right;
+    margin: 0;
+}
+
+/* Mission Actions */
+.mission-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+/* Sjednocené styly tlačítek */
+.btn-primary, .btn-secondary {
+    padding: 12px 30px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-family: inherit;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Primární tlačítko - zlaté, hlavní akce */
+.btn-primary {
+    background: linear-gradient(180deg, var(--gold-light) 0%, var(--gold-dark) 100%);
+    border: 2px solid var(--gold-light);
+    color: #1a1208;
+
+    text-shadow: 0 1px 0 rgba(255,255,255,0.2);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(180deg, var(--gold-light) 0%, var(--gold) 100%);
+    transform: scale(1.02);
+    box-shadow: 0 0 15px var(--gold-glow);
+}
+
+/* Sekundární tlačítko - tmavé, vedlejší akce */
+.btn-secondary {
+    background: linear-gradient(180deg, #4a4035 0%, #2a2520 100%);
+    border: 2px solid #5a5045;
+    color: var(--parchment);
+}
+
+.btn-secondary:hover {
+    background: linear-gradient(180deg, #5a5045 0%, #3a3530 100%);
+    border-color: var(--gold-dark);
+    color: var(--parchment-light);
+    transform: translateY(-1px);
+}
+
+.btn-secondary:active {
+    transform: translateY(0);
+    background: linear-gradient(180deg, #3a3025 0%, #1a1510 100%);
+}
+
+/* Text link tlačítko - minimalistické */
+.btn-link {
+    background: transparent;
+    border: none;
+    color: var(--gold);
+    padding: 8px 16px;
+    cursor: pointer;
+    text-decoration: underline;
+    font-family: inherit;
+    transition: color 0.2s;
+}
+
+.btn-link:hover {
+    color: var(--gold-light);
+}
+
+/* Phase Info Panel (in header) */
+#phase-panel {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--crimson) 0%, var(--crimson-dark) 100%);
+    border: 2px solid var(--gold);
+    border-radius: 5px;
+
+    font-size: var(--font-size-sm);
+    box-shadow: 0 2px 8px var(--crimson-glow);
+}
+
+#phase-icon {
+    margin-right: 6px;
+    font-size: 1rem;
+}
+
+#phase-name {
+    color: var(--gold-light);
+    font-weight: bold;
+    text-transform: uppercase;
+
+}
+
+#phase-description {
+    color: var(--parchment-light);
+    margin-left: 8px;
+    font-size: var(--font-size-sm);
+}
+
+#phase-panel.hidden {
+    display: none;
+}
+
+/* Trvalý cíl mise v hlavičce - vždy viditelný během hry */
+#objective-hud {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    max-width: 92%;
+    margin: 4px auto 0;
+    padding: 3px 12px;
+    background: rgba(0, 0, 0, 0.18);
+    border: 1px solid var(--gold);
+    border-radius: 12px;
+    font-size: var(--font-size-sm);
+    line-height: 1.3;
+    text-align: left;
+}
+
+#objective-hud .objective-hud-icon {
+    flex-shrink: 0;
+    font-size: 0.95rem;
+}
+
+#objective-hud #objective-hud-text {
+    color: var(--parchment-light);
+    font-weight: bold;
+}
+
+#objective-hud.hidden {
+    display: none;
+}
+
+/* Event Notification */
+/* Event notification - středověký iluminovaný styl */
+.event-notification {
+    position: fixed;
+
+    transform: translate(-50%, -50%);
+    background:
+        /* Pergamenová textura */
+        repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 2px,
+            rgba(139, 105, 32, 0.03) 2px,
+            rgba(139, 105, 32, 0.03) 4px
+        ),
+        linear-gradient(180deg,
+            rgba(245, 230, 200, 0.15) 0%,
+            rgba(232, 212, 168, 0.1) 50%,
+            rgba(196, 160, 96, 0.08) 100%
+        ),
+        linear-gradient(135deg, #2a1f14 0%, #3a2a1a 50%, #2a1f14 100%);
+    border: 4px solid;
+    border-image: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 50%, var(--gold-dark) 100%) 1;
+      /* Ostré rohy jako středověký dokument */
+
+    z-index: 200;
+
+    animation: eventFadeIn 0.4s ease-out;
+
+}
+
+/* Ozdobné rohy */
+.event-notification::before,
+.event-notification::after {
+    content: '❧';
+    position: absolute;
+    font-size: 1.5rem;
+    color: var(--gold);
+    text-shadow: 0 0 10px var(--gold-glow);
+}
+
+.event-notification::before {
+    top: 8px;
+    left: 12px;
+}
+
+.event-notification::after {
+    bottom: 8px;
+    right: 12px;
+    transform: rotate(180deg);
+}
+
+@keyframes eventFadeIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+.event-notification h3 {
+    color: var(--gold);
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+
+}
+
+.event-notification p {
+    color: var(--parchment);
+    font-size: 1.1rem;
+
+    margin-bottom: 20px;
+}
+
+.event-notification button {
+
+    font-size: 1rem;
+    cursor: pointer;
+    background: linear-gradient(180deg, var(--gold) 0%, var(--gold-dark) 100%);
+    border: 2px solid var(--gold-light);
+
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: bold;
+    font-family: inherit;
+    transition: all 0.2s;
+}
+
+.event-notification button:hover {
+    background: linear-gradient(180deg, var(--gold-light) 0%, var(--gold) 100%);
+
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    /* Automaticky sbal oba panely */
+    #unit-panel, #info-panel {
+        width: 30px;
+        padding: 15px 5px;
+    }
+
+    #unit-panel h2,
+    #info-panel h2,
+    #unit-info,
+    #unit-actions,
+    #army-overview {
+        display: none;
+    }
+
+    #unit-panel.expanded, #info-panel.expanded {
+        width: 200px;
+        padding: 15px;
+    }
+
+    #unit-panel.expanded h2,
+    #info-panel.expanded h2,
+    #unit-panel.expanded #unit-info,
+    #unit-panel.expanded #unit-actions,
+    #info-panel.expanded #army-overview {
+        display: block;
+    }
+
+    #unit-panel.expanded #unit-actions {
+        display: flex;
+    }
+}
+
+@media (max-width: 900px) {
+    #game-main {
+        flex-direction: column;
+    }
+
+    #unit-panel, #info-panel {
+
+        max-height: 120px;
+        overflow-y: auto;
+    }
+
+    #unit-actions {
+        display: flex;
+    }
+
+    .panel-toggle {
+        display: none;
+    }
+
+    /* Footer na dva řádky */
+    #game-footer {
+
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .footer-main-actions {
+        width: 100%;
+        justify-content: center;
+        order: 1;
+    }
+
+    .footer-log {
+        width: 100%;
+        order: 3;
+    }
+
+    .footer-menu {
+        order: 2;
+    }
+}
