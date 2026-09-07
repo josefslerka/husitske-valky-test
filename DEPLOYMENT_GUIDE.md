@@ -1,209 +1,71 @@
-# 🚀 Deployment Guide - Jak vydat hru
+# Nasazení na GitHub Pages
 
-## Metoda 1: GitHub Pages (Doporučeno) 🌟
+Projekt používá veřejný repozitář
+[josefslerka/husitske-valky](https://github.com/josefslerka/husitske-valky).
+Cílová adresa hry je
+[Husitské války](https://josefslerka.github.io/husitske-valky/).
 
-### Krok za krokem:
+## Nastavení hostingu
 
-1. **Vytvoř GitHub repository:**
-   ```bash
-   cd /Users/josefslerka/codex/strategie
-   git init
-   git add .
-   git commit -m "Alpha 0.1 - První release"
-   ```
+V repozitáři otevřete **Settings → Pages**:
 
-2. **Vytvoř repo na GitHubu:**
-   - Jdi na github.com
-   - New Repository
-   - Název: `husitske-valky`
-   - Public nebo Private (private = jen s linkem)
+- Source: **Deploy from a branch**
+- Branch: **main**
+- Folder: **/(root)**
 
-3. **Push na GitHub:**
-   ```bash
-   git remote add origin https://github.com/[username]/husitske-valky.git
-   git branch -M main
-   git push -u origin main
-   ```
+Hra nevyžaduje build, databázi ani serverovou aplikaci. Soubor `.nojekyll` v kořeni
+vypíná zpracování Jekyllem; HTML, JavaScript, CSS, překlady a hudba se publikují jako
+statické soubory. Relativní cesty fungují i pod prefixem `/husitske-valky/`.
 
-4. **Zapni GitHub Pages:**
-   - Jdi do Settings → Pages
-   - Source: `main` branch, `/ (root)`
-   - Save
-   - Počkej 1-2 minuty
+Repozitář, jeho historie a web jsou veřejné. Do commitu nepatří přístupové údaje,
+osobní poznámky testerů ani knihy/PDF ze složky `zdroje/`. Gitignore není ochranou
+již commitnutých souborů. Ani soukromé repo samo o sobě neznamená neveřejný Pages web.
 
-5. **Hotovo! URL:**
-   ```
-   https://[username].github.io/husitske-valky/
-   ```
+## Další vydání
 
-### Výhody:
-✅ Zdarma
-✅ Automatické updaty (git push)
-✅ Vlastní doména možná
-✅ HTTPS
-✅ Rychlé CDN
+V kořeni projektu:
 
----
+```bash
+node scripts/check.js
+git status
+```
 
-## Metoda 2: Netlify Drop (Nejrychlejší) ⚡
+Po úspěšných kontrolách commitněte jen zamýšlené soubory a odešlete je:
 
-### Krok za krokem:
+```bash
+git push origin main
+```
 
-1. **Jdi na:** https://app.netlify.com/drop
+Pokud se mění JS, CSS nebo locale, aktualizujte odpovídající `?v=` podle
+[pravidel údržby](docs/CODE_STRUCTURE.md). Po pushi zkontrolujte v záložce
+**Actions** běh **CI** a samostatný běh **pages build and deployment**.
+Nahraná verze nemusí být dostupná okamžitě; konečnou adresu a stav ukazuje také
+**Settings → Pages**.
 
-2. **Přetáhni složku** `strategie/` do okna
+Současné CI provádí kontroly, ale **neblokuje** publikování z větve. Proto musí
+kontroly projít už před pushem. Nasazení podmíněné zeleným CI by vyžadovalo změnu
+na vlastní publikační workflow.
 
-3. **Hotovo!** Máš URL typu:
-   ```
-   https://random-name-12345.netlify.app
-   ```
+## Kontrola veřejné verze
 
-4. **Vlastní název (optional):**
-   - Site settings → Change site name
-   - Např: `husitske-valky-alpha.netlify.app`
+- Otevřete HTTPS adresu hry, nikoli lokální `file://` soubor.
+- Zkuste české i anglické menu, první briefing a pohyb jednotky.
+- Ověřte postranní panely, konec tahu, uložení a načtení.
+- Po dokončení bitvy ověřte výsledek a kroniku.
+- Pokud chybí překlady nebo assety, ověřte jejich HTTP odpověď a přesnou velikost
+  písmen v cestě. Při staré verzi obnovte stránku a zkontrolujte cache verze.
 
-### Update hry:
-- Prostě znovu přetáhni složku (přepíše to)
+Savy a kroniky z localhostu se na novou adresu automaticky nepřenesou. Jsou uložené
+v prohlížeči pro konkrétní původ webu; hra je neposílá na server.
+Podklad pro testery je v [docs/ACT_I_PLAYTEST.md](docs/ACT_I_PLAYTEST.md).
 
-### Výhody:
-✅ 5 minut
-✅ Žádný GitHub
-✅ Vlastní subdoména zdarma
-✅ HTTPS
+## Lokální hraní
 
----
+```bash
+python3 -m http.server 8000
+```
 
-## Metoda 3: ZIP pro kamarády 📦
+Poté otevřete [localhost:8000](http://localhost:8000). Stejný HTTP server je potřeba
+i po rozbalení ZIPu; samotné otevření `index.html` může zablokovat načítání překladů.
 
-### Krok za krokem:
-
-1. **Vytvoř ZIP:**
-   ```bash
-   cd /Users/josefslerka/codex/strategie
-   zip -r husitske-valky-alpha-0.1.zip . \
-     -x "*.git*" \
-     -x "node_modules/*" \
-     -x ".DS_Store" \
-     -x "*.tmp" \
-     -x ".claude/*"
-   ```
-
-2. **Nahraj na:**
-   - Google Drive (sdílej link)
-   - Dropbox
-   - WeTransfer
-   - Discord
-
-3. **Instrukce pro kamarády:**
-   ```
-   1. Stáhni ZIP
-   2. Rozbal
-   3. Otevři index.html v Chrome/Firefox
-   4. Hraj!
-   ```
-
-### Výhody:
-✅ Instant
-✅ Offline hratelné
-✅ Žádný hosting
-
-### Nevýhody:
-❌ Update = nový ZIP
-❌ Nutno stahovat
-
----
-
-## Metoda 4: Vercel (Alternative k Netlify) 🔷
-
-### Krok za krokem:
-
-1. **Jdi na:** https://vercel.com
-
-2. **Import GitHub repo** nebo **Upload**
-
-3. **Deploy**
-
-4. **Hotovo!** URL:
-   ```
-   https://husitske-valky.vercel.app
-   ```
-
-### Výhody:
-✅ Podobné jako Netlify
-✅ Automatický deploy z GitHubu
-✅ Analytics zdarma
-
----
-
-## 🎯 Doporučení pro Alpha:
-
-### Pro beta testing s kamarády:
-**Nejlepší volba:** GitHub Pages nebo Netlify
-
-**Proč?**
-- Živá URL - pošleš jen link
-- Update = git push (nebo re-upload)
-- HTTPS - funguje všude
-- Zdarma
-
-### Pro rychlé sdílení:
-**Nejlepší volba:** ZIP na Google Drive
-
-**Proč?**
-- 2 minuty
-- Funguje offline
-- Žádná registrace
-
----
-
-## 📊 Porovnání:
-
-| Metoda | Čas | Obtížnost | Update | URL |
-|--------|-----|-----------|--------|-----|
-| GitHub Pages | 15 min | Střední | `git push` | ✅ Trvalá |
-| Netlify Drop | 5 min | Snadné | Re-upload | ✅ Trvalá |
-| Vercel | 10 min | Snadné | Auto | ✅ Trvalá |
-| ZIP | 2 min | Velmi snadné | Nový ZIP | ❌ Žádná |
-
----
-
-## ✅ Checklist před deploym:
-
-- [ ] Hra funguje lokálně (`python3 -m http.server`)
-- [ ] Tutorial je dokončitelný
-- [ ] Žádné console errors (F12)
-- [ ] README vytvořeno
-- [ ] CHANGELOG vytvořen
-- [ ] Verze číslo někde viditelné
-- [ ] Kontakt na tebe v README
-
----
-
-## 🐛 Po deployu:
-
-1. **Otestuj živou verzi**
-   - Otevři na jiném počítači/telefonu
-   - Projdi tutorial
-   - Zahraj 1-2 scénáře
-
-2. **Pošli kamarádům:**
-   ```
-   Ahoj! Mám alpha verzi husitské strategie.
-   Chceš otestovat?
-
-   URL: [tvoje URL]
-
-   Je to alpha - bugy jsou expected!
-   Pošli mi feedback. Díky! 🎮
-   ```
-
-3. **Sleduj feedback**
-   - Vytvoř spreadsheet/doc pro poznámky
-   - Zapisuj všechny bugy
-   - Prioritizuj fixes
-
----
-
-## 🎉 Ready to deploy!
-
-Vyber si metodu a do toho! 🚀
+Nastavení vychází z [dokumentace GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site).

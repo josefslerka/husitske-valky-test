@@ -32,6 +32,9 @@ Pak otevřete [http://localhost:8000](http://localhost:8000). Přímé otevřen�
 
 **Doporučené prohlížeče:** aktuální Chrome, Firefox nebo Safari.
 
+Nasazení na GitHub Pages a postup aktualizace jsou v
+[DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md).
+
 ### První zážitek
 
 **První bitva: Živohošť** otevře rovnou rozkazy a stručné ovládání. Hlavní cíl
