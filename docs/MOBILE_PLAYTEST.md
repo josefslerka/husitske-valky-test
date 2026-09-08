@@ -11,10 +11,11 @@ výkon ani systémové lišty. Publikování testu není potvrzení podpory zař
 
 ## Ovládání
 
-- Na dotyku a v okně do 1200 px: vyberte vlastní oddíl, klepněte na cíl,
-  přečtěte náhled a potvrďte Přesunout / Zaútočit / Pochod celé hradby.
-  Samotný náhled ani jeho zavření nespotřebuje akci. Nepřátelský oddíl a terén
-  lze prohlížet bez útoku, vyčerpaný vlastní oddíl bez nového rozkazu.
+- Na dotyku a v okně do 1200 px: vyberte vlastní oddíl a klepněte na dostupné
+  pole. Přesun i pochod hradby se provedou rovnou, bez dalšího potvrzení.
+  Jen útok na nepřítele má náhled s potvrzením Zaútočit; samotný náhled ani
+  jeho zavření nespotřebuje akci. Nepřítele lze prohlížet bez útoku a vyčerpaný
+  vlastní oddíl bez nového rozkazu. Klepnutí na dostupné prázdné pole už není inspekce.
 - Tažení posouvá mapu. Dva prsty mění přiblížení v rozsahu 60–200 %; po zdvižení
   prstů se nesmí provést klik. Zoom má také tlačítka − / +, myš používá kolečko.
   Zvětšení celé stránky přes Ctrl/kolečko není blokované.
@@ -82,7 +83,7 @@ nepřesměrovávejte port do internetu a po testu server ukončete Ctrl+C.
    změna nastavení/jazyka a nový postup v testu nesmí měnit původní hru.
 
 Automatická kontrola: `node scripts/check.js`. `scripts/test-touch.js` pokrývá
-náhledy a jejich neplatnost, souřadnice/zoom, gesta a duplicitní click,
+přímý přesun a pochod, náhledy útoku a jejich neplatnost, souřadnice/zoom, gesta a duplicitní click,
 checkpointy, chyby úložiště, životní cyklus stránky a CS/EN texty.
 
 Offline/PWA instalace, synchronizace zařízení a úpravy balancu nejsou součástí

@@ -44,13 +44,52 @@ test('potvrzení útoku provede právě jeden útok i při dvojím klepnutí', a
     assert.equal(orders.pending, null); game.destroy();
 });
 
-test('pohyb se provede až potvrzením a zachová standardní undo', async () => {
+test('pohyb se provede rovnou klepnutím a zachová standardní undo i autosave', async () => {
     const { h, game, orders, player } = fixture();
-    orders.tap({ col: 5, row: 4 }); assert.equal(orders.pending.kind, 'move');
-    assert.equal(player.row, 5);
-    orders.confirm(); await h.advance(800);
+    orders.tap({ col: 5, row: 4 });
+    assert.equal(orders.pending, null); assert.equal(orders.inspectedHex, null);
+    assert.equal(orders.panel.classList.contains('hidden'), true);
+    assert.equal(player.row, 4); assert.equal(game.actions.busy, true);
+    assert.equal(h.storage.has(h.SaveGameSystem.AUTO_KEY), false);
+    await h.advance(800);
     assert.equal(player.row, 4); assert.equal(game.canUndo(), true);
+    const savedUnit = h.SaveGameSystem.read({ automatic: true }).data.units.find(u => u.id === player.id);
+    assert.equal(savedUnit.row, 4);
     game.undoLastMove(); assert.equal(player.row, 5); game.destroy();
+});
+
+test('dotyk, pero i kompaktní myš přesunou oddíl jednou a kompatibilní click jej neodznačí', async () => {
+    for (const kind of ['touch', 'pen', 'mouse']) {
+        const { h, game, input, player, orders } = fixture();
+        h.document.getElementById('game-container').classList.add('compact-battle');
+        const p = game.hexGrid.hexToPixel(5, 4);
+        pointer(input.canvas, 'pointerdown', p.x, p.y, { kind });
+        pointer(input.canvas, 'pointerup', p.x, p.y, { kind });
+        if (kind === 'mouse') click(input.canvas, p.x, p.y);
+        assert.equal(player.row, 4); assert.equal(orders.pending, null);
+        await h.advance(800);
+        // Opožděný syntetický click po dotyku nesmí provést druhou akci.
+        if (kind !== 'mouse') click(input.canvas, p.x, p.y);
+        assert.equal(game.selectedUnit, player); assert.equal(player.row, 4);
+        assert.equal(game.canUndo(), true); game.destroy();
+    }
+});
+
+test('přímý pohyb zruší starý náhled útoku, jeho potvrzení už nic neprovede', async () => {
+    const { h, game, orders, player, enemy } = fixture();
+    orders.tap(enemy); assert.equal(orders.pending.kind, 'attack');
+    orders.tap({ col: 5, row: 4 }); await h.advance(800);
+    assert.equal(player.row, 4); assert.equal(orders.pending, null);
+    const before = snapshot(game); orders.confirm();
+    assert.equal(snapshot(game), before); assert.equal(enemy.health, enemy.maxHealth); game.destroy();
+});
+
+test('klepnutí na nedostupné pole nespotřebuje pohyb ani nezaloží autosave', () => {
+    const { h, game, orders } = fixture();
+    const before = snapshot(game);
+    orders.tap({ col: 0, row: 0 });
+    assert.equal(orders.pending, null); assert.equal(snapshot(game), before);
+    assert.equal(h.storage.has(h.SaveGameSystem.AUTO_KEY), false); game.destroy();
 });
 
 for (const [name, change] of [
@@ -91,11 +130,11 @@ test('platný pohyb do neprozkoumaného místa funguje bez odhalení jeho terén
     game.fogOfWar = true; game.visibleHexes.clear(); game.exploredHexes.clear();
     const target = { col: 5, row: 4 };
     assert.equal(game.canMoveTo(player, target.col, target.row), true);
+    game.view.tooltip.contentForHex = () => { throw new Error('Přesun nesmí před akcí zobrazit skrytý terén'); };
     orders.tap(target);
-    assert.equal(orders.pending.kind, 'move');
-    assert.equal(h.document.getElementById('order-content').innerHTML, '');
-    assert.match(h.document.getElementById('order-content').textContent, /touch.unexplored/);
-    orders.confirm(); await h.advance(800); assert.equal(player.row, 4); game.destroy();
+    assert.equal(orders.pending, null); assert.equal(orders.inspectedHex, null);
+    assert.equal(orders.panel.classList.contains('hidden'), true);
+    await h.advance(800); assert.equal(player.row, 4); game.destroy();
 });
 
 test('vyčerpaný vlastní oddíl lze prohlédnout bez rozkazu', () => {
@@ -106,15 +145,15 @@ test('vyčerpaný vlastní oddíl lze prohlédnout bez rozkazu', () => {
     assert.equal(snapshot(game), before); game.destroy();
 });
 
-test('pochod hradby používá platné cíle celé linie a nespotřebuje pohyb v náhledu', async () => {
+test('pochod hradby se provede bez potvrzení a používá platné cíle celé linie', async () => {
     const { h, game, orders } = fixture();
     const wagon = game.unitFactory.createUnit('VOZOVA_HRADBA', 3, 3);
     wagon.formationClosed = true; wagon.marching = true; game.units.push(wagon);
     game.selectUnit(wagon);
     const target = game.getWagonMarchTargets(wagon).find(t => !game.getUnitAt(t.col, t.row));
     assert.ok(target); orders.tap(target);
-    assert.equal(orders.pending.kind, 'march'); assert.equal(wagon.hasMoved, false);
-    orders.confirm(); await h.advance(1000);
+    assert.equal(orders.pending, null); assert.equal(orders.panel.classList.contains('hidden'), true);
+    await h.advance(1000);
     assert.equal(wagon.col, target.col); assert.equal(wagon.row, target.row); game.destroy();
 });
 
@@ -128,8 +167,8 @@ test('dotykové klepnutí vybere jednotku jen jednou, kompatibilní click se ign
 
 test('tažení myší nebo prstem nikdy nevydá herní rozkaz', () => {
     for (const kind of ['mouse', 'touch', 'pen']) {
-        const { game, input, enemy } = fixture(); const before = snapshot(game);
-        const p = game.hexGrid.hexToPixel(enemy.col, enemy.row);
+        const { game, input } = fixture(); const before = snapshot(game);
+        const p = game.hexGrid.hexToPixel(5, 4);
         pointer(input.canvas, 'pointerdown', p.x - 40, p.y, { kind });
         pointer(input.canvas, 'pointermove', p.x, p.y, { kind });
         pointer(input.canvas, 'pointerup', p.x, p.y, { kind }); click(input.canvas, p.x, p.y);
@@ -152,7 +191,7 @@ test('pinch mění přiblížení, nikoli herní stav, ani při zdvižení prst�
 
 for (const type of ['pointercancel', 'lostpointercapture']) {
     test(`${type} vyčistí gesto a nepustí opožděný click`, () => {
-        const { game, input, enemy } = fixture(); const p = game.hexGrid.hexToPixel(enemy.col, enemy.row);
+        const { game, input } = fixture(); const p = game.hexGrid.hexToPixel(5, 4);
         const before = snapshot(game);
         pointer(input.canvas, 'pointerdown', p.x, p.y);
         pointer(input.canvas, type, p.x, p.y);

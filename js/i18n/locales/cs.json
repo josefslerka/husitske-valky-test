@@ -23,12 +23,12 @@
     "zoomOut": "Oddálit mapu",
     "camera": "Pohled na mapu",
     "battlefield": "Bojiště: vyberte oddíl a poté cíl",
-    "help": "Na dotyku nebo v kompaktním okně: klepněte na vlastní oddíl, potom na cíl. Pohyb nebo útok se provede až tlačítkem v náhledu. Tažením posunujete mapu; dvěma prsty nebo tlačítky − / + ji přiblížíte. Rozkazy a detail otevřou kartu oddílu, Armáda přehled jednotek. Rozehraná bitva se ukládá automaticky po dokončených akcích, odděleně od ručního uložení.",
+    "help": "Na dotyku nebo v kompaktním okně: klepněte na vlastní oddíl, potom na dostupné pole. Přesun i pochod hradby se provedou rovnou. Jen útok má náhled, který potvrdíte tlačítkem Zaútočit. Tažením posunujete mapu; dvěma prsty nebo tlačítky − / + ji přiblížíte. Rozkazy a detail otevřou kartu oddílu, Armáda přehled jednotek. Rozehraná bitva se ukládá automaticky po dokončených akcích, odděleně od ručního uložení.",
     "resumeAuto": "Pokračovat v rozehrané",
     "manualSave": "Ručně uložená hra",
     "savedSummary": "{battle} · kolo {turn} · automaticky uloženo",
     "autosaveError": "Automatické uložení není dostupné. Nezavírejte hru, pokud si chcete uchovat postup.",
-    "chooseTarget": "{unit}: vyberte cíl na mapě. Rozkaz se provede až po potvrzení.",
+    "chooseTarget": "{unit}: klepnutí na zelené pole rovnou přesune oddíl. Útok nejprve ukáže náhled.",
     "selectHint": "Klepněte na vlastní oddíl. Jeho rozkazy najdete pod mapou."
   },
   "menu": {
@@ -54,7 +54,7 @@
     "controlsTitle": "Před prvním tahem · ovládání v kostce",
     "noRush": "Je to tahová hra. Při rozhodování vás nic nehoní; protivník jedná až po ukončení vašeho tahu.",
     "selectStep": "Vaše oddíly jsou červené. Vyberte jeden; jeho stav a schopnosti najdete v levém panelu nebo pod mapou v tlačítku Rozkazy a detail.",
-    "actionStep": "Zeleně zvýrazněné pole znamená dostupný pohyb, červeně zvýrazněný nepřítel možný útok. Na dotyku a v kompaktním okně nejprve vyberte cíl a potvrďte náhled. Na velkém monitoru myší provedete akci přímo kliknutím.",
+    "actionStep": "Klepnutí na zeleně zvýrazněné pole rovnou přesune vybraný oddíl. Červeně zvýrazněný nepřítel znamená možný útok: na dotyku a v kompaktním okně nejprve uvidíte náhled a útok potvrdíte. Na velkém monitoru myší útočíte přímo kliknutím.",
     "endStep": "Rozdejte rozkazy dalším oddílům a stiskněte Ukončit tah. Nemusíte využít každou akci.",
     "helpStep": "Hlavní cíl zůstává nad mapou. Podrobnosti najdete pod Cíle, pravidla pod Menu → Nápověda. Escape otevře pauzu.",
     "resultReason": "Proč bitva skončila",

@@ -1,4 +1,4 @@
-// Dotykový náhled je pouze návrh. Potvrzení znovu ověří aktuální herní pravidla.
+// Dotykový přesun je přímý. Útok má náhled a potvrzení, které znovu ověří pravidla.
 class BattleOrders {
     constructor(view) {
         this.view = view;
@@ -50,9 +50,13 @@ class BattleOrders {
             return;
         }
         const intent = this.intent(hex);
+        if (intent?.kind === 'move' || intent?.kind === 'march') {
+            // Stejná pravidla, animace, undo a autosave jako při běžném kliknutí.
+            // Gesta a kompatibilní click už filtruje BattleMapInput.
+            this.game.handleHexClick(hex);
+            return;
+        }
         const html = this.view.tooltip.contentForHex(hex);
-        // Pravidla dovolují průzkumný pohyb za dohled. Nesmíme jej zakázat
-        // jen proto, že zatím neznáme terén; karta v takovém případě nic neodhalí.
         if (!html && !intent) return;
         if (intent) this.pending = { ...intent, hex: { ...hex }, unit: this.game.selectedUnit,
             turn: this.game.turnNumber, fromCol: this.game.selectedUnit.col, fromRow: this.game.selectedUnit.row };

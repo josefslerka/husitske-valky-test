@@ -18,14 +18,16 @@ Prezentace bitvy je rozdělena podle odpovědností:
 - `BattleMapInput` vlastní gesta a kameru: posun, zoom, převody souřadnic a
   potlačení kompatibilního clicku po dotyku/tažení. Zvětšuje prezentační velikost
   Canvasu, ne logickou mřížku nebo pohybové dosahy.
-- `BattleOrders` drží pouze dočasný náhled rozkazu a inspekci hexu. Obsah sdílí
+- `BattleOrders` provádí přesun a pochod přímo, drží pouze dočasný náhled útoku
+  a inspekci hexu. Obsah sdílí
   s `BattleTooltip.contentForHex()`, včetně mlhy a odhadu protiútoku. Potvrzení
   znovu zkontroluje jednotku, kolo, výchozí pozici, cíl a platnost akce.
 
 Pohled čte stav a dotazuje se pravidel. Změny herního stavu provádí příkazy `Game`
 nebo příslušného systému, nikoli přímým přepisováním jeho polí. Například klik na
 Canvas převede `BattleView.handleClick()` přes kameru na hex. Myš na desktopu jej
-předá `Game.handleHexClick()` přímo, dotyk/kompaktní režim až po potvrzení náhledu.
+předá `Game.handleHexClick()` přímo. Dotyk/kompaktní režim předá přesun a pochod
+také přímo, ale útok až po potvrzení náhledu. Filtr gest zůstává v `BattleMapInput`.
 Přepnutí rychlosti AI jde přes `Game.skipAIAnimations()`.
 
 Dosavadní metody `Game.updateUI()`, `Game.updateUnitPanel()` a další veřejné vstupy

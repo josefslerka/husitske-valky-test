@@ -23,12 +23,12 @@
     "zoomOut": "Zoom out of the map",
     "camera": "Map camera",
     "battlefield": "Battlefield: select a unit, then a target",
-    "help": "On touchscreens or in a compact window: tap your unit, then a target. Movement or an attack happens only when you confirm the preview. Drag to pan; pinch with two fingers or use − / + to zoom. Orders and details opens the unit card; Army shows your forces. Your battle is saved automatically after completed actions, separately from your manual save.",
+    "help": "On touchscreens or in a compact window: tap your unit, then a reachable tile. Movement and wagon marches happen directly. Only attacks show a preview, which you confirm with Attack. Drag to pan; pinch with two fingers or use − / + to zoom. Orders and details opens the unit card; Army shows your forces. Your battle is saved automatically after completed actions, separately from your manual save.",
     "resumeAuto": "Resume current battle",
     "manualSave": "Manually saved game",
     "savedSummary": "{battle} · turn {turn} · autosaved",
     "autosaveError": "Autosave is unavailable. Keep the game open if you want to retain your progress.",
-    "chooseTarget": "{unit}: choose a target on the map. Confirm the preview to issue the order.",
+    "chooseTarget": "{unit}: tap a green tile to move directly. Attacks show a preview first.",
     "selectHint": "Tap one of your units. Its orders are below the map."
   },
   "menu": {
@@ -54,7 +54,7 @@
     "controlsTitle": "Before your first turn · quick controls",
     "noRush": "This is a turn-based game. Take your time deciding; the opponent acts after you end your turn.",
     "selectStep": "Your units are red. Select one; its status and abilities appear in the left panel or under the map in Orders and details.",
-    "actionStep": "A green highlighted tile is a possible move; a red highlighted enemy is a possible attack. On touchscreens and in a compact window, choose a target and confirm the preview. With a mouse on a large screen, clicking carries out the action directly.",
+    "actionStep": "Tap a green highlighted tile to move the selected unit directly. A red highlighted enemy is a possible attack: on touchscreens and in a compact window, review the preview and confirm the attack. With a mouse on a large screen, clicking attacks directly.",
     "endStep": "Give orders to your other units, then press End Turn. You do not have to use every action.",
     "helpStep": "Your main objective stays above the map. Open Objectives for details or Menu → Help for the rules. Escape opens the pause menu.",
     "resultReason": "Why the battle ended",
