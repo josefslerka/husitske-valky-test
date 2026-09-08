@@ -1583,13 +1583,15 @@ body {
     font: italic 1.1rem/1.55 Georgia, serif;
     text-align: center;
 }
-#btn-first-battle {
+#btn-first-battle,
+#btn-resume-auto {
     grid-column: 1 / -1;
     flex-direction: column;
     gap: 5px;
     padding: 14px 18px;
 }
-#btn-first-battle .first-battle-note {
+#btn-first-battle .first-battle-note,
+#btn-resume-auto .first-battle-note {
     font: normal 0.8rem/1.4 Georgia, serif;
     letter-spacing: 0.02em;
     text-transform: none;
