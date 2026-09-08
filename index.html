@@ -2,7 +2,7 @@
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Husitské Války - Tahová Strategie</title>
     <meta name="description" content="Historická tahová strategie o husitských válkách. Veďte husitská vojska Jana Žižky v bitvách 15. století. | Historical turn-based strategy about Hussite Wars. Lead Jan Žižka's armies in 15th century battles.">
     <meta name="keywords" content="husité, husitské války, Jan Žižka, tahová strategie, historická hra, středověk, Čechy, strategy game, turn-based, medieval, Bohemia">
@@ -18,7 +18,7 @@
     <meta property="twitter:title" content="Husitské Války - Tahová Strategie">
     <meta property="twitter:description" content="Historická tahová strategie o husitských válkách. Veďte husitská vojska Jana Žižky v bitvách 15. století.">
 
-    <link rel="stylesheet" href="style.css?v=8.7">
+    <link rel="stylesheet" href="style.css?v=8.9">
 </head>
 <body class="booting">
     <section id="startup-status" class="startup-status">
@@ -45,6 +45,7 @@
                 </div>
 
                 <p class="menu-promise" data-i18n="onboarding.promise"></p>
+                <p class="test-build-notice" data-i18n="deployment.testNotice"></p>
                 <nav class="menu-buttons-grid">
                     <button id="btn-first-battle" class="menu-btn primary">
                         <span class="btn-text" data-i18n="onboarding.firstBattle"></span>
@@ -54,9 +55,13 @@
                         <span class="btn-icon">⚔️</span>
                         <span class="btn-text" data-i18n="menu.newGame"></span>
                     </button>
+                    <button id="btn-resume-auto" class="menu-btn hidden">
+                        <span class="btn-text" data-i18n="touch.resumeAuto"></span>
+                        <span class="first-battle-note" id="autosave-summary"></span>
+                    </button>
                     <button id="btn-continue" class="menu-btn" disabled>
                         <span class="btn-icon">📜</span>
-                        <span class="btn-text" data-i18n="menu.continue"></span>
+                        <span class="btn-text" data-i18n="touch.manualSave"></span>
                     </button>
                     <button id="btn-encyclopedia" class="menu-btn">
                         <span class="btn-icon">📚</span>
@@ -142,7 +147,10 @@
             </aside>
 
             <div id="map-container">
-                <canvas id="game-canvas"></canvas>
+                <div id="map-surface">
+                    <canvas id="game-canvas" data-i18n-aria-label="touch.battlefield" aria-label="Bojiště"></canvas>
+                    <div id="order-marker" class="hidden" aria-hidden="true"></div>
+                </div>
                 <div id="tooltip" class="hidden"></div>
                 <!-- Panel cílů mise -->
                 <div id="objectives-panel" class="hidden">
@@ -190,9 +198,38 @@
                     </div>
                 </div>
             </aside>
+            <div id="map-tools" role="group" data-i18n-aria-label="touch.camera" aria-label="Pohled na mapu">
+                <button id="map-zoom-out" data-i18n-title="touch.zoomOut" data-i18n-aria-label="touch.zoomOut" aria-label="Oddálit">−</button>
+                <output id="map-zoom-value" aria-live="off">100%</output>
+                <button id="map-zoom-in" data-i18n-title="touch.zoomIn" data-i18n-aria-label="touch.zoomIn" aria-label="Přiblížit">+</button>
+                <button id="map-center" data-i18n="touch.center"></button>
+                <button id="btn-minimap" data-i18n="touch.overview" aria-controls="minimap" aria-expanded="false"></button>
+            </div>
+            <section id="battle-order" class="hidden" aria-labelledby="order-title">
+                <strong id="order-title"></strong>
+                <p id="order-hint"></p>
+                <p id="order-outcome" role="status" aria-live="polite"></p>
+                <details id="order-details">
+                    <summary data-i18n="touch.details"></summary>
+                    <div id="order-content"></div>
+                </details>
+                <div class="order-buttons">
+                    <button id="order-cancel" data-i18n="confirm.cancel"></button>
+                    <button id="order-confirm"></button>
+                </div>
+            </section>
         </main>
 
+        <div id="compact-orders">
+            <button id="btn-unit-sheet" aria-controls="unit-panel" aria-expanded="false" disabled>
+                <span id="compact-unit-name"></span><span data-i18n="touch.orders"></span>
+            </button>
+            <button id="btn-clear-selection" data-i18n="touch.deselect" disabled></button>
+            <button id="btn-next-unit" data-i18n="touch.nextUnit"></button>
+            <button id="btn-army-sheet" data-i18n="touch.army" aria-controls="info-panel" aria-expanded="false"></button>
+        </div>
         <p id="turn-guidance" class="hidden" role="status" aria-live="polite" aria-atomic="true"></p>
+        <p id="autosave-status" class="hidden" role="status" aria-live="polite"></p>
         <footer id="game-footer">
             <div class="footer-main-actions">
                 <button id="btn-end-turn" data-i18n="game.endTurn"></button>
@@ -304,6 +341,7 @@
                             <li data-i18n="onboarding.endStep"></li>
                         </ol>
                         <p class="controls-note" data-i18n="onboarding.helpStep"></p>
+                        <p class="touch-help" data-i18n="touch.help"></p>
                     </details>
 
                     <!-- Historické poznámky -->
@@ -632,6 +670,7 @@
                 </div>
 
                 <div id="tab-controls" class="help-tab-content">
+                    <p class="touch-help" data-i18n="touch.help"></p>
                     <h3>Ovládání</h3>
                     <div class="controls-list">
                         <div class="control-item">
@@ -723,6 +762,7 @@
         <div class="modal-content pause-modal-content">
             <button id="pause-close" class="close-btn">&times;</button>
             <h2 data-i18n="pause.title">Hra pozastavena</h2>
+            <p class="test-build-notice" data-i18n="deployment.testNotice"></p>
             <div class="pause-buttons">
                 <button id="btn-resume" class="menu-btn primary">
                     <span class="btn-icon">▶️</span>
@@ -974,7 +1014,7 @@
     </div>
 
     <!-- Custom Confirm Dialog -->
-    <div id="confirm-modal" class="modal hidden">
+    <div id="confirm-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="confirm-title" aria-describedby="confirm-message">
         <div class="modal-overlay"></div>
         <div class="modal-content confirm-dialog">
             <div class="confirm-icon">⚠️</div>
@@ -1038,7 +1078,8 @@
     </div>
 
     <!-- i18n - lokalizační systém (načíst jako první) -->
-    <script src="js/i18n/i18n.js?v=8.7"></script>
+    <script src="js/core/GameStorage.js?v=8.9"></script>
+    <script src="js/i18n/i18n.js?v=8.9"></script>
     <script src="js/i18n/i18nHelpers.js?v=8.5"></script>
     <script src="js/i18n/encyclopediaRenderer.js?v=3.9"></script>
     <!-- ?v= cache-busting: bumpni číslo při každém vydání, ať hráči nedostanou starý JS -->
@@ -1050,23 +1091,25 @@
     <script src="js/entities/UnitFactory.js?v=3.9"></script>
     <script src="js/data/battleLore.js?v=8.0"></script>
     <script src="js/data/campaign.js?v=8.0"></script>
-    <script src="js/systems/CampaignProgressSystem.js?v=8.0"></script>
+    <script src="js/systems/CampaignProgressSystem.js?v=8.9"></script>
     <script src="js/data/scenarios.js?v=8.5"></script>
     <script src="js/systems/CombatSystem.js?v=8.2"></script>
-    <script src="js/systems/BattleActionSystem.js?v=8.1"></script>
-    <script src="js/systems/SaveGameSystem.js?v=8.4"></script>
+    <script src="js/systems/BattleActionSystem.js?v=8.8"></script>
+    <script src="js/systems/SaveGameSystem.js?v=8.9"></script>
     <script src="js/systems/ScenarioEventSystem.js?v=8.6"></script>
     <script src="js/systems/FogOfWarSystem.js?v=3.9"></script>
     <script src="js/systems/VictoryConditionsSystem.js?v=8.1"></script>
     <script src="js/systems/TutorialSystem.js?v=8.1"></script>
     <script src="js/systems/MoraleSystem.js?v=8.1"></script>
-    <script src="js/systems/ChronicleSystem.js?v=8.6"></script>
+    <script src="js/systems/ChronicleSystem.js?v=8.9"></script>
     <script src="js/ui/ChronicleView.js?v=8.6"></script>
-    <script src="js/ui/BattlePanels.js?v=8.7"></script>
-    <script src="js/ui/BattleTooltip.js?v=8.2"></script>
-    <script src="js/ui/BattleView.js?v=8.2"></script>
-    <script src="js/core/game.js?v=8.6"></script>
+    <script src="js/ui/BattlePanels.js?v=8.8"></script>
+    <script src="js/ui/BattleTooltip.js?v=8.8"></script>
+    <script src="js/ui/BattleMapInput.js?v=8.8"></script>
+    <script src="js/ui/BattleOrders.js?v=8.8"></script>
+    <script src="js/ui/BattleView.js?v=8.8"></script>
+    <script src="js/core/game.js?v=8.9"></script>
     <script src="js/ai.js?v=8.1"></script>
-    <script src="js/ui/main.js?v=8.7"></script>
+    <script src="js/ui/main.js?v=8.9"></script>
 </body>
 </html>
