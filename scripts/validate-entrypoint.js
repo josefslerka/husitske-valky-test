@@ -8,7 +8,7 @@ const root = path.resolve(__dirname, '..');
 const scriptOrder = [
     'js/core/GameStorage.js',
     'js/i18n/i18n.js', 'js/i18n/i18nHelpers.js', 'js/i18n/encyclopediaRenderer.js',
-    'js/ui/sound.js', 'js/ui/music.js', 'js/core/hex.js', 'js/data/unitTypes.js',
+    'js/ui/sound.js', 'js/ui/music.js', 'js/ui/WoodcutRenderer.js', 'js/core/hex.js', 'js/data/unitTypes.js',
     'js/entities/Unit.js', 'js/entities/UnitFactory.js', 'js/data/battleLore.js',
     'js/data/campaign.js', 'js/systems/CampaignProgressSystem.js', 'js/data/scenarios.js',
     'js/systems/CombatSystem.js', 'js/systems/BattleActionSystem.js', 'js/systems/SaveGameSystem.js',

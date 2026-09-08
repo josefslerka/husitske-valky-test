@@ -1,60 +1,62 @@
 /* ===============================================
-   POLNI RUKOPIS UI - experimental battle/readability layer
+   DŘEVOŘEZ — teplý papír, černá rytina, střídmé barvy stran.
+   Vlastník vzhledu; rozložení a dotyková gesta zůstávají samostatné.
    =============================================== */
 :root {
-    --field-page: #d8c493;
-    --field-page-light: #ead9ad;
-    --field-ink: #20150d;
-    --field-ink-soft: #473422;
-    --field-rule: rgba(88, 51, 24, 0.34);
-    --field-red: #8f2430;
-    --field-red-dark: #5e1420;
-    --field-blue: #244f7a;
-    --field-blue-dark: #16324f;
-    --field-gold: #b88a2b;
-    --field-map-bg: #38442d;
-    --field-panel-shadow: 0 10px 24px rgba(18, 10, 4, 0.32);
+    --field-page: #e8dcc2;
+    --field-page-light: #f2e8d3;
+    --field-ink: #28302b;
+    --field-ink-soft: #5d604f;
+    --field-rule: #a19d86;
+    --field-red: #80352d;
+    --field-red-dark: #652a24;
+    --field-blue: #3f5965;
+    --field-blue-dark: #2c424b;
+    --field-gold: #ad8b50;
+    --field-map-bg: #e8dcc2;
+    --field-panel-shadow: 0 4px 12px rgba(40, 48, 43, 0.13);
+    color-scheme: light;
 }
 
 body {
     background:
         repeating-linear-gradient(0deg, rgba(255, 242, 196, 0.03) 0 1px, transparent 1px 5px),
-        radial-gradient(120% 85% at 50% 12%, #4b3820 0%, #24170e 45%, #0f0905 100%);
+        var(--field-ink);
 }
 
 #game-container {
     max-width: none;
-    background: #15100a;
+    background: var(--field-page);
 }
 
 #game-header {
 
-    background:
-        linear-gradient(90deg, rgba(143, 36, 48, 0.16), transparent 28%, transparent 72%, rgba(184, 138, 43, 0.12)),
-        linear-gradient(180deg, #ead9ad 0%, #cdb06f 100%);
-    color: var(--field-ink);
-    border-bottom: 2px solid #6b3b1d;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.34);
+    background: var(--field-ink);
+    color: var(--field-page-light);
+    border-bottom: 3px solid var(--field-gold);
+    box-shadow: none;
 }
 
 .header-logo {
 
-    border-radius: 50%;
-    border: 2px solid rgba(94, 20, 32, 0.55);
-    background: #efe0b7;
-    box-shadow: inset 0 0 0 2px rgba(255, 248, 216, 0.42);
+    border-radius: 0;
+    border: 1px solid var(--field-rule);
+    background: var(--field-page-light);
+    box-shadow: none;
+    filter: grayscale(1) sepia(.25);
 }
 
 #game-header h1,
 #battle-name {
-    color: var(--field-red-dark);
+    color: var(--field-page-light);
     font-size: clamp(1.2rem, 2vw, 1.7rem);
     letter-spacing: 0.04em;
-    text-shadow: 0 1px 0 rgba(255, 244, 203, 0.75);
+    text-shadow: none;
+    text-transform: uppercase;
 }
 
 #battle-date {
-    color: #5c4428;
+    color: #d7ceb7;
     font-size: 0.88rem;
 }
 
@@ -76,30 +78,27 @@ body {
 }
 
 #current-player {
-    background: linear-gradient(180deg, var(--field-red), var(--field-red-dark));
+    background: var(--field-red);
     color: #fff4d3;
     border-color: rgba(255, 220, 132, 0.45);
 }
 
 #current-player.crusaders {
-    background: linear-gradient(180deg, var(--field-blue), var(--field-blue-dark));
+    background: var(--field-blue);
     color: #eaf2ff;
 }
 
 #game-main {
 
-    background:
-        radial-gradient(80% 80% at 50% 45%, rgba(216, 196, 147, 0.10), transparent 60%),
-        #171008;
+    background: var(--field-page);
 }
 
 #unit-panel,
 #info-panel {
-    background:
-        repeating-linear-gradient(90deg, rgba(73, 52, 30, 0.045) 0 1px, transparent 1px 9px),
-        linear-gradient(180deg, var(--field-page-light) 0%, var(--field-page) 56%, #c5aa72 100%);
-    border: 1px solid #6e4525;
-    border-radius: 4px;
+    background: var(--field-page-light);
+    border: 1px solid var(--field-rule);
+    border-top: 3px solid var(--field-ink);
+    border-radius: 0;
     border-image: none;
     color: var(--field-ink);
     box-shadow: var(--field-panel-shadow), inset 0 0 0 1px rgba(255, 248, 218, 0.42);
@@ -236,17 +235,17 @@ body {
 #unit-actions button {
     min-height: 34px;
     padding: 7px 8px;
-    background: linear-gradient(180deg, #f1d37d, var(--field-gold));
-    border: 1px solid #75491f;
-    border-radius: 3px;
-    color: #2b1a09;
-    text-shadow: 0 1px 0 rgba(255, 245, 193, 0.55);
-    box-shadow: 0 2px 0 rgba(84, 46, 15, 0.55);
+    background: var(--field-page-light);
+    border: 1px solid var(--field-rule);
+    border-radius: 0;
+    color: var(--field-ink);
+    text-shadow: none;
+    box-shadow: none;
 }
 
 #unit-actions button:hover:not(:disabled) {
-    background: linear-gradient(180deg, #ffe5a0, #c9972b);
-    box-shadow: 0 3px 0 rgba(84, 46, 15, 0.55), 0 0 0 2px rgba(184, 138, 43, 0.18);
+    background: var(--field-page);
+    box-shadow: inset 0 0 0 1px var(--field-ink);
     transform: translateY(-1px);
 }
 
@@ -327,6 +326,19 @@ body {
     color: #315d26;
 }
 
+.woodcut-icon { display: block; width: 100%; height: 100%; }
+.btn-icon, .objective-hud-icon, #phase-icon { filter: grayscale(1); }
+.army-section .unit-icon:not(.destroyed) {
+    width: 27px; height: 27px; flex: 0 0 27px; padding: 2px;
+    background: var(--field-red); color: var(--field-page-light);
+    border: 1px solid var(--field-ink); border-radius: 50%;
+}
+.army-section.crusaders .unit-icon:not(.destroyed) {
+    background: var(--field-blue); border-radius: 0;
+    clip-path: polygon(0 0, 100% 0, 90% 70%, 50% 100%, 10% 70%);
+}
+.army-section li.active { outline: 2px solid var(--field-red); outline-offset: -2px; }
+
 .unit-health.health-medium {
     color: #7a5b17;
 }
@@ -340,12 +352,10 @@ body {
     justify-content: flex-start;
     align-items: flex-start;
 
-    background:
-        radial-gradient(75% 75% at 50% 45%, rgba(141, 122, 75, 0.18), transparent 70%),
-        linear-gradient(180deg, #26301f, #151d12);
-    border: 1px solid rgba(184, 138, 43, 0.28);
-    border-radius: 4px;
-    box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.32);
+    background: var(--field-map-bg);
+    border: 1px solid var(--field-rule);
+    border-radius: 0;
+    box-shadow: none;
 }
 
 #game-canvas {
@@ -362,9 +372,7 @@ body {
     top: 12px;
     right: 12px;
     width: min(270px, calc(100% - 24px));
-    background:
-        repeating-linear-gradient(0deg, rgba(78, 52, 29, 0.04) 0 1px, transparent 1px 7px),
-        linear-gradient(180deg, rgba(239, 219, 172, 0.98), rgba(207, 180, 119, 0.98));
+    background: var(--field-page-light);
     border: 1px solid #6e4525;
     border-radius: 3px;
     color: var(--field-ink);
@@ -398,7 +406,7 @@ body {
 
     border: 1px solid rgba(238, 208, 125, 0.85);
     border-radius: 3px;
-    background: #25301f;
+    background: var(--field-map-bg);
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.42), 0 0 0 4px rgba(32, 21, 13, 0.26);
 }
 
@@ -412,9 +420,9 @@ body {
 #game-footer {
 
     flex-wrap: nowrap;
-    background: linear-gradient(180deg, #d9c493, #b89455);
-    border-top: 2px solid #6e4525;
-    box-shadow: 0 -6px 18px rgba(0, 0, 0, 0.28);
+    background: var(--field-page-light);
+    border-top: 2px solid var(--field-ink);
+    box-shadow: none;
 }
 
 .footer-main-actions {
@@ -432,14 +440,14 @@ body {
 }
 
 #btn-end-turn {
-    background: linear-gradient(180deg, #a8323f, #671620);
+    background: var(--field-red);
     border: 1px solid #4b1118;
     color: #fff1cf;
     box-shadow: 0 2px 0 rgba(42, 10, 12, 0.65);
 }
 
 #btn-end-turn:hover {
-    background: linear-gradient(180deg, #bd4050, #7a1d28);
+    background: var(--field-red-dark);
     border-color: #5c1420;
     transform: translateY(-1px);
     box-shadow: 0 3px 0 rgba(42, 10, 12, 0.65);
@@ -447,6 +455,7 @@ body {
 
 #btn-choral,
 #btn-objectives,
+#btn-menu,
 .footer-btn {
     background: rgba(255, 244, 210, 0.45);
     border: 1px solid rgba(88, 51, 24, 0.4);
@@ -456,6 +465,7 @@ body {
 
 #btn-choral:hover:not(:disabled),
 #btn-objectives:hover:not(:disabled),
+#btn-menu:hover:not(:disabled),
 .footer-btn:hover:not(:disabled) {
     background: rgba(255, 248, 222, 0.72);
     border-color: rgba(88, 51, 24, 0.65);
@@ -482,20 +492,20 @@ body {
     transform: none;
     width: 28px;
     height: 36px;
-    background: linear-gradient(180deg, #e2c16b, #a97b29);
-    border-color: #6e4525;
-    color: #2b1a09;
-    box-shadow: 0 2px 7px rgba(0, 0, 0, 0.25);
+    background: var(--field-ink);
+    border-color: var(--field-ink);
+    color: var(--field-page-light);
+    box-shadow: none;
 }
 
 /* Lišty ořezávají obsah. Ovládání musí ležet uvnitř, ne 24 px za okrajem. */
-#unit-panel .panel-toggle { right: 5px; border: 1px solid #6e4525; border-radius: 3px; }
-#info-panel .panel-toggle { left: 5px; border: 1px solid #6e4525; border-radius: 3px; }
+#unit-panel .panel-toggle { right: 5px; border: 1px solid var(--field-ink); border-radius: 0; }
+#info-panel .panel-toggle { left: 5px; border: 1px solid var(--field-ink); border-radius: 0; }
 #unit-panel h2 { padding-right: 28px; min-height: 32px; }
 #info-panel h2 { padding-left: 28px; min-height: 32px; }
 
 .panel-toggle:hover {
-    background: linear-gradient(180deg, #f2d88c, #b98a2f);
+    background: var(--field-red-dark);
 }
 
 #tooltip {
@@ -622,7 +632,14 @@ body {
     margin-top: 4px;
     padding: 5px 12px;
     max-width: 640px;
+    background: transparent;
+    color: var(--field-page-light);
+    border-color: var(--field-rule);
+    box-shadow: none;
 }
+
+#objective-hud { color: var(--field-page-light); background: transparent; border-color: var(--field-rule); }
+#objective-hud #objective-hud-text { color: var(--field-page-light); text-shadow: none; }
 
 #phase-name {
     letter-spacing: 0.09em;
@@ -711,16 +728,12 @@ body {
 
 #map-container {
     padding: 8px;
-    background:
-        radial-gradient(70% 78% at 50% 45%, rgba(141, 122, 75, 0.10), transparent 70%),
-        linear-gradient(180deg, #26301f, #182012);
+    background: var(--field-map-bg);
     overflow: auto;
 }
 
 #game-canvas {
-    box-shadow:
-        0 8px 18px rgba(0, 0, 0, 0.34),
-        0 0 0 3px rgba(32, 21, 13, 0.28);
+    box-shadow: none;
 }
 
 #minimap {
@@ -777,9 +790,7 @@ body {
     gap: 8px 14px;
     align-items: center;
     text-align: left;
-    background:
-        repeating-linear-gradient(90deg, rgba(73, 52, 30, 0.045) 0 1px, transparent 1px 9px),
-        linear-gradient(180deg, rgba(234, 217, 173, 0.98), rgba(196, 169, 112, 0.98));
+    background: var(--field-page-light);
     border: 1px solid #6e4525;
     border-left: 5px solid var(--field-red-dark);
     border-radius: 3px;
@@ -818,17 +829,17 @@ body {
     align-self: center;
     padding: 8px 16px;
     min-height: 34px;
-    background: linear-gradient(180deg, #f1d37d, var(--field-gold));
+    background: var(--field-ink);
     border: 1px solid #75491f;
-    border-radius: 3px;
-    color: #2b1a09;
+    border-radius: 0;
+    color: var(--field-page-light);
     font-size: 0.8rem;
-    box-shadow: 0 2px 0 rgba(84, 46, 15, 0.45);
+    box-shadow: none;
 }
 
 .event-notification button:hover {
-    background: linear-gradient(180deg, #ffe5a0, #c9972b);
-    box-shadow: 0 3px 0 rgba(84, 46, 15, 0.45);
+    background: var(--field-red-dark);
+    box-shadow: none;
 }
 
 @media (max-width: 1100px) {
@@ -945,11 +956,10 @@ body {
 .gameover-modal-content,
 .tutorial-modal-content,
 .confirm-dialog {
-    background:
-        repeating-linear-gradient(90deg, rgba(73, 52, 30, 0.045) 0 1px, transparent 1px 10px),
-        linear-gradient(180deg, rgba(234, 217, 173, 0.96), rgba(207, 180, 119, 0.94));
-    border: 1px solid #6e4525;
-    border-radius: 4px;
+    background: var(--field-page);
+    border: 1px solid var(--field-rule);
+    border-top: 4px solid var(--field-ink);
+    border-radius: 0;
     border-image: none;
     color: var(--field-ink);
     box-shadow:
@@ -1060,14 +1070,17 @@ body {
 }
 
 .menu-btn.primary {
-    background: linear-gradient(180deg, #f1d37d, var(--field-gold));
+    background: var(--field-ink);
     border-color: #75491f;
-    color: #2b1a09;
+    color: var(--field-page-light);
+    border: 1px solid var(--field-ink);
+    border-radius: 0;
 }
 
 .menu-btn.primary:hover:not(:disabled) {
-    background: linear-gradient(180deg, #ffe5a0, #c9972b);
+    background: var(--field-red-dark);
     box-shadow: 0 3px 0 rgba(84, 46, 15, 0.45);
+    color: var(--field-page-light);
 }
 
 .music-btn,
@@ -1472,11 +1485,11 @@ body {
     }
 }
 
-/* Main menu direction: cooler field-map background, no heavy bitmap logo. */
+/* Titulní list dřevořezové kroniky. */
 #main-menu .menu-background {
     background:
-        radial-gradient(95% 78% at 50% 42%, rgba(227, 219, 180, 0.78), rgba(139, 153, 127, 0.42) 46%, rgba(45, 64, 57, 0.88) 100%),
-        linear-gradient(135deg, #2d4039 0%, #596a5f 48%, #26372f 100%);
+        repeating-linear-gradient(125deg, #f2e8d308 0 1px, transparent 1px 8px),
+        var(--field-ink);
 }
 
 #main-menu .menu-background::before {
@@ -1505,10 +1518,10 @@ body {
     height: auto;
     max-height: calc(100dvh - 28px);
     overflow-y: auto;
-    background:
-        repeating-linear-gradient(90deg, rgba(73, 52, 30, 0.035) 0 1px, transparent 1px 10px),
-        linear-gradient(180deg, rgba(239, 225, 187, 0.95), rgba(205, 189, 139, 0.91));
-    border: 1px solid rgba(78, 56, 31, 0.42);
+    background: var(--field-page);
+    border: 1px solid var(--field-rule);
+    border-top: 6px solid var(--field-red);
+    border-radius: 0;
     box-shadow:
         0 24px 58px rgba(16, 28, 22, 0.36),
         inset 0 0 0 1px rgba(255, 248, 222, 0.36);
@@ -1516,7 +1529,8 @@ body {
 
 #main-menu .game-logo {
     margin-bottom: 16px;
-    padding: 8px 0 2px;
+    padding: 18px 0;
+    border-bottom: 3px double var(--field-ink);
 }
 
 #main-menu .logo-image {
@@ -1527,7 +1541,7 @@ body {
     display: grid;
     gap: 6px;
     place-items: center;
-    color: var(--field-red-dark);
+    color: var(--field-ink);
 }
 
 .menu-title-main {
@@ -1603,15 +1617,15 @@ body {
 
 /* Contrast unification: keep modal/menu surfaces on one parchment system. */
 :root {
-    --ui-paper-clear: rgba(255, 248, 222, 0.54);
-    --ui-paper-solid: rgba(255, 248, 222, 0.76);
-    --ui-ink-strong: #20150d;
-    --ui-ink-muted: #5f4b31;
-    --ui-line-soft: rgba(88, 51, 24, 0.28);
-    --ui-line-strong: rgba(88, 51, 24, 0.48);
-    --ui-red: #6d1422;
-    --ui-green: #315f34;
-    --ui-gold-flat: #b88a2b;
+    --ui-paper-clear: rgba(242, 232, 211, 0.65);
+    --ui-paper-solid: #f2e8d3;
+    --ui-ink-strong: #28302b;
+    --ui-ink-muted: #5d604f;
+    --ui-line-soft: #bdb59e;
+    --ui-line-strong: #a19d86;
+    --ui-red: #80352d;
+    --ui-green: #365846;
+    --ui-gold-flat: #ad8b50;
 }
 
 .mission-info,
@@ -1783,6 +1797,7 @@ body {
 #main-menu .menu-btn {
     color: var(--ui-ink-strong);
     text-shadow: none;
+    border-radius: 0;
 }
 
 #main-menu .menu-btn:disabled {
@@ -1790,6 +1805,8 @@ body {
     border-color: rgba(88, 51, 24, 0.30);
     color: rgba(32, 21, 13, 0.52);
 }
+
+#main-menu .menu-btn.primary { color: var(--field-page-light); }
 
 .menu-title-main {
     font-size: clamp(2.05rem, 4.4vw, 3.55rem);

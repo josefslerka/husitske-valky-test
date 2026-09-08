@@ -69,7 +69,7 @@ function createHarness({ browserView = false, pathname = '/', storage = new Map(
     });
     for (const file of [
         'core/GameStorage.js',
-        'data/unitTypes.js', 'entities/Unit.js', 'entities/UnitFactory.js', 'core/hex.js',
+        'data/unitTypes.js', 'entities/Unit.js', 'entities/UnitFactory.js', 'ui/WoodcutRenderer.js', 'core/hex.js',
         'data/scenarios.js', 'data/campaign.js', 'systems/CampaignProgressSystem.js',
         'systems/CombatSystem.js', 'systems/FogOfWarSystem.js', 'systems/MoraleSystem.js',
         'systems/VictoryConditionsSystem.js', 'systems/TutorialSystem.js',

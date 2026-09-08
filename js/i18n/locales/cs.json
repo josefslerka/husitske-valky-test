@@ -53,7 +53,7 @@
     "optionalGoal": "Volitelný bonus —",
     "controlsTitle": "Před prvním tahem · ovládání v kostce",
     "noRush": "Je to tahová hra. Při rozhodování vás nic nehoní; protivník jedná až po ukončení vašeho tahu.",
-    "selectStep": "Vaše oddíly jsou červené. Vyberte jeden; jeho stav a schopnosti najdete v levém panelu nebo pod mapou v tlačítku Rozkazy a detail.",
+    "selectStep": "Vaše oddíly mají červené kruhové žetony, protivník modré štíty. Vyberte vlastní oddíl; jeho stav a schopnosti najdete v levém panelu nebo pod mapou v tlačítku Rozkazy a detail.",
     "actionStep": "Klepnutí na zeleně zvýrazněné pole rovnou přesune vybraný oddíl. Červeně zvýrazněný nepřítel znamená možný útok: na dotyku a v kompaktním okně nejprve uvidíte náhled a útok potvrdíte. Na velkém monitoru myší útočíte přímo kliknutím.",
     "endStep": "Rozdejte rozkazy dalším oddílům a stiskněte Ukončit tah. Nemusíte využít každou akci.",
     "helpStep": "Hlavní cíl zůstává nad mapou. Podrobnosti najdete pod Cíle, pravidla pod Menu → Nápověda. Escape otevře pauzu.",

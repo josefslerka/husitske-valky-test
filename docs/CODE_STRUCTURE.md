@@ -11,6 +11,10 @@ Prezentace bitvy je rozdělena podle odpovědností:
 
 - `BattleView` překládá vstupy prohlížeče na příkazy hry, vykresluje mapu a minimapu,
   ovládá kameru, notifikace a efekty. Vlastní listenery a animační smyčku.
+- `WoodcutRenderer` vlastní kreslení terénu, žetonů a zvýraznění. `HexGrid.render()`
+  mu deleguje prezentaci, zatímco souřadnice, sousedé a obsazení zůstávají v mřížce.
+  Sdílené kódové vektorové značky slouží i přehledu armády; žádné další assety ani
+  závislosti se nestahují. Kreslení nespotřebovává náhodná čísla herních pravidel.
 - `BattlePanels` sestavuje HTML jednotek, přehledu armád, tlačítek a fázového banneru.
   Situační pokyn pod mapou pouze odvozuje ze stavu tahu a vybrané jednotky;
   neprohledává pozice protivníka ani nemění herní pravidla.
@@ -196,7 +200,7 @@ zastaví render a zruší gesta/náhled. Podrobnosti: [MOBILE_PLAYTEST.md](MOBIL
 | `campaign.css` | Kampaň, mise, fáze a události |
 | `menu-and-results.css` | Hlavní menu, nastavení, výsledky a tutorial |
 | `feedback.css` | Animace, indikátory, přístupnost a kronika |
-| `field-theme.css` | Výsledné rukopisné téma a jeho přepsání základních stylů |
+| `field-theme.css` | Výsledné dřevořezové téma a jeho přepsání základních stylů |
 | `touch-and-layout.css` | Kamera, náhled rozkazu, dotykové panely a kompaktní rozložení |
 
 Rozdělení zachovalo relativní pořadí selektorů i media queries. Pozdější téma stále

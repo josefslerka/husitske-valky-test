@@ -53,7 +53,7 @@
     "optionalGoal": "Optional bonus —",
     "controlsTitle": "Before your first turn · quick controls",
     "noRush": "This is a turn-based game. Take your time deciding; the opponent acts after you end your turn.",
-    "selectStep": "Your units are red. Select one; its status and abilities appear in the left panel or under the map in Orders and details.",
+    "selectStep": "Your units have red round tokens; the opponent uses blue shields. Select your unit; its status and abilities appear in the left panel or under the map in Orders and details.",
     "actionStep": "Tap a green highlighted tile to move the selected unit directly. A red highlighted enemy is a possible attack: on touchscreens and in a compact window, review the preview and confirm the attack. With a mouse on a large screen, clicking attacks directly.",
     "endStep": "Give orders to your other units, then press End Turn. You do not have to use every action.",
     "helpStep": "Your main objective stays above the map. Open Objectives for details or Menu → Help for the rules. Escape opens the pause menu.",

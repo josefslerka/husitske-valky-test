@@ -127,8 +127,7 @@ class BattlePanels {
             li.className = 'unit-list-item';
 
             // Získání symbolu jednotky
-            const unitType = UnitTypes[unit.type];
-            const symbol = unitType?.symbol || '?';
+            const symbol = WoodcutRenderer.icon(unit);
 
             // Výpočet procenta zdraví pro barvu
             const healthPercent = (unit.health / unit.maxHealth) * 100;

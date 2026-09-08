@@ -139,6 +139,7 @@ strategie/
 │   │   ├── campaign.js    # Struktura kampaně
 │   │   └── battleLore.js  # Historické texty
 │   ├── ui/                # UI komponenty
+│   │   ├── WoodcutRenderer.js # Dřevořezová mapa a společné vektorové značky oddílů
 │   │   ├── BattleView.js  # Vstupy bitvy, kamera, vykreslování a UI lifecycle
 │   │   ├── BattleMapInput.js # Posun, zoom, gesta a souřadnice
 │   │   ├── BattleOrders.js # Přímý přesun a potvrzení útoku na dotyku
@@ -196,10 +197,14 @@ Viz: [docs/VICTORY_CONDITIONS.md](docs/VICTORY_CONDITIONS.md)
 
 ## 🎨 Grafický styl
 
-- **Středověký manuscript look** - Inspirováno iluminovanými rukopisy
-- **Parchment textures** - Nostalgický pocit historického dokumentu
-- **Hex-based battlefield** - Taktický hexagonal grid
-- **Period-appropriate UI** - Gotické fonty, zlaté ornamenty
+Testovací větev používá **dřevořez**: teplý papír, tmavou rytinu krajiny a střídmou
+červenou/modrou pro strany. Vlastní oddíly mají kruhové žetony, protivník štíty;
+značky zbraní jsou společné pro mapu a přehled armády. Pohyb má přerušovaný obrys
+s tečkou, útok červený obrys s křížky a výběr dvojitou linku.
+
+Vykreslení je oddělené v `WoodcutRenderer`; nemění scénáře, pravidla ani formát
+savu. `node scripts/test-woodcut.js` hlídá terény, značky, mlhu, geometrii a kreslení
+všech 18 scénářů. Podrobnosti a ruční kontrola: [WOODCUT_PLAYTEST.md](docs/WOODCUT_PLAYTEST.md).
 
 ## 🏛️ Historická autenticita
 
