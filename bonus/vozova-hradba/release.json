@@ -1,0 +1,16 @@
+{
+  "version": "9",
+  "files": {
+    "index.html": "7494e868fa53c3b39dd3b7ceae6341fcaf410eed5d35455e2b1cd0c9c748a93b",
+    "style.css": "c24e9df7bb964838cfe9a1f486c8532a52e241b6098e05f3ae100ba966dd5548",
+    "game.js": "c6a627a89a096ea0b795d116198fc7aebabdbca5004ac0100a080891fb09ced7",
+    "session.js": "39f638d8d971894cc2aa260c1353e1e2b39e3df15073a263a11fd6543c102540",
+    "ui.js": "17d002fcba01568b231b4a9695f7d0f35bca1275764da9488c925f85625e8332",
+    "README.md": "54e88edf5518c70192af49e54a19d49d3491cc9807b948ef3ae4ab5e55039317",
+    "DESIGN-RESEARCH.md": "920a9195b3a0e783560809e9c26b80b9985aceeaec96f34d90960517ca2a6d3c",
+    "BALANCE.md": "2519e69b372f3958ea7360f59d743eaf8081c65e83acd6115f0fbd6c9e824535",
+    "PLAYTEST.md": "af83ecd74a280a92f1c1df7fa971245e08feca784ab565b336e08affd6e8d168",
+    "shared/unitTypes.js": "758dea9f82f60c78864f47369ba7cce6dbd681bcb5350dde76391e9a5d1decb5",
+    "shared/WoodcutRenderer.js": "b1186e884138b695038f05e4e7c8e76a98a0c9ef0ae298ec28643d4759b38afa"
+  }
+}
